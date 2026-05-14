@@ -22,13 +22,15 @@ export default function ProductCard({ product }) {
 
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 flex flex-col">
-      <img
-        src={product.image}
-        alt={product.name}
-        className="w-full aspect-square object-cover"
-      />
+      <div className="p-5">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full aspect-square object-cover rounded-lg"
+        />
+      </div>
 
-      <div className="p-5 flex-1 flex flex-col">
+      <div className="p-6 sm:p-5 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900">{product.name}</h3>
           <span className="text-lg font-bold text-blue-600">
@@ -38,11 +40,11 @@ export default function ProductCard({ product }) {
 
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-3">
-            <label className="text-xs font-medium text-gray-700 w-10">Size</label>
+            <label className="text-sm font-medium text-gray-700 w-10">Size</label>
             <select
               value={selectedSize}
               onChange={(e) => setSelectedSize(e.target.value)}
-              className="flex-1 px-3 py-2 sm:px-2 sm:py-1 text-xs border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="flex-1 px-3 py-2 sm:px-2 sm:py-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               {sizes.map((size) => (
                 <option key={size} value={size}>{size}</option>
@@ -51,11 +53,11 @@ export default function ProductCard({ product }) {
           </div>
 
           <div className="flex items-center gap-2 mb-3">
-            <label className="text-xs font-medium text-gray-700 w-10">Sugar</label>
+            <label className="text-sm font-medium text-gray-700 w-10">Sugar</label>
             <select
               value={selectedSugar}
               onChange={(e) => setSelectedSugar(e.target.value)}
-              className="flex-1 px-3 py-2 sm:px-2 sm:py-1 text-xs border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="flex-1 px-3 py-2 sm:px-2 sm:py-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               {sugarLevels.map((level) => (
                 <option key={level} value={level}>{level}</option>
@@ -64,11 +66,11 @@ export default function ProductCard({ product }) {
           </div>
 
           <div className="flex items-center gap-2">
-            <label className="text-xs font-medium text-gray-700 w-10">Add On</label>
+            <label className="text-sm font-medium text-gray-700 w-10">Add On</label>
             <select
               value={selectedAddOn}
               onChange={(e) => setSelectedAddOn(e.target.value)}
-              className="flex-1 px-3 py-2 sm:px-2 sm:py-1 text-xs border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="flex-1 px-3 py-2 sm:px-2 sm:py-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">None</option>
               {product.addOns && product.addOns.map((addOn) => (
@@ -80,7 +82,7 @@ export default function ProductCard({ product }) {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-3 pt-4 mt-auto">
+        <div className="flex items-center justify-between gap-3 pt-4 mt-auto">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setQty(Math.max(1, qty - 1))}
@@ -99,7 +101,7 @@ export default function ProductCard({ product }) {
 
           <button
             onClick={handleAddToCart}
-            className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm"
           >
             Add to Cart
           </button>

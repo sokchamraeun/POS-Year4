@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const cartCount = 3
 
   const cartIcon = (
@@ -28,7 +29,7 @@ export default function Navbar() {
             <span className="text-xl font-bold text-gray-800">POSystem</span>
           </Link>
 
-          <div className="flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-8">
             <a
               href="/#home"
               className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
@@ -49,7 +50,7 @@ export default function Navbar() {
             </a>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <Link to="/cart" className="relative text-gray-600 hover:text-blue-600 transition-colors">
               {cartIcon}
               {cartCount > 0 && (
@@ -60,7 +61,7 @@ export default function Navbar() {
             </Link>
 
             {isLoggedIn ? (
-              <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-3">
                 <span className="text-sm font-medium text-gray-700">John Doe</span>
                 <button
                   onClick={() => setIsLoggedIn(false)}
@@ -72,14 +73,68 @@ export default function Navbar() {
             ) : (
               <button
                 onClick={() => setIsLoggedIn(true)}
-                className="flex items-center gap-1 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                className="hidden sm:flex items-center gap-1 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              >
+                {userIcon}
+                <span className="text-sm">Login</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="md:hidden flex flex-col gap-1.5 p-2"
+            >
+              <span className={`block w-6 h-0.5 bg-gray-600 transition-all ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+              <span className={`block w-6 h-0.5 bg-gray-600 transition-all ${menuOpen ? 'opacity-0' : ''}`} />
+              <span className={`block w-6 h-0.5 bg-gray-600 transition-all ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+            </button>
+          </div>
+        </div>
+
+        {menuOpen && (
+          <div className="md:hidden pb-4 flex flex-col gap-3">
+            <a
+              href="/#home"
+              onClick={() => setMenuOpen(false)}
+              className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+            >
+              Home
+            </a>
+            <Link
+              to="/service"
+              onClick={() => setMenuOpen(false)}
+              className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+            >
+              Service
+            </Link>
+            <a
+              href="/#products"
+              onClick={() => setMenuOpen(false)}
+              className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+            >
+              Product
+            </a>
+            {isLoggedIn ? (
+              <div className="flex items-center gap-3 pt-2 border-t border-gray-200">
+                <span className="text-sm font-medium text-gray-700">John Doe</span>
+                <button
+                  onClick={() => { setIsLoggedIn(false); setMenuOpen(false) }}
+                  className="text-sm text-gray-600 hover:text-red-600 font-medium transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => { setIsLoggedIn(true); setMenuOpen(false) }}
+                className="flex items-center gap-1 text-gray-600 hover:text-blue-600 font-medium pt-2 border-t border-gray-200"
               >
                 {userIcon}
                 <span className="text-sm">Login</span>
               </button>
             )}
           </div>
-        </div>
+        )}
       </div>
     </nav>
   )
