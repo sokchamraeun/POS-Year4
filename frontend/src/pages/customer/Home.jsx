@@ -1,4 +1,5 @@
 import Navbar from '../../components/customer/Navbar.jsx'
+import Footer from '../../components/customer/Footer.jsx'
 import HeroSlider from '../../components/customer/HeroSlider.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
 
@@ -106,6 +107,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <Footer />
     </div>
   )
 }
