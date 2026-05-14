@@ -77,13 +77,12 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => setIsLoggedIn(true)}
+              <Link to="/staff/login"
                 className="hidden sm:flex items-center gap-1 text-gray-600 hover:text-blue-600 font-medium transition-colors"
               >
                 {userIcon}
                 <span className="text-sm">Login</span>
-              </button>
+              </Link>
             )}
 
             <button
@@ -138,13 +137,12 @@ export default function Navbar() {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => { setIsLoggedIn(true); setMenuOpen(false) }}
+              <Link to="/staff/login" onClick={() => setMenuOpen(false)}
                 className="flex items-center gap-1 text-gray-600 hover:text-blue-600 font-medium pt-2 border-t border-gray-200"
               >
                 {userIcon}
                 <span className="text-sm">Login</span>
-              </button>
+              </Link>
             )}
           </div>
         )}

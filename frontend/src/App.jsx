@@ -6,6 +6,11 @@ import Orders from './pages/staff/Orders.jsx'
 import Inventory from './pages/staff/Inventory.jsx'
 import Recipe from './pages/staff/Recipe.jsx'
 import MenuOrder from './pages/staff/MenuOrder.jsx'
+import Permissions from './pages/staff/Permissions.jsx'
+import Roles from './pages/staff/Roles.jsx'
+import Reports from './pages/staff/Reports.jsx'
+import Login from './pages/auth/Login.jsx'
+import Register from './pages/auth/Register.jsx'
 
 export default function App() {
   return (
@@ -18,6 +23,11 @@ export default function App() {
         <Route path="/staff/inventory" element={<Inventory />} />
         <Route path="/staff/recipe" element={<Recipe />} />
         <Route path="/staff/menu-order" element={<MenuOrder />} />
+        <Route path="/staff/permissions" element={<Permissions />} />
+        <Route path="/staff/roles" element={<Roles />} />
+        <Route path="/staff/reports" element={<Reports />} />
+        <Route path="/staff/login" element={<Login />} />
+        <Route path="/staff/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   )
