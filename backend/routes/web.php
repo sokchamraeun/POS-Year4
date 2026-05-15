@@ -7,7 +7,8 @@ use App\Http\Controllers\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [WebAuthController::class, 'loginPage'])->name('auth.login');
-Route::post('/login', [WebAuthController::class, 'login']);
+Route::post('/login', [WebAuthController::class, 'login'])->name('auth.login.post');
+Route::get('/', fn () => redirect()->route('auth.login'));
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [WebAuthController::class, 'logout'])->name('auth.logout');
