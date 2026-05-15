@@ -13,10 +13,10 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy backend files
+# Copy files
 COPY . .
 
-# Create required folders
+# Create folders
 RUN mkdir -p bootstrap/cache \
     storage/framework/cache \
     storage/framework/sessions \
@@ -25,7 +25,7 @@ RUN mkdir -p bootstrap/cache \
 # Permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Install PHP packages
+# Install composer packages
 RUN composer install --no-dev --optimize-autoloader
 
 # Storage link
@@ -34,5 +34,7 @@ RUN php artisan storage:link || true
 EXPOSE 10000
 
 CMD php artisan migrate --force && \
-    php artisan optimize && \
+    php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan view:clear && \
     php artisan serve --host=0.0.0.0 --port=10000
