@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@yield('title', config('app.name', 'POS'))</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-white border-r border-gray-200 p-6 relative">
+            <h1 class="text-xl font-bold mb-8">
+                <a href="{{ route('users.index') }}" class="text-blue-600">POS</a>
+            </h1>
+            <nav class="space-y-2">
+                <a href="{{ route('users.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('users.*') ? 'bg-gray-100 font-semibold' : '' }}">Users</a>
+                <a href="{{ route('roles.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('roles.*') ? 'bg-gray-100 font-semibold' : '' }}">Roles</a>
+                <a href="{{ route('permissions.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('permissions.*') ? 'bg-gray-100 font-semibold' : '' }}">Permissions</a>
+            </nav>
+
+            <div class="absolute bottom-6 left-6 right-6">
+                <form action="{{ route('auth.logout') }}" method="POST">
+                    @csrf
+                    <button class="w-full text-left px-4 py-2 rounded hover:bg-gray-100 text-red-600">Logout</button>
+                </form>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-y-auto p-8">
+            @yield('content')
+        </main>
+    </div>
+</body>
+</html>

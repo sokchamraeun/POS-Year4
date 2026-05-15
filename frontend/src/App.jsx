@@ -7,6 +7,7 @@ import Inventory from './pages/staff/Inventory.jsx'
 import Recipe from './pages/staff/Recipe.jsx'
 import MenuOrder from './pages/staff/MenuOrder.jsx'
 import Permissions from './pages/staff/Permissions.jsx'
+import Users from './pages/staff/Users.jsx'
 import Roles from './pages/staff/Roles.jsx'
 import Reports from './pages/staff/Reports.jsx'
 import Login from './pages/auth/Login.jsx'
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/staff/recipe" element={<Recipe />} />
         <Route path="/staff/menu-order" element={<MenuOrder />} />
         <Route path="/staff/permissions" element={<Permissions />} />
+        <Route path="/staff/users" element={<Users />} />
         <Route path="/staff/roles" element={<Roles />} />
         <Route path="/staff/reports" element={<Reports />} />
         <Route path="/staff/login" element={<Login />} />

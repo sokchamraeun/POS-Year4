@@ -2,26 +2,24 @@ import { useState } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
-const initialRoles = [
-  { id: 1, name: 'Admin', slug: 'admin', permissions: ['Create Product', 'Delete Product', 'Manage Staff'] },
-  { id: 2, name: 'Manage', slug: 'manage', permissions: [] },
-  { id: 3, name: 'Staff', slug: 'staff', permissions: [] },
+const roleOptions = ['Admin', 'Manager', 'Staff']
+const statusOptions = ['Active', 'Inactive']
+
+const initialUsers = [
+  { id: 1, name: 'Admin User', email: 'admin@visal.com', role: 'Admin', status: 'Active' },
+  { id: 2, name: 'Manager User', email: 'manager@visal.com', role: 'Manager', status: 'Active' },
+  { id: 3, name: 'Staff User', email: 'staff@visal.com', role: 'Staff', status: 'Active' },
+  { id: 4, name: 'John Doe', email: 'john@visal.com', role: 'Staff', status: 'Inactive' },
 ]
 
-const availablePermissions = [
-  'Dashboard', 'Products', 'Orders', 'Inventory', 'Recipe',
-  'Create Product', 'Edit Product', 'Delete Product',
-  'Manage Staff', 'Manage Roles', 'Manage Permissions',
-]
-
-export default function Roles() {
-  const [roles, setRoles] = useState(initialRoles)
+export default function Users() {
+  const [users, setUsers] = useState(initialUsers)
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [formData, setFormData] = useState({ name: '', slug: '', permissions: [] })
+  const [formData, setFormData] = useState({ name: '', email: '', role: 'Staff', status: 'Active' })
 
   function resetForm() {
-    setFormData({ name: '', slug: '', permissions: [] })
+    setFormData({ name: '', email: '', role: 'Staff', status: 'Active' })
     setEditing(null)
   }
 
@@ -30,37 +28,28 @@ export default function Roles() {
     setShowModal(true)
   }
 
-  function openEditModal(role) {
-    setFormData({ name: role.name, slug: role.slug, permissions: [...role.permissions] })
-    setEditing(role)
+  function openEditModal(user) {
+    setFormData({ name: user.name, email: user.email, role: user.role, status: user.status })
+    setEditing(user)
     setShowModal(true)
   }
 
-  function togglePermission(perm) {
-    setFormData((prev) => ({
-      ...prev,
-      permissions: prev.permissions.includes(perm)
-        ? prev.permissions.filter((p) => p !== perm)
-        : [...prev.permissions, perm],
-    }))
-  }
-
   function handleSave() {
-    if (!formData.name || !formData.slug) return
+    if (!formData.name || !formData.email) return
     if (editing) {
-      setRoles(roles.map((r) =>
-        r.id === editing.id ? { ...r, ...formData } : r
+      setUsers(users.map((u) =>
+        u.id === editing.id ? { ...u, ...formData } : u
       ))
     } else {
-      const newId = roles.length ? Math.max(...roles.map((r) => r.id)) + 1 : 1
-      setRoles([...roles, { id: newId, ...formData }])
+      const newId = users.length ? Math.max(...users.map((u) => u.id)) + 1 : 1
+      setUsers([...users, { id: newId, ...formData }])
     }
     setShowModal(false)
     resetForm()
   }
 
   function handleDelete(id) {
-    setRoles(roles.filter((r) => r.id !== id))
+    setUsers(users.filter((u) => u.id !== id))
   }
 
   return (
@@ -70,12 +59,12 @@ export default function Roles() {
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Roles</h1>
+            <h1 className="text-2xl font-bold text-gray-800">Users</h1>
             <button
               onClick={openAddModal}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
             >
-              + Add New Role
+              + Add User
             </button>
           </div>
 
@@ -85,42 +74,40 @@ export default function Roles() {
                 <tr className="text-left text-gray-500 font-medium bg-gray-50 border-b border-gray-200">
                   <th className="px-6 py-4">ID</th>
                   <th className="px-6 py-4">Name</th>
-                  <th className="px-6 py-4">Slug</th>
-                  <th className="px-6 py-4">Permissions</th>
+                  <th className="px-6 py-4">Email</th>
+                  <th className="px-6 py-4">Role</th>
+                  <th className="px-6 py-4">Status</th>
                   <th className="px-6 py-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {roles.map((role) => (
-                  <tr key={role.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="px-6 py-4 text-gray-800 font-medium">{role.id}</td>
-                    <td className="px-6 py-4 text-gray-800">{role.name}</td>
-                    <td className="px-6 py-4 text-gray-600">{role.slug}</td>
+                {users.map((user) => (
+                  <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="px-6 py-4 text-gray-800 font-medium">{user.id}</td>
+                    <td className="px-6 py-4 text-gray-800">{user.name}</td>
+                    <td className="px-6 py-4 text-gray-600">{user.email}</td>
                     <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1.5">
-                        {role.permissions.length > 0
-                          ? role.permissions.map((p) => (
-                              <span key={p} className="px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
-                                {p}
-                              </span>
-                            ))
-                          : <span className="text-gray-400">-</span>
-                        }
-                      </div>
+                      <span className="text-gray-800">{user.role}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                        user.status === 'Active'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        {user.status}
+                      </span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <button className="text-blue-600 hover:text-blue-800 text-xs font-medium transition-colors">
-                          View
-                        </button>
                         <button
-                          onClick={() => openEditModal(role)}
+                          onClick={() => openEditModal(user)}
                           className="text-amber-600 hover:text-amber-800 text-xs font-medium transition-colors"
                         >
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(role.id)}
+                          onClick={() => handleDelete(user.id)}
                           className="text-red-600 hover:text-red-800 text-xs font-medium transition-colors"
                         >
                           Delete
@@ -135,10 +122,10 @@ export default function Roles() {
 
           {showModal && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4">
+              <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-800">
-                    {editing ? 'Edit Role' : 'Add New Role'}
+                    {editing ? 'Edit User' : 'Add User'}
                   </h2>
                   <button
                     onClick={() => { setShowModal(false); resetForm() }}
@@ -155,34 +142,42 @@ export default function Roles() {
                     <input
                       type="text" value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="Role name"
+                      placeholder="Full name"
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                     <input
-                      type="text" value={formData.slug}
-                      onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                      placeholder="role-slug"
+                      type="email" value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      placeholder="user@visal.com"
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Permissions</label>
-                    <div className="border border-gray-300 rounded-lg p-3 max-h-40 overflow-y-auto space-y-2">
-                      {availablePermissions.map((perm) => (
-                        <label key={perm} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={formData.permissions.includes(perm)}
-                            onChange={() => togglePermission(perm)}
-                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                          />
-                          <span className="text-sm text-gray-700">{perm}</span>
-                        </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <select
+                      value={formData.role}
+                      onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {roleOptions.map((r) => (
+                        <option key={r} value={r}>{r}</option>
                       ))}
-                    </div>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                    <select
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {statusOptions.map((s) => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
                 <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
@@ -196,7 +191,7 @@ export default function Roles() {
                     onClick={handleSave}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
                   >
-                    {editing ? 'Save Changes' : 'Add Role'}
+                    {editing ? 'Save Changes' : 'Add User'}
                   </button>
                 </div>
               </div>
