@@ -6,14 +6,13 @@ use App\Http\Controllers\Roles\RoleController;
 use App\Http\Controllers\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/login', [WebAuthController::class, 'loginPage'])->name('auth.login');
-Route::post('/login', [WebAuthController::class, 'login'])->name('auth.login.post');
-Route::get('/', fn () => redirect()->route('auth.login'));
+Route::get('/', [WebAuthController::class, 'loginPage'])->name('auth.login');
+Route::post('/', [WebAuthController::class, 'login'])->name('auth.login.post');
 
-Route::middleware('auth')->group(function () {
+
     Route::post('/logout', [WebAuthController::class, 'logout'])->name('auth.logout');
 
-    Route::get('/', fn () => redirect()->route('users.index'));
+    // Route::get('/', fn () => redirect()->route('auth.login.post'));
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
@@ -38,4 +37,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
     Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
     Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
-});
+
