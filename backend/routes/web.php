@@ -9,11 +9,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [WebAuthController::class, 'loginPage'])->name('auth.login');
 Route::post('/', [WebAuthController::class, 'login'])->name('auth.login.post');
 
-
+ 
     Route::post('/logout', [WebAuthController::class, 'logout'])->name('auth.logout');
-
+    
     // Route::get('/', fn () => redirect()->route('auth.login.post'));
-
+    
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
