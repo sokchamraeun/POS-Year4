@@ -23,7 +23,6 @@ RUN chmod -R 775 storage bootstrap/cache
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN php artisan key:generate
 
 RUN php artisan storage:link || true
 
