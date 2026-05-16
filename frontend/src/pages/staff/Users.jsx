@@ -58,7 +58,7 @@ export default function Users() {
       name: user.name,
       email: user.email,
       password: '',
-      role_id: user.role_id ?? user.role?.id ?? '',
+      role_id: user.role_id || user.role?.id || '',
       phone: user.phone ?? '',
       status: user.status ?? true,
     })
@@ -71,6 +71,7 @@ export default function Users() {
     try {
       const body = { ...formData }
       if (!body.password && editing) delete body.password
+      if (!body.role_id) body.role_id = null
 
       const url = editing ? `${API_BASE}/users/${editing.id}` : `${API_BASE}/users`
       const method = editing ? 'PUT' : 'POST'
@@ -157,7 +158,7 @@ export default function Users() {
                     <td colSpan={6} className="px-6 py-8 text-center text-gray-400">No users found.</td>
                   </tr>
                 ) : (
-                  users.map((user) => (
+                  users.filter((u) => u.role_id).map((user) => (
                     <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="px-6 py-4 text-gray-800 font-medium">{user.id}</td>
                       <td className="px-6 py-4 text-gray-800">{user.name}</td>
