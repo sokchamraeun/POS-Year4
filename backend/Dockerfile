@@ -33,8 +33,7 @@ RUN chmod -R 775 storage bootstrap/cache
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Create .env if missing
-RUN cp .env.example .env || true
+RUN touch .env
 
 # Generate app key
 RUN php artisan key:generate --force
