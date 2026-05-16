@@ -116,9 +116,9 @@
   'app' => 
   array (
     'name' => 'Laravel',
-    'env' => 'local',
-    'debug' => true,
-    'url' => 'http://127.0.0.1:8000',
+    'env' => 'production',
+    'debug' => false,
+    'url' => 'https://pos-year4.onrender.com',
     'frontend_url' => 'http://localhost:3000',
     'asset_url' => NULL,
     'timezone' => 'UTC',
@@ -480,7 +480,7 @@
       array (
         'driver' => 'local',
         'root' => 'C:\\Users\\sokch\\OneDrive\\Desktop\\POS-Year4\\backend\\storage\\app/public',
-        'url' => 'http://127.0.0.1:8000/storage',
+        'url' => 'https://pos-year4.onrender.com/storage',
         'visibility' => 'public',
         'throw' => false,
         'report' => false,
@@ -600,13 +600,6 @@
       array (
         'path' => 'C:\\Users\\sokch\\OneDrive\\Desktop\\POS-Year4\\backend\\storage\\logs/laravel.log',
       ),
-      'browser' => 
-      array (
-        'driver' => 'single',
-        'path' => 'C:\\Users\\sokch\\OneDrive\\Desktop\\POS-Year4\\backend\\storage\\logs\\browser.log',
-        'level' => 'debug',
-        'days' => 14,
-      ),
     ),
   ),
   'mail' => 
@@ -624,7 +617,7 @@
         'username' => NULL,
         'password' => NULL,
         'timeout' => NULL,
-        'local_domain' => '127.0.0.1',
+        'local_domain' => 'pos-year4.onrender.com',
       ),
       'ses' => 
       array (
@@ -849,7 +842,7 @@
       2 => '127.0.0.1',
       3 => '127.0.0.1:8000',
       4 => '::1',
-      5 => '127.0.0.1:8000',
+      5 => 'pos-year4.onrender.com',
     ),
     'guard' => 
     array (
