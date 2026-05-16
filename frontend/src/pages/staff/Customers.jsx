@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
-const API_BASE = 'http://127.0.0.1:8000/api'
+const API_BASE = 'https://pos-year4.onrender.com/api'
 
 export default function Customers() {
   const [customers, setCustomers] = useState([])
