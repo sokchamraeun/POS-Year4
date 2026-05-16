@@ -9,9 +9,17 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $users = User::with('role')->paginate(10);
+        $query = User::with('role');
+
+        if ($request->type === 'customer') {
+            $query->whereDoesntHave('role', function ($q) {
+                $q->whereIn('slug', ['admin', 'manage', 'staff']);
+            })->orWhereNull('role_id');
+        }
+
+        $users = $query->orderBy('id')->paginate(10);
         return response()->json($users);
     }
 
