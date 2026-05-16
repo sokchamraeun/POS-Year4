@@ -11,7 +11,7 @@ const initialUsers = [
   { id: 3, name: 'Staff User', email: 'staff@visal.com', role: 'Staff', status: 'Active' },
   { id: 4, name: 'John Doe', email: 'john@visal.com', role: 'Staff', status: 'Inactive' },
 ]
-
+//change 
 export default function Users() {
   const [users, setUsers] = useState(initialUsers)
   const [showModal, setShowModal] = useState(false)
