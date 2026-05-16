@@ -147,15 +147,18 @@ export default function Users() {
                   <th className="px-6 py-4">ID</th>
                   <th className="px-6 py-4">Name</th>
                   <th className="px-6 py-4">Email</th>
+                  <th className="px-6 py-4">Phone</th>
                   <th className="px-6 py-4">Role</th>
                   <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Login Time</th>
+                  <th className="px-6 py-4">Logout Time</th>
                   <th className="px-6 py-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {users.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-400">No users found.</td>
+                    <td colSpan={9} className="px-6 py-8 text-center text-gray-400">No users found.</td>
                   </tr>
                 ) : (
                   users.filter((u) => u.role_id).map((user) => (
@@ -163,6 +166,7 @@ export default function Users() {
                       <td className="px-6 py-4 text-gray-800 font-medium">{user.id}</td>
                       <td className="px-6 py-4 text-gray-800">{user.name}</td>
                       <td className="px-6 py-4 text-gray-600">{user.email}</td>
+                      <td className="px-6 py-4 text-gray-600">{user.phone || '—'}</td>
                       <td className="px-6 py-4">
                         <span className="text-gray-800">{user.role?.name ?? '—'}</span>
                       </td>
@@ -174,6 +178,28 @@ export default function Users() {
                         }`}>
                           {user.status ? 'Active' : 'Inactive'}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">
+                        {user.last_login_at
+                          ? new Date(user.last_login_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : '—'}
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">
+                        {user.logout_at
+                          ? new Date(user.logout_at).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : '—'}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
