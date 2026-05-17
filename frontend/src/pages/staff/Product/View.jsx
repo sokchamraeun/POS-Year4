@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
-const API = 'http://127.0.0.1:8000/api'
+const API = 'https://pos-year4.onrender.com/api'
 
 export default function ViewProduct() {
   const { id } = useParams()
@@ -112,24 +112,24 @@ export default function ViewProduct() {
               <div className="col-span-2">
                 <span className="text-gray-500">Sugar Levels</span>
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {product.sugarLevels?.map((level) => (
+                  {product.sugar_levels?.map((level) => (
                     <span key={level.id} className="inline-block bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-md">
                       {level.name}
                     </span>
                   ))}
-                  {!product.sugarLevels?.length && <span className="text-gray-400">—</span>}
+                  {!product.sugar_levels?.length && <span className="text-gray-400">—</span>}
                 </div>
               </div>
 
               <div className="col-span-2">
                 <span className="text-gray-500">Ice Levels</span>
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {product.iceLevels?.map((level) => (
+                  {product.ice_levels?.map((level) => (
                     <span key={level.id} className="inline-block bg-cyan-100 text-cyan-700 text-xs px-2 py-1 rounded-md">
                       {level.name}
                     </span>
                   ))}
-                  {!product.iceLevels?.length && <span className="text-gray-400">—</span>}
+                  {!product.ice_levels?.length && <span className="text-gray-400">—</span>}
                 </div>
               </div>
             </div>

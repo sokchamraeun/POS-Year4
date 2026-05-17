@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
-const API_URL = 'http://127.0.0.1:8000/api/products'
+const API_URL = 'https://pos-year4.onrender.com/api/products'
 
 const categoryColors = {
   Coffee: 'bg-blue-100 text-blue-700',
@@ -104,7 +104,8 @@ export default function Products() {
                       <th className="px-6 py-3">Category</th>
                       <th className="px-6 py-3">Sizes</th>
                       <th className="px-6 py-3">Addons</th>
-                      <th className="px-6 py-3">Options</th>
+                      <th className="px-6 py-3">Sugar</th>
+                      <th className="px-6 py-3">Ice Level</th>
                       <th className="px-6 py-3">Status</th>
                       <th className="px-6 py-3 text-right">Actions</th>
                     </tr>
@@ -115,7 +116,7 @@ export default function Products() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             {product.image ? (
-                              <img src={`http://127.0.0.1:8000/storage/${product.image}`} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
+                              <img src={`https://pos-year4.onrender.com/storage/${product.image}`} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
                             ) : (
                               <div className="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center text-gray-400 text-xs">N/A</div>
                             )}
@@ -153,26 +154,23 @@ export default function Products() {
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="flex flex-col gap-0.5">
-                            {product.sugarLevels?.length > 0 && (
-                              <div className="flex flex-wrap gap-1">
-                                {product.sugarLevels.map((level) => (
-                                  <span key={level.id} className="inline-block bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-md">
-                                    Sugar: {level.name}
-                                  </span>
-                                ))}
-                              </div>
+                          <div className="flex flex-wrap gap-1">
+                            {product.sugar_levels?.length ? (
+                              product.sugar_levels.map((level) => (
+                                <span key={level.id} className="inline-block bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-md">{level.name}</span>
+                              ))
+                            ) : (
+                              <span className="text-gray-400 text-xs">—</span>
                             )}
-                            {product.iceLevels?.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-0.5">
-                                {product.iceLevels.map((level) => (
-                                  <span key={level.id} className="inline-block bg-cyan-100 text-cyan-700 text-xs px-2 py-0.5 rounded-md">
-                                    Ice: {level.name}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                            {!product.sugarLevels?.length && !product.iceLevels?.length && (
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-wrap gap-1">
+                            {product.ice_levels?.length ? (
+                              product.ice_levels.map((level) => (
+                                <span key={level.id} className="inline-block bg-cyan-100 text-cyan-700 text-xs px-2 py-0.5 rounded-md">{level.name}</span>
+                              ))
+                            ) : (
                               <span className="text-gray-400 text-xs">—</span>
                             )}
                           </div>
@@ -205,7 +203,7 @@ export default function Products() {
                     ))}
                     {filtered.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="px-6 py-8 text-center text-gray-500">No products found.</td>
+                        <td colSpan={8} className="px-6 py-8 text-center text-gray-500">No products found.</td>
                       </tr>
                     )}
                   </tbody>

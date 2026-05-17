@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
-const API = 'http://127.0.0.1:8000/api'
+const API = 'https://pos-year4.onrender.com/api'
 
 export default function EditProduct() {
   const { id } = useParams()
@@ -51,8 +51,8 @@ export default function EditProduct() {
           sizes: product.sizes?.map((s) => s.id) ?? [],
           prices: Object.fromEntries((product.sizes ?? []).map((s) => [s.id, s.pivot?.price ?? 0])),
           addons: product.addons?.map((a) => a.id) ?? [],
-          sugar_levels: product.sugarLevels?.map((s) => s.id) ?? [],
-          ice_levels: product.iceLevels?.map((s) => s.id) ?? [],
+          sugar_levels: product.sugar_levels?.map((s) => s.id) ?? [],
+          ice_levels: product.ice_levels?.map((s) => s.id) ?? [],
         })
         setCategories(cats.data ?? cats)
         setSizes(szs.data ?? szs)
