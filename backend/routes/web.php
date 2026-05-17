@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\Addons\AddonController;
 use App\Http\Controllers\Auth\WebAuthController;
+use App\Http\Controllers\Categories\CategoryController;
 use App\Http\Controllers\Permissions\PermissionController;
+use App\Http\Controllers\Products\ProductController;
 use App\Http\Controllers\Roles\RoleController;
 use App\Http\Controllers\Users\UserController;
 use Illuminate\Support\Facades\Route;
@@ -37,4 +40,28 @@ Route::middleware('auth')->group(function () {
     Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
     Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
     Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+    Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+    Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+    Route::get('/addons', [AddonController::class, 'index'])->name('addons.index');
+    Route::get('/addons/create', [AddonController::class, 'create'])->name('addons.create');
+    Route::post('/addons', [AddonController::class, 'store'])->name('addons.store');
+    Route::get('/addons/{addon}', [AddonController::class, 'show'])->name('addons.show');
+    Route::get('/addons/{addon}/edit', [AddonController::class, 'edit'])->name('addons.edit');
+    Route::put('/addons/{addon}', [AddonController::class, 'update'])->name('addons.update');
+    Route::delete('/addons/{addon}', [AddonController::class, 'destroy'])->name('addons.destroy');
 });
