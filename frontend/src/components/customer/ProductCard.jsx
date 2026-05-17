@@ -1,99 +1,117 @@
 import { useState } from 'react'
 
-const sizes = ['Small', 'Medium', 'Large']
-const sugarLevels = ['0%', '25%', '50%', '75%', '100%']
-
-export default function ProductCard({ product }) {
-  const [selectedSize, setSelectedSize] = useState('Medium')
-  const [selectedSugar, setSelectedSugar] = useState('50%')
+export default function ProductCard({ product, onAddToCart }) {
+  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0]?.name || '')
+  const [selectedSugar, setSelectedSugar] = useState(product.sugar_levels?.[0]?.name || '')
+  const [selectedIce, setSelectedIce] = useState(product.ice_levels?.[0]?.name || '')
   const [selectedAddOn, setSelectedAddOn] = useState('')
   const [qty, setQty] = useState(1)
 
+  function getBasePrice(sizeName) {
+    const size = product.sizes?.find((s) => s.name === sizeName)
+    return size ? Number(size.pivot?.price ?? 0) : 0
+  }
+
+  function getAddOnPrice(addOnName) {
+    if (!addOnName) return 0
+    const a = product.addons?.find((a) => a.name === addOnName)
+    return a ? Number(a.price) : 0
+  }
+
+  const price = getBasePrice(selectedSize) + getAddOnPrice(selectedAddOn)
+
   const handleAddToCart = () => {
-    const cartItem = {
+    const item = {
       ...product,
       size: selectedSize,
       sugar: selectedSugar,
-      addOn: selectedAddOn || null,
+      ice: selectedIce,
+      addOn: selectedAddOn,
+      unitPrice: getBasePrice(selectedSize) + getAddOnPrice(selectedAddOn),
       qty,
     }
-    console.log('Added to cart:', cartItem)
+    onAddToCart?.(item)
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 flex flex-col">
-      <div className="p-5">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full aspect-square object-cover rounded-lg"
-        />
+    <div className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+      <div className="p-3 pb-0">
+        {product.image ? (
+          <img
+            src={`https://pos-year4.onrender.com/storage/${product.image}`}
+            alt={product.name}
+            className="w-full aspect-square object-cover rounded-lg"
+          />
+        ) : (
+          <div className="w-full aspect-square rounded-lg bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+            No Image
+          </div>
+        )}
       </div>
-
-      <div className="p-6 sm:p-5 flex-1 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">{product.name}</h3>
-          <span className="text-lg font-bold text-blue-600">
-            RM{product.price.toFixed(2)}
-          </span>
+      <div className="p-3 flex-1 flex flex-col">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-gray-800">{product.name}</h3>
+          <span className="text-sm font-bold text-blue-600">${price.toFixed(2)}</span>
         </div>
 
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-3">
-            <label className="text-sm font-medium text-gray-700 w-10">Size</label>
-            <select
-              value={selectedSize}
-              onChange={(e) => setSelectedSize(e.target.value)}
-              className="flex-1 px-3 py-2 sm:px-2 sm:py-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              {sizes.map((size) => (
-                <option key={size} value={size}>{size}</option>
-              ))}
-            </select>
-          </div>
+        <select
+          value={selectedSize}
+          onChange={(e) => setSelectedSize(e.target.value)}
+          className="w-full text-xs border border-gray-300 rounded-lg px-2 py-1.5 mb-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          {product.sizes?.map((s) => (
+            <option key={s.id} value={s.name}>
+              {s.name} (${Number(s.pivot?.price ?? 0).toFixed(2)})
+            </option>
+          ))}
+        </select>
 
-          <div className="flex items-center gap-2 mb-3">
-            <label className="text-sm font-medium text-gray-700 w-10">Sugar</label>
-            <select
-              value={selectedSugar}
-              onChange={(e) => setSelectedSugar(e.target.value)}
-              className="flex-1 px-3 py-2 sm:px-2 sm:py-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              {sugarLevels.map((level) => (
-                <option key={level} value={level}>{level}</option>
-              ))}
-            </select>
-          </div>
+        <div className="flex gap-1.5 mb-1.5">
+          <select
+            value={selectedIce}
+            onChange={(e) => setSelectedIce(e.target.value)}
+            className="flex-1 text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {product.ice_levels?.map((l) => (
+              <option key={l.id} value={l.name}>{l.name}</option>
+            ))}
+          </select>
+          <select
+            value={selectedSugar}
+            onChange={(e) => setSelectedSugar(e.target.value)}
+            className="flex-1 text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {product.sugar_levels?.map((s) => (
+              <option key={s.id} value={s.name}>{s.name}</option>
+            ))}
+          </select>
+        </div>
 
+        <select
+          value={selectedAddOn}
+          onChange={(e) => setSelectedAddOn(e.target.value)}
+          className="w-full text-xs border border-gray-300 rounded-lg px-2 py-1.5 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">No Add On</option>
+          {product.addons?.map((a) => (
+            <option key={a.id} value={a.name}>
+              {a.name} (+${Number(a.price).toFixed(2)})
+            </option>
+          ))}
+        </select>
+
+        <div className="flex items-center justify-between gap-2 mt-auto">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700 w-10">Add On</label>
-            <select
-              value={selectedAddOn}
-              onChange={(e) => setSelectedAddOn(e.target.value)}
-              className="flex-1 px-3 py-2 sm:px-2 sm:py-1 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">None</option>
-              {product.addOns && product.addOns.map((addOn) => (
-                <option key={addOn.name} value={addOn.name}>
-                  {addOn.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between gap-3 pt-4 mt-auto">
-          <div className="flex items-center gap-3">
             <button
               onClick={() => setQty(Math.max(1, qty - 1))}
-              className="w-8 h-8 rounded-lg border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
+              className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs flex items-center justify-center hover:bg-gray-200 transition-colors"
             >
               -
             </button>
-            <span className="text-lg font-semibold w-6 text-center">{qty}</span>
+            <span className="text-sm font-medium text-gray-800 w-5 text-center">{qty}</span>
             <button
               onClick={() => setQty(qty + 1)}
-              className="w-8 h-8 rounded-lg border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors"
+              className="w-6 h-6 rounded-full bg-gray-100 text-gray-600 text-xs flex items-center justify-center hover:bg-gray-200 transition-colors"
             >
               +
             </button>
@@ -101,7 +119,7 @@ export default function ProductCard({ product }) {
 
           <button
             onClick={handleAddToCart}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm"
+            className="bg-blue-600 text-white text-xs font-medium py-2 px-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Add to Cart
           </button>

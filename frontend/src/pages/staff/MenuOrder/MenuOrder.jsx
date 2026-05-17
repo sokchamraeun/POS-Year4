@@ -1,26 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
-const sizes = ['Small', 'Medium', 'Large']
-const sugarLevels = ['0%', '25%', '50%', '75%', '100%']
-const iceLevels = ['No Ice', 'Less Ice', 'Normal Ice', 'Extra Ice']
-
-const menu = [
-  { id: 1, name: 'Americano', price: 8.90, category: 'Coffee', image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop', addOns: [{ name: 'Extra Shot', price: 2.00 }, { name: 'Whipped Cream', price: 1.50 }] },
-  { id: 2, name: 'Caffee Latte', price: 10.90, category: 'Coffee', image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=400&h=400&fit=crop', addOns: [{ name: 'Extra Shot', price: 2.00 }, { name: 'Vanilla', price: 1.00 }] },
-  { id: 3, name: 'Mocha', price: 12.50, category: 'Coffee', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&h=400&fit=crop', addOns: [{ name: 'Whipped Cream', price: 1.50 }, { name: 'Chocolate Drizzle', price: 1.50 }] },
-  { id: 4, name: 'Espresso', price: 7.50, category: 'Coffee', image: 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=400&h=400&fit=crop', addOns: [{ name: 'Extra Shot', price: 2.00 }] },
-  { id: 5, name: 'Cappuccino', price: 11.50, category: 'Coffee', image: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=400&h=400&fit=crop', addOns: [{ name: 'Cinnamon', price: 1.00 }, { name: 'Whipped Cream', price: 1.50 }] },
-  { id: 6, name: 'Caramel Macchiato', price: 13.90, category: 'Coffee', image: 'https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=400&h=400&fit=crop', addOns: [{ name: 'Caramel Drizzle', price: 1.50 }, { name: 'Extra Shot', price: 2.00 }] },
-  { id: 7, name: 'Matcha Latte', price: 12.90, category: 'Tea', image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400&h=400&fit=crop', addOns: [{ name: 'Vanilla', price: 1.00 }] },
-  { id: 8, name: 'Cold Brew', price: 9.90, category: 'Coffee', image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=400&fit=crop', addOns: [{ name: 'Whipped Cream', price: 1.50 }, { name: 'Vanilla', price: 1.00 }] },
-]
-
-const categories = ['All', 'Coffee', 'Tea']
+const API_URL = 'https://pos-year4.onrender.com/api'
 
 export default function MenuOrder() {
   const [category, setCategory] = useState('All')
+  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState(['All'])
+  const [loading, setLoading] = useState(true)
   const [cart, setCart] = useState([])
   const [options, setOptions] = useState({})
   const [customerName, setCustomerName] = useState('')
@@ -28,35 +16,89 @@ export default function MenuOrder() {
   const [tableNo, setTableNo] = useState('')
   const [success, setSuccess] = useState('')
 
-  const filtered = category === 'All' ? menu : menu.filter((m) => m.category === category)
+  useEffect(() => {
+    async function fetchAll() {
+      try {
+        const [firstPage, catRes] = await Promise.all([
+          fetch(`${API_URL}/products?page=1`).then((r) => r.json()),
+          fetch(`${API_URL}/categories`).then((r) => r.json()),
+        ])
+        let allProducts = firstPage.data ?? []
+        const lastPage = firstPage.last_page ?? 1
+        const pages = []
+        for (let p = 2; p <= lastPage; p++) {
+          pages.push(
+            fetch(`${API_URL}/products?page=${p}`)
+              .then((r) => r.json())
+              .then((j) => j.data ?? [])
+          )
+        }
+        const rest = await Promise.all(pages)
+        for (const arr of rest) allProducts = allProducts.concat(arr)
 
-  const defaultOpt = { size: 'Medium', sugar: '50%', ice: 'Normal Ice', addOn: '' }
+        setProducts(allProducts)
+        const cats = (catRes.data ?? catRes).map((c) => c.name)
+        setCategories(['All', ...cats])
+        setLoading(false)
+      } catch {
+        setLoading(false)
+      }
+    }
+    fetchAll()
+  }, [])
 
-  function getOpt(id) { return options[id] || defaultOpt }
+  const filtered =
+    category === 'All'
+      ? products
+      : products.filter((p) => p.category?.name === category)
+
+  function getDefaultOpt(product) {
+    return {
+      size: product.sizes?.[0]?.name || '',
+      sugar: product.sugar_levels?.[0]?.name || '',
+      ice: product.ice_levels?.[0]?.name || '',
+      addOn: '',
+    }
+  }
+
+  function getOpt(id) {
+    return options[id]
+  }
 
   function setOpt(id, field, value) {
     setOptions((prev) => ({
       ...prev,
-      [id]: { ...(prev[id] || defaultOpt), [field]: value },
+      [id]: { ...(prev[id] || {}), [field]: value },
     }))
   }
 
-  function addOnPrice(item, addOn) {
-    if (!addOn) return 0
-    const a = item.addOns.find((a) => a.name === addOn)
-    return a ? a.price : 0
+  function getBasePrice(product, sizeName) {
+    const size = product.sizes?.find((s) => s.name === sizeName)
+    return size ? Number(size.pivot?.price ?? 0) : 0
   }
 
-  function addToCart(item) {
-    const { size, sugar, ice, addOn } = getOpt(item.id)
-    const key = `${item.id}-${size}-${sugar}-${ice}-${addOn}`
-    const unitPrice = item.price + addOnPrice(item, addOn)
+  function addOnPrice(product, addOnName) {
+    if (!addOnName) return 0
+    const a = product.addons?.find((a) => a.name === addOnName)
+    return a ? Number(a.price) : 0
+  }
+
+  function addToCart(product) {
+    const opt = getOpt(product.id) || getDefaultOpt(product)
+    const { size, sugar, ice, addOn } = opt
+    const key = `${product.id}-${size}-${sugar}-${ice}-${addOn}`
+    const unitPrice = getBasePrice(product, size) + addOnPrice(product, addOn)
     setCart((prev) => {
       const existing = prev.find((c) => c.key === key)
       if (existing) {
-        return prev.map((c) => (c.key === key ? { ...c, qty: c.qty + 1 } : c))
+        return prev.map((c) =>
+          c.key === key ? { ...c, qty: c.qty + 1 } : c
+        )
       }
-      return [...prev, { ...item, key, size, sugar, ice, addOn, unitPrice, qty: 1 }]
+      return [
+        ...prev,
+        { ...product, key, size, sugar, ice, addOn, unitPrice, qty: 1 },
+      ]
     })
   }
 
@@ -64,7 +106,9 @@ export default function MenuOrder() {
     if (qty <= 0) {
       setCart((prev) => prev.filter((c) => c.key !== key))
     } else {
-      setCart((prev) => prev.map((c) => (c.key === key ? { ...c, qty } : c)))
+      setCart((prev) =>
+        prev.map((c) => (c.key === key ? { ...c, qty } : c))
+      )
     }
   }
 
@@ -103,6 +147,20 @@ export default function MenuOrder() {
 
   const total = cart.reduce((sum, c) => sum + c.unitPrice * c.qty, 0)
 
+  if (loading) {
+    return (
+      <div className="flex h-screen bg-gray-100">
+        <Sidebar />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Topbar />
+          <main className="flex-1 flex items-center justify-center">
+            <p className="text-gray-500">Loading menu...</p>
+          </main>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar />
@@ -116,7 +174,9 @@ export default function MenuOrder() {
                   key={cat}
                   onClick={() => setCategory(cat)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    category === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+                    category === cat
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white text-gray-600 hover:bg-gray-50'
                   }`}
                 >
                   {cat}
@@ -134,90 +194,188 @@ export default function MenuOrder() {
           <div className="flex gap-6 px-6 pb-6 pt-4 flex-1 overflow-hidden">
             <div className="flex-1 overflow-y-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {filtered.map((item) => {
-                  const opt = getOpt(item.id)
+                {filtered.map((product) => {
+                  const opt = getOpt(product.id) || getDefaultOpt(product)
+                  const price = getBasePrice(product, opt.size)
                   return (
-                    <div key={item.id} className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+                    <div
+                      key={product.id}
+                      className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col"
+                    >
                       <div className="p-3 pb-0">
-                        <img src={item.image} alt={item.name} className="w-full aspect-square object-cover rounded-lg" />
+                        {product.image ? (
+                          <img
+                            src={`https://pos-year4.onrender.com/storage/${product.image}`}
+                            alt={product.name}
+                            className="w-full aspect-square object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="w-full aspect-square rounded-lg bg-gray-200 flex items-center justify-center text-gray-400 text-xs">
+                            No Image
+                          </div>
+                        )}
                       </div>
                       <div className="p-3 flex-1 flex flex-col">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-sm font-semibold text-gray-800">{item.name}</h3>
-                          <span className="text-sm font-bold text-blue-600">${item.price.toFixed(2)}</span>
+                          <h3 className="text-sm font-semibold text-gray-800">
+                            {product.name}
+                          </h3>
+                          <span className="text-sm font-bold text-blue-600">
+                            ${price.toFixed(2)}
+                          </span>
                         </div>
 
+                        <select
+                          value={opt.size}
+                          onChange={(e) =>
+                            setOpt(product.id, 'size', e.target.value)
+                          }
+                          className="w-full text-xs border border-gray-300 rounded-lg px-2 py-1.5 mb-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          {product.sizes?.map((s) => (
+                            <option key={s.id} value={s.name}>
+                              {s.name} (${Number(s.pivot?.price ?? 0).toFixed(2)})
+                            </option>
+                          ))}
+                        </select>
                         <div className="flex gap-1.5 mb-1.5">
-                          <select value={opt.size} onChange={(e) => setOpt(item.id, 'size', e.target.value)}
-                            className="flex-1 text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            {sizes.map((s) => <option key={s} value={s}>{s}</option>)}
+                          <select
+                            value={opt.ice}
+                            onChange={(e) =>
+                              setOpt(product.id, 'ice', e.target.value)
+                            }
+                            className="flex-1 text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            {product.ice_levels?.map((l) => (
+                              <option key={l.id} value={l.name}>
+                                {l.name}
+                              </option>
+                            ))}
                           </select>
-                          <select value={opt.ice} onChange={(e) => setOpt(item.id, 'ice', e.target.value)}
-                            className="flex-1 text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            {iceLevels.map((l) => <option key={l} value={l}>{l}</option>)}
-                          </select>
-                          <select value={opt.sugar} onChange={(e) => setOpt(item.id, 'sugar', e.target.value)}
-                            className="flex-1 text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            {sugarLevels.map((s) => <option key={s} value={s}>{s}</option>)}
+                          <select
+                            value={opt.sugar}
+                            onChange={(e) =>
+                              setOpt(product.id, 'sugar', e.target.value)
+                            }
+                            className="flex-1 text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            {product.sugar_levels?.map((s) => (
+                              <option key={s.id} value={s.name}>
+                                {s.name}
+                              </option>
+                            ))}
                           </select>
                         </div>
-
-                        <select value={opt.addOn} onChange={(e) => setOpt(item.id, 'addOn', e.target.value)}
-                          className="w-full text-xs border border-gray-300 rounded-lg px-2 py-1.5 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select
+                          value={opt.addOn}
+                          onChange={(e) =>
+                            setOpt(product.id, 'addOn', e.target.value)
+                          }
+                          className="w-full text-xs border border-gray-300 rounded-lg px-2 py-1.5 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
                           <option value="">No Add On</option>
-                          {item.addOns.map((a) => <option key={a.name} value={a.name}>{a.name} (+${a.price.toFixed(2)})</option>)}
+                          {product.addons?.map((a) => (
+                            <option key={a.id} value={a.name}>
+                              {a.name} (+${Number(a.price).toFixed(2)})
+                            </option>
+                          ))}
                         </select>
 
-                        <button onClick={() => addToCart(item)}
-                          className="mt-auto w-full bg-blue-600 text-white text-xs font-medium py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <button
+                          onClick={() => addToCart(product)}
+                          className="mt-auto w-full bg-blue-600 text-white text-xs font-medium py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        >
                           Add to Order
                         </button>
                       </div>
                     </div>
                   )
                 })}
+                {filtered.length === 0 && (
+                  <div className="col-span-full text-center text-gray-500 py-8">
+                    No products found.
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="w-80 shrink-0 flex flex-col">
               <div className="bg-white rounded-xl shadow-sm flex flex-col flex-1 overflow-hidden">
-                <h2 className="text-base font-semibold text-gray-800 px-4 pt-4 pb-3 shrink-0 border-b border-gray-100">Current Order</h2>
+                <h2 className="text-base font-semibold text-gray-800 px-4 pt-4 pb-3 shrink-0 border-b border-gray-100">
+                  Current Order
+                </h2>
 
                 <div className="px-4 pt-3 pb-2 space-y-2 shrink-0 border-b border-gray-100">
-                  <input type="text" placeholder="Customer Name" value={customerName}
+                  <input
+                    type="text"
+                    placeholder="Customer Name"
+                    value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                  <input type="text" placeholder="Phone Number" value={phone}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Phone Number"
+                    value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                  <input type="text" placeholder="Table No." value={tableNo}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Table No."
+                    value={tableNo}
                     onChange={(e) => setTableNo(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
                 </div>
 
                 {cart.length === 0 ? (
                   <div className="flex-1 flex items-center justify-center">
-                    <p className="text-sm text-gray-400">No items added yet.</p>
+                    <p className="text-sm text-gray-400">
+                      No items added yet.
+                    </p>
                   </div>
                 ) : (
                   <>
                     <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
                       {cart.map((c) => (
-                        <div key={c.key} className="flex items-start justify-between gap-2 pb-3 border-b border-gray-100 last:border-0">
+                        <div
+                          key={c.key}
+                          className="flex items-start justify-between gap-2 pb-3 border-b border-gray-100 last:border-0"
+                        >
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-800 truncate">{c.name}</p>
-                            <p className="text-xs text-gray-400">{c.size}, {c.sugar}, {c.ice}{c.addOn ? `, +${c.addOn}` : ''}</p>
-                            <p className="text-xs text-gray-500">${c.unitPrice.toFixed(2)} ea</p>
+                            <p className="text-sm font-medium text-gray-800 truncate">
+                              {c.name}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {c.size}, {c.sugar}, {c.ice}
+                              {c.addOn ? `, +${c.addOn}` : ''}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              ${c.unitPrice.toFixed(2)} ea
+                            </p>
                           </div>
                           <div className="flex flex-col items-end gap-1">
                             <div className="flex items-center gap-2">
-                              <button onClick={() => updateQty(c.key, c.qty - 1)}
-                                className="w-5 h-5 rounded-full bg-gray-100 text-gray-600 text-xs flex items-center justify-center hover:bg-gray-200 transition-colors">-</button>
-                              <span className="text-sm font-medium text-gray-800 w-5 text-center">{c.qty}</span>
-                              <button onClick={() => updateQty(c.key, c.qty + 1)}
-                                className="w-5 h-5 rounded-full bg-gray-100 text-gray-600 text-xs flex items-center justify-center hover:bg-gray-200 transition-colors">+</button>
+                              <button
+                                onClick={() => updateQty(c.key, c.qty - 1)}
+                                className="w-5 h-5 rounded-full bg-gray-100 text-gray-600 text-xs flex items-center justify-center hover:bg-gray-200 transition-colors"
+                              >
+                                -
+                              </button>
+                              <span className="text-sm font-medium text-gray-800 w-5 text-center">
+                                {c.qty}
+                              </span>
+                              <button
+                                onClick={() => updateQty(c.key, c.qty + 1)}
+                                className="w-5 h-5 rounded-full bg-gray-100 text-gray-600 text-xs flex items-center justify-center hover:bg-gray-200 transition-colors"
+                              >
+                                +
+                              </button>
                             </div>
-                            <span className="text-xs font-semibold text-gray-700">${(c.unitPrice * c.qty).toFixed(2)}</span>
+                            <span className="text-xs font-semibold text-gray-700">
+                              ${(c.unitPrice * c.qty).toFixed(2)}
+                            </span>
                           </div>
                         </div>
                       ))}
@@ -227,7 +385,10 @@ export default function MenuOrder() {
                         <span>Total</span>
                         <span>${total.toFixed(2)}</span>
                       </div>
-                      <button onClick={placeOrder} className="mt-3 w-full bg-green-600 text-white text-sm font-medium py-2.5 rounded-lg hover:bg-green-700 transition-colors">
+                      <button
+                        onClick={placeOrder}
+                        className="mt-3 w-full bg-green-600 text-white text-sm font-medium py-2.5 rounded-lg hover:bg-green-700 transition-colors"
+                      >
                         Place Order
                       </button>
                     </div>
