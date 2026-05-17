@@ -51,7 +51,7 @@ export default function ViewProduct() {
           <div className="bg-white rounded-xl shadow-sm p-6 max-w-2xl">
             <div className="flex items-center gap-4 mb-6">
               {product.image ? (
-                <img src={`http://127.0.0.1:8000/storage/${product.image}`} alt={product.name} className="w-20 h-20 rounded-xl object-cover" />
+                <img src={`https://pos-year4.onrender.com/storage/${product.image}`} alt={product.name} className="w-20 h-20 rounded-xl object-cover" />
               ) : (
                 <div className="w-20 h-20 rounded-xl bg-gray-200 flex items-center justify-center text-gray-400 text-sm">N/A</div>
               )}

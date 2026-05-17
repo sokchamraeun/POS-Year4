@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import Sidebar from '../../components/staff/Sidebar.jsx'
-import Topbar from '../../components/staff/Topbar.jsx'
+import Sidebar from '../../../components/staff/Sidebar.jsx'
+import Topbar from '../../../components/staff/Topbar.jsx'
 
 const sizes = ['Small', 'Medium', 'Large']
 const sugarLevels = ['0%', '25%', '50%', '75%', '100%']
+const iceLevels = ['No Ice', 'Less Ice', 'Normal Ice', 'Extra Ice']
 
 const menu = [
   { id: 1, name: 'Americano', price: 8.90, category: 'Coffee', image: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop', addOns: [{ name: 'Extra Shot', price: 2.00 }, { name: 'Whipped Cream', price: 1.50 }] },
-  { id: 2, name: 'Caffe Latte', price: 10.90, category: 'Coffee', image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=400&h=400&fit=crop', addOns: [{ name: 'Extra Shot', price: 2.00 }, { name: 'Vanilla', price: 1.00 }] },
+  { id: 2, name: 'Caffee Latte', price: 10.90, category: 'Coffee', image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=400&h=400&fit=crop', addOns: [{ name: 'Extra Shot', price: 2.00 }, { name: 'Vanilla', price: 1.00 }] },
   { id: 3, name: 'Mocha', price: 12.50, category: 'Coffee', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&h=400&fit=crop', addOns: [{ name: 'Whipped Cream', price: 1.50 }, { name: 'Chocolate Drizzle', price: 1.50 }] },
   { id: 4, name: 'Espresso', price: 7.50, category: 'Coffee', image: 'https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=400&h=400&fit=crop', addOns: [{ name: 'Extra Shot', price: 2.00 }] },
   { id: 5, name: 'Cappuccino', price: 11.50, category: 'Coffee', image: 'https://images.unsplash.com/photo-1534778101976-62847782c213?w=400&h=400&fit=crop', addOns: [{ name: 'Cinnamon', price: 1.00 }, { name: 'Whipped Cream', price: 1.50 }] },
@@ -29,7 +30,7 @@ export default function MenuOrder() {
 
   const filtered = category === 'All' ? menu : menu.filter((m) => m.category === category)
 
-  const defaultOpt = { size: 'Medium', sugar: '50%', addOn: '' }
+  const defaultOpt = { size: 'Medium', sugar: '50%', ice: 'Normal Ice', addOn: '' }
 
   function getOpt(id) { return options[id] || defaultOpt }
 
@@ -47,15 +48,15 @@ export default function MenuOrder() {
   }
 
   function addToCart(item) {
-    const { size, sugar, addOn } = getOpt(item.id)
-    const key = `${item.id}-${size}-${sugar}-${addOn}`
+    const { size, sugar, ice, addOn } = getOpt(item.id)
+    const key = `${item.id}-${size}-${sugar}-${ice}-${addOn}`
     const unitPrice = item.price + addOnPrice(item, addOn)
     setCart((prev) => {
       const existing = prev.find((c) => c.key === key)
       if (existing) {
         return prev.map((c) => (c.key === key ? { ...c, qty: c.qty + 1 } : c))
       }
-      return [...prev, { ...item, key, size, sugar, addOn, unitPrice, qty: 1 }]
+      return [...prev, { ...item, key, size, sugar, ice, addOn, unitPrice, qty: 1 }]
     })
   }
 
@@ -84,6 +85,7 @@ export default function MenuOrder() {
         price: c.unitPrice,
         size: c.size,
         sugar: c.sugar,
+        ice: c.ice,
         addOn: c.addOn,
       })),
     }
@@ -145,15 +147,20 @@ export default function MenuOrder() {
                           <span className="text-sm font-bold text-blue-600">${item.price.toFixed(2)}</span>
                         </div>
 
-                        <select value={opt.size} onChange={(e) => setOpt(item.id, 'size', e.target.value)}
-                          className="w-full text-xs border border-gray-300 rounded-lg px-2 py-1.5 mb-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                          {sizes.map((s) => <option key={s} value={s}>{s}</option>)}
-                        </select>
-
-                        <select value={opt.sugar} onChange={(e) => setOpt(item.id, 'sugar', e.target.value)}
-                          className="w-full text-xs border border-gray-300 rounded-lg px-2 py-1.5 mb-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                          {sugarLevels.map((s) => <option key={s} value={s}>{s}</option>)}
-                        </select>
+                        <div className="flex gap-1.5 mb-1.5">
+                          <select value={opt.size} onChange={(e) => setOpt(item.id, 'size', e.target.value)}
+                            className="flex-1 text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            {sizes.map((s) => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                          <select value={opt.ice} onChange={(e) => setOpt(item.id, 'ice', e.target.value)}
+                            className="flex-1 text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            {iceLevels.map((l) => <option key={l} value={l}>{l}</option>)}
+                          </select>
+                          <select value={opt.sugar} onChange={(e) => setOpt(item.id, 'sugar', e.target.value)}
+                            className="flex-1 text-xs border border-gray-300 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            {sugarLevels.map((s) => <option key={s} value={s}>{s}</option>)}
+                          </select>
+                        </div>
 
                         <select value={opt.addOn} onChange={(e) => setOpt(item.id, 'addOn', e.target.value)}
                           className="w-full text-xs border border-gray-300 rounded-lg px-2 py-1.5 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -199,7 +206,7 @@ export default function MenuOrder() {
                         <div key={c.key} className="flex items-start justify-between gap-2 pb-3 border-b border-gray-100 last:border-0">
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-800 truncate">{c.name}</p>
-                            <p className="text-xs text-gray-400">{c.size}, {c.sugar}{c.addOn ? `, +${c.addOn}` : ''}</p>
+                            <p className="text-xs text-gray-400">{c.size}, {c.sugar}, {c.ice}{c.addOn ? `, +${c.addOn}` : ''}</p>
                             <p className="text-xs text-gray-500">${c.unitPrice.toFixed(2)} ea</p>
                           </div>
                           <div className="flex flex-col items-end gap-1">

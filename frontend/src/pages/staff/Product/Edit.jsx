@@ -47,7 +47,7 @@ export default function EditProduct() {
           description: product.description ?? '',
           status: product.status,
           image: null,
-          imagePreview: product.image ? `http://127.0.0.1:8000/storage/${product.image}` : '',
+          imagePreview: product.image ? `https://pos-year4.onrender.com/storage/${product.image}` : '',
           sizes: product.sizes?.map((s) => s.id) ?? [],
           prices: Object.fromEntries((product.sizes ?? []).map((s) => [s.id, s.pivot?.price ?? 0])),
           addons: product.addons?.map((a) => a.id) ?? [],
