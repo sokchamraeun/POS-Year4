@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/customer/Home.jsx'
 import Dashboard from './pages/staff/Dashboard.jsx'
-import Products from './pages/staff/Products.jsx'
+import Products from './pages/staff/Product/Products.jsx'
+import CreateProduct from './pages/staff/Product/Create.jsx'
+import EditProduct from './pages/staff/Product/Edit.jsx'
+import ViewProduct from './pages/staff/Product/View.jsx'
 import Orders from './pages/staff/Orders.jsx'
 import Inventory from './pages/staff/Inventory.jsx'
 import Recipe from './pages/staff/Recipe.jsx'
@@ -22,6 +25,9 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/staff/dashboard" element={<Dashboard />} />
         <Route path="/staff/products" element={<Products />} />
+        <Route path="/staff/products/add" element={<CreateProduct />} />
+        <Route path="/staff/products/edit/:id" element={<EditProduct />} />
+        <Route path="/staff/products/:id" element={<ViewProduct />} />
         <Route path="/staff/orders" element={<Orders />} />
         <Route path="/staff/inventory" element={<Inventory />} />
         <Route path="/staff/recipe" element={<Recipe />} />
