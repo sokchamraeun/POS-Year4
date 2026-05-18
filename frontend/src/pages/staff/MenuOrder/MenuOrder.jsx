@@ -76,7 +76,6 @@ export default function MenuOrder() {
     const size = product.sizes?.find((s) => s.name === sizeName)
     return size ? Number(size.pivot?.price ?? 0) : 0
   }
-
   function addOnPrice(product, addOnName) {
     if (!addOnName) return 0
     const a = product.addons?.find((a) => a.name === addOnName)
