@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Services\CloudinaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -22,7 +22,7 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, CloudinaryService $cloudinary): JsonResponse
     {
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
@@ -43,7 +43,7 @@ class ProductController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public');
+            $imagePath = $cloudinary->upload($request->file('image'));
         }
 
         $product = Product::create([
@@ -78,7 +78,7 @@ class ProductController extends Controller
         return response()->json($product, 201);
     }
 
-    public function update(Request $request, Product $product): JsonResponse
+    public function update(Request $request, Product $product, CloudinaryService $cloudinary): JsonResponse
     {
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
@@ -100,9 +100,9 @@ class ProductController extends Controller
         $imagePath = $product->image;
         if ($request->hasFile('image')) {
             if ($product->image) {
-                Storage::disk('public')->delete($product->image);
+                $cloudinary->delete($product->image);
             }
-            $imagePath = $request->file('image')->store('products', 'public');
+            $imagePath = $cloudinary->upload($request->file('image'));
         }
 
         $product->update([
@@ -140,8 +140,11 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    public function destroy(Product $product): JsonResponse
+    public function destroy(Product $product, CloudinaryService $cloudinary): JsonResponse
     {
+        if ($product->image) {
+            $cloudinary->delete($product->image);
+        }
         $product->delete();
         return response()->json(['message' => 'Product deleted successfully.']);
     }

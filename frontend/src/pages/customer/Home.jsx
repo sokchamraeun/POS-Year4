@@ -4,7 +4,7 @@ import Footer from '../../components/customer/Footer.jsx'
 import HeroSlider from '../../components/customer/HeroSlider.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
 
-const API_URL = 'https://pos-year4.onrender.com/api'
+const API_URL = import.meta.env.VITE_API_URL
 
 export default function Home() {
   const [products, setProducts] = useState([])

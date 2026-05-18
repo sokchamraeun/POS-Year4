@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
-const API_URL = 'https://pos-year4.onrender.com/api'
+const API_URL = import.meta.env.VITE_API_URL
 
 export default function MenuOrder() {
   const [category, setCategory] = useState('All')
@@ -205,7 +205,7 @@ export default function MenuOrder() {
                       <div className="p-3 pb-0">
                         {product.image ? (
                           <img
-                            src={`https://pos-year4.onrender.com/storage/${product.image}`}
+                            src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`}
                             alt={product.name}
                             className="w-full aspect-square object-cover rounded-lg"
                           />

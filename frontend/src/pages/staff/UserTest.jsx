@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
-const API_BASE = 'https://pos-year4.onrender.com/api'
+const API_BASE = import.meta.env.VITE_API_URL
 
 export default function UserTest() {
   const [users, setUsers] = useState([])

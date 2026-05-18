@@ -7,10 +7,10 @@ use App\Models\Addon;
 use App\Models\Category;
 use App\Models\IceLevel;
 use App\Models\Product;
+use App\Services\CloudinaryService;
 use App\Models\Size;
 use App\Models\SugarLevel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -30,7 +30,7 @@ class ProductController extends Controller
         return view('products.create', compact('categories', 'sizes', 'addons', 'sugarLevels', 'iceLevels'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, CloudinaryService $cloudinary)
     {
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
@@ -52,7 +52,7 @@ class ProductController extends Controller
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public');
+            $imagePath = $cloudinary->upload($request->file('image'));
         }
 
         $product = Product::create([
@@ -104,7 +104,7 @@ class ProductController extends Controller
         return view('products.edit', compact('product', 'categories', 'sizes', 'addons', 'sugarLevels', 'iceLevels'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Product $product, CloudinaryService $cloudinary)
     {
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
@@ -127,9 +127,9 @@ class ProductController extends Controller
         $imagePath = $product->image;
         if ($request->hasFile('image')) {
             if ($product->image) {
-                Storage::disk('public')->delete($product->image);
+                $cloudinary->delete($product->image);
             }
-            $imagePath = $request->file('image')->store('products', 'public');
+            $imagePath = $cloudinary->upload($request->file('image'));
         }
 
         $product->update([
@@ -167,8 +167,11 @@ class ProductController extends Controller
         return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
 
-    public function destroy(Product $product)
+    public function destroy(Product $product, CloudinaryService $cloudinary)
     {
+        if ($product->image) {
+            $cloudinary->delete($product->image);
+        }
         $product->delete();
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }

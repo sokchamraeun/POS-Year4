@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
-const API = 'https://pos-year4.onrender.com/api'
+const API = import.meta.env.VITE_API_URL
 
 export default function ViewProduct() {
   const { id } = useParams()
@@ -51,7 +51,7 @@ export default function ViewProduct() {
           <div className="bg-white rounded-xl shadow-sm p-6 max-w-2xl">
             <div className="flex items-center gap-4 mb-6">
               {product.image ? (
-                <img src={`https://pos-year4.onrender.com/storage/${product.image}`} alt={product.name} className="w-20 h-20 rounded-xl object-cover" />
+                <img src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`} alt={product.name} className="w-20 h-20 rounded-xl object-cover" />
               ) : (
                 <div className="w-20 h-20 rounded-xl bg-gray-200 flex items-center justify-center text-gray-400 text-sm">N/A</div>
               )}

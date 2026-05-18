@@ -149,7 +149,7 @@ export default function Sidebar() {
             </div>
           )}
         </div>
-      </nav>
+       </nav>
       <div className="px-6 py-4 border-t border-gray-700">
         <NavLink
           to="/staff/login"

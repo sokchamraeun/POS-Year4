@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
-const API = 'https://pos-year4.onrender.com/api'
+const API = import.meta.env.VITE_API_URL
 
 export default function EditProduct() {
   const { id } = useParams()
@@ -47,7 +47,7 @@ export default function EditProduct() {
           description: product.description ?? '',
           status: product.status,
           image: null,
-          imagePreview: product.image ? `https://pos-year4.onrender.com/storage/${product.image}` : '',
+          imagePreview: product.image ? `${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}` : '',
           sizes: product.sizes?.map((s) => s.id) ?? [],
           prices: Object.fromEntries((product.sizes ?? []).map((s) => [s.id, s.pivot?.price ?? 0])),
           addons: product.addons?.map((a) => a.id) ?? [],

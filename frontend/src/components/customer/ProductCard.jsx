@@ -38,7 +38,7 @@ export default function ProductCard({ product, onAddToCart }) {
       <div className="p-3 pb-0">
         {product.image ? (
           <img
-            src={`https://pos-year4.onrender.com/storage/${product.image}`}
+            src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`}
             alt={product.name}
             className="w-full aspect-square object-cover rounded-lg"
           />

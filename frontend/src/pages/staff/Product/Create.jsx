@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
-const API = 'https://pos-year4.onrender.com/api'
+const API = import.meta.env.VITE_API_URL
 
 export default function CreateProduct() {
   const navigate = useNavigate()

@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
-const API_URL = 'https://pos-year4.onrender.com/api/products'
+const API_URL = import.meta.env.VITE_API_URL + '/products'
 
 const categoryColors = {
   Coffee: 'bg-blue-100 text-blue-700',
@@ -116,7 +116,7 @@ export default function Products() {
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             {product.image ? (
-                              <img src={`https://pos-year4.onrender.com/storage/${product.image}`} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
+                              <img src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`} alt={product.name} className="w-10 h-10 rounded-lg object-cover" />
                             ) : (
                               <div className="w-10 h-10 rounded-lg bg-gray-200 flex items-center justify-center text-gray-400 text-xs">N/A</div>
                             )}
