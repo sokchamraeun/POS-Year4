@@ -11,14 +11,14 @@ class OrderController extends Controller
 {
     public function index(): JsonResponse
     {
-        $orders = Order::with(['customer', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon'])
+        $orders = Order::with(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon'])
             ->orderByDesc('id')->paginate(10);
         return response()->json($orders);
     }
 
     public function show(Order $order): JsonResponse
     {
-        $order->load(['customer', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
         return response()->json($order);
     }
 
@@ -26,6 +26,7 @@ class OrderController extends Controller
     {
         $data = $request->validate([
             'customer_id' => 'nullable|exists:customers,id',
+            'table_id' => 'nullable|exists:tables,id',
             'total' => 'required|numeric|min:0',
             'payment_method' => 'nullable|string|max:50',
             'payment_status' => 'nullable|string|max:50',
@@ -45,6 +46,7 @@ class OrderController extends Controller
 
         $order = Order::create([
             'customer_id' => $data['customer_id'] ?? null,
+            'table_id' => $data['table_id'] ?? null,
             'total' => $data['total'],
             'payment_method' => $data['payment_method'] ?? null,
             'payment_status' => $data['payment_status'] ?? null,
@@ -72,7 +74,7 @@ class OrderController extends Controller
             }
         }
 
-        $order->load(['customer', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
         return response()->json($order, 201);
     }
 
@@ -80,6 +82,7 @@ class OrderController extends Controller
     {
         $data = $request->validate([
             'customer_id' => 'nullable|exists:customers,id',
+            'table_id' => 'nullable|exists:tables,id',
             'total' => 'required|numeric|min:0',
             'payment_method' => 'nullable|string|max:50',
             'payment_status' => 'nullable|string|max:50',
@@ -88,13 +91,14 @@ class OrderController extends Controller
 
         $order->update([
             'customer_id' => $data['customer_id'] ?? null,
+            'table_id' => $data['table_id'] ?? null,
             'total' => $data['total'],
             'payment_method' => $data['payment_method'] ?? null,
             'payment_status' => $data['payment_status'] ?? null,
             'status' => $data['status'] ?? null,
         ]);
 
-        $order->load(['customer', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
         return response()->json($order);
     }
 

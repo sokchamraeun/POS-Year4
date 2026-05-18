@@ -5,19 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['name', 'phone', 'points'])]
-class Customer extends Model
+#[Fillable(['ingredient_id', 'type', 'quantity', 'note'])]
+class InventoryTransaction extends Model
 {
     use HasFactory;
 
-    public const CREATED_AT = 'created_at';
     public const UPDATED_AT = null;
 
-    public function orders(): HasMany
+    public function ingredient(): BelongsTo
     {
-        return $this->hasMany(Order::class);
+        return $this->belongsTo(Ingredient::class);
     }
 }
- 

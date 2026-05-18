@@ -3,9 +3,14 @@
 use App\Http\Controllers\Addons\AddonController;
 use App\Http\Controllers\Auth\WebAuthController;
 use App\Http\Controllers\Categories\CategoryController;
+use App\Http\Controllers\Ingredients\IngredientController;
+use App\Http\Controllers\Inventory\InventoryController;
+use App\Http\Controllers\Orders\OrderController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Products\ProductController;
+use App\Http\Controllers\Recipes\RecipeController;
 use App\Http\Controllers\Roles\RoleController;
+use App\Http\Controllers\Tables\TableController;
 use App\Http\Controllers\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -64,4 +69,36 @@ Route::middleware('auth')->group(function () {
     Route::get('/addons/{addon}/edit', [AddonController::class, 'edit'])->name('addons.edit');
     Route::put('/addons/{addon}', [AddonController::class, 'update'])->name('addons.update');
     Route::delete('/addons/{addon}', [AddonController::class, 'destroy'])->name('addons.destroy');
+
+    Route::get('/tables', [TableController::class, 'index'])->name('tables.index');
+    Route::get('/tables/create', [TableController::class, 'create'])->name('tables.create');
+    Route::post('/tables', [TableController::class, 'store'])->name('tables.store');
+    Route::get('/tables/{table}', [TableController::class, 'show'])->name('tables.show');
+    Route::get('/tables/{table}/edit', [TableController::class, 'edit'])->name('tables.edit');
+    Route::put('/tables/{table}', [TableController::class, 'update'])->name('tables.update');
+    Route::delete('/tables/{table}', [TableController::class, 'destroy'])->name('tables.destroy');
+
+    Route::get('/ingredients', [IngredientController::class, 'index'])->name('ingredients.index');
+    Route::get('/ingredients/create', [IngredientController::class, 'create'])->name('ingredients.create');
+    Route::post('/ingredients', [IngredientController::class, 'store'])->name('ingredients.store');
+    Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show'])->name('ingredients.show');
+    Route::get('/ingredients/{ingredient}/edit', [IngredientController::class, 'edit'])->name('ingredients.edit');
+    Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update'])->name('ingredients.update');
+    Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy'])->name('ingredients.destroy');
+
+    Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
+    Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
+    Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+    Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
+    Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
+    Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
+    Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+
+    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+    Route::get('/inventory/create', [InventoryController::class, 'create'])->name('inventory.create');
+    Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
+    Route::get('/inventory/history', [InventoryController::class, 'history'])->name('inventory.history');
 });

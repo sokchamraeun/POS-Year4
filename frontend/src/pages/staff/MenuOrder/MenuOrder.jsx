@@ -13,15 +13,17 @@ export default function MenuOrder() {
   const [options, setOptions] = useState({})
   const [customerName, setCustomerName] = useState('')
   const [phone, setPhone] = useState('')
-  const [tableNo, setTableNo] = useState('')
+  const [tableId, setTableId] = useState('')
+  const [tables, setTables] = useState([])
   const [success, setSuccess] = useState('')
 
   useEffect(() => {
     async function fetchAll() {
       try {
-        const [firstPage, catRes] = await Promise.all([
+        const [firstPage, catRes, tblRes] = await Promise.all([
           fetch(`${API_URL}/products?page=1`).then((r) => r.json()),
           fetch(`${API_URL}/categories`).then((r) => r.json()),
+          fetch(`${API_URL}/tables/available`).then((r) => r.json()),
         ])
         let allProducts = firstPage.data ?? []
         const lastPage = firstPage.last_page ?? 1
@@ -39,6 +41,7 @@ export default function MenuOrder() {
         setProducts(allProducts)
         const cats = (catRes.data ?? catRes).map((c) => c.name)
         setCategories(['All', ...cats])
+        setTables(tblRes.data ?? tblRes ?? [])
         setLoading(false)
       } catch {
         setLoading(false)
@@ -116,7 +119,7 @@ export default function MenuOrder() {
       id: `#${Date.now().toString().slice(-6)}`,
       customer: customerName || 'Guest',
       phone: phone || '-',
-      table: tableNo || '-',
+      table: tables.find((t) => t.id === Number(tableId))?.name || tableId || '-',
       items: cart.reduce((sum, c) => sum + c.qty, 0),
       total: total,
       date: new Date().toISOString().slice(0, 10),
@@ -139,7 +142,7 @@ export default function MenuOrder() {
     setCategory('All')
     setCustomerName('')
     setPhone('')
-    setTableNo('')
+    setTableId('')
     setSuccess(`Order ${order.id} placed successfully!`)
     setTimeout(() => setSuccess(''), 3000)
   }
@@ -319,13 +322,16 @@ export default function MenuOrder() {
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                  <input
-                    type="text"
-                    placeholder="Table No."
-                    value={tableNo}
-                    onChange={(e) => setTableNo(e.target.value)}
+                  <select
+                    value={tableId}
+                    onChange={(e) => setTableId(e.target.value)}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  >
+                    <option value="">Select Table</option>
+                    {tables.map((t) => (
+                      <option key={t.id} value={t.id}>{t.name} (Cap: {t.capacity})</option>
+                    ))}
+                  </select>
                 </div>
 
                 {cart.length === 0 ? (

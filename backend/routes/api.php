@@ -5,12 +5,16 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\IceLevelController;
+use App\Http\Controllers\Api\IngredientController;
+use App\Http\Controllers\Api\InventoryTransactionController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\RecipeController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SizeController;
 use App\Http\Controllers\Api\SugarLevelController;
+use App\Http\Controllers\Api\TableController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -88,4 +92,26 @@ Route::middleware('auth:sanctum')->group(function () {});
     Route::put('/orders/{order}', [OrderController::class, 'update']);
     Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
 
-    
+    Route::get('/tables', [TableController::class, 'index']);
+    Route::get('/tables/available', [TableController::class, 'available']);
+    Route::get('/tables/{table}', [TableController::class, 'show']);
+    Route::post('/tables', [TableController::class, 'store']);
+    Route::put('/tables/{table}', [TableController::class, 'update']);
+    Route::delete('/tables/{table}', [TableController::class, 'destroy']);
+
+    Route::get('/ingredients', [IngredientController::class, 'index']);
+    Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show']);
+    Route::post('/ingredients', [IngredientController::class, 'store']);
+    Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update']);
+    Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy']);
+
+    Route::get('/recipes', [RecipeController::class, 'index']);
+    Route::get('/recipes/{recipe}', [RecipeController::class, 'show']);
+    Route::post('/recipes', [RecipeController::class, 'store']);
+    Route::put('/recipes/{recipe}', [RecipeController::class, 'update']);
+    Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy']);
+
+    Route::get('/inventory-transactions', [InventoryTransactionController::class, 'index']);
+    Route::get('/inventory-transactions/{inventoryTransaction}', [InventoryTransactionController::class, 'show']);
+    Route::post('/inventory-transactions', [InventoryTransactionController::class, 'store']);
+    Route::delete('/inventory-transactions/{inventoryTransaction}', [InventoryTransactionController::class, 'destroy']);

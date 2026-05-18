@@ -51,4 +51,9 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    public function ingredients(): BelongsToMany
+    {
+        return $this->belongsToMany(Ingredient::class, 'recipes')->withPivot(['id', 'quantity']);
+    }
 }

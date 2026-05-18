@@ -21,6 +21,11 @@
                 <a href="{{ route('products.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('products.*') ? 'bg-gray-100 font-semibold' : '' }}">Products</a>
                 <a href="{{ route('categories.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('categories.*') ? 'bg-gray-100 font-semibold' : '' }}">Categories</a>
                 <a href="{{ route('addons.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('addons.*') ? 'bg-gray-100 font-semibold' : '' }}">Addons</a>
+                <a href="{{ route('tables.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('tables.*') ? 'bg-gray-100 font-semibold' : '' }}">Tables</a>
+                <a href="{{ route('inventory.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('inventory.*') ? 'bg-gray-100 font-semibold' : '' }}">Inventory</a>
+                <a href="{{ route('ingredients.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('ingredients.*') ? 'bg-gray-100 font-semibold' : '' }}">Ingredients</a>
+                <a href="{{ route('recipes.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('recipes.*') ? 'bg-gray-100 font-semibold' : '' }}">Recipes</a>
+                <a href="{{ route('orders.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('orders.*') ? 'bg-gray-100 font-semibold' : '' }}">Orders</a>
             </nav>
 
             <div class="absolute bottom-6 left-6 right-6">
