@@ -14,6 +14,7 @@ export default function Recipe() {
   const [editing, setEditing] = useState(null)
   const [preselected, setPreselected] = useState(null)
   const [form, setForm] = useState({ product_id: '', ingredient_id: '', quantity: '' })
+  const [modalRows, setModalRows] = useState([])
   const [products, setProducts] = useState([])
   const [ingredients, setIngredients] = useState([])
 
@@ -55,6 +56,7 @@ export default function Recipe() {
     setEditing(null)
     setPreselected({ product_id: productId, size_id: sizeId })
     setForm({ product_id: productId || '', size_id: sizeId || '', ingredient_id: '', quantity: '' })
+    setModalRows([{ key: Date.now(), ingredient_id: '', quantity: '', _remove: false }])
     setShowModal(true)
   }
 
@@ -65,17 +67,47 @@ export default function Recipe() {
     setShowModal(true)
   }
 
+  const addModalRow = () => {
+    setModalRows([...modalRows, { key: Date.now(), ingredient_id: '', quantity: '', _remove: false }])
+  }
+
+  const updateModalRow = (key, field, value) => {
+    setModalRows(modalRows.map(r => r.key === key ? { ...r, [field]: value } : r))
+  }
+
+  const toggleModalRowRemove = (key) => {
+    setModalRows(modalRows.map(r => r.key === key ? { ...r, _remove: !r._remove } : r))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const url = editing ? `${API_URL}/recipes/${editing.id}` : `${API_URL}/recipes`
-    const method = editing ? 'PUT' : 'POST'
-    try {
-      const res = await fetch(url, {
-        method,
+    if (editing) {
+      const res = await fetch(`${API_URL}/recipes/${editing.id}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify(editing ? { ...form } : form),
+        body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error('Failed to save')
+      if (!res.ok) { const d = await res.json(); throw new Error(Object.values(d.errors ?? d).flat().join(', ')) }
+      setShowModal(false)
+      fetchData()
+      return
+    }
+    const active = modalRows.filter(r => !r._remove && r.ingredient_id && r.quantity)
+    if (active.length === 0) { alert('Add at least one ingredient.'); return }
+    try {
+      for (const row of active) {
+        const res = await fetch(`${API_URL}/recipes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...headers },
+          body: JSON.stringify({
+            product_id: form.product_id,
+            size_id: form.size_id,
+            ingredient_id: row.ingredient_id,
+            quantity: row.quantity,
+          }),
+        })
+        if (!res.ok) throw new Error('Failed to save')
+      }
       setShowModal(false)
       fetchData()
     } catch (err) { alert(err.message) }
@@ -113,47 +145,49 @@ export default function Recipe() {
 
           <div className="space-y-6">
             {Object.entries(grouped).map(([pid, prod]) => (
-              <div key={pid} className="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div className="px-6 py-4 bg-gray-50 border-b flex justify-between items-center">
-                  <h2 className="font-semibold text-gray-800">{prod.product?.name ?? `Product #${pid}`}</h2>
+              <div key={pid} className="bg-white rounded-xl shadow-sm overflow-hidden border border-blue-100">
+                <div className="px-6 py-4 bg-blue-50 border-b border-blue-200 flex justify-between items-center">
+                  <h2 className="font-semibold text-blue-700 bg-white rounded-lg px-3 py-1.5 border border-blue-200 shadow-sm">{prod.product?.name ?? `Product #${pid}`}</h2>
                   <button onClick={() => openCreate(pid, null)} className="text-blue-600 hover:underline text-xs font-medium">+ Add Ingredient</button>
                 </div>
-                {Object.entries(prod.sizes).map(([sid, sz]) => (
-                  <div key={sid} className="border-t">
-                    <div className="px-6 py-3 bg-gray-50 flex justify-between items-center text-sm font-medium text-gray-700">
-                      <span>{sz.size?.name ?? `Size #${sid}`}</span>
-                      <div className="flex gap-3">
-                        <Link to={`/staff/recipe/batch-edit/${pid}/${sid}`} className="text-yellow-600 hover:underline text-xs">Edit All</Link>
-                        <button onClick={() => openCreate(pid, sid)} className="text-blue-600 hover:underline text-xs">+ Add Ingredient</button>
+                <div className="p-4 space-y-4">
+                  {Object.entries(prod.sizes).map(([sid, sz]) => (
+                    <div key={sid} className="border border-indigo-200 rounded-lg shadow-sm overflow-hidden">
+                      <div className="px-6 py-3 bg-indigo-50 border-b border-indigo-200 flex justify-between items-center text-sm font-medium text-indigo-600">
+                        <span className="bg-white rounded-md px-3 py-1 border border-indigo-200 shadow-sm">{sz.size?.name ?? `Size #${sid}`}</span>
+                        <div className="flex gap-3">
+                          <Link to={`/staff/recipe/batch-edit/${pid}/${sid}`} className="text-yellow-600 hover:underline text-xs">Edit All</Link>
+                          <button onClick={() => openCreate(pid, sid)} className="text-blue-600 hover:underline text-xs">+ Add Ingredient</button>
+                        </div>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="text-left text-gray-500 font-medium border-b border-gray-100">
+                              <th className="px-6 py-3">Ingredient</th>
+                              <th className="px-6 py-3">Quantity</th>
+                              <th className="px-6 py-3 text-right">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {sz.ingredients.map((r) => (
+                              <tr key={r.id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td className="px-6 py-4 text-gray-800">{r.ingredient?.name}</td>
+                                <td className="px-6 py-4 text-gray-800">{Number(r.quantity).toFixed(2)} {r.ingredient?.unit}</td>
+                                <td className="px-6 py-4 text-right">
+                                  <div className="flex items-center justify-end gap-1">
+                                    <button onClick={() => openEdit(r)} className="px-3 py-1.5 text-xs font-medium text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors">Edit</button>
+                                    <button onClick={() => handleDelete(r.id)} className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors">Remove</button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="text-left text-gray-500 font-medium border-b border-gray-100">
-                            <th className="px-6 py-3">Ingredient</th>
-                            <th className="px-6 py-3">Quantity</th>
-                            <th className="px-6 py-3 text-right">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {sz.ingredients.map((r) => (
-                            <tr key={r.id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
-                              <td className="px-6 py-4 text-gray-800">{r.ingredient?.name}</td>
-                              <td className="px-6 py-4 text-gray-800">{Number(r.quantity).toFixed(2)} {r.ingredient?.unit}</td>
-                              <td className="px-6 py-4 text-right">
-                                <div className="flex items-center justify-end gap-1">
-                                  <button onClick={() => openEdit(r)} className="px-3 py-1.5 text-xs font-medium text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors">Edit</button>
-                                  <button onClick={() => handleDelete(r.id)} className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors">Remove</button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             ))}
             {Object.keys(grouped).length === 0 && (
@@ -165,40 +199,75 @@ export default function Recipe() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
-            <h2 className="text-lg font-semibold mb-4">{editing ? 'Edit Ingredient' : 'Add Ingredient'}</h2>
+          <div className="bg-white rounded-xl shadow-xl w-full mx-4 p-6" style={{ maxWidth: editing ? '24rem' : '40rem' }}>
+            <h2 className="text-lg font-semibold mb-4">{editing ? 'Edit Ingredient' : 'Add Ingredients'}</h2>
             <form onSubmit={handleSubmit}>
               {!editing && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
-                  <select value={form.product_id} onChange={e => setForm({ ...form, product_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Select product</option>
-                    {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                  </select>
-                </div>
+                <>
+                  <div className="flex gap-4 mb-4">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
+                      <select value={form.product_id} onChange={e => setForm({ ...form, product_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select product</option>
+                        {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      </select>
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Size</label>
+                      <select value={form.size_id} onChange={e => setForm({ ...form, size_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Select size</option>
+                        {Object.values(sizes).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  <table className="w-full mb-3">
+                    <thead>
+                      <tr className="text-left text-xs text-gray-500 border-b">
+                        <th className="px-2 py-2">Ingredient</th>
+                        <th className="px-2 py-2 w-32">Quantity</th>
+                        <th className="px-2 py-2 w-12">Remove</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {modalRows.map((row) => (
+                        <tr key={row.key} className={`border-b ${row._remove ? 'opacity-50 bg-gray-50' : ''}`}>
+                          <td className="px-2 py-2">
+                            <select value={row.ingredient_id} onChange={e => updateModalRow(row.key, 'ingredient_id', e.target.value)} disabled={row._remove} required className="w-full border rounded px-2 py-1 text-sm">
+                              <option value="">Select ingredient</option>
+                              {ingredients.map(i => <option key={i.id} value={i.id}>{i.name} ({i.unit})</option>)}
+                            </select>
+                          </td>
+                          <td className="px-2 py-2">
+                            <input type="number" value={row.quantity} onChange={e => updateModalRow(row.key, 'quantity', e.target.value)} step="0.01" min="0.01" disabled={row._remove} required className="w-full border rounded px-2 py-1 text-sm" />
+                          </td>
+                          <td className="px-2 py-2 text-center">
+                            <input type="checkbox" checked={row._remove} onChange={() => toggleModalRowRemove(row.key)} />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <button type="button" onClick={addModalRow} className="text-blue-600 hover:underline text-sm mb-4">+ Add Row</button>
+                </>
               )}
-              {!editing && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Size</label>
-                  <select value={form.size_id} onChange={e => setForm({ ...form, size_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Select size</option>
-                    {Object.values(sizes).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
-                </div>
+
+              {editing && (
+                <>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Ingredient</label>
+                    <select value={form.ingredient_id} onChange={e => setForm({ ...form, ingredient_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <option value="">Select ingredient</option>
+                      {ingredients.map(i => <option key={i.id} value={i.id}>{i.name} ({i.unit})</option>)}
+                    </select>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                    <input type="number" value={form.quantity} onChange={e => setForm({ ...form, quantity: e.target.value })} step="0.01" min="0.01" required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                </>
               )}
-              {!editing && (
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ingredient</label>
-                  <select value={form.ingredient_id} onChange={e => setForm({ ...form, ingredient_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Select ingredient</option>
-                    {ingredients.map(i => <option key={i.id} value={i.id}>{i.name} ({i.unit})</option>)}
-                  </select>
-                </div>
-              )}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-                <input type="number" value={form.quantity} onChange={e => setForm({ ...form, quantity: e.target.value })} step="0.01" min="0.01" required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
+
               <div className="flex gap-2 justify-end">
                 <button type="button" onClick={() => { setShowModal(false); setEditing(null) }} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">Cancel</button>
                 <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">{editing ? 'Update' : 'Create'}</button>
