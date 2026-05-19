@@ -7,22 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['product_id', 'size_id', 'ingredient_id', 'quantity'])]
-class Recipe extends Model
+#[Fillable(['addon_id', 'ingredient_id', 'quantity'])]
+class AddonIngredient extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-
-    public function product(): BelongsTo
+    public function addon(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Addon::class);
     }
 
-    public function size(): BelongsTo
-    {
-        return $this->belongsTo(Size::class);
-    }
 
     public function ingredient(): BelongsTo
     {

@@ -20,6 +20,10 @@
                 <dd>{{ $recipe->product->name }}</dd>
             </div>
             <div class="flex">
+                <dt class="w-32 font-medium text-gray-600">Size</dt>
+                <dd>{{ $recipe->size->name }}</dd>
+            </div>
+            <div class="flex">
                 <dt class="w-32 font-medium text-gray-600">Ingredient</dt>
                 <dd>{{ $recipe->ingredient->name }}</dd>
             </div>

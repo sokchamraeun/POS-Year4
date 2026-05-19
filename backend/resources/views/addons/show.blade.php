@@ -29,6 +29,10 @@
             </div>
         </dl>
 
+        <div class="mt-6">
+            <a href="{{ route('addon-ingredients.index') }}?addon_id={{ $addon->id }}" class="text-blue-600 hover:underline">View Ingredients &rarr;</a>
+        </div>
+
         <div class="flex gap-2 mt-6">
             <a href="{{ route('addons.edit', $addon) }}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Edit</a>
             <form action="{{ route('addons.destroy', $addon) }}" method="POST" onsubmit="return confirm('Delete this addon?')">

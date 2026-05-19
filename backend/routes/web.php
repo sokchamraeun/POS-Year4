@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddonIngredients\AddonIngredientController;
 use App\Http\Controllers\Addons\AddonController;
 use App\Http\Controllers\Auth\WebAuthController;
 use App\Http\Controllers\Categories\CategoryController;
@@ -70,6 +71,14 @@ Route::middleware('auth')->group(function () {
     Route::put('/addons/{addon}', [AddonController::class, 'update'])->name('addons.update');
     Route::delete('/addons/{addon}', [AddonController::class, 'destroy'])->name('addons.destroy');
 
+    Route::get('/addon-ingredients', [AddonIngredientController::class, 'index'])->name('addon-ingredients.index');
+    Route::get('/addon-ingredients/create', [AddonIngredientController::class, 'create'])->name('addon-ingredients.create');
+    Route::post('/addon-ingredients', [AddonIngredientController::class, 'store'])->name('addon-ingredients.store');
+    Route::get('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'show'])->name('addon-ingredients.show');
+    Route::get('/addon-ingredients/{addonIngredient}/edit', [AddonIngredientController::class, 'edit'])->name('addon-ingredients.edit');
+    Route::put('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'update'])->name('addon-ingredients.update');
+    Route::delete('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'destroy'])->name('addon-ingredients.destroy');
+
     Route::get('/tables', [TableController::class, 'index'])->name('tables.index');
     Route::get('/tables/create', [TableController::class, 'create'])->name('tables.create');
     Route::post('/tables', [TableController::class, 'store'])->name('tables.store');
@@ -89,6 +98,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
     Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
     Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+    Route::get('/recipes/{product}/{size}/batch-edit', [RecipeController::class, 'batchEdit'])->name('recipes.batch-edit');
+    Route::put('/recipes/batch-update', [RecipeController::class, 'batchUpdate'])->name('recipes.batch-update');
     Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
     Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
     Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');

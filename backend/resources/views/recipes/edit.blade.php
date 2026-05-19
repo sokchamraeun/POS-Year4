@@ -25,6 +25,17 @@
             </div>
 
             <div class="mb-4">
+                <label for="size_id" class="block font-medium mb-1">Size</label>
+                <select name="size_id" id="size_id" class="w-full border rounded px-3 py-2 @error('size_id') border-red-500 @enderror" required>
+                    <option value="">Select size</option>
+                    @foreach ($sizes as $size)
+                        <option value="{{ $size->id }}" @selected(old('size_id', $recipe->size_id) == $size->id)>{{ $size->name }}</option>
+                    @endforeach
+                </select>
+                @error('size_id') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <div class="mb-4">
                 <label for="ingredient_id" class="block font-medium mb-1">Ingredient</label>
                 <select name="ingredient_id" id="ingredient_id" class="w-full border rounded px-3 py-2 @error('ingredient_id') border-red-500 @enderror" required>
                     <option value="">Select ingredient</option>

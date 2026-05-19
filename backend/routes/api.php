@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AddonController;
+use App\Http\Controllers\Api\AddonIngredientController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerController;
@@ -22,7 +23,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {});
-
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
@@ -74,6 +74,11 @@ Route::middleware('auth:sanctum')->group(function () {});
     Route::put('/addons/{addon}', [AddonController::class, 'update']);
     Route::delete('/addons/{addon}', [AddonController::class, 'destroy']);
 
+    Route::get('/addon-ingredients', [AddonIngredientController::class, 'index']);
+    Route::post('/addon-ingredients', [AddonIngredientController::class, 'store']);
+    Route::put('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'update']);
+    Route::delete('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'destroy']);
+
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{product}', [ProductController::class, 'show']);
     Route::post('/products', [ProductController::class, 'store']);
@@ -107,6 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {});
 
     Route::get('/recipes', [RecipeController::class, 'index']);
     Route::get('/recipes/{recipe}', [RecipeController::class, 'show']);
+    Route::post('/recipes/batch-update', [RecipeController::class, 'batchUpdate']);
     Route::post('/recipes', [RecipeController::class, 'store']);
     Route::put('/recipes/{recipe}', [RecipeController::class, 'update']);
     Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy']);
@@ -115,3 +121,4 @@ Route::middleware('auth:sanctum')->group(function () {});
     Route::get('/inventory-transactions/{inventoryTransaction}', [InventoryTransactionController::class, 'show']);
     Route::post('/inventory-transactions', [InventoryTransactionController::class, 'store']);
     Route::delete('/inventory-transactions/{inventoryTransaction}', [InventoryTransactionController::class, 'destroy']);
+

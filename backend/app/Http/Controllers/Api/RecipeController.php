@@ -6,18 +6,28 @@ use App\Http\Controllers\Controller;
 use App\Models\Recipe;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RecipeController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $recipes = Recipe::with(['product:id,name', 'ingredient:id,name,unit'])->orderBy('id')->paginate(15);
+        $query = Recipe::with(['product:id,name', 'size:id,name', 'ingredient:id,name,unit']);
+
+        if ($request->query('product_id')) {
+            $query->where('product_id', $request->query('product_id'));
+        }
+        if ($request->query('size_id')) {
+            $query->where('size_id', $request->query('size_id'));
+        }
+
+        $recipes = $query->orderBy('id')->paginate(15);
         return response()->json($recipes);
     }
 
     public function show(Recipe $recipe): JsonResponse
     {
-        $recipe->load(['product', 'ingredient']);
+        $recipe->load(['product', 'size', 'ingredient']);
         return response()->json($recipe);
     }
 
@@ -25,11 +35,12 @@ class RecipeController extends Controller
     {
         $data = $request->validate([
             'product_id' => 'required|exists:products,id',
+            'size_id' => 'required|exists:sizes,id',
             'ingredient_id' => 'required|exists:ingredients,id',
             'quantity' => 'required|numeric|min:0.01',
         ]);
         $recipe = Recipe::create($data);
-        $recipe->load(['product:id,name', 'ingredient:id,name,unit']);
+        $recipe->load(['product:id,name', 'size:id,name', 'ingredient:id,name,unit']);
         return response()->json($recipe, 201);
     }
 
@@ -37,11 +48,12 @@ class RecipeController extends Controller
     {
         $data = $request->validate([
             'product_id' => 'required|exists:products,id',
+            'size_id' => 'required|exists:sizes,id',
             'ingredient_id' => 'required|exists:ingredients,id',
             'quantity' => 'required|numeric|min:0.01',
         ]);
         $recipe->update($data);
-        $recipe->load(['product:id,name', 'ingredient:id,name,unit']);
+        $recipe->load(['product:id,name', 'size:id,name', 'ingredient:id,name,unit']);
         return response()->json($recipe);
     }
 
@@ -49,5 +61,39 @@ class RecipeController extends Controller
     {
         $recipe->delete();
         return response()->json(['message' => 'Recipe deleted successfully.']);
+    }
+
+    public function batchUpdate(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'size_id' => 'required|exists:sizes,id',
+            'recipes' => 'required|array',
+            'recipes.*.ingredient_id' => 'required|exists:ingredients,id',
+            'recipes.*.quantity' => 'required|numeric|min:0.01',
+        ]);
+
+        DB::transaction(function () use ($data) {
+            Recipe::where('product_id', $data['product_id'])
+                ->where('size_id', $data['size_id'])
+                ->delete();
+
+            foreach ($data['recipes'] as $item) {
+                Recipe::create([
+                    'product_id' => $data['product_id'],
+                    'size_id' => $data['size_id'],
+                    'ingredient_id' => $item['ingredient_id'],
+                    'quantity' => $item['quantity'],
+                ]);
+            }
+        });
+
+        $recipes = Recipe::with(['product:id,name', 'size:id,name', 'ingredient:id,name,unit'])
+            ->where('product_id', $data['product_id'])
+            ->where('size_id', $data['size_id'])
+            ->orderBy('id')
+            ->get();
+
+        return response()->json(['message' => 'Recipes updated successfully.', 'data' => $recipes]);
     }
 }

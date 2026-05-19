@@ -24,4 +24,15 @@ class Addon extends Model
     {
         return $this->hasMany(OrderItemAddon::class);
     }
+
+    public function addonIngredients(): HasMany
+    {
+        return $this->hasMany(AddonIngredient::class);
+    }
+
+    public function ingredients(): BelongsToMany
+    {
+        return $this->belongsToMany(Ingredient::class, 'addon_ingredients')
+            ->withPivot(['id', 'quantity']);
+    }
 }

@@ -29,4 +29,15 @@ class Ingredient extends Model
     {
         return $this->hasMany(InventoryTransaction::class);
     }
+
+    public function addonIngredients(): HasMany
+    {
+        return $this->hasMany(AddonIngredient::class);
+    }
+
+    public function addons(): BelongsToMany
+    {
+        return $this->belongsToMany(Addon::class, 'addon_ingredients')
+            ->withPivot(['id', 'quantity']);
+    }
 }

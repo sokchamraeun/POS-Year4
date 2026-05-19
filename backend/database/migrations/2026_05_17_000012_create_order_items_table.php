@@ -13,8 +13,8 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained();
             $table->foreignId('size_id')->constrained();
-            $table->foreignId('sugar_level_id')->constrained();
-            $table->foreignId('ice_level_id')->constrained();
+            $table->foreignId('sugar_level_id')->nullable()->constrained();
+            $table->foreignId('ice_level_id')->nullable()->constrained();
             $table->integer('qty')->default(1);
             $table->decimal('unit_price', 10, 2)->nullable();
             $table->decimal('subtotal', 10, 2)->nullable();
