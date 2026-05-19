@@ -2,6 +2,31 @@ import { useState, useEffect } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
+const API_URL = import.meta.env.VITE_API_URL
+
+function mapOrder(o) {
+  return {
+    id: `#${o.id}`,
+    customer: o.customer?.name ?? 'Guest',
+    phone: o.customer?.phone ?? '-',
+    table: o.table?.name ?? '-',
+    items: o.items?.reduce((s, i) => s + i.qty, 0) ?? 0,
+    total: Number(o.total ?? 0),
+    date: (o.created_at ?? '').slice(0, 10),
+    status: o.status ?? 'Pending',
+    payment: o.payment_status ?? 'Unpaid',
+    detail: (o.items ?? []).map((i) => ({
+      name: i.product?.name ?? 'Unknown',
+      qty: i.qty,
+      price: Number(i.unit_price ?? 0),
+      size: i.size?.name ?? '',
+      sugar: i.sugarLevel?.name ?? '',
+      ice: i.iceLevel?.name ?? '',
+      addOn: i.addons?.map((a) => a.addon?.name).filter(Boolean).join(', ') ?? '',
+    })),
+  }
+}
+
 const recipes = {
   Americano: [
     { name: 'Coffee Beans', qty: 18, unit: 'g' },
@@ -39,48 +64,6 @@ const recipes = {
   ],
 }
 
-const allOrders = [
-  { id: '#1001', customer: 'Alice Johnson', phone: '012-345 6789', items: 3, total: 32.50, date: '2026-05-14', status: 'Completed', payment: 'Paid', detail: [
-    { name: 'Americano', qty: 1, price: 8.90 },
-    { name: 'Caffe Latte', qty: 1, price: 10.90 },
-    { name: 'Mocha', qty: 1, price: 12.50 },
-  ]},
-  { id: '#1002', customer: 'Bob Smith', phone: '012-345 6790', items: 1, total: 8.90, date: '2026-05-14', status: 'Pending', payment: 'Unpaid', detail: [
-    { name: 'Americano', qty: 1, price: 8.90 },
-  ]},
-  { id: '#1003', customer: 'Carol White', phone: '012-345 6791', items: 2, total: 21.80, date: '2026-05-13', status: 'Completed', payment: 'Paid', detail: [
-    { name: 'Cappuccino', qty: 1, price: 11.50 },
-    { name: 'Espresso', qty: 1, price: 7.50 },
-    { name: 'Whipped Cream', qty: 1, price: 1.50 },
-    { name: 'Caramel', qty: 1, price: 1.00 },
-  ]},
-  { id: '#1004', customer: 'David Lee', phone: '012-345 6792', items: 4, total: 45.60, date: '2026-05-13', status: 'Processing', payment: 'Paid', detail: [
-    { name: 'Caramel Macchiato', qty: 2, price: 13.90 },
-    { name: 'Cold Brew', qty: 1, price: 9.90 },
-    { name: 'Vanilla', qty: 1, price: 1.00 },
-  ]},
-  { id: '#1005', customer: 'Eve Brown', phone: '012-345 6793', items: 2, total: 18.40, date: '2026-05-12', status: 'Completed', payment: 'Paid', detail: [
-    { name: 'Matcha Latte', qty: 1, price: 12.90 },
-    { name: 'Extra Shot', qty: 1, price: 2.00 },
-  ]},
-  { id: '#1006', customer: 'Frank Wilson', phone: '012-345 6794', items: 5, total: 62.30, date: '2026-05-12', status: 'Cancelled', payment: 'Refunded', detail: [
-    { name: 'Mocha', qty: 2, price: 12.50 },
-    { name: 'Caffe Latte', qty: 1, price: 10.90 },
-    { name: 'Espresso', qty: 1, price: 7.50 },
-    { name: 'Whipped Cream', qty: 2, price: 1.50 },
-    { name: 'Chocolate Drizzle', qty: 1, price: 1.50 },
-  ]},
-  { id: '#1007', customer: 'Grace Kim', phone: '012-345 6795', items: 1, total: 12.50, date: '2026-05-11', status: 'Completed', payment: 'Paid', detail: [
-    { name: 'Mocha', qty: 1, price: 12.50 },
-  ]},
-  { id: '#1008', customer: 'Henry Chen', phone: '012-345 6796', items: 3, total: 36.70, date: '2026-05-11', status: 'Pending', payment: 'Unpaid', detail: [
-    { name: 'Americano', qty: 2, price: 8.90 },
-    { name: 'Cappuccino', qty: 1, price: 11.50 },
-    { name: 'Whipped Cream', qty: 1, price: 1.50 },
-    { name: 'Caramel', qty: 1, price: 1.00 },
-  ]},
-]
-
 const tabs = ['All', 'Completed', 'Processing', 'Pending', 'Cancelled']
 
 const statusColors = {
@@ -96,16 +79,42 @@ const paymentColors = {
   Refunded: 'text-gray-600 bg-gray-100',
 }
 
-function loadOrders() {
-  const stored = JSON.parse(localStorage.getItem('newOrders') || '[]')
-  return [...stored, ...allOrders]
-}
-
 export default function Orders() {
-  const [orders, setOrders] = useState(loadOrders)
+  const [orders, setOrders] = useState([])
   const [activeTab, setActiveTab] = useState('All')
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [deductMsg, setDeductMsg] = useState('')
+  const [page, setPage] = useState(1)
+  const [lastPage, setLastPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(true)
+
+  function loadOrders() {
+    setLoading(true)
+    fetch(`${API_URL}/orders?page=${page}`)
+      .then((res) => res.json())
+      .then((json) => {
+        const apiOrders = (json.data ?? []).map(mapOrder)
+        const stored = JSON.parse(localStorage.getItem('newOrders') || '[]')
+        setOrders([...stored, ...apiOrders])
+        setLastPage(json.last_page ?? 1)
+        setTotal(json.total ?? 0)
+      })
+      .catch(() => {
+        const stored = JSON.parse(localStorage.getItem('newOrders') || '[]')
+        setOrders(stored)
+      })
+      .finally(() => setLoading(false))
+  }
+
+  function clearLocal() {
+    localStorage.removeItem('newOrders')
+    loadOrders()
+  }
+
+  useEffect(() => {
+    loadOrders()
+  }, [page])
 
   useEffect(() => {
     if (deductMsg) {
@@ -117,8 +126,15 @@ export default function Orders() {
   const filtered = activeTab === 'All' ? orders : orders.filter((o) => o.status === activeTab)
 
   function handleStatusChange(orderId, newStatus) {
+    const numericId = orderId.startsWith('#') ? orderId.slice(1) : orderId
     setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)))
     setSelectedOrder((prev) => (prev && prev.id === orderId ? { ...prev, status: newStatus } : prev))
+
+    fetch(`${API_URL}/orders/${numericId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus }),
+    })
 
     if (newStatus === 'Completed') {
       const order = orders.find((o) => o.id === orderId)
@@ -140,8 +156,15 @@ export default function Orders() {
   }
 
   function handlePaymentChange(orderId, newPayment) {
+    const numericId = orderId.startsWith('#') ? orderId.slice(1) : orderId
     setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, payment: newPayment } : o)))
     setSelectedOrder((prev) => (prev && prev.id === orderId ? { ...prev, payment: newPayment } : prev))
+
+    fetch(`${API_URL}/orders/${numericId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payment_status: newPayment }),
+    })
   }
 
   return (
@@ -150,7 +173,15 @@ export default function Orders() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">Orders</h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
+            <button
+              onClick={clearLocal}
+              className="text-sm text-red-600 hover:text-red-800 font-medium transition-colors"
+            >
+              Clear Local
+            </button>
+          </div>
 
           {deductMsg && (
             <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
@@ -178,70 +209,116 @@ export default function Orders() {
               ))}
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-500 font-medium">
-                    <th className="px-6 py-3">Order</th>
-                    <th className="px-6 py-3">Customer</th>
-                    <th className="px-6 py-3">Phone</th>
-                    <th className="px-6 py-3">Table</th>
-                    <th className="px-6 py-3">Items</th>
-                    <th className="px-6 py-3">Total</th>
-                    <th className="px-6 py-3">Date</th>
-                    <th className="px-6 py-3">Status</th>
-                    <th className="px-6 py-3">Payment</th>
-                    <th className="px-6 py-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((order) => (
-                    <tr key={order.id} className="border-t border-gray-100 hover:bg-gray-50">
-                      <td className="px-6 py-4 font-medium text-gray-800">{order.id}</td>
-                      <td className="px-6 py-4 text-gray-600">{order.customer}</td>
-                      <td className="px-6 py-4 text-gray-500">{order.phone}</td>
-                      <td className="px-6 py-4 text-gray-500">{order.table || '-'}</td>
-                      <td className="px-6 py-4 text-gray-600">{order.items}</td>
-                      <td className="px-6 py-4 text-gray-800">${order.total.toFixed(2)}</td>
-                      <td className="px-6 py-4 text-gray-500">{order.date}</td>
-                      <td className="px-6 py-4">
-                        <select
-                          value={order.status}
-                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                          className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusColors[order.status]}`}
-                          style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
-                        >
-                          <option value="Pending">Pending</option>
-                          <option value="Processing">Processing</option>
-                          <option value="Completed">Completed</option>
-                          <option value="Cancelled">Cancelled</option>
-                        </select>
-                      </td>
-                      <td className="px-6 py-4">
-                        <select
-                          value={order.payment}
-                          onChange={(e) => handlePaymentChange(order.id, e.target.value)}
-                          className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${paymentColors[order.payment]}`}
-                          style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
-                        >
-                          <option value="Paid">Paid</option>
-                          <option value="Unpaid">Unpaid</option>
-                          <option value="Refunded">Refunded</option>
-                        </select>
-                      </td>
-                      <td className="px-6 py-4">
-                        <button
-                          onClick={() => setSelectedOrder(order)}
-                          className="text-blue-600 hover:text-blue-800 text-xs font-medium transition-colors"
-                        >
-                          View Detail
-                        </button>
-                      </td>
+            {loading ? (
+              <div className="p-6 text-center text-gray-500">Loading orders...</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-gray-500 font-medium">
+                      <th className="px-6 py-3">Order</th>
+                      <th className="px-6 py-3">Customer</th>
+                      <th className="px-6 py-3">Phone</th>
+                      <th className="px-6 py-3">Table</th>
+                      <th className="px-6 py-3">Items</th>
+                      <th className="px-6 py-3">Total</th>
+                      <th className="px-6 py-3">Date</th>
+                      <th className="px-6 py-3">Status</th>
+                      <th className="px-6 py-3">Payment</th>
+                      <th className="px-6 py-3">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {filtered.map((order) => (
+                      <tr key={order.id} className="border-t border-gray-100 hover:bg-gray-50">
+                        <td className="px-6 py-4 font-medium text-gray-800">{order.id}</td>
+                        <td className="px-6 py-4 text-gray-600">{order.customer}</td>
+                        <td className="px-6 py-4 text-gray-500">{order.phone}</td>
+                        <td className="px-6 py-4 text-gray-500">{order.table || '-'}</td>
+                        <td className="px-6 py-4 text-gray-600">{order.items}</td>
+                        <td className="px-6 py-4 text-gray-800">${order.total.toFixed(2)}</td>
+                        <td className="px-6 py-4 text-gray-500">{order.date}</td>
+                        <td className="px-6 py-4">
+                          <select
+                            value={order.status}
+                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusColors[order.status]}`}
+                            style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
+                          >
+                            <option value="Pending">Pending</option>
+                            <option value="Processing">Processing</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4">
+                          <select
+                            value={order.payment}
+                            onChange={(e) => handlePaymentChange(order.id, e.target.value)}
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${paymentColors[order.payment]}`}
+                            style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
+                          >
+                            <option value="Paid">Paid</option>
+                            <option value="Unpaid">Unpaid</option>
+                            <option value="Refunded">Refunded</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4">
+                          <button
+                            onClick={() => setSelectedOrder(order)}
+                            className="text-blue-600 hover:text-blue-800 text-xs font-medium transition-colors"
+                          >
+                            View Detail
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {lastPage > 1 && !loading && (
+              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                <span className="text-xs text-gray-500">Page {page} of {lastPage} ({total} orders)</span>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setPage(page - 1)}
+                    disabled={page <= 1}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page <= 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    Prev
+                  </button>
+                  {Array.from({ length: lastPage }, (_, i) => i + 1)
+                    .filter((p) => p === 1 || p === lastPage || Math.abs(p - page) <= 1)
+                    .reduce((acc, p, idx, arr) => {
+                      if (idx > 0 && p - arr[idx - 1] > 1) acc.push('...')
+                      acc.push(p)
+                      return acc
+                    }, [])
+                    .map((item, i) =>
+                      item === '...' ? (
+                        <span key={`e${i}`} className="px-2 py-1.5 text-xs text-gray-400">...</span>
+                      ) : (
+                        <button
+                          key={item}
+                          onClick={() => setPage(item)}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${item === page ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                        >
+                          {item}
+                        </button>
+                      )
+                    )}
+                  <button
+                    onClick={() => setPage(page + 1)}
+                    disabled={page >= lastPage}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page >= lastPage ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {selectedOrder && (

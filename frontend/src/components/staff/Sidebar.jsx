@@ -113,6 +113,12 @@ const links = [
 
 export default function Sidebar() {
   const [open, setOpen] = useState(() => sessionStorage.getItem('umOpen') === 'true')
+  const [collapsed, setCollapsed] = useState(() => sessionStorage.getItem('sidebarCollapsed') === 'true')
+
+  function setCollapsedPersist(val) {
+    setCollapsed(val)
+    sessionStorage.setItem('sidebarCollapsed', val)
+  }
 
   function toggle() {
     setOpen((prev) => {
@@ -121,14 +127,67 @@ export default function Sidebar() {
       return next
     })
   }
+
+  if (collapsed) {
+    return (
+      <div className="w-14 bg-gray-900 text-white flex flex-col shrink-0">
+        <button
+          onClick={() => setCollapsedPersist(false)}
+          className="flex items-center justify-center h-14 text-gray-400 hover:text-white transition-colors border-b border-gray-700"
+          title="Open sidebar"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+          </svg>
+        </button>
+        <nav className="flex-1 py-4 flex flex-col items-center gap-1 overflow-y-auto">
+          {links.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              className={({ isActive }) =>
+                `flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
+                  isActive
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                }`
+              }
+              title={link.label}
+            >
+              {link.icon}
+            </NavLink>
+          ))}
+          <NavLink
+            to="/staff/login"
+            className="flex items-center justify-center w-10 h-10 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors mt-auto"
+            title="Logout"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </NavLink>
+        </nav>
+      </div>
+    )
+  }
+
   return (
-    <aside className="w-64 bg-gray-900 text-white flex flex-col">
+    <aside className="w-64 bg-gray-900 text-white flex flex-col shrink-0">
       <div className="flex items-center gap-2 px-6 h-16 border-b border-gray-700">
         <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
           <span className="text-white font-bold text-sm">V</span>
         </div>
         <span className="text-xl font-bold">Visal</span>
         <span className="text-xs text-gray-400 ml-auto">Staff</span>
+        <button
+          onClick={() => setCollapsedPersist(true)}
+          className="p-1 text-gray-400 hover:text-white transition-colors ml-2"
+          title="Close sidebar"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+          </svg>
+        </button>
       </div>
       <nav className="flex-1 py-4 overflow-y-auto">
         {links.map((link) => (
