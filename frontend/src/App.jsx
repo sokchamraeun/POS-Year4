@@ -19,6 +19,7 @@ import Tables from './pages/staff/Tables.jsx'
 import Addon from './pages/staff/Addons/Addon.jsx'
 import AddonIngredient from './pages/staff/Addons/AddonIngredient.jsx'
 import Ingredients from './pages/staff/Ingredients/Ingredients.jsx'
+import Category from './pages/staff/Category/Category.jsx'
 import UserTest from './pages/staff/UserTest.jsx'
 import Login from './pages/auth/Login.jsx'
 import Register from './pages/auth/Register.jsx'
@@ -47,6 +48,7 @@ export default function App() {
         <Route path="/staff/addons" element={<Addon />} />
         <Route path="/staff/addon-ingredients" element={<AddonIngredient />} />
         <Route path="/staff/ingredients" element={<Ingredients />} />
+        <Route path="/staff/categories" element={<Category />} />
         <Route path="/staff/user-test" element={<UserTest />} />
         <Route path="/staff/login" element={<Login />} />
         <Route path="/staff/register" element={<Register />} />

@@ -8,7 +8,21 @@ const periods = [
   { key: 'daily', label: 'Daily' },
   { key: 'monthly', label: 'Monthly' },
   { key: 'yearly', label: 'Yearly' },
+  { key: 'custom', label: 'Custom' },
 ]
+
+const statusColors = {
+  Completed: 'text-green-600 bg-green-100',
+  Processing: 'text-blue-600 bg-blue-100',
+  Pending: 'text-yellow-600 bg-yellow-100',
+  Cancelled: 'text-red-600 bg-red-100',
+}
+
+const paymentColors = {
+  Paid: 'text-green-600 bg-green-100',
+  Unpaid: 'text-red-600 bg-red-100',
+  Refunded: 'text-gray-600 bg-gray-100',
+}
 
 const SVG_WIDTH = 700
 const SVG_HEIGHT = 280
@@ -47,13 +61,11 @@ export default function Dashboard() {
   const [chartData, setChartData] = useState({ daily: [], monthly: [], yearly: [] })
   const [topProducts, setTopProducts] = useState([])
   const [products, setProducts] = useState([])
-  const [recentOrders, setRecentOrders] = useState([
-    { id: 1001, customer: { name: 'John Doe' }, total: 24.50, payment_status: 'Paid', created_at: '2026-05-18T10:30:00' },
-    { id: 1002, customer: { name: 'Jane Smith' }, total: 15.00, payment_status: 'Paid', created_at: '2026-05-18T11:00:00' },
-    { id: 1003, customer: { name: 'Alice Wong' }, total: 32.80, payment_status: 'Unpaid', created_at: '2026-05-18T11:45:00' },
-    { id: 1004, customer: { name: 'Bob Lee' }, total: 8.90, payment_status: 'Paid', created_at: '2026-05-18T12:15:00' },
-    { id: 1005, customer: { name: 'Carol Tan' }, total: 41.20, payment_status: 'Pending', created_at: '2026-05-18T13:00:00' },
-  ])
+  const [recentOrders, setRecentOrders] = useState([])
+  const [selectedOrder, setSelectedOrder] = useState(null)
+  const [allOrders, setAllOrders] = useState([])
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -77,6 +89,9 @@ export default function Dashboard() {
           { label: 'Products', value: String(allProducts.length), change: `${allProducts.filter((p) => p.status).length} active`, color: 'bg-yellow-500' },
           { label: 'Customers', value: String(customers.length), change: '-', color: 'bg-purple-500' },
         ])
+
+        setRecentOrders(orders.slice(0, 5))
+        setAllOrders(orders)
 
         const orderItems = orders.flatMap((o) => (o.items ?? []).map((i) => ({ ...i, date: o.created_at })))
 
@@ -162,12 +177,78 @@ export default function Dashboard() {
     load()
   }, [])
 
-  const data = chartData[period]
+  useEffect(() => {
+    if (period === 'custom') {
+      if (!fromDate) setFromDate(new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10))
+      if (!toDate) setToDate(new Date().toISOString().slice(0, 10))
+    }
+  }, [period])
+
+  const customData = (() => {
+    if (period !== 'custom' || !fromDate || !toDate) return null
+    const filtered = allOrders.filter((o) => {
+      const d = (o.created_at ?? '').slice(0, 10)
+      return d >= fromDate && d <= toDate
+    })
+    const byDate = {}
+    for (const o of filtered) {
+      const date = (o.created_at ?? '').slice(0, 10)
+      if (date) {
+        if (!byDate[date]) byDate[date] = { revenue: 0, orders: 0 }
+        byDate[date].revenue += Number(o.total ?? 0)
+        byDate[date].orders += 1
+      }
+    }
+    const sorted = Object.keys(byDate).sort()
+    return sorted.length > 0
+      ? sorted.map((d) => ({ label: d.slice(5), revenue: byDate[d].revenue, orders: byDate[d].orders }))
+      : [{ label: 'No data', revenue: 0, orders: 0 }]
+  })()
+
+  const data = period === 'custom' ? (customData ?? [{ label: 'No data', revenue: 0, orders: 0 }]) : chartData[period]
   const maxVal = data.length > 0 ? Math.max(...data.flatMap((d) => [d.revenue, d.orders])) * 1.15 : 1
   const barWidth = Math.min(plotW / (data.length || 1) * 0.22, 20)
 
   function xCenter(i) {
     return PAD.left + (i + 0.5) * (plotW / (data.length || 1))
+  }
+
+  function handleStatusChange(orderId, newStatus) {
+    const order = allOrders.find((o) => o.id === orderId) ?? recentOrders.find((o) => o.id === orderId)
+    setRecentOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)))
+    setAllOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)))
+    setSelectedOrder((prev) => (prev && prev.id === orderId ? { ...prev, status: newStatus } : prev))
+    fetch(`${API_URL}/orders/${orderId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        status: newStatus,
+        payment_status: order?.payment_status ?? 'Unpaid',
+        total: Number(order?.total ?? 0),
+        customer_id: order?.customer_id ?? null,
+        table_id: order?.table_id ?? null,
+        payment_method: order?.payment_method ?? null,
+      }),
+    })
+  }
+
+  function handlePaymentChange(orderId, newPayment) {
+    const order = allOrders.find((o) => o.id === orderId) ?? recentOrders.find((o) => o.id === orderId)
+    setRecentOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, payment_status: newPayment } : o)))
+    setAllOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, payment_status: newPayment } : o)))
+    setSelectedOrder((prev) => (prev && prev.id === orderId ? { ...prev, payment_status: newPayment } : prev))
+    fetch(`${API_URL}/orders/${orderId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        status: order?.status ?? 'Pending',
+        payment_status: newPayment,
+        total: Number(order?.total ?? 0),
+        customer_id: order?.customer_id ?? null,
+        table_id: order?.table_id ?? null,
+        payment_method: order?.payment_method ?? null,
+      }),
+    })
   }
 
   if (loading) {
@@ -226,6 +307,13 @@ export default function Dashboard() {
                     </button>
                   ))}
                 </div>
+                {period === 'custom' && (
+                  <div className="flex items-center gap-2 mt-3">
+                    <input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} className="px-2 py-1 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <span className="text-xs text-gray-500">to</span>
+                    <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} className="px-2 py-1 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-6 text-sm mb-4">
@@ -320,6 +408,7 @@ export default function Dashboard() {
                           <th className="pb-2 pr-2">Customer</th>
                           <th className="pb-2 pr-2">Total</th>
                           <th className="pb-2 pr-2">Payment</th>
+                          <th className="pb-2 pr-2">Status</th>
                           <th className="pb-2 text-right">Action</th>
                         </tr>
                       </thead>
@@ -330,16 +419,32 @@ export default function Dashboard() {
                             <td className="py-2.5 pr-2 text-gray-600">{o.customer?.name ?? 'Guest'}</td>
                             <td className="py-2.5 pr-2 text-gray-800">${Number(o.total ?? 0).toFixed(2)}</td>
                             <td className="py-2.5 pr-2">
-                              <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${
-                                o.payment_status === 'Paid' ? 'text-green-700 bg-green-100' :
-                                o.payment_status === 'Unpaid' ? 'text-red-700 bg-red-100' :
-                                'text-yellow-700 bg-yellow-100'
-                              }`}>
-                                {o.payment_status ?? 'Unpaid'}
-                              </span>
+                              <select
+                                value={o.payment_status ?? 'Unpaid'}
+                                onChange={(e) => handlePaymentChange(o.id, e.target.value)}
+                                className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${paymentColors[o.payment_status ?? 'Unpaid']}`}
+                                style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
+                              >
+                                <option value="Paid">Paid</option>
+                                <option value="Unpaid">Unpaid</option>
+                                <option value="Refunded">Refunded</option>
+                              </select>
+                            </td>
+                            <td className="py-2.5 pr-2">
+                              <select
+                                value={o.status ?? 'Pending'}
+                                onChange={(e) => handleStatusChange(o.id, e.target.value)}
+                                className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusColors[o.status ?? 'Pending']}`}
+                                style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
+                              >
+                                <option value="Pending">Pending</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                              </select>
                             </td>
                             <td className="py-2.5 text-right">
-                              <button className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors">
+                              <button onClick={() => setSelectedOrder(o)} className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors">
                                 View Detail
                               </button>
                             </td>
@@ -400,6 +505,89 @@ export default function Dashboard() {
               )}
             </div>
           </div>
+
+          {selectedOrder && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-800">Order #{selectedOrder.id} - Items</h2>
+                  <button onClick={() => setSelectedOrder(null)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="px-6 py-4">
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <span>Customer: <span className="text-gray-800 font-medium">{selectedOrder.customer?.name ?? 'Guest'}</span>{selectedOrder.customer?.phone ? ` \u2014 ${selectedOrder.customer.phone}` : ''}</span>
+                    <span>{(selectedOrder.created_at ?? '').slice(0, 10)}</span>
+                  </div>
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${
+                      selectedOrder.payment_status === 'Paid' ? 'text-green-700 bg-green-100' :
+                      selectedOrder.payment_status === 'Unpaid' ? 'text-red-700 bg-red-100' :
+                      'text-yellow-700 bg-yellow-100'
+                    }`}>
+                      {selectedOrder.payment_status ?? 'Unpaid'}
+                    </span>
+                    <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${
+                      selectedOrder.status === 'Completed' ? 'text-green-700 bg-green-100' :
+                      selectedOrder.status === 'Processing' ? 'text-blue-700 bg-blue-100' :
+                      selectedOrder.status === 'Cancelled' ? 'text-red-700 bg-red-100' :
+                      'text-yellow-700 bg-yellow-100'
+                    }`}>
+                      {selectedOrder.status ?? 'Pending'}
+                    </span>
+                  </div>
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-gray-500 font-medium border-b border-gray-100">
+                        <th className="pb-2">Item</th>
+                        <th className="pb-2">Qty</th>
+                        <th className="pb-2 text-right">Price</th>
+                        <th className="pb-2 text-right">Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(selectedOrder.items ?? []).map((item, i) => {
+                        const itemName = item.product?.name ?? item.name ?? 'Unknown'
+                        const itemPrice = Number(item.unit_price ?? item.price ?? 0)
+                        const itemQty = item.qty ?? 1
+                        const variations = [item.size?.name, item.sugarLevel?.name, item.iceLevel?.name].filter(Boolean).join(' | ')
+                        const addonText = (item.addons ?? []).map((a) => a.addon?.name).filter(Boolean).join(', ')
+                        return (
+                          <tr key={i} className="border-b border-gray-50">
+                            <td className="py-2 text-gray-800">
+                              {itemName}
+                              {variations && <div className="text-xs text-gray-400">{variations}</div>}
+                              {addonText && <div className="text-xs text-gray-400">+ {addonText}</div>}
+                            </td>
+                            <td className="py-2 text-gray-600">{itemQty}</td>
+                            <td className="py-2 text-gray-600 text-right">${itemPrice.toFixed(2)}</td>
+                            <td className="py-2 text-gray-800 text-right">${(itemQty * itemPrice).toFixed(2)}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colSpan={3} className="pt-3 text-right font-semibold text-gray-800">Total</td>
+                        <td className="pt-3 text-right font-semibold text-gray-800">${Number(selectedOrder.total ?? 0).toFixed(2)}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+                  <button
+                    onClick={() => setSelectedOrder(null)}
+                    className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>
