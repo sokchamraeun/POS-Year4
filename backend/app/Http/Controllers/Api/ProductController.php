@@ -12,13 +12,13 @@ class ProductController extends Controller
 {
     public function index(): JsonResponse
     {
-        $products = Product::with(['category', 'sizes', 'addons', 'sugarLevels', 'iceLevels'])->orderBy('id')->paginate(10);
+        $products = Product::with(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels'])->orderBy('id')->paginate(10);
         return response()->json($products);
     }
 
     public function show(Product $product): JsonResponse
     {
-        $product->load(['category', 'sizes', 'addons', 'sugarLevels', 'iceLevels']);
+        $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
         return response()->json($product);
     }
 
@@ -74,7 +74,7 @@ class ProductController extends Controller
             $product->addons()->attach($data['addons']);
         }
 
-        $product->load(['category', 'sizes', 'addons', 'sugarLevels', 'iceLevels']);
+        $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
         return response()->json($product, 201);
     }
 
@@ -136,7 +136,7 @@ class ProductController extends Controller
             $product->addons()->attach($data['addons']);
         }
 
-        $product->load(['category', 'sizes', 'addons', 'sugarLevels', 'iceLevels']);
+        $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
         return response()->json($product);
     }
 

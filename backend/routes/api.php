@@ -122,3 +122,4 @@ Route::middleware('auth:sanctum')->group(function () {});
     Route::post('/inventory-transactions', [InventoryTransactionController::class, 'store']);
     Route::delete('/inventory-transactions/{inventoryTransaction}', [InventoryTransactionController::class, 'destroy']);
 
+

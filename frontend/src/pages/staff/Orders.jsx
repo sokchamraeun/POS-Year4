@@ -3,6 +3,8 @@ import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
+const token = localStorage.getItem('token')
+const authHeaders = { Authorization: `Bearer ${token}` }
 
 function mapOrder(o) {
   return {
@@ -15,6 +17,7 @@ function mapOrder(o) {
     date: (o.created_at ?? '').slice(0, 10),
     status: o.status ?? 'Pending',
     payment: o.payment_status ?? 'Unpaid',
+    paymentMethod: o.payment_method ?? '-',
     detail: (o.items ?? []).map((i) => ({
       name: i.product?.name ?? 'Unknown',
       qty: i.qty,
@@ -91,7 +94,7 @@ export default function Orders() {
 
   function loadOrders() {
     setLoading(true)
-    fetch(`${API_URL}/orders?page=${page}`)
+    fetch(`${API_URL}/orders?page=${page}`, { headers: authHeaders })
       .then((res) => res.json())
       .then((json) => {
         const apiOrders = (json.data ?? []).map(mapOrder)
@@ -132,7 +135,7 @@ export default function Orders() {
 
     fetch(`${API_URL}/orders/${numericId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
       body: JSON.stringify({ status: newStatus }),
     })
 
@@ -162,7 +165,7 @@ export default function Orders() {
 
     fetch(`${API_URL}/orders/${numericId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
       body: JSON.stringify({ payment_status: newPayment }),
     })
   }
@@ -225,6 +228,7 @@ export default function Orders() {
                       <th className="px-6 py-3">Date</th>
                       <th className="px-6 py-3">Status</th>
                       <th className="px-6 py-3">Payment</th>
+                      <th className="px-6 py-3">Method</th>
                       <th className="px-6 py-3">Actions</th>
                     </tr>
                   </thead>
@@ -263,6 +267,7 @@ export default function Orders() {
                             <option value="Refunded">Refunded</option>
                           </select>
                         </td>
+                        <td className="px-6 py-4 text-gray-600 capitalize">{order.paymentMethod}</td>
                         <td className="px-6 py-4">
                           <button
                             onClick={() => setSelectedOrder(order)}
@@ -376,7 +381,15 @@ export default function Orders() {
                     <tbody>
                       {selectedOrder.detail.map((item, i) => (
                         <tr key={i} className="border-b border-gray-50">
-                          <td className="py-2 text-gray-800">{item.name}</td>
+                          <td className="py-2 text-gray-800">
+                            <div>{item.name}</div>
+                            <div className="text-xs text-gray-400 space-x-1">
+                              {item.size && <span>{item.size}</span>}
+                              {item.sugar && <><span>|</span><span>{item.sugar}</span></>}
+                              {item.ice && <><span>|</span><span>{item.ice}</span></>}
+                              {item.addOn && <><span>|</span><span>{item.addOn}</span></>}
+                            </div>
+                          </td>
                           <td className="py-2 text-gray-600">{item.qty}</td>
                           <td className="py-2 text-gray-600 text-right">${item.price.toFixed(2)}</td>
                           <td className="py-2 text-gray-800 text-right">${(item.qty * item.price).toFixed(2)}</td>

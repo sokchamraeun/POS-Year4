@@ -4,6 +4,8 @@ import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL + '/ingredients'
+const token = localStorage.getItem('token')
+const authHeaders = { Authorization: `Bearer ${token}` }
 
 export default function Ingredients() {
   const [ingredients, setIngredients] = useState([])
@@ -15,7 +17,7 @@ export default function Ingredients() {
 
   const fetchIngredients = () => {
     setLoading(true)
-    fetch(API_URL)
+    fetch(API_URL, { headers: authHeaders })
       .then(res => { if (!res.ok) throw new Error('Failed to fetch'); return res.json() })
       .then(json => { setIngredients(json.data ?? json); setLoading(false) })
       .catch(err => { setError(err.message); setLoading(false) })

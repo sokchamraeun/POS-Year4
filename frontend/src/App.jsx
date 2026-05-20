@@ -20,6 +20,9 @@ import Addon from './pages/staff/Addons/Addon.jsx'
 import AddonIngredient from './pages/staff/Addons/AddonIngredient.jsx'
 import Ingredients from './pages/staff/Ingredients/Ingredients.jsx'
 import Category from './pages/staff/Category/Category.jsx'
+import SizePage from './pages/staff/Size/Size.jsx'
+import IceLevel from './pages/staff/IceLevel/IceLevel.jsx'
+import SugarLevel from './pages/staff/SugarLevel/SugarLevel.jsx'
 import UserTest from './pages/staff/UserTest.jsx'
 import Login from './pages/auth/Login.jsx'
 import Register from './pages/auth/Register.jsx'
@@ -49,6 +52,9 @@ export default function App() {
         <Route path="/staff/addon-ingredients" element={<AddonIngredient />} />
         <Route path="/staff/ingredients" element={<Ingredients />} />
         <Route path="/staff/categories" element={<Category />} />
+        <Route path="/staff/sizes" element={<SizePage />} />
+        <Route path="/staff/ice-levels" element={<IceLevel />} />
+        <Route path="/staff/sugar-levels" element={<SugarLevel />} />
         <Route path="/staff/user-test" element={<UserTest />} />
         <Route path="/staff/login" element={<Login />} />
         <Route path="/staff/register" element={<Register />} />

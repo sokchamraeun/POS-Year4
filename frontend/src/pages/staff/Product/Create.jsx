@@ -4,6 +4,8 @@ import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
 const API = import.meta.env.VITE_API_URL
+const token = localStorage.getItem('token')
+const authHeaders = { Authorization: `Bearer ${token}` }
 
 export default function CreateProduct() {
   const navigate = useNavigate()
@@ -30,11 +32,11 @@ export default function CreateProduct() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API}/categories`).then((r) => r.json()),
-      fetch(`${API}/sizes`).then((r) => r.json()),
-      fetch(`${API}/addons`).then((r) => r.json()),
-      fetch(`${API}/sugar-levels`).then((r) => r.json()),
-      fetch(`${API}/ice-levels`).then((r) => r.json()),
+      fetch(`${API}/categories`, { headers: authHeaders }).then((r) => r.json()),
+      fetch(`${API}/sizes`, { headers: authHeaders }).then((r) => r.json()),
+      fetch(`${API}/addons`, { headers: authHeaders }).then((r) => r.json()),
+      fetch(`${API}/sugar-levels`, { headers: authHeaders }).then((r) => r.json()),
+      fetch(`${API}/ice-levels`, { headers: authHeaders }).then((r) => r.json()),
     ])
       .then(([cats, szs, ads, sugars, ices]) => {
         setCategories(cats.data ?? cats)
@@ -132,7 +134,7 @@ export default function CreateProduct() {
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="mb-6">
-            <a href="/staff/products" className="text-blue-600 hover:underline text-sm">&larr; Back to Products</a>
+            <a href="/staff/products" className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors">&larr; Back to Products</a>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-6 max-w-2xl">

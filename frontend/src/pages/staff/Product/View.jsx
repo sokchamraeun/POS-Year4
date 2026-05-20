@@ -45,7 +45,7 @@ export default function ViewProduct() {
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="mb-6">
-            <Link to="/staff/products" className="text-blue-600 hover:underline text-sm">&larr; Back to Products</Link>
+            <Link to="/staff/products" className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-gray-800 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors">&larr; Back to Products</Link>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-6 max-w-2xl">

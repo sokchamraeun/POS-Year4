@@ -9,6 +9,63 @@ const userLinks = [
   { to: '/staff/user-test', label: 'User Test' },
 ]
 
+const itemProductLinks = [
+  {
+    to: '/staff/sizes',
+    label: 'Sizes',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+      </svg>
+    ),
+  },
+  {
+    to: '/staff/categories',
+    label: 'Categories',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+      </svg>
+    ),
+  },
+  {
+    to: '/staff/ice-levels',
+    label: 'Ice Levels',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 16h.01M8 8h.01M12 20h.01M12 4h.01M16 16h.01M16 8h.01M20 12h.01M4 12h.01" />
+      </svg>
+    ),
+  },
+  {
+    to: '/staff/sugar-levels',
+    label: 'Sugar Levels',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+      </svg>
+    ),
+  },
+  {
+    to: '/staff/addons',
+    label: 'Addons',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
+  {
+    to: '/staff/addon-ingredients',
+    label: 'Addon Ingredients',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>
+    ),
+  },
+]
+
 const links = [
   {
     to: '/staff/dashboard',
@@ -47,38 +104,11 @@ const links = [
     ),
   },
   {
-    to: '/staff/addons',
-    label: 'Addons',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
-  },
-  {
-    to: '/staff/addon-ingredients',
-    label: 'Addon Ingredients',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-      </svg>
-    ),
-  },
-  {
     to: '/staff/products',
     label: 'Products',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-      </svg>
-    ),
-  },
-  {
-    to: '/staff/categories',
-    label: 'Categories',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
       </svg>
     ),
   },
@@ -122,6 +152,7 @@ const links = [
 
 export default function Sidebar() {
   const [open, setOpen] = useState(() => sessionStorage.getItem('umOpen') === 'true')
+  const [ipOpen, setIpOpen] = useState(() => sessionStorage.getItem('ipOpen') === 'true')
   const [collapsed, setCollapsed] = useState(() => sessionStorage.getItem('sidebarCollapsed') === 'true')
 
   function setCollapsedPersist(val) {
@@ -133,6 +164,14 @@ export default function Sidebar() {
     setOpen((prev) => {
       const next = !prev
       sessionStorage.setItem('umOpen', next)
+      return next
+    })
+  }
+
+  function toggleIp() {
+    setIpOpen((prev) => {
+      const next = !prev
+      sessionStorage.setItem('ipOpen', next)
       return next
     })
   }
@@ -236,6 +275,44 @@ export default function Sidebar() {
           {open && (
             <div className="bg-gray-800">
               {userLinks.map((l) => (
+                <NavLink
+                  key={l.to}
+                  to={l.to}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-6 py-2.5 pl-14 text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                    }`
+                  }
+                >
+                  {l.label}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="pt-1">
+          <button
+            onClick={toggleIp}
+            className="flex items-center gap-3 px-6 py-3 w-full text-sm font-medium text-gray-400 hover:text-white transition-colors text-left"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            Item Product
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`h-4 w-4 ml-auto transition-transform ${ipOpen ? 'rotate-180' : ''}`}
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {ipOpen && (
+            <div className="bg-gray-800">
+              {itemProductLinks.map((l) => (
                 <NavLink
                   key={l.to}
                   to={l.to}

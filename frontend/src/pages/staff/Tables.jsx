@@ -4,6 +4,8 @@ import Topbar from '../../components/staff/Topbar.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 const FRONTEND_URL = 'https://pos-year4.vercel.app'
+const token = localStorage.getItem('token')
+const authHeaders = { Authorization: `Bearer ${token}` }
 
 export default function Tables() {
   const [tables, setTables] = useState([])
@@ -14,7 +16,7 @@ export default function Tables() {
 
   async function fetchTables() {
     try {
-      const res = await fetch(`${API_URL}/tables`).then((r) => r.json())
+      const res = await fetch(`${API_URL}/tables`, { headers: authHeaders }).then((r) => r.json())
       setTables(res.data ?? res ?? [])
     } catch { } finally {
       setLoading(false)

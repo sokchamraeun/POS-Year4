@@ -2,7 +2,16 @@ const API_URL = import.meta.env.VITE_API_URL
 
 export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
   const size = product.sizes?.find((s) => s.name === opt.size)
-  const price = size ? Number(size.pivot?.price ?? 0) : 0
+  const basePrice = size ? Number(size.pivot?.price ?? 0) : 0
+  let addonPrice = 0
+  if (opt.addOn) {
+    const a = product.addons?.find((a) => a.name === opt.addOn)
+    if (a) {
+      const sp = a.size_prices?.find((sp) => sp.size_id === size?.id)
+      addonPrice = sp ? Number(sp.price) : (Number(a.price) || 0)
+    }
+  }
+  const price = basePrice + addonPrice
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col">
@@ -64,11 +73,15 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
           className="w-full md:text-xs text-[11px] border border-gray-300 rounded-lg px-2 py-1.5 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">No Add On</option>
-          {product.addons?.map((a) => (
-            <option key={a.id} value={a.name}>
-              {a.name} (+${Number(a.price).toFixed(2)})
-            </option>
-          ))}
+          {product.addons?.map((a) => {
+            const sp = a.size_prices?.find((sp) => sp.size_id === size?.id)
+            const ap = sp ? Number(sp.price) : (Number(a.price) || 0)
+            return (
+              <option key={a.id} value={a.name}>
+                {a.name} (+${ap.toFixed(2)})
+              </option>
+            )
+          })}
         </select>
 
         <button

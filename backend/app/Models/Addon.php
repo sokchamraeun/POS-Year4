@@ -35,4 +35,9 @@ class Addon extends Model
         return $this->belongsToMany(Ingredient::class, 'addon_ingredients')
             ->withPivot(['id', 'quantity']);
     }
+
+    public function sizePrices(): HasMany
+    {
+        return $this->hasMany(AddonSizePrice::class, 'addon_id');
+    }
 }

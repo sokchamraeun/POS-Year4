@@ -6,6 +6,8 @@ import ProductCard from './components/ProductCard.jsx'
 import CartSidebar from './components/CartSidebar.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
+const token = localStorage.getItem('token')
+const headers = { Authorization: `Bearer ${token}` }
 
 export default function MenuOrder() {
   const [category, setCategory] = useState('All')
@@ -35,17 +37,17 @@ export default function MenuOrder() {
     async function fetchAll() {
       try {
         const [firstPage, catRes, tblRes, custRes] = await Promise.all([
-          fetch(`${API_URL}/products?page=1`).then((r) => r.json()),
-          fetch(`${API_URL}/categories`).then((r) => r.json()),
-          fetch(`${API_URL}/tables/available`).then((r) => r.json()),
-          fetch(`${API_URL}/customers`).then((r) => r.json()),
+          fetch(`${API_URL}/products?page=1`, { headers }).then((r) => r.json()),
+          fetch(`${API_URL}/categories`, { headers }).then((r) => r.json()),
+          fetch(`${API_URL}/tables/available`, { headers }).then((r) => r.json()),
+          fetch(`${API_URL}/customers`, { headers }).then((r) => r.json()),
         ])
         let allProducts = firstPage.data ?? []
         const lastPage = firstPage.last_page ?? 1
         const pages = []
         for (let p = 2; p <= lastPage; p++) {
           pages.push(
-            fetch(`${API_URL}/products?page=${p}`)
+            fetch(`${API_URL}/products?page=${p}`, { headers })
               .then((r) => r.json())
               .then((j) => j.data ?? [])
           )
@@ -93,17 +95,21 @@ export default function MenuOrder() {
     const size = product.sizes?.find((s) => s.name === sizeName)
     return size ? Number(size.pivot?.price ?? 0) : 0
   }
-  function addOnPrice(product, addOnName) {
+  function addOnPrice(product, addOnName, sizeName) {
     if (!addOnName) return 0
     const a = product.addons?.find((a) => a.name === addOnName)
-    return a ? Number(a.price) : 0
+    if (!a) return 0
+    const size = product.sizes?.find((s) => s.name === sizeName)
+    if (!size) return Number(a.price) || 0
+    const sp = a.size_prices?.find((sp) => sp.size_id === size.id)
+    return sp ? Number(sp.price) : (Number(a.price) || 0)
   }
 
   function addToCart(product) {
-    const opt = getOpt(product.id) || getDefaultOpt(product)
+    const opt = { ...getDefaultOpt(product), ...getOpt(product.id) }
     const { size, sugar, ice, addOn } = opt
     const key = `${product.id}-${size}-${sugar}-${ice}-${addOn}`
-    const unitPrice = getBasePrice(product, size) + addOnPrice(product, addOn)
+    const unitPrice = getBasePrice(product, size) + addOnPrice(product, addOn, size)
     setCart((prev) => {
       const existing = prev.find((c) => c.key === key)
       if (existing) {
@@ -136,7 +142,7 @@ export default function MenuOrder() {
       if (!finalCustomerId && customerName) {
         const custRes = await fetch(`${API_URL}/customers`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...headers },
           body: JSON.stringify({ name: customerName, phone: phone || null }),
         })
         if (custRes.ok) {
@@ -165,7 +171,7 @@ export default function MenuOrder() {
 
       const orderRes = await fetch(`${API_URL}/orders`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify({
           customer_id: finalCustomerId || null,
           table_id: tableId || null,
@@ -197,6 +203,7 @@ export default function MenuOrder() {
         date: new Date().toISOString().slice(0, 10),
         status: 'Pending',
         payment: 'Unpaid',
+        paymentMethod: paymentMethod === 'not_yet' ? null : paymentMethod,
         detail: cart.map((c) => ({
           name: c.name,
           qty: c.qty,
@@ -280,7 +287,7 @@ export default function MenuOrder() {
             <div className="flex-1 overflow-y-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                 {filtered.map((product) => {
-                  const opt = getOpt(product.id) || getDefaultOpt(product)
+                  const opt = { ...getDefaultOpt(product), ...getOpt(product.id) }
                   return (
                     <ProductCard
                       key={product.id}

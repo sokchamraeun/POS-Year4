@@ -3,6 +3,8 @@ import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL
+const token = localStorage.getItem('token')
+const authHeaders = { Authorization: `Bearer ${token}` }
 
 export default function Customers() {
   const [customers, setCustomers] = useState([])
@@ -17,7 +19,7 @@ export default function Customers() {
   async function fetchCustomers() {
     try {
       setLoading(true)
-      const res = await fetch(`${API_BASE}/users?type=customer`)
+      const res = await fetch(`${API_BASE}/users?type=customer`, { headers: authHeaders })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const json = await res.json()
       setCustomers(json.data ?? json)
@@ -61,7 +63,7 @@ export default function Customers() {
 
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...authHeaders },
         body: JSON.stringify(body),
       })
       if (!res.ok) {
@@ -80,7 +82,7 @@ export default function Customers() {
   async function handleDelete(id) {
     if (!window.confirm('Delete this customer?')) return
     try {
-      const res = await fetch(`${API_BASE}/users/${id}`, { method: 'DELETE' })
+      const res = await fetch(`${API_BASE}/users/${id}`, { method: 'DELETE', headers: authHeaders })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       fetchCustomers()
     } catch (err) {

@@ -3,6 +3,8 @@ import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
+const token = localStorage.getItem('token')
+const headers = { Authorization: `Bearer ${token}` }
 
 const periods = [
   { key: 'daily', label: 'Daily' },
@@ -31,7 +33,7 @@ const plotW = SVG_WIDTH - PAD.left - PAD.right
 const plotH = SVG_HEIGHT - PAD.top - PAD.bottom
 
 function fetchAllPages(endpoint) {
-  return fetch(`${API_URL}${endpoint}?page=1`)
+  return fetch(`${API_URL}${endpoint}?page=1`, { headers })
     .then((r) => r.json())
     .then(async (first) => {
       let all = first.data ?? []
@@ -39,7 +41,7 @@ function fetchAllPages(endpoint) {
       const pages = []
       for (let p = 2; p <= lastPage; p++) {
         pages.push(
-          fetch(`${API_URL}${endpoint}?page=${p}`)
+          fetch(`${API_URL}${endpoint}?page=${p}`, { headers })
             .then((r) => r.json())
             .then((j) => j.data ?? [])
         )

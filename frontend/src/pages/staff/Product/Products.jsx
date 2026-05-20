@@ -4,6 +4,8 @@ import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL + '/products'
+const token = localStorage.getItem('token')
+const headers = { Authorization: `Bearer ${token}` }
 
 const categoryColors = {
   Coffee: 'bg-blue-100 text-blue-700',
@@ -29,7 +31,7 @@ export default function Products() {
 
   const fetchProducts = (p) => {
     setLoading(true)
-    fetch(`${API_URL}?page=${p}`)
+    fetch(`${API_URL}?page=${p}`, { headers })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch products')
         return res.json()
@@ -101,14 +103,14 @@ export default function Products() {
                 <table className="w-full text-sm hidden md:table min-w-[900px]">
                   <thead>
                     <tr className="text-gray-500 font-medium border-b border-gray-100">
-                      <th className="px-6 py-3 md:px-3 md:py-2 text-center">Product</th>
-                      <th className="px-6 py-3 md:px-3 md:py-2 text-center">Category</th>
-                      <th className="px-6 py-3 md:px-3 md:py-2 text-center">Sizes</th>
-                      <th className="px-6 py-3 md:px-3 md:py-2 text-center">Addons</th>
-                      <th className="px-6 py-3 md:px-3 md:py-2 text-center">Sugar</th>
-                      <th className="px-6 py-3 md:px-3 md:py-2 text-center">Ice</th>
-                      <th className="px-6 py-3 md:px-3 md:py-2 text-center">Status</th>
-                      <th className="px-6 py-3 md:px-3 md:py-2 text-center">Actions</th>
+                      <th className="px-6 py-3 md:px-3 md:py-2 text-left">Product</th>
+                      <th className="px-6 py-3 md:px-3 md:py-2 text-left">Category</th>
+                      <th className="px-6 py-3 md:px-3 md:py-2 text-left">Sizes</th>
+                      <th className="px-6 py-3 md:px-3 md:py-2 text-left">Addons</th>
+                      <th className="px-6 py-3 md:px-3 md:py-2 text-left">Sugar</th>
+                      <th className="px-6 py-3 md:px-3 md:py-2 text-left">Ice</th>
+                      <th className="px-6 py-3 md:px-3 md:py-2 text-left">Status</th>
+                      <th className="px-6 py-3 md:px-3 md:py-2 text-left">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
