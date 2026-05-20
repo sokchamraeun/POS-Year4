@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.3",
         "cloudinary/cloudinary_php": "*",
+        "khqr-gateway/bakong-khqr-php": "*",
         "laravel/framework": "^13.8",
         "laravel/sanctum": "*",
         "laravel/tinker": "^3.0"

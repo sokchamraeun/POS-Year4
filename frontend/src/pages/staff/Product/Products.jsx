@@ -55,6 +55,16 @@ export default function Products() {
     fetchProducts(1)
   }, [updated])
 
+  function handleDelete(id, name) {
+    if (!confirm(`Delete product "${name}"? This cannot be undone.`)) return
+    fetch(`${API_URL}/${id}`, { method: 'DELETE', headers })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to delete')
+        fetchProducts(page)
+      })
+      .catch(() => alert('Failed to delete product'))
+  }
+
   const filtered = products.filter(
     (p) =>
       p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -197,7 +207,10 @@ export default function Products() {
                             >
                               Edit
                             </Link>
-                            <button className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors md:px-2 md:py-1">
+                            <button
+                              onClick={() => handleDelete(product.id, product.name)}
+                              className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors md:px-2 md:py-1"
+                            >
                               Delete
                             </button>
                           </div>
@@ -284,7 +297,12 @@ export default function Products() {
                         <div className="flex items-center gap-2">
                           <Link to={`/staff/products/${product.id}`} className="px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-md transition-colors">View</Link>
                           <Link to={`/staff/products/edit/${product.id}`} className="px-3 py-1.5 text-xs font-medium text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors">Edit</Link>
-                          <button className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors">Delete</button>
+                          <button
+                            onClick={() => handleDelete(product.id, product.name)}
+                            className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                          >
+                            Delete
+                          </button>
                         </div>
                       </div>
                     </div>

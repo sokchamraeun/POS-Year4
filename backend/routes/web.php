@@ -4,6 +4,8 @@ use App\Http\Controllers\AddonIngredients\AddonIngredientController;
 use App\Http\Controllers\Addons\AddonController;
 use App\Http\Controllers\Auth\WebAuthController;
 use App\Http\Controllers\Categories\CategoryController;
+use App\Http\Controllers\Customer\CustomerOrderController;
+use App\Http\Controllers\KHQR\KhqrTestController;
 use App\Http\Controllers\Ingredients\IngredientController;
 use App\Http\Controllers\Inventory\InventoryController;
 use App\Http\Controllers\Orders\OrderController;
@@ -17,6 +19,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WebAuthController::class, 'loginPage'])->name('auth.login');
 Route::post('/', [WebAuthController::class, 'login'])->name('auth.login.post');
+
+Route::get('/customer/order', [CustomerOrderController::class, 'showForm'])->name('customer.order.form');
+Route::post('/customer/order', [CustomerOrderController::class, 'placeOrder'])->name('customer.order.place');
+Route::get('/customer/order/{order}/confirmation', [CustomerOrderController::class, 'confirmation'])->name('customer.order.confirmation');
+Route::post('/customer/order/webhook', [CustomerOrderController::class, 'webhook'])->name('customer.order.webhook');
+Route::get('/khqr-test', [KhqrTestController::class, 'index'])->name('khqr.test');
+Route::post('/khqr-test', [KhqrTestController::class, 'generate'])->name('khqr.test.generate');
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [WebAuthController::class, 'logout'])->name('auth.logout');
