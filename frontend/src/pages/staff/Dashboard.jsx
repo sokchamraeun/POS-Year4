@@ -412,7 +412,7 @@ export default function Dashboard() {
                         x2={SVG_WIDTH - PAD.right} y2={PAD.top + plotH * (1 - frac)}
                         stroke="#e5e7eb" strokeWidth={1} strokeDasharray="4,3" />
                       <text x={PAD.left - 10} y={PAD.top + plotH * (1 - frac) + 4}
-                        textAnchor="end" fill="#9ca3af" fontSize={11} fontFamily="system-ui" fontFeatureSettings="'tnum'">
+                        textAnchor="end" fill="#9ca3af" fontSize={11} fontFamily="'Noto Sans Khmer', sans-serif" fontFeatureSettings="'tnum'">
                         {period === 'yearly' ? `$${Math.round(maxVal * frac / 1000)}k` : `$${Math.round(maxVal * frac)}`}
                       </text>
                     </g>
@@ -466,7 +466,7 @@ export default function Dashboard() {
                           </g>
                         ))}
                         {data.map((d, i) => (
-                          <text key={`lbl-${i}`} x={xCenter(i)} y={SVG_HEIGHT - 8} textAnchor="middle" fill="#6b7280" fontSize={11} fontFamily="system-ui" fontWeight={hoverIdx === i ? 700 : 500}>
+                          <text key={`lbl-${i}`} x={xCenter(i)} y={SVG_HEIGHT - 8} textAnchor="middle" fill="#6b7280" fontSize={11} fontFamily="'Noto Sans Khmer', sans-serif" fontWeight={hoverIdx === i ? 700 : 500}>
                             {d.label}
                           </text>
                         ))}
@@ -475,13 +475,13 @@ export default function Dashboard() {
                             <line x1={hoveredPoint.x} y1={PAD.top} x2={hoveredPoint.x} y2={PAD.top + plotH}
                               stroke="#94a3b8" strokeWidth={1} strokeDasharray="4,3" />
                             <rect x={hoveredPoint.x - 60} y={PAD.top + 4} width={120} height={52} rx={6} fill="#1f2937" opacity={0.92} />
-                            <text x={hoveredPoint.x} y={PAD.top + 20} textAnchor="middle" fill="#e5e7eb" fontSize={11} fontFamily="system-ui" fontWeight={600}>
+                            <text x={hoveredPoint.x} y={PAD.top + 20} textAnchor="middle" fill="#e5e7eb" fontSize={11} fontFamily="'Noto Sans Khmer', sans-serif" fontWeight={600}>
                               {hoveredPoint.label}
                             </text>
-                            <text x={hoveredPoint.x} y={PAD.top + 34} textAnchor="middle" fill="#a5b4fc" fontSize={11} fontFamily="system-ui" fontWeight={700}>
+                            <text x={hoveredPoint.x} y={PAD.top + 34} textAnchor="middle" fill="#a5b4fc" fontSize={11} fontFamily="'Noto Sans Khmer', sans-serif" fontWeight={700}>
                               Rev: ${period === 'yearly' ? Math.round(hoveredPoint.revenue / 1000) + 'k' : hoveredPoint.revenue}
                             </text>
-                            <text x={hoveredPoint.x} y={PAD.top + 48} textAnchor="middle" fill="#fde68a" fontSize={11} fontFamily="system-ui" fontWeight={700}>
+                            <text x={hoveredPoint.x} y={PAD.top + 48} textAnchor="middle" fill="#fde68a" fontSize={11} fontFamily="'Noto Sans Khmer', sans-serif" fontWeight={700}>
                               Ord: {hoveredPoint.orders}
                             </text>
                           </g>
@@ -491,7 +491,7 @@ export default function Dashboard() {
                   })()}
 
                   {data.length <= 1 && (
-                    <text x={SVG_WIDTH / 2} y={SVG_HEIGHT / 2} textAnchor="middle" fill="#9ca3af" fontSize={13} fontFamily="system-ui">
+                    <text x={SVG_WIDTH / 2} y={SVG_HEIGHT / 2} textAnchor="middle" fill="#9ca3af" fontSize={13} fontFamily="'Noto Sans Khmer', sans-serif">
                       Need more data points for a line chart
                     </text>
                   )}
@@ -614,8 +614,8 @@ export default function Dashboard() {
                         <path key={i} d={s.path} fill={s.color} stroke="#fff" strokeWidth={2} />
                       ))}
                       <circle cx={cx} cy={cy} r={innerR} fill="white" />
-                      <text x={cx} y={cy - 6} textAnchor="middle" fill="#374151" fontSize={22} fontWeight={800} fontFamily="system-ui">{total}</text>
-                      <text x={cx} y={cy + 14} textAnchor="middle" fill="#9ca3af" fontSize={11} fontFamily="system-ui">Total Sold</text>
+                      <text x={cx} y={cy - 6} textAnchor="middle" fill="#374151" fontSize={22} fontWeight={800} fontFamily="'Noto Sans Khmer', sans-serif">{total}</text>
+                      <text x={cx} y={cy + 14} textAnchor="middle" fill="#9ca3af" fontSize={11} fontFamily="'Noto Sans Khmer', sans-serif">Total Sold</text>
                     </svg>
                     <div className="flex-1 space-y-2">
                       {slices.map((s, i) => (
