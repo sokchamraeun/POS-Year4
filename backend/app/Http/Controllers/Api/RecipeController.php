@@ -12,7 +12,7 @@ class RecipeController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Recipe::with(['product:id,name', 'size:id,name', 'ingredient:id,name,unit']);
+        $query = Recipe::with(['product:id,category_id,name,image', 'size:id,name', 'ingredient:id,name,unit,cost_per_unit']);
 
         if ($request->query('product_id')) {
             $query->where('product_id', $request->query('product_id'));
@@ -27,7 +27,7 @@ class RecipeController extends Controller
 
     public function show(Recipe $recipe): JsonResponse
     {
-        $recipe->load(['product', 'size', 'ingredient']);
+        $recipe->load(['product:id,name,image', 'size', 'ingredient']);
         return response()->json($recipe);
     }
 
@@ -38,9 +38,10 @@ class RecipeController extends Controller
             'size_id' => 'required|exists:sizes,id',
             'ingredient_id' => 'required|exists:ingredients,id',
             'quantity' => 'required|numeric|min:0.01',
+            'cost' => 'nullable|numeric|min:0',
         ]);
         $recipe = Recipe::create($data);
-        $recipe->load(['product:id,name', 'size:id,name', 'ingredient:id,name,unit']);
+        $recipe->load(['product:id,category_id,name,image', 'size:id,name', 'ingredient:id,name,unit,cost_per_unit']);
         return response()->json($recipe, 201);
     }
 
@@ -51,9 +52,10 @@ class RecipeController extends Controller
             'size_id' => 'required|exists:sizes,id',
             'ingredient_id' => 'required|exists:ingredients,id',
             'quantity' => 'required|numeric|min:0.01',
+            'cost' => 'nullable|numeric|min:0',
         ]);
         $recipe->update($data);
-        $recipe->load(['product:id,name', 'size:id,name', 'ingredient:id,name,unit']);
+        $recipe->load(['product:id,category_id,name,image', 'size:id,name', 'ingredient:id,name,unit,cost_per_unit']);
         return response()->json($recipe);
     }
 
@@ -71,6 +73,7 @@ class RecipeController extends Controller
             'recipes' => 'required|array',
             'recipes.*.ingredient_id' => 'required|exists:ingredients,id',
             'recipes.*.quantity' => 'required|numeric|min:0.01',
+            'recipes.*.cost' => 'nullable|numeric|min:0',
         ]);
 
         DB::transaction(function () use ($data) {
@@ -84,11 +87,12 @@ class RecipeController extends Controller
                     'size_id' => $data['size_id'],
                     'ingredient_id' => $item['ingredient_id'],
                     'quantity' => $item['quantity'],
+                    'cost' => $item['cost'] ?? null,
                 ]);
             }
         });
 
-        $recipes = Recipe::with(['product:id,name', 'size:id,name', 'ingredient:id,name,unit'])
+        $recipes = Recipe::with(['product:id,category_id,name,image', 'size:id,name', 'ingredient:id,name,unit,cost_per_unit'])
             ->where('product_id', $data['product_id'])
             ->where('size_id', $data['size_id'])
             ->orderBy('id')

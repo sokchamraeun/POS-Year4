@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\PaymentCheckoutController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RecipeController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SizeController;
 use App\Http\Controllers\Api\SugarLevelController;
@@ -124,5 +125,15 @@ Route::middleware('auth:sanctum')->group(function () {});
     Route::get('/inventory-transactions/{inventoryTransaction}', [InventoryTransactionController::class, 'show']);
     Route::post('/inventory-transactions', [InventoryTransactionController::class, 'store']);
     Route::delete('/inventory-transactions/{inventoryTransaction}', [InventoryTransactionController::class, 'destroy']);
+
+    Route::prefix('reports')->group(function () {
+        Route::get('/sales', [ReportController::class, 'sales']);
+        Route::get('/products', [ReportController::class, 'products']);
+        Route::get('/inventory', [ReportController::class, 'inventory']);
+        Route::get('/purchases', [ReportController::class, 'purchases']);
+        Route::get('/profit', [ReportController::class, 'profit']);
+        Route::get('/customers', [ReportController::class, 'customers']);
+        Route::get('/payments', [ReportController::class, 'payments']);
+    });
 
 

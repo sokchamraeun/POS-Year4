@@ -28,6 +28,7 @@ class IngredientController extends Controller
             'unit' => 'required|string|max:20',
             'stock_quantity' => 'required|numeric|min:0',
             'reorder_level' => 'required|numeric|min:0',
+            'cost_per_unit' => 'nullable|numeric|min:0',
         ]);
         $ingredient = Ingredient::create($data);
         return response()->json($ingredient, 201);
@@ -40,6 +41,7 @@ class IngredientController extends Controller
             'unit' => 'required|string|max:20',
             'stock_quantity' => 'required|numeric|min:0',
             'reorder_level' => 'required|numeric|min:0',
+            'cost_per_unit' => 'nullable|numeric|min:0',
         ]);
         $ingredient->update($data);
         return response()->json($ingredient);
