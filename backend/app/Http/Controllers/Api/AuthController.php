@@ -22,6 +22,8 @@ class AuthController extends Controller
         $data['password'] = bcrypt($data['password']);
 
         $user = User::create($data);
+        
+        $user->tokens()->delete();
 
         $token = $user->createToken('api-token')->plainTextToken;
 
