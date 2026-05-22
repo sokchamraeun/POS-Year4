@@ -16,7 +16,7 @@ const periods = [
 const statusColors = {
   Completed: 'text-green-600 bg-green-100',
   Processing: 'text-blue-600 bg-blue-100',
-  Pending: 'text-yellow-600 bg-yellow-100',
+  new: 'text-yellow-600 bg-yellow-100',
   Cancelled: 'text-red-600 bg-red-100',
 }
 
@@ -307,7 +307,7 @@ export default function Dashboard() {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        status: order?.status ?? 'Pending',
+        status: order?.status ?? 'new',
         payment_status: newPayment,
         total: Number(order?.total ?? 0),
         customer_id: order?.customer_id ?? null,
@@ -550,12 +550,12 @@ export default function Dashboard() {
                             </td>
                             <td className="py-2.5 pr-2">
                               <select
-                                value={o.status ?? 'Pending'}
+                                value={o.status ?? 'new'}
                                 onChange={(e) => handleStatusChange(o.id, e.target.value)}
-                                className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusColors[o.status ?? 'Pending']}`}
+                                className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusColors[o.status ?? 'new']}`}
                                 style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
                               >
-                                <option value="Pending">Pending</option>
+                                <option value="new">new</option>
                                 <option value="Processing">Processing</option>
                                 <option value="Completed">Completed</option>
                                 <option value="Cancelled">Cancelled</option>
@@ -678,11 +678,11 @@ export default function Dashboard() {
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-500">Status:</span>
                       <select
-                        value={selectedOrder.status ?? 'Pending'}
+                        value={selectedOrder.status ?? 'new'}
                         onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
-                        className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${statusColors[selectedOrder.status ?? 'Pending']?.split(' ')[0] || 'text-gray-600'}`}
+                        className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${statusColors[selectedOrder.status ?? 'new']?.split(' ')[0] || 'text-gray-600'}`}
                       >
-                        <option value="Pending">Pending</option>
+                        <option value="new">new</option>
                         <option value="Processing">Processing</option>
                         <option value="Completed">Completed</option>
                         <option value="Cancelled">Cancelled</option>
@@ -785,7 +785,7 @@ export default function Dashboard() {
                           Receipt #${o.id}<br>
                           ${o.customer?.name ?? 'Guest'}${o.customer?.phone ? ' &mdash; '+o.customer.phone : ''}${o.table ? ' | Table: '+(o.table?.name??o.table) : ''}<br>
                           ${(() => { const d = new Date(o.created_at ?? ''); if (isNaN(d)) return ''; const kh = new Date(d.getTime() + 7 * 60 * 60 * 1000); return kh.toISOString().slice(0, 19).replace('T', ' ') })()}<br>
-                          Status: ${o.status ?? 'Pending'} | Payment: ${o.payment_status ?? 'Unpaid'}<br>Free WIFI<br>Username: Visal<br>Password: 12345678
+                          Status: ${o.status ?? 'new'} | Payment: ${o.payment_status ?? 'Unpaid'}<br>Free WIFI<br>Username: Visal<br>Password: 12345678
                         </div>
                         <hr>
                         <table>
