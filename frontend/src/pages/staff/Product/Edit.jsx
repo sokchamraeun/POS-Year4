@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
+import Cropper from 'react-easy-crop'
 
 const API = import.meta.env.VITE_API_URL
 const token = localStorage.getItem('token')
@@ -18,6 +19,14 @@ export default function EditProduct() {
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState(null)
   const [saving, setSaving] = useState(false)
+
+  // Crop states
+  const [cropOpen, setCropOpen] = useState(false)
+  const [cropImage, setCropImage] = useState(null)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
+  const fileInputRef = useRef(null)
 
   const [form, setForm] = useState({
     name: '',
@@ -96,6 +105,95 @@ export default function EditProduct() {
         [field]: exists ? prev[field].filter((v) => v !== valueId) : [...prev[field], valueId],
       }
     })
+  }
+
+  const onFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        setCropImage(reader.result)
+        setCropOpen(true)
+      }
+    }
+  }
+
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels)
+  }
+
+  const createCroppedImage = async () => {
+    try {
+      const canvas = document.createElement('canvas')
+      const image = new Image()
+      image.src = cropImage
+      
+      await new Promise((resolve) => {
+        image.onload = resolve
+      })
+
+      const scaleX = image.naturalWidth / image.width
+      const scaleY = image.naturalHeight / image.height
+      
+      const ctx = canvas.getContext('2d')
+      
+      canvas.width = croppedAreaPixels.width
+      canvas.height = croppedAreaPixels.height
+      
+      ctx.drawImage(
+        image,
+        croppedAreaPixels.x * scaleX,
+        croppedAreaPixels.y * scaleY,
+        croppedAreaPixels.width * scaleX,
+        croppedAreaPixels.height * scaleY,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      )
+      
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => {
+          const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' })
+          resolve(file)
+        }, 'image/jpeg', 0.95)
+      })
+    } catch (error) {
+      console.error('Error creating cropped image:', error)
+      return null
+    }
+  }
+
+  const handleCropSave = async () => {
+    if (croppedAreaPixels) {
+      const croppedFile = await createCroppedImage()
+      if (croppedFile) {
+        const previewUrl = URL.createObjectURL(croppedFile)
+        setForm((prev) => ({
+          ...prev,
+          image: croppedFile,
+          imagePreview: previewUrl,
+        }))
+      }
+      setCropOpen(false)
+      setCropImage(null)
+      setCrop({ x: 0, y: 0 })
+      setZoom(1)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  const handleCropCancel = () => {
+    setCropOpen(false)
+    setCropImage(null)
+    setCrop({ x: 0, y: 0 })
+    setZoom(1)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -193,14 +291,13 @@ export default function EditProduct() {
                     <img src={form.imagePreview} alt="Preview" className="w-20 h-20 rounded-lg object-cover" />
                   </div>
                 )}
-                <input type="file" accept="image/*" onChange={(e) => {
-                  const file = e.target.files[0]
-                  setForm((prev) => ({
-                    ...prev,
-                    image: file,
-                    imagePreview: file ? URL.createObjectURL(file) : prev.imagePreview,
-                  }))
-                }} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                <input 
+                  ref={fileInputRef}
+                  type="file" 
+                  accept="image/*" 
+                  onChange={onFileChange} 
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" 
+                />
               </div>
 
               <div className="mb-4">
@@ -268,6 +365,59 @@ export default function EditProduct() {
           </div>
         </main>
       </div>
+
+      {/* Crop Modal */}
+      {cropOpen && cropImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="bg-white rounded-lg w-full max-w-2xl m-4">
+            <div className="p-4 border-b">
+              <h3 className="text-lg font-semibold">Crop Image</h3>
+            </div>
+            
+            <div className="relative h-96">
+              <Cropper
+                image={cropImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+
+            <div className="p-4 border-t">
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Zoom</label>
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.01}
+                  value={zoom}
+                  onChange={(e) => setZoom(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCropCancel}
+                  className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCropSave}
+                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
