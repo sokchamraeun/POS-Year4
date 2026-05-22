@@ -172,6 +172,8 @@ class OrderController extends Controller
             'status' => 'nullable|string|max:50',
         ]);
 
+        $oldStatus = $order->status;
+
         $order->update([
             'customer_id' => $data['customer_id'] ?? $order->customer_id,
             'table_id' => $data['table_id'] ?? $order->table_id,
@@ -181,12 +183,19 @@ class OrderController extends Controller
             'status' => $data['status'] ?? $order->status,
         ]);
 
+        $newStatus = $data['status'] ?? $order->status;
+
+        if ($oldStatus !== 'Cancelled' && $newStatus === 'Cancelled') {
+            $this->restoreStock($order);
+        }
+
         $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
         return response()->json($order);
     }
 
     public function destroy(Order $order): JsonResponse
     {
+        $this->restoreStock($order);
         $order->delete();
         return response()->json(['message' => 'Order deleted successfully.']);
     }
@@ -213,5 +222,41 @@ class OrderController extends Controller
             ->where('size_id', $sizeId)
             ->with('ingredient')
             ->get();
+    }
+
+    private function restoreStock(Order $order): void
+    {
+        $order->load('items.addons.addon', 'items.product', 'items.size');
+
+        foreach ($order->items as $item) {
+            $qty = $item->qty ?? 1;
+            $sizeId = $item->size_id;
+
+            $recipes = $this->getRecipes($item->product_id, $sizeId);
+            foreach ($recipes as $recipe) {
+                $restoreQty = $recipe->quantity * $qty;
+                $recipe->ingredient->increment('stock_quantity', $restoreQty);
+                InventoryTransaction::create([
+                    'ingredient_id' => $recipe->ingredient_id,
+                    'type' => 'deduct',
+                    'quantity' => $restoreQty,
+                    'note' => "Restored for cancelled Order #{$order->id}",
+                ]);
+            }
+
+            foreach ($item->addons as $orderAddon) {
+                $addonIngredients = AddonIngredient::where('addon_id', $orderAddon->addon_id)->get();
+                foreach ($addonIngredients as $ai) {
+                    $restoreQty = $ai->quantity * $qty;
+                    $ai->ingredient->increment('stock_quantity', $restoreQty);
+                    InventoryTransaction::create([
+                        'ingredient_id' => $ai->ingredient_id,
+                        'type' => 'deduct',
+                        'quantity' => $restoreQty,
+                        'note' => "Restored for cancelled Order #{$order->id}",
+                    ]);
+                }
+            }
+        }
     }
 }
