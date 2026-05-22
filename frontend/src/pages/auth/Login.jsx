@@ -28,9 +28,7 @@ export default function Login() {
     try {
       const res = await fetch(`${API_URL}/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
@@ -41,10 +39,10 @@ export default function Login() {
         return;
       }
 
-      // ✅ store token only (secure)
+      // 🔥 IMPORTANT: store ONLY token
       localStorage.setItem("token", data.token);
 
-      // optional (UI only)
+      // optional UI cache (not trusted for auth)
       localStorage.setItem("user", JSON.stringify(data.user));
 
       // redirect by role
@@ -64,7 +62,7 @@ export default function Login() {
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage:
-            "url('https://imgs.search.brave.com/egclU_g2EpYut0dwE7rTDZtrhTwGz7ebxSVhoEENI0s/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzAzLzA2LzgwLzk0/LzM2MF9GXzMwNjgw/OTQxOV9zT2d0alBF/bEs4SFh1eDA3Vkpl/TVdmc0lQcFFxY3Vp/Sy5qcGc')",
+            "url('https://images.unsplash.com/photo-1509042239860-f550ce710b93')",
         }}
       >
         <div className="absolute inset-0 bg-black/50" />
@@ -132,11 +130,7 @@ export default function Login() {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-2.5 text-gray-500 hover:text-blue-600"
                 >
-                  {showPassword ? (
-                    <EyeOff size={18} />
-                  ) : (
-                    <Eye size={18} />
-                  )}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
