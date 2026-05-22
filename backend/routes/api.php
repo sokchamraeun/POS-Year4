@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::middleware('auth:sanctum')->group(function () {});
+Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
@@ -98,6 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {});
     Route::post('/orders', [OrderController::class, 'store']);
     Route::put('/orders/{order}', [OrderController::class, 'update']);
     Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
+    Route::post('/orders/{order}/mark-printed', [OrderController::class, 'markPrinted']);
     Route::post('/orders/payment/initiate', [PaymentCheckoutController::class, 'initiate']);
     Route::match(['get', 'post'], '/orders/payment/callback', [PaymentCheckoutController::class, 'callback']);
 
@@ -135,5 +136,6 @@ Route::middleware('auth:sanctum')->group(function () {});
         Route::get('/customers', [ReportController::class, 'customers']);
         Route::get('/payments', [ReportController::class, 'payments']);
     });
+});
 
 

@@ -15,14 +15,14 @@ class OrderController extends Controller
 {
     public function index(): JsonResponse
     {
-        $orders = Order::with(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon'])
+        $orders = Order::with(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy'])
             ->orderByDesc('id')->paginate(10);
         return response()->json($orders);
     }
 
     public function show(Order $order): JsonResponse
     {
-        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
         return response()->json($order);
     }
 
@@ -157,7 +157,7 @@ class OrderController extends Controller
             return $order;
         });
 
-        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
         return response()->json($order, 201);
     }
 
@@ -166,22 +166,22 @@ class OrderController extends Controller
         $data = $request->validate([
             'customer_id' => 'nullable|exists:customers,id',
             'table_id' => 'nullable|exists:tables,id',
-            'total' => 'required|numeric|min:0',
+            'total' => 'nullable|numeric|min:0',
             'payment_method' => 'nullable|string|max:50',
             'payment_status' => 'nullable|string|max:50',
             'status' => 'nullable|string|max:50',
         ]);
 
         $order->update([
-            'customer_id' => $data['customer_id'] ?? null,
-            'table_id' => $data['table_id'] ?? null,
-            'total' => $data['total'],
-            'payment_method' => $data['payment_method'] ?? null,
-            'payment_status' => $data['payment_status'] ?? null,
-            'status' => $data['status'] ?? null,
+            'customer_id' => $data['customer_id'] ?? $order->customer_id,
+            'table_id' => $data['table_id'] ?? $order->table_id,
+            'total' => $data['total'] ?? $order->total,
+            'payment_method' => $data['payment_method'] ?? $order->payment_method,
+            'payment_status' => $data['payment_status'] ?? $order->payment_status,
+            'status' => $data['status'] ?? $order->status,
         ]);
 
-        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
         return response()->json($order);
     }
 
@@ -189,6 +189,22 @@ class OrderController extends Controller
     {
         $order->delete();
         return response()->json(['message' => 'Order deleted successfully.']);
+    }
+
+    public function markPrinted(Order $order): JsonResponse
+    {
+        $order->increment('print_count');
+        $order->update([
+            'is_printed' => true,
+            'printed_at' => now(),
+            'printed_by' => auth()->id(),
+        ]);
+        return response()->json([
+            'print_count' => $order->fresh()->print_count,
+            'is_printed' => true,
+            'printed_at' => $order->fresh()->printed_at,
+            'printed_by' => auth()->id(),
+        ]);
     }
 
     private function getRecipes(int $productId, int $sizeId): \Illuminate\Database\Eloquent\Collection

@@ -53,7 +53,7 @@ class CustomerOrderController extends Controller
                 'total' => $total,
                 'payment_method' => 'KHQR',
                 'payment_status' => 'Unpaid',
-                'status' => 'Pending',
+                'status' => 'New',
             ]);
 
             foreach ($items as $itemData) {

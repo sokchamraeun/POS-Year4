@@ -14,7 +14,8 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
   const price = basePrice + addonPrice
 
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col">
+    <div className="rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col bg-cover bg-center border border-blue-200" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=60')" }}>
+      <div className="bg-white/90 backdrop-blur-sm flex flex-col flex-1">
       <div className="p-3 pb-0">
         {product.image ? (
           <img
@@ -90,6 +91,7 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
         >
           Add to Order
         </button>
+      </div>
       </div>
     </div>
   )

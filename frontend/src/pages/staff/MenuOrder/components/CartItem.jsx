@@ -1,6 +1,6 @@
 export default function CartItem({ item, onUpdateQty }) {
   return (
-    <div className="flex items-start justify-between gap-2 pb-3 border-b border-gray-100 last:border-0">
+    <div className="flex items-start justify-between gap-2 p-2.5 border border-blue-200 rounded-lg">
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
         <p className="text-xs text-gray-400">

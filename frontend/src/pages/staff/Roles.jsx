@@ -1,24 +1,43 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
-const initialRoles = [
-  { id: 1, name: 'Admin', slug: 'admin', permissions: ['Create Product', 'Delete Product', 'Manage Staff'] },
-  { id: 2, name: 'Manage', slug: 'manage', permissions: [] },
-  { id: 3, name: 'Staff', slug: 'staff', permissions: [] },
-]
-
-const availablePermissions = [
-  'Dashboard', 'Products', 'Orders', 'Inventory', 'Recipe',
-  'Create Product', 'Edit Product', 'Delete Product',
-  'Manage Staff', 'Manage Roles', 'Manage Permissions',
-]
-
 export default function Roles() {
-  const [roles, setRoles] = useState(initialRoles)
+  const [roles, setRoles] = useState([])
+  const [allPermissions, setAllPermissions] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
   const [formData, setFormData] = useState({ name: '', slug: '', permissions: [] })
+
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
+  }
+
+  useEffect(() => {
+    fetchRoles()
+    fetchPermissions()
+  }, [])
+
+  async function fetchRoles() {
+    try {
+      const res = await fetch('/api/roles', { headers })
+      const data = await res.json()
+      setRoles(data.data || data)
+    } catch (err) {
+      console.error('Failed to fetch roles', err)
+    }
+  }
+
+  async function fetchPermissions() {
+    try {
+      const res = await fetch('/api/permissions', { headers })
+      const data = await res.json()
+      setAllPermissions(data.data || data)
+    } catch (err) {
+      console.error('Failed to fetch permissions', err)
+    }
+  }
 
   function resetForm() {
     setFormData({ name: '', slug: '', permissions: [] })
@@ -31,36 +50,52 @@ export default function Roles() {
   }
 
   function openEditModal(role) {
-    setFormData({ name: role.name, slug: role.slug, permissions: [...role.permissions] })
+    setFormData({
+      name: role.name,
+      slug: role.slug,
+      permissions: role.permissions.map((p) => p.id),
+    })
     setEditing(role)
     setShowModal(true)
   }
 
-  function togglePermission(perm) {
+  function togglePermission(permId) {
     setFormData((prev) => ({
       ...prev,
-      permissions: prev.permissions.includes(perm)
-        ? prev.permissions.filter((p) => p !== perm)
-        : [...prev.permissions, perm],
+      permissions: prev.permissions.includes(permId)
+        ? prev.permissions.filter((p) => p !== permId)
+        : [...prev.permissions, permId],
     }))
   }
 
-  function handleSave() {
+  async function handleSave() {
     if (!formData.name || !formData.slug) return
-    if (editing) {
-      setRoles(roles.map((r) =>
-        r.id === editing.id ? { ...r, ...formData } : r
-      ))
-    } else {
-      const newId = roles.length ? Math.max(...roles.map((r) => r.id)) + 1 : 1
-      setRoles([...roles, { id: newId, ...formData }])
+    try {
+      const url = editing ? `/api/roles/${editing.id}` : '/api/roles'
+      const method = editing ? 'PUT' : 'POST'
+      const res = await fetch(url, {
+        method,
+        headers,
+        body: JSON.stringify(formData),
+      })
+      if (!res.ok) return
+      setShowModal(false)
+      resetForm()
+      fetchRoles()
+    } catch (err) {
+      console.error('Failed to save role', err)
     }
-    setShowModal(false)
-    resetForm()
   }
 
-  function handleDelete(id) {
-    setRoles(roles.filter((r) => r.id !== id))
+  async function handleDelete(id) {
+    if (!confirm('Are you sure you want to delete this role?')) return
+    try {
+      const res = await fetch(`/api/roles/${id}`, { method: 'DELETE', headers })
+      if (!res.ok) return
+      fetchRoles()
+    } catch (err) {
+      console.error('Failed to delete role', err)
+    }
   }
 
   return (
@@ -100,8 +135,8 @@ export default function Roles() {
                       <div className="flex flex-wrap gap-1.5">
                         {role.permissions.length > 0
                           ? role.permissions.map((p) => (
-                              <span key={p} className="px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
-                                {p}
+                              <span key={p.id} className="px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
+                                {p.name}
                               </span>
                             ))
                           : <span className="text-gray-400">-</span>
@@ -110,9 +145,6 @@ export default function Roles() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <button className="text-blue-600 hover:text-blue-800 text-xs font-medium transition-colors">
-                          View
-                        </button>
                         <button
                           onClick={() => openEditModal(role)}
                           className="text-amber-600 hover:text-amber-800 text-xs font-medium transition-colors"
@@ -171,15 +203,15 @@ export default function Roles() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Permissions</label>
                     <div className="border border-gray-300 rounded-lg p-3 max-h-40 overflow-y-auto space-y-2">
-                      {availablePermissions.map((perm) => (
-                        <label key={perm} className="flex items-center gap-2 cursor-pointer">
+                      {allPermissions.map((perm) => (
+                        <label key={perm.id} className="flex items-center gap-2 cursor-pointer">
                           <input
                             type="checkbox"
-                            checked={formData.permissions.includes(perm)}
-                            onChange={() => togglePermission(perm)}
+                            checked={formData.permissions.includes(perm.id)}
+                            onChange={() => togglePermission(perm.id)}
                             className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                           />
-                          <span className="text-sm text-gray-700">{perm}</span>
+                          <span className="text-sm text-gray-700">{perm.name}</span>
                         </label>
                       ))}
                     </div>

@@ -1,10 +1,35 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+
+function safeParseUser() {
+  try {
+    const raw = localStorage.getItem('user')
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
 
 export default function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const navigate = useNavigate()
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'))
+  const [user, setUser] = useState(safeParseUser)
   const [menuOpen, setMenuOpen] = useState(false)
   const cartCount = 3
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    setIsLoggedIn(!!token)
+    setUser(safeParseUser())
+  }, [])
+
+  function handleLogout() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setIsLoggedIn(false)
+    setUser(null)
+    navigate('/')
+  }
 
   const cartIcon = (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -29,56 +54,60 @@ export default function Navbar() {
             <span className="text-xl font-bold text-gray-800">isal</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-1">
             <a
               href="/#home"
-              className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              className="px-3 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 font-medium transition-all"
             >
               Home
             </a>
             <Link
               to="/service"
-              className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              className="px-3 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 font-medium transition-all"
             >
               Service
             </Link>
             <a
               href="/#products"
-              className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              className="px-3 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 font-medium transition-all"
             >
               Product
             </a>
             <Link
               to="/staff/dashboard"
-              className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              className="px-3 py-2 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600 font-medium transition-all"
             >
               Dashboard
             </Link>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Link to="/cart" className="relative text-gray-600 hover:text-blue-600 transition-colors">
+          <div className="flex items-center gap-3">
+            <Link to="/cart" className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
               {cartIcon}
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
             </Link>
 
             {isLoggedIn ? (
-              <div className="hidden sm:flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-700">John Doe</span>
+              <div className="hidden sm:flex items-center gap-2 bg-gray-100 rounded-full px-4 py-1.5 border border-gray-200">
+                <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">{user?.name?.[0]?.toUpperCase()}</span>
+                </div>
+                <span className="text-sm font-medium text-gray-700">{user?.name}</span>
+                <span className="text-gray-300 mx-1">|</span>
                 <button
-                  onClick={() => setIsLoggedIn(false)}
-                  className="text-sm text-gray-600 hover:text-red-600 font-medium transition-colors"
+                  onClick={handleLogout}
+                  className="text-sm text-gray-500 hover:text-red-600 font-medium transition-colors"
                 >
                   Logout
                 </button>
               </div>
             ) : (
               <Link to="/staff/login"
-                className="hidden sm:flex items-center gap-1 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                className="hidden sm:flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-blue-200 text-blue-600 hover:bg-blue-50 font-medium transition-all"
               >
                 {userIcon}
                 <span className="text-sm">Login</span>
@@ -128,9 +157,9 @@ export default function Navbar() {
             </Link>
             {isLoggedIn ? (
               <div className="flex items-center gap-3 pt-2 border-t border-gray-200">
-                <span className="text-sm font-medium text-gray-700">John Doe</span>
+                <span className="text-sm font-medium text-gray-700">{user?.name}</span>
                 <button
-                  onClick={() => { setIsLoggedIn(false); setMenuOpen(false) }}
+                  onClick={() => { handleLogout(); setMenuOpen(false) }}
                   className="text-sm text-gray-600 hover:text-red-600 font-medium transition-colors"
                 >
                   Logout

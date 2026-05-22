@@ -21,6 +21,8 @@ export default function Recipe() {
   const [batchEdit, setBatchEdit] = useState(null)
   const [batchRows, setBatchRows] = useState([])
   const [batchSaving, setBatchSaving] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [searchQuery, setSearchQuery] = useState('')
 
   const token = localStorage.getItem('token')
   const headers = { Authorization: `Bearer ${token}` }
@@ -53,6 +55,8 @@ export default function Recipe() {
 
   const grouped = recipes.reduce((acc, r) => {
     const catId = r.product?.category_id ?? 'uncategorized'
+    if (selectedCategory !== 'All' && String(catId) !== String(selectedCategory)) return acc
+    if (searchQuery && !r.product?.name?.toLowerCase().includes(searchQuery.toLowerCase())) return acc
     if (!acc[catId]) acc[catId] = { category: categories[catId] ?? null, products: {} }
     const pid = r.product_id
     if (!acc[catId].products[pid]) acc[catId].products[pid] = { product: r.product, sizes: {} }
@@ -211,6 +215,19 @@ export default function Recipe() {
           </div>
 
           {error && <div className="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-6">{error}</div>}
+
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              <button onClick={() => setSelectedCategory('All')} className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === 'All' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>All</button>
+              {Object.values(categories).map((cat) => (
+                <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === cat.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{cat.name}</button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search recipes..." className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48" />
+              <button onClick={() => setSearchQuery(searchQuery)} className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">Search</button>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {Object.entries(grouped).length === 0 && (

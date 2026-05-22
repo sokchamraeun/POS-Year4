@@ -25,6 +25,12 @@ export default function Ingredients() {
   const [ingredients, setIngredients] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [stats, setStats] = useState([
+    { label: 'Total Ingredients', value: '0', change: '-', color: 'from-blue-500 to-blue-600', border: '#3b82f6' },
+    { label: 'Total Stock Value', value: '$0.00', change: '-', color: 'from-green-500 to-green-600', border: '#22c55e' },
+    { label: 'Low Stock Items', value: '0', change: '-', color: 'from-amber-500 to-amber-600', border: '#f59e0b' },
+    { label: 'Out of Stock', value: '0', change: '-', color: 'from-red-500 to-red-600', border: '#ef4444' },
+  ])
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState({ name: '', unit: '', stock_quantity: '', reorder_level: '', cost_per_unit: '' })
@@ -36,7 +42,21 @@ export default function Ingredients() {
     setLoading(true)
     fetch(`${API_URL}/ingredients`, { headers: authHeaders })
       .then(res => { if (!res.ok) throw new Error('Failed to fetch'); return res.json() })
-      .then(json => { setIngredients(json.data ?? json); setLoading(false) })
+      .then(json => {
+        const data = json.data ?? json
+        setIngredients(data)
+        const total = data.length
+        const value = data.reduce((s, i) => s + Number(i.stock_quantity ?? 0) * Number(i.cost_per_unit ?? 0), 0)
+        const low = data.filter((i) => Number(i.stock_quantity) > 0 && Number(i.stock_quantity) <= Number(i.reorder_level)).length
+        const out = data.filter((i) => Number(i.stock_quantity) <= 0).length
+        setStats([
+          { label: 'Total Ingredients', value: String(total), change: `${data.filter((i) => Number(i.stock_quantity) > Number(i.reorder_level)).length} well stocked`, color: 'from-blue-500 to-blue-600', border: '#3b82f6' },
+          { label: 'Total Stock Value', value: `$${value.toFixed(2)}`, change: `$${(value / (total || 1)).toFixed(2)} avg`, color: 'from-green-500 to-green-600', border: '#22c55e' },
+          { label: 'Low Stock Items', value: String(low), change: `${((low / (total || 1)) * 100).toFixed(0)}% of total`, color: 'from-amber-500 to-amber-600', border: '#f59e0b' },
+          { label: 'Out of Stock', value: String(out), change: out > 0 ? 'Needs restock' : 'All good', color: 'from-red-500 to-red-600', border: '#ef4444' },
+        ])
+        setLoading(false)
+      })
       .catch(err => { setError(err.message); setLoading(false) })
   }
 
@@ -111,6 +131,20 @@ export default function Ingredients() {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-800">Ingredients</h1>
             <button onClick={openCreate} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">Add New Ingredient</button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {stats.map((stat, idx) => (
+              <div key={stat.label} className="bg-white rounded-xl shadow-sm p-6 border-l-4 hover:shadow-md transition-shadow duration-200" style={{ borderColor: stat.border }}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">{stat.label}</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
+                  </div>
+                  <span className="text-xs text-gray-500 font-medium bg-gray-50 px-2.5 py-1 rounded-full">{stat.change}</span>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="bg-white rounded-xl shadow-sm overflow-x-auto">

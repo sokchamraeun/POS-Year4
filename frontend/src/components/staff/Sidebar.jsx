@@ -1,5 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
+
+function safeParseUser() {
+  try {
+    const raw = localStorage.getItem('user')
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
 
 const userLinks = [
   { to: '/staff/roles', label: 'Roles' },
@@ -151,9 +160,14 @@ const links = [
 ]
 
 export default function Sidebar() {
+  const [user, setUser] = useState(safeParseUser)
   const [open, setOpen] = useState(() => sessionStorage.getItem('umOpen') === 'true')
   const [ipOpen, setIpOpen] = useState(() => sessionStorage.getItem('ipOpen') === 'true')
   const [collapsed, setCollapsed] = useState(() => sessionStorage.getItem('sidebarCollapsed') === 'true')
+
+  useEffect(() => {
+    setUser(safeParseUser())
+  }, [])
 
   function setCollapsedPersist(val) {
     setCollapsed(val)
@@ -205,15 +219,15 @@ export default function Sidebar() {
               {link.icon}
             </NavLink>
           ))}
-          <NavLink
-            to="/staff/login"
+          <button
+            onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' }}
             className="flex items-center justify-center w-10 h-10 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors mt-auto"
             title="Logout"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-          </NavLink>
+          </button>
         </nav>
       </div>
     )
@@ -226,7 +240,7 @@ export default function Sidebar() {
           <span className="text-white font-bold text-sm">V</span>
         </div>
         <span className="text-xl font-bold">Visal</span>
-        <span className="text-xs text-gray-400 ml-auto">Staff</span>
+        <span className="text-xs text-gray-400 ml-auto">{user?.role?.name || 'Staff'}</span>
         <button
           onClick={() => setCollapsedPersist(true)}
           className="p-1 text-gray-400 hover:text-white transition-colors ml-2"
@@ -332,15 +346,15 @@ export default function Sidebar() {
         </div>
        </nav>
       <div className="px-6 py-4 border-t border-gray-700">
-        <NavLink
-          to="/staff/login"
+        <button
+          onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' }}
           className="flex items-center gap-3 text-sm font-medium text-gray-400 hover:text-white transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
           Logout
-        </NavLink>
+        </button>
       </div>
     </aside>
   )

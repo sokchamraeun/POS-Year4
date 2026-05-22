@@ -81,8 +81,13 @@ export default function Dashboard() {
         ])
 
         setProducts(allProducts)
-        const today = new Date().toISOString().slice(0, 10)
-        const ordersToday = orders.filter((o) => (o.created_at ?? '').startsWith(today))
+        const today = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10)
+        const ordersToday = orders.filter((o) => {
+          const d = new Date(o.created_at ?? '')
+          if (isNaN(d)) return false
+          const kh = new Date(d.getTime() + 7 * 60 * 60 * 1000)
+          return kh.toISOString().slice(0, 10) === today
+        })
         const paidToday = ordersToday.filter((o) => o.payment_status === 'Paid')
         const totalRevenue = orders.reduce((s, o) => s + Number(o.total ?? 0), 0)
         const revenueToday = paidToday.reduce((s, o) => s + Number(o.total ?? 0), 0)
@@ -184,7 +189,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (period === 'custom') {
       if (!fromDate) setFromDate(new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10))
-      if (!toDate) setToDate(new Date().toISOString().slice(0, 10))
+      if (!toDate) setToDate(new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10))
     }
   }, [period])
 
@@ -278,8 +283,13 @@ export default function Dashboard() {
     setRecentOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, payment_status: newPayment } : o)))
     setAllOrders((prev) => {
       const updated = prev.map((o) => (o.id === orderId ? { ...o, payment_status: newPayment } : o))
-      const today = new Date().toISOString().slice(0, 10)
-      const ordersToday = updated.filter((o) => (o.created_at ?? '').startsWith(today))
+      const today = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10)
+      const ordersToday = updated.filter((o) => {
+        const d = new Date(o.created_at ?? '')
+        if (isNaN(d)) return false
+        const kh = new Date(d.getTime() + 7 * 60 * 60 * 1000)
+        return kh.toISOString().slice(0, 10) === today
+      })
       const paidToday = ordersToday.filter((o) => o.payment_status === 'Paid')
       const revenueToday = paidToday.reduce((s, o) => s + Number(o.total ?? 0), 0)
       setStats((prevStats) => prevStats.map((s) =>
@@ -458,11 +468,13 @@ export default function Dashboard() {
                         {points.map((p, i) => (
                           <g key={`rev-${i}`}>
                             <circle cx={p.x} cy={p.y} r={hoverIdx === i ? 6 : 4} fill={hoverIdx === i ? '#6366f1' : '#fff'} stroke="#6366f1" strokeWidth={2.5} filter="url(#dotGlow)" />
+                            <text x={p.x} y={p.y - 10} textAnchor="middle" fill="#6366f1" fontSize={10} fontFamily="'Noto Sans Khmer', sans-serif" fontWeight={700}>${period === 'yearly' ? Math.round(data[i].revenue / 1000) + 'k' : data[i].revenue}</text>
                           </g>
                         ))}
                         {ordPoints.map((p, i) => (
                           <g key={`ord-${i}`}>
                             <circle cx={p.x} cy={p.y} r={hoverIdx === i ? 6 : 4} fill={hoverIdx === i ? '#f59e0b' : '#fff'} stroke="#f59e0b" strokeWidth={2.5} filter="url(#dotGlowOrd)" />
+                            <text x={p.x} y={p.y + 18} textAnchor="middle" fill="#f59e0b" fontSize={10} fontFamily="'Noto Sans Khmer', sans-serif" fontWeight={700}>{data[i].orders} ord</text>
                           </g>
                         ))}
                         {data.map((d, i) => (
@@ -522,23 +534,7 @@ export default function Dashboard() {
                           <tr key={o.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                             <td className="py-2.5 pr-2 font-medium text-gray-800">#{o.id}</td>
                             <td className="py-2.5 pr-2 text-gray-600">{o.customer?.name ?? 'Guest'}</td>
-                            <td className="py-2.5 pr-2">
-                              {(o.items ?? []).slice(0, 3).map((item, i) => {
-                                const name = item.product?.name ?? item.name ?? 'Unknown'
-                                const vars = [item.size?.name, item.sugarLevel?.name, item.iceLevel?.name].filter(Boolean).join('|')
-                                const adds = (item.addons ?? []).map(a => a.addon?.name).filter(Boolean).join(',')
-                                return (
-                                  <div key={i} className="text-xs leading-tight mb-0.5">
-                                    <span className="text-gray-700 font-medium">{name}</span>
-                                    {vars && <span className="text-gray-400"> ({vars})</span>}
-                                    {adds && <span className="text-gray-400"> +{adds}</span>}
-                                    <span className="text-gray-500"> x{item.qty ?? 1}</span>
-                                  </div>
-                                )
-                              })}
-                              {(o.items ?? []).length > 3 && <div className="text-xs text-gray-400">+{o.items.length - 3} more</div>}
-                              {(o.items ?? []).length === 0 && <span className="text-xs text-gray-400">—</span>}
-                            </td>
+                            <td className="py-2.5 pr-2 text-gray-600">{(o.items ?? []).reduce((s, i) => s + (i.qty ?? 1), 0)}</td>
                             <td className="py-2.5 pr-2 text-gray-800 font-medium">${Number(o.total ?? 0).toFixed(2)}</td>
                             <td className="py-2.5 pr-2">
                               <select
@@ -565,7 +561,7 @@ export default function Dashboard() {
                                 <option value="Cancelled">Cancelled</option>
                               </select>
                             </td>
-                            <td className="py-2.5 text-right">
+                            <td className="py-2.5 text-right flex items-center justify-end gap-1">
                               <button onClick={() => setSelectedOrder(o)} className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors">
                                 View Detail
                               </button>
@@ -660,27 +656,31 @@ export default function Dashboard() {
 
           {selectedOrder && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4">
+              <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-800">#{selectedOrder.id} - Items</h2>
+                  <h2 className="text-lg font-semibold text-gray-800">#{selectedOrder.id}</h2>
                   <button onClick={() => setSelectedOrder(null)} className="text-gray-400 hover:text-gray-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
-                <div className="px-6 py-4">
+                <div className="px-6 py-4 overflow-y-auto">
                   <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                    <span>Customer: <span className="text-gray-800 font-medium">{selectedOrder.customer?.name ?? 'Guest'}</span>{selectedOrder.customer?.phone ? ` \u2014 ${selectedOrder.customer.phone}` : ''}{selectedOrder.table ? ` | Table: ${selectedOrder.table?.name ?? selectedOrder.table}` : ''}</span>
-                    <span>{(selectedOrder.created_at ?? '').slice(0, 10)}</span>
+                    <div className="flex items-center gap-4">
+                      <span><span className="text-gray-400">Customer:</span> <span className="text-gray-800 font-medium">{selectedOrder.customer?.name ?? 'Guest'}</span></span>
+                      {selectedOrder.customer?.phone && <><span className="text-gray-300">|</span><span>{selectedOrder.customer.phone}</span></>}
+                      {selectedOrder.table && <><span className="text-gray-300">|</span><span>Table: <span className="text-gray-800 font-medium">{selectedOrder.table?.name ?? selectedOrder.table}</span></span></>}
+                    </div>
+                    <span className="text-gray-400">{(() => { const d = new Date(selectedOrder.created_at ?? ''); if (isNaN(d)) return ''; const kh = new Date(d.getTime() + 7 * 60 * 60 * 1000); return kh.toISOString().slice(0, 19).replace('T', ' ') })()}</span>
                   </div>
-                  <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-500">Status:</span>
                       <select
                         value={selectedOrder.status ?? 'Pending'}
                         onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
-                        className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${statusColors[selectedOrder.status ?? 'Pending']?.split(' ')[0] || 'text-gray-600'}`}
                       >
                         <option value="Pending">Pending</option>
                         <option value="Processing">Processing</option>
@@ -693,18 +693,23 @@ export default function Dashboard() {
                       <select
                         value={selectedOrder.payment_status ?? 'Unpaid'}
                         onChange={(e) => handlePaymentChange(selectedOrder.id, e.target.value)}
-                        className="text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${paymentColors[selectedOrder.payment_status ?? 'Unpaid']?.split(' ')[0] || 'text-gray-600'}`}
                       >
                         <option value="Paid">Paid</option>
                         <option value="Unpaid">Unpaid</option>
                         <option value="Refunded">Refunded</option>
                       </select>
                     </div>
+                    <span className="text-sm text-gray-400 ml-auto">Method: <span className="text-gray-700 font-medium capitalize">{selectedOrder.payment_method ?? '-'}</span></span>
                   </div>
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-left text-gray-500 font-medium border-b border-gray-100">
+                      <tr className="text-left text-gray-500 font-medium border-b border-gray-200">
                         <th className="pb-2">Item</th>
+                        <th className="pb-2">Size</th>
+                        <th className="pb-2">Sugar</th>
+                        <th className="pb-2">Ice</th>
+                        <th className="pb-2">Add-ons</th>
                         <th className="pb-2">Qty</th>
                         <th className="pb-2 text-right">Price</th>
                         <th className="pb-2 text-right">Subtotal</th>
@@ -716,30 +721,26 @@ export default function Dashboard() {
                         const price = Number(item.unit_price ?? item.price ?? 0)
                         const qty = item.qty ?? 1
                         const size = item.size?.name ?? ''
-                        const sugar = item.sugarLevel?.name ?? ''
-                        const ice = item.iceLevel?.name ?? ''
+                        const sugar = item.sugar_level?.name ?? ''
+                        const ice = item.ice_level?.name ?? ''
                         const addOn = (item.addons ?? []).map((a) => a.addon?.name).filter(Boolean).join(', ')
                         return (
                           <tr key={i} className="border-b border-gray-50">
-                            <td className="py-2 text-gray-800">
-                              <div>{name}</div>
-                              <div className="text-xs text-gray-400 space-x-1">
-                                {size && <span>{size}</span>}
-                                {sugar && <><span>|</span><span>{sugar}</span></>}
-                                {ice && <><span>|</span><span>{ice}</span></>}
-                                {addOn && <><span>|</span><span>{addOn}</span></>}
-                              </div>
-                            </td>
-                            <td className="py-2 text-gray-600">{qty}</td>
-                            <td className="py-2 text-gray-600 text-right">${price.toFixed(2)}</td>
-                            <td className="py-2 text-gray-800 text-right">${(qty * price).toFixed(2)}</td>
+                            <td className="py-2.5 text-gray-800 font-medium">{name}</td>
+                            <td className="py-2.5 text-gray-600">{size || '-'}</td>
+                            <td className="py-2.5 text-gray-600">{sugar || '-'}</td>
+                            <td className="py-2.5 text-gray-600">{ice || '-'}</td>
+                            <td className="py-2.5 text-gray-600">{addOn || '-'}</td>
+                            <td className="py-2.5 text-gray-600">{qty}</td>
+                            <td className="py-2.5 text-gray-600 text-right">${price.toFixed(2)}</td>
+                            <td className="py-2.5 text-gray-800 text-right font-medium">${(qty * price).toFixed(2)}</td>
                           </tr>
                         )
                       })}
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colSpan={3} className="pt-3 text-right font-semibold text-gray-800">Total</td>
+                        <td colSpan={7} className="pt-3 text-right font-semibold text-gray-800">Total</td>
                         <td className="pt-3 text-right font-semibold text-gray-800">${Number(selectedOrder.total ?? 0).toFixed(2)}</td>
                       </tr>
                     </tfoot>
@@ -748,46 +749,49 @@ export default function Dashboard() {
                 <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
                   <button
                     onClick={() => {
+                      fetch(`${API_URL}/orders/${selectedOrder.id}/mark-printed`, { method: 'POST', headers }).catch(() => {})
                       const w = window.open('', '_blank')
                       const o = selectedOrder
-                      const itemsHtml = (o.items ?? []).map(item => {
+                      const itemsHtml = (o.items ?? []).map((item, idx) => {
                         const name = item.product?.name ?? item.name ?? 'Unknown'
                         const qty = item.qty ?? 1
                         const price = Number(item.unit_price ?? item.price ?? 0)
                         const size = item.size?.name ?? ''
-                        const sugar = item.sugarLevel?.name ?? ''
-                        const ice = item.iceLevel?.name ?? ''
+                        const sugar = item.sugar_level?.name ?? ''
+                        const ice = item.ice_level?.name ?? ''
                         const addOn = (item.addons ?? []).map(a => a.addon?.name).filter(Boolean).join(', ')
-                        const vars = [size, sugar, ice, addOn].filter(Boolean).join(' | ')
-                        return `<tr><td style="padding:4px 8px">${name}${vars ? '<br><span style="color:#888;font-size:11px">'+vars+'</span>' : ''}</td><td style="padding:4px 8px;text-align:center">${qty}</td><td style="padding:4px 8px;text-align:right">$${price.toFixed(2)}</td><td style="padding:4px 8px;text-align:right">$${(qty * price).toFixed(2)}</td></tr>`
+                        const vars = [size, sugar, ice, addOn].filter(Boolean).join('|')
+                        return `<tr><td style="padding:4px 4px;text-align:center;font-size:10px">${idx + 1}</td><td style="padding:4px 4px;font-size:10px">${name}${vars ? '<br><span style="color:#666;font-size:8px">'+vars+'</span>' : ''}</td><td style="padding:4px 4px;text-align:center;font-size:10px">${qty}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${price.toFixed(2)}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${(qty * price).toFixed(2)}</td></tr>`
                       }).join('')
                       w.document.write(`
+
+
                         <html><head><title>Receipt #${o.id}</title>
                         <style>
-                          body { font-family: 'Courier New', monospace; font-size: 13px; margin: 20px; }
-                          h1 { font-size: 18px; text-align: center; margin-bottom: 4px; }
-                          .info { text-align: center; color: #555; margin-bottom: 16px; font-size: 12px; }
+                          body { font-family: 'Courier New', monospace; font-size: 11px; margin: 0; padding: 8px; width: 58mm; font-weight: bold; }
+                          h1 { font-size: 14px; text-align: center; margin-bottom: 4px; }
+                          .info { text-align: center; color: #555; margin-bottom: 12px; font-size: 10px; }
                           table { width: 100%; border-collapse: collapse; }
-                          th { border-bottom: 1px solid #333; padding: 6px 8px; text-align: left; font-size: 12px; }
+                          th { border-bottom: 1px solid #333; padding: 4px 4px; text-align: left; font-size: 10px; }
                           th.right { text-align: right; }
-                          td { padding: 6px 8px; }
-                          .total { border-top: 2px solid #333; font-weight: bold; font-size: 15px; }
-                          .total td { padding-top: 8px; }
-                          hr { border: none; border-top: 1px dashed #999; margin: 12px 0; }
-                          .footer { text-align: center; color: #888; font-size: 11px; margin-top: 16px; }
+                          td { padding: 4px 4px; font-size: 10px; }
+                          .total { border-top: 2px solid #333; font-weight: bold; font-size: 12px; }
+                          .total td { padding-top: 6px; }
+                          hr { border: none; border-top: 1px dashed #999; margin: 8px 0; }
+                          .footer { text-align: center; color: #888; font-size: 9px; margin-top: 12px; }
                         </style></head><body>
                         <h1>Visal Cafe</h1>
                         <div class="info">
                           Receipt #${o.id}<br>
                           ${o.customer?.name ?? 'Guest'}${o.customer?.phone ? ' &mdash; '+o.customer.phone : ''}${o.table ? ' | Table: '+(o.table?.name??o.table) : ''}<br>
-                          ${(o.created_at ?? '').slice(0, 10)}<br>
-                          Status: ${o.status ?? 'Pending'} | Payment: ${o.payment_status ?? 'Unpaid'}
+                          ${(() => { const d = new Date(o.created_at ?? ''); if (isNaN(d)) return ''; const kh = new Date(d.getTime() + 7 * 60 * 60 * 1000); return kh.toISOString().slice(0, 19).replace('T', ' ') })()}<br>
+                          Status: ${o.status ?? 'Pending'} | Payment: ${o.payment_status ?? 'Unpaid'}<br>Free WIFI<br>Username: Visal<br>Password: 12345678
                         </div>
                         <hr>
                         <table>
-                          <thead><tr><th>Item</th><th style="text-align:center">Qty</th><th class="right">Price</th><th class="right">Subtotal</th></tr></thead>
+                          <thead><tr><th style="text-align:center">No.</th><th>Item</th><th style="text-align:center">Qty</th><th class="right">Price</th><th class="right">Subtotal</th></tr></thead>
                           <tbody>${itemsHtml}</tbody>
-                          <tfoot><tr class="total"><td colspan="3" style="text-align:right">Total</td><td style="text-align:right">$${Number(o.total ?? 0).toFixed(2)}</td></tr></tfoot>
+                          <tfoot><tr class="total"><td colspan="4" style="text-align:right">Total</td><td style="text-align:right">$${Number(o.total ?? 0).toFixed(2)}</td></tr></tfoot>
                         </table>
                         <hr>
                         <div class="footer">Thank you for your visit!</div>

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import PrivateRoute from './routes/PrivateRoute.jsx'
 import Home from './pages/customer/Home.jsx'
 import Dashboard from './pages/staff/Dashboard.jsx'
 import Products from './pages/staff/Product/Products.jsx'
@@ -32,30 +33,30 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/staff/dashboard" element={<Dashboard />} />
-        <Route path="/staff/products" element={<Products />} />
-        <Route path="/staff/products/add" element={<CreateProduct />} />
-        <Route path="/staff/products/edit/:id" element={<EditProduct />} />
-        <Route path="/staff/products/:id" element={<ViewProduct />} />
-        <Route path="/staff/orders" element={<Orders />} />
-        <Route path="/staff/inventory" element={<Inventory />} />
-        <Route path="/staff/recipe" element={<Recipe />} />
-        <Route path="/staff/recipe/batch-edit/:productId/:sizeId" element={<RecipeBatchEdit />} />
-        <Route path="/staff/menu-order" element={<MenuOrder />} />
-        <Route path="/staff/permissions" element={<Permissions />} />
-        <Route path="/staff/users" element={<Users />} />
-        <Route path="/staff/customers" element={<Customers />} />
-        <Route path="/staff/roles" element={<Roles />} />
-        <Route path="/staff/reports" element={<Reports />} />
-        <Route path="/staff/tables" element={<Tables />} />
-        <Route path="/staff/addons" element={<Addon />} />
-        <Route path="/staff/addon-ingredients" element={<AddonIngredient />} />
-        <Route path="/staff/ingredients" element={<Ingredients />} />
-        <Route path="/staff/categories" element={<Category />} />
-        <Route path="/staff/sizes" element={<SizePage />} />
-        <Route path="/staff/ice-levels" element={<IceLevel />} />
-        <Route path="/staff/sugar-levels" element={<SugarLevel />} />
-        <Route path="/staff/user-test" element={<UserTest />} />
+        <Route path="/staff/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/staff/products" element={<PrivateRoute><Products /></PrivateRoute>} />
+        <Route path="/staff/products/add" element={<PrivateRoute><CreateProduct /></PrivateRoute>} />
+        <Route path="/staff/products/edit/:id" element={<PrivateRoute><EditProduct /></PrivateRoute>} />
+        <Route path="/staff/products/:id" element={<PrivateRoute><ViewProduct /></PrivateRoute>} />
+        <Route path="/staff/orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
+        <Route path="/staff/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />
+        <Route path="/staff/recipe" element={<PrivateRoute><Recipe /></PrivateRoute>} />
+        <Route path="/staff/recipe/batch-edit/:productId/:sizeId" element={<PrivateRoute><RecipeBatchEdit /></PrivateRoute>} />
+        <Route path="/staff/menu-order" element={<PrivateRoute><MenuOrder /></PrivateRoute>} />
+        <Route path="/staff/permissions" element={<PrivateRoute><Permissions /></PrivateRoute>} />
+        <Route path="/staff/users" element={<PrivateRoute><Users /></PrivateRoute>} />
+        <Route path="/staff/customers" element={<PrivateRoute><Customers /></PrivateRoute>} />
+        <Route path="/staff/roles" element={<PrivateRoute><Roles /></PrivateRoute>} />
+        <Route path="/staff/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
+        <Route path="/staff/tables" element={<PrivateRoute><Tables /></PrivateRoute>} />
+        <Route path="/staff/addons" element={<PrivateRoute><Addon /></PrivateRoute>} />
+        <Route path="/staff/addon-ingredients" element={<PrivateRoute><AddonIngredient /></PrivateRoute>} />
+        <Route path="/staff/ingredients" element={<PrivateRoute><Ingredients /></PrivateRoute>} />
+        <Route path="/staff/categories" element={<PrivateRoute><Category /></PrivateRoute>} />
+        <Route path="/staff/sizes" element={<PrivateRoute><SizePage /></PrivateRoute>} />
+        <Route path="/staff/ice-levels" element={<PrivateRoute><IceLevel /></PrivateRoute>} />
+        <Route path="/staff/sugar-levels" element={<PrivateRoute><SugarLevel /></PrivateRoute>} />
+        <Route path="/staff/user-test" element={<PrivateRoute><UserTest /></PrivateRoute>} />
         <Route path="/staff/login" element={<Login />} />
         <Route path="/staff/register" element={<Register />} />
       </Routes>
