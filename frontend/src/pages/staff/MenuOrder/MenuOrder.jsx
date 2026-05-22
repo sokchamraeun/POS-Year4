@@ -182,7 +182,7 @@ export default function MenuOrder() {
           customer_id: finalCustomerId || null,
           table_id: tableId || null,
           total,
-          status: 'Pending',
+          status: 'New',
           payment_method: paymentMethod === 'not_yet' ? null : paymentMethod,
           payment_status: paymentMethod === 'not_yet' ? 'Unpaid' : 'Paid',
           items,
@@ -209,7 +209,7 @@ export default function MenuOrder() {
         items: cart.reduce((sum, c) => sum + c.qty, 0),
         total,
         date: new Date().toISOString().slice(0, 10),
-        status: 'Pending',
+        status: 'New',
         payment: 'Unpaid',
         paymentMethod: paymentMethod === 'not_yet' ? null : paymentMethod,
         detail: cart.map((c) => ({
