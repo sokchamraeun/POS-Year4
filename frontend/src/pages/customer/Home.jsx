@@ -37,24 +37,27 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 ">
       <Navbar />
 
       <HeroSlider />
 
-      <section id="products" className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 py-16">
+      <section id="products" className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 py-16 bg-white rounded-lg shadow-sm mb-16 mt-12 "   style={{
+    backgroundImage:
+      "url('')",
+  }}>
         <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Our Menu</h2>
         {loading ? (
           <p className="text-center text-gray-500">Loading menu...</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 border bg-indigo-50 border-b   border-indigo-200 rounded-lg shadow-sm overflow-hidden rounded-xl shadow-sm p-6">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
       </section>
-
+        
       <Footer />
     </div>
   )
