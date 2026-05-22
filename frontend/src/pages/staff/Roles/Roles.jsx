@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 
+const API = import.meta.env.VITE_API_URL || '/api'
+
 export default function Roles() {
   const [roles, setRoles] = useState([])
   const [allPermissions, setAllPermissions] = useState([])
@@ -21,7 +23,7 @@ export default function Roles() {
 
   async function fetchRoles() {
     try {
-      const res = await fetch('/api/roles', { headers })
+      const res = await fetch(`${API}/roles`, { headers })
       const data = await res.json()
       setRoles(data.data || data)
     } catch (err) {
@@ -31,7 +33,7 @@ export default function Roles() {
 
   async function fetchPermissions() {
     try {
-      const res = await fetch('/api/permissions', { headers })
+      const res = await fetch(`${API}/permissions`, { headers })
       const data = await res.json()
       setAllPermissions(data.data || data)
     } catch (err) {
@@ -72,7 +74,7 @@ export default function Roles() {
   async function handleSave() {
     if (!formData.name || !formData.slug) return
     try {
-      const url = editing ? `/api/roles/${editing.id}` : '/api/roles'
+      const url = editing ? `${API}/roles/${editing.id}` : `${API}/roles`
       const method = editing ? 'PUT' : 'POST'
       const res = await fetch(url, {
         method,
@@ -91,7 +93,7 @@ export default function Roles() {
   async function handleDelete(id) {
     if (!confirm('Are you sure you want to delete this role?')) return
     try {
-      const res = await fetch(`/api/roles/${id}`, { method: 'DELETE', headers })
+      const res = await fetch(`${API}/roles/${id}`, { method: 'DELETE', headers })
       if (!res.ok) return
       fetchRoles()
     } catch (err) {

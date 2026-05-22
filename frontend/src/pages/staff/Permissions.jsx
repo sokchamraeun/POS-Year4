@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
+const API = import.meta.env.VITE_API_URL || '/api'
 const moduleOptions = ['', 'Dashboard', 'Products', 'Orders', 'Inventory', 'Recipe', 'Reports', 'Permissions']
 
 export default function Permissions() {
@@ -19,7 +20,7 @@ export default function Permissions() {
 
   async function fetchPermissions() {
     try {
-      const res = await fetch('/api/permissions', { headers })
+      const res = await fetch(`${API}/permissions`, { headers })
       const data = await res.json()
       setPermissions(data.data || data)
     } catch (err) {
@@ -46,7 +47,7 @@ export default function Permissions() {
   async function handleSave() {
     if (!formData.name || !formData.slug) return
     try {
-      const url = editing ? `/api/permissions/${editing.id}` : '/api/permissions'
+      const url = editing ? `${API}/permissions/${editing.id}` : `${API}/permissions`
       const method = editing ? 'PUT' : 'POST'
       const res = await fetch(url, { method, headers, body: JSON.stringify(formData) })
       if (!res.ok) return
@@ -61,7 +62,7 @@ export default function Permissions() {
   async function handleDelete(id) {
     if (!confirm('Are you sure you want to delete this permission?')) return
     try {
-      const res = await fetch(`/api/permissions/${id}`, { method: 'DELETE', headers })
+      const res = await fetch(`${API}/permissions/${id}`, { method: 'DELETE', headers })
       if (!res.ok) return
       fetchPermissions()
     } catch (err) {
