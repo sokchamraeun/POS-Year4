@@ -2,25 +2,14 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import CartSidebar from "./CartSidebar.jsx";
 import { useCart } from "../../context/CartContext.jsx";
-
-function safeParseUser() {
-  try {
-    const raw = localStorage.getItem("user");
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
+import { useCustomerAuth } from "../../context/CustomerAuthContext.jsx";
 
 export default function Navbar() {
   const { totalItems: cartCount } = useCart();
+  const { customer, isLoggedIn, logout: customerLogout } = useCustomerAuth();
   const [cartOpen, setCartOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    () => !!localStorage.getItem("token"),
-  );
-  const [user, setUser] = useState(() => safeParseUser());
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -33,10 +22,7 @@ export default function Navbar() {
   }, []);
 
   function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setIsLoggedIn(false);
-    setUser(null);
+    customerLogout();
     navigate("/");
     setMenuOpen(false);
   }
@@ -199,13 +185,13 @@ export default function Navbar() {
                   <div className="relative">
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-full flex items-center justify-center shadow-md">
                       <span className="text-white font-bold text-sm">
-                        {user?.name?.[0]?.toUpperCase()}
+                        {customer?.name?.[0]?.toUpperCase()}
                       </span>
                     </div>
                     <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"></div>
                   </div>
                   <span className="text-sm font-semibold text-gray-700">
-                    {user?.name?.split(" ")[0]}
+                    {customer?.name?.split(" ")[0]}
                   </span>
                   <button
                     onClick={handleLogout}
@@ -216,7 +202,7 @@ export default function Navbar() {
                 </div>
               ) : (
                 <Link
-                  to="/staff/login"
+                  to="/customer/login"
                   className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:shadow-lg transition-all duration-200 hover:scale-105 active:scale-95 font-medium text-sm"
                 >
                   {userIcon}
@@ -288,14 +274,14 @@ export default function Navbar() {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-full flex items-center justify-center shadow-md">
                           <span className="text-white font-bold text-sm">
-                            {user?.name?.[0]?.toUpperCase()}
+                            {customer?.name?.[0]?.toUpperCase()}
                           </span>
                         </div>
                         <div>
                           <p className="text-sm font-semibold text-gray-700">
-                            {user?.name}
+                            {customer?.name}
                           </p>
-                          <p className="text-xs text-gray-500">{user?.email}</p>
+                          <p className="text-xs text-gray-500">{customer?.phone}</p>
                         </div>
                       </div>
                       <button
@@ -308,7 +294,7 @@ export default function Navbar() {
                   </div>
                 ) : (
                   <Link
-                    to="/staff/login"
+                    to="/customer/login"
                     onClick={() => setMenuOpen(false)}
                     className="mx-4 mt-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-medium transition-all duration-200"
                   >

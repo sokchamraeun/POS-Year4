@@ -1,16 +1,24 @@
 import { useState, useEffect } from 'react'
 import CartItem from './CartItem.jsx'
 import { useCart } from '../../context/CartContext.jsx'
+import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 
 export default function CartSidebar({ open, onClose }) {
   const { items, totalItems, totalPrice, clearCart } = useCart()
+  const { customer, isLoggedIn } = useCustomerAuth()
   const [placing, setPlacing] = useState(false)
   const [done, setDone] = useState(false)
-  const [phone, setPhone] = useState('')
+  const [phone, setPhone] = useState(customer?.phone || '')
   const [selectedTable, setSelectedTable] = useState('')
   const [tables, setTables] = useState([])
+
+  useEffect(() => {
+    if (customer?.phone) {
+      setPhone(customer.phone)
+    }
+  }, [customer])
 
   function handleClose() {
     setDone(false)
@@ -33,10 +41,8 @@ export default function CartSidebar({ open, onClose }) {
   async function placeOrder() {
     setPlacing(true)
     try {
-      let customerId = null
-      if (phone.trim()) {
-        const loggedUser = JSON.parse(localStorage.getItem('user') || '{}')
-        const custName = loggedUser?.name || phone.trim()
+      let customerId = customer?.id || null
+      if (!customerId && phone.trim()) {
         const custRes = await fetch(`${API_URL}/customers?phone=${encodeURIComponent(phone.trim())}`, {
           headers: { 'Accept': 'application/json' },
         })
@@ -44,18 +50,11 @@ export default function CartSidebar({ open, onClose }) {
         const existing = custData.data?.find(c => c.phone === phone.trim())
         if (existing) {
           customerId = existing.id
-          if (existing.name !== custName) {
-            await fetch(`${API_URL}/customers/${existing.id}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-              body: JSON.stringify({ name: custName, phone: phone.trim() }),
-            })
-          }
         } else {
           const createRes = await fetch(`${API_URL}/customers`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ phone: phone.trim(), name: custName }),
+            body: JSON.stringify({ phone: phone.trim(), name: phone.trim() }),
           })
           if (createRes.ok) {
             const created = await createRes.json()
@@ -154,13 +153,19 @@ export default function CartSidebar({ open, onClose }) {
 
         {items.length > 0 && !done && (
           <div className="border-t border-gray-200 px-5 py-4 space-y-3">
-            <input
-              type="tel"
-              placeholder="Phone number (optional)"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            {isLoggedIn ? (
+              <div className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 text-gray-700">
+                {customer?.name} ({customer?.phone})
+              </div>
+            ) : (
+              <input
+                type="tel"
+                placeholder="Phone number (optional)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            )}
             <select
               value={selectedTable}
               onChange={(e) => setSelectedTable(e.target.value)}

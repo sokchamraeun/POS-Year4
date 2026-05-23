@@ -39,6 +39,10 @@ export default function Login() {
         return;
       }
 
+      // clear any leftover customer auth
+      localStorage.removeItem("customer_token");
+      localStorage.removeItem("customer");
+
       // 🔥 IMPORTANT: store ONLY token
       localStorage.setItem("token", data.token);
 

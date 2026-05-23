@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AddonIngredientController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\CustomerAuthController;
 use App\Http\Controllers\Api\IceLevelController;
 use App\Http\Controllers\Api\IngredientController;
 use App\Http\Controllers\Api\InventoryTransactionController;
@@ -20,14 +21,35 @@ use App\Http\Controllers\Api\SugarLevelController;
 use App\Http\Controllers\Api\TableController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
-//test
+
+// Public auth routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/customer/register', [CustomerAuthController::class, 'register']);
+Route::post('/customer/login', [CustomerAuthController::class, 'login']);
+Route::post('/customer/forgot-password', [CustomerAuthController::class, 'forgotPassword']);
 
-Route::middleware('auth:sanctum')->group(function () {});
+// Customer-facing public routes (no auth required)
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{product}', [ProductController::class, 'show']);
+Route::get('/tables/available', [TableController::class, 'available']);
+Route::post('/orders', [OrderController::class, 'store']);
+Route::post('/orders/check-stock', [OrderController::class, 'checkStock']);
+Route::get('/orders/history', [OrderController::class, 'customerHistory']);
+Route::get('/orders/user-history', [OrderController::class, 'userHistory']);
+Route::get('/tables', [TableController::class, 'index']);
+
+// Protected routes (staff + customer auth)
+Route::middleware('auth:sanctum')->group(function () {
+    // Staff auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
 
+    // Customer auth
+    Route::post('/customer/logout', [CustomerAuthController::class, 'logout']);
+    Route::get('/customer/me', [CustomerAuthController::class, 'me']);
+
+    // Staff management
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::post('/users', [UserController::class, 'store']);
@@ -81,37 +103,34 @@ Route::middleware('auth:sanctum')->group(function () {});
     Route::put('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'update']);
     Route::delete('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'destroy']);
 
-    Route::get('/products', [ProductController::class, 'index']);
-    Route::get('/products/{product}', [ProductController::class, 'show']);
+    // Staff product management
     Route::post('/products', [ProductController::class, 'store']);
     Route::put('/products/{product}', [ProductController::class, 'update']);
     Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 
+    // Customer management (staff)
     Route::get('/customers', [CustomerController::class, 'index']);
     Route::get('/customers/{customer}', [CustomerController::class, 'show']);
     Route::post('/customers', [CustomerController::class, 'store']);
     Route::put('/customers/{customer}', [CustomerController::class, 'update']);
     Route::delete('/customers/{customer}', [CustomerController::class, 'destroy']);
 
+    // Staff order management
     Route::get('/orders', [OrderController::class, 'index']);
-    Route::get('/orders/history', [OrderController::class, 'customerHistory']);
-    Route::get('/orders/user-history', [OrderController::class, 'userHistory']);
     Route::get('/orders/{order}', [OrderController::class, 'show']);
-    Route::post('/orders', [OrderController::class, 'store']);
-    Route::post('/orders/check-stock', [OrderController::class, 'checkStock']);
     Route::put('/orders/{order}', [OrderController::class, 'update']);
     Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
     Route::post('/orders/{order}/mark-printed', [OrderController::class, 'markPrinted']);
     Route::post('/orders/payment/initiate', [PaymentCheckoutController::class, 'initiate']);
     Route::match(['get', 'post'], '/orders/payment/callback', [PaymentCheckoutController::class, 'callback']);
 
-    Route::get('/tables', [TableController::class, 'index']);
-    Route::get('/tables/available', [TableController::class, 'available']);
+    // Table management (staff)
     Route::get('/tables/{table}', [TableController::class, 'show']);
     Route::post('/tables', [TableController::class, 'store']);
     Route::put('/tables/{table}', [TableController::class, 'update']);
     Route::delete('/tables/{table}', [TableController::class, 'destroy']);
 
+    // Ingredient & recipe management (staff)
     Route::get('/ingredients', [IngredientController::class, 'index']);
     Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show']);
     Route::post('/ingredients', [IngredientController::class, 'store']);
@@ -139,4 +158,4 @@ Route::middleware('auth:sanctum')->group(function () {});
         Route::get('/customers', [ReportController::class, 'customers']);
         Route::get('/payments', [ReportController::class, 'payments']);
     });
-
+});

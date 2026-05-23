@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import PrivateRoute from './routes/PrivateRoute.jsx'
 import Home from './pages/customer/Home.jsx'
 import History from './pages/customer/History.jsx'
+import CustomerLogin from './pages/customer/CustomerLogin.jsx'
+import CustomerRegister from './pages/customer/CustomerRegister.jsx'
+import CustomerForgotPassword from './pages/customer/CustomerForgotPassword.jsx'
 import Dashboard from './pages/staff/Dashboard.jsx'
 import Products from './pages/staff/Product/Products.jsx'
 import CreateProduct from './pages/staff/Product/Create.jsx'
@@ -35,6 +38,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/history" element={<History />} />
+        <Route path="/customer/login" element={<CustomerLogin />} />
+        <Route path="/customer/register" element={<CustomerRegister />} />
+        <Route path="/customer/forgot-password" element={<CustomerForgotPassword />} />
         <Route path="/staff/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/staff/products" element={<PrivateRoute><Products /></PrivateRoute>} />
         <Route path="/staff/products/add" element={<PrivateRoute><CreateProduct /></PrivateRoute>} />
