@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 export default function ProductCard({ product, onAddToCart }) {
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0]?.name || '')
   const [selectedSugar, setSelectedSugar] = useState(product.sugar_levels?.[0]?.name || '')
@@ -8,6 +10,7 @@ export default function ProductCard({ product, onAddToCart }) {
   const [qty, setQty] = useState(1)
   const [isAdded, setIsAdded] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
+  const [stockMsg, setStockMsg] = useState('')
 
   function getBasePrice(sizeName) {
     const size = product.sizes?.find((s) => s.name === sizeName)
@@ -22,7 +25,43 @@ export default function ProductCard({ product, onAddToCart }) {
 
   const price = getBasePrice(selectedSize) + getAddOnPrice(selectedAddOn)
 
-  const handleAddToCart = () => {
+  async function handleAddToCart() {
+    setStockMsg('')
+    const size = product.sizes?.find((s) => s.name === selectedSize)
+    const addon = product.addons?.find((a) => a.name === selectedAddOn)
+
+    try {
+      const res = await fetch(`${API_URL}/orders/check-stock`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          items: [{
+            product_id: product.id,
+            size_id: size?.id,
+            qty,
+            addon_id: addon?.id || null,
+          }],
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setStockMsg('Stock check error: ' + (data?.message || 'Request failed'))
+        setTimeout(() => setStockMsg(''), 4000)
+        return
+      }
+      if (!data.available) {
+        // const errors = Array.isArray(data.errors) ? data.errors.join('; ') : 'Insufficient ingredients'
+        setStockMsg('out stock')
+        setTimeout(() => setStockMsg(''), 4000)
+        return
+      }
+    } catch (err) {
+      const msg = err?.message || String(err)
+      setStockMsg('Stock check error: ' + msg)
+      setTimeout(() => setStockMsg(''), 5000)
+      return
+    }
+
     const item = {
       ...product,
       size: selectedSize,
@@ -33,8 +72,6 @@ export default function ProductCard({ product, onAddToCart }) {
       qty,
     }
     onAddToCart?.(item)
-    
-    // Animation feedback
     setIsAdded(true)
     setTimeout(() => setIsAdded(false), 1000)
   }
@@ -163,6 +200,13 @@ export default function ProductCard({ product, onAddToCart }) {
           </select>
         </div>
 
+        {/* Stock message */}
+        {stockMsg && (
+          <div className="text-xs text-red-600 bg-red-50 rounded-lg px-2 py-1.5 mb-2 text-center">
+            {stockMsg}
+          </div>
+        )}
+
         {/* Quantity and Add to Cart */}
         <div className="flex items-center justify-between gap-3 mt-auto pt-2">
           <div className="flex items-center gap-2 bg-gray-100 rounded-xl p-1">
@@ -215,7 +259,7 @@ export default function ProductCard({ product, onAddToCart }) {
       </div>
 
       {/* Add this CSS to your global styles or component */}
-      <style>{`
+      <style jsx>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.5; }

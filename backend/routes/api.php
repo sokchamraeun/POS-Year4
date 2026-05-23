@@ -94,8 +94,11 @@ Route::middleware('auth:sanctum')->group(function () {});
     Route::delete('/customers/{customer}', [CustomerController::class, 'destroy']);
 
     Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/history', [OrderController::class, 'customerHistory']);
+    Route::get('/orders/user-history', [OrderController::class, 'userHistory']);
     Route::get('/orders/{order}', [OrderController::class, 'show']);
     Route::post('/orders', [OrderController::class, 'store']);
+    Route::post('/orders/check-stock', [OrderController::class, 'checkStock']);
     Route::put('/orders/{order}', [OrderController::class, 'update']);
     Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
     Route::post('/orders/{order}/mark-printed', [OrderController::class, 'markPrinted']);

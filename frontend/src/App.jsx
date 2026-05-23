@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import PrivateRoute from './routes/PrivateRoute.jsx'
 import Home from './pages/customer/Home.jsx'
+import History from './pages/customer/History.jsx'
 import Dashboard from './pages/staff/Dashboard.jsx'
 import Products from './pages/staff/Product/Products.jsx'
 import CreateProduct from './pages/staff/Product/Create.jsx'
@@ -33,6 +34,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/history" element={<History />} />
         <Route path="/staff/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/staff/products" element={<PrivateRoute><Products /></PrivateRoute>} />
         <Route path="/staff/products/add" element={<PrivateRoute><CreateProduct /></PrivateRoute>} />

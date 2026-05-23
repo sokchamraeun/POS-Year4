@@ -9,9 +9,13 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $customers = Customer::withCount('orders')->orderBy('id')->paginate(10);
+        $query = Customer::withCount('orders');
+        if ($request->filled('phone')) {
+            $query->where('phone', $request->phone);
+        }
+        $customers = $query->orderBy('id')->paginate(10);
         return response()->json($customers);
     }
 

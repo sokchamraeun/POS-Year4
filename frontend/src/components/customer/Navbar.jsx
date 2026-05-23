@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import CartSidebar from "./CartSidebar.jsx";
+import { useCart } from "../../context/CartContext.jsx";
 
 function safeParseUser() {
   try {
@@ -11,6 +13,8 @@ function safeParseUser() {
 }
 
 export default function Navbar() {
+  const { totalItems: cartCount } = useCart();
+  const [cartOpen, setCartOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -19,7 +23,6 @@ export default function Navbar() {
   const [user, setUser] = useState(() => safeParseUser());
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const cartCount = 3;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -134,6 +137,16 @@ export default function Navbar() {
                 Home
               </a>
               <Link
+                to="/history"
+                className={`px-4 py-2 rounded-4xl text-sm font-medium transition-all duration-200 ${
+                  isActive("/history")
+                    ? "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 shadow-sm"
+                    : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                }`}
+              >
+                History
+              </Link>
+              <Link
                 to="/service"
                 className={`px-4 py-2 rounded-4xl text-sm font-medium transition-all duration-200 ${
                   isActive("/service")
@@ -168,17 +181,17 @@ export default function Navbar() {
             {/* Right Section */}
             <div className="flex items-center gap-2">
               {/* Cart Button */}
-              <Link
-                to="/cart"
+              <button
+                onClick={() => setCartOpen(true)}
                 className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group"
               >
                 {cartIcon}
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg animate-pulse">
+                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                     {cartCount}
                   </span>
                 )}
-              </Link>
+              </button>
 
               {/* User Menu */}
               {isLoggedIn ? (
@@ -240,6 +253,13 @@ export default function Navbar() {
                 >
                   Home
                 </a>
+                <Link
+                  to="/history"
+                  onClick={() => setMenuOpen(false)}
+                  className="px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 font-medium transition-all duration-200"
+                >
+                  History
+                </Link>
                 <Link
                   to="/service"
                   onClick={() => setMenuOpen(false)}
@@ -305,29 +325,27 @@ export default function Navbar() {
       {/* Spacer to prevent content from hiding under fixed navbar */}
       <div className="h-16"></div>
 
+      <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} />
+
       {/* Add custom animations */}
       <style jsx>{`
         @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         .animate-slideDown {
           animation: slideDown 0.3s ease-out;
         }
+        @keyframes slideLeft {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+        .animate-slideLeft {
+          animation: slideLeft 0.25s ease-out;
+        }
         @keyframes pulse {
-          0%,
-          100% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.1);
-          }
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.1); }
         }
         .animate-pulse {
           animation: pulse 1.5s ease-in-out infinite;

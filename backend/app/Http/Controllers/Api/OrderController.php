@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AddonIngredient;
+use App\Models\Customer;
 use App\Models\InventoryTransaction;
 use App\Models\Order;
 use App\Models\Recipe;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +26,35 @@ class OrderController extends Controller
     {
         $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
         return response()->json($order);
+    }
+
+    public function customerHistory(Request $request): JsonResponse
+    {
+        $data = $request->validate(['phone' => 'required|string']);
+        $customer = Customer::where('phone', $data['phone'])->first();
+        if (!$customer) {
+            return response()->json(['data' => [], 'message' => 'No orders found']);
+        }
+        $orders = Order::with(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon'])
+            ->where('customer_id', $customer->id)
+            ->orderByDesc('id')
+            ->paginate(10);
+        return response()->json($orders);
+    }
+
+    public function userHistory(Request $request): JsonResponse
+    {
+        $data = $request->validate(['email' => 'required|email']);
+        $user = User::where('email', $data['email'])->first();
+        if (!$user) {
+            return response()->json(['data' => [], 'message' => 'No orders found']);
+        }
+        $orders = Order::with(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon'])
+            ->whereHas('customer', fn($q) => $q->where('name', $user->name))
+            ->orWhereHas('customer', fn($q) => $q->where('phone', $user->email))
+            ->orderByDesc('id')
+            ->paginate(10);
+        return response()->json($orders);
     }
 
     public function store(Request $request): JsonResponse
@@ -55,6 +86,7 @@ class OrderController extends Controller
 
             $recipes = $this->getRecipes($itemData['product_id'], $sizeId);
             foreach ($recipes as $recipe) {
+                if (!$recipe->ingredient) continue;
                 $needed = $recipe->quantity * $qty;
                 if ($recipe->ingredient->stock_quantity < $needed) {
                     $insufficient[] = sprintf(
@@ -73,6 +105,7 @@ class OrderController extends Controller
                     $addonIngredients = AddonIngredient::where('addon_id', $addonData['addon_id'])
                         ->with('ingredient')->get();
                     foreach ($addonIngredients as $ai) {
+                        if (!$ai->ingredient) continue;
                         $needed = $ai->quantity * $qty;
                         if ($ai->ingredient->stock_quantity < $needed) {
                             $insufficient[] = sprintf(
@@ -129,6 +162,7 @@ class OrderController extends Controller
 
                         $addonIngredients = AddonIngredient::where('addon_id', $addonData['addon_id'])->get();
                         foreach ($addonIngredients as $ai) {
+                            if (!$ai->ingredient) continue;
                             $deductQty = $ai->quantity * $qty;
                             $ai->ingredient->decrement('stock_quantity', $deductQty);
                             InventoryTransaction::create([
@@ -143,6 +177,7 @@ class OrderController extends Controller
 
                 $recipes = $this->getRecipes($itemData['product_id'], $sizeId);
                 foreach ($recipes as $recipe) {
+                    if (!$recipe->ingredient) continue;
                     $deductQty = $recipe->quantity * $qty;
                     $recipe->ingredient->decrement('stock_quantity', $deductQty);
                     InventoryTransaction::create([
@@ -216,6 +251,65 @@ class OrderController extends Controller
         ]);
     }
 
+    public function checkStock(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'items' => 'required|array',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.size_id' => 'required|exists:sizes,id',
+            'items.*.qty' => 'nullable|integer|min:1',
+            'items.*.addon_id' => 'nullable|exists:addons,id',
+        ]);
+
+        $insufficient = [];
+        foreach ($data['items'] as $itemData) {
+            $qty = $itemData['qty'] ?? 1;
+            $recipes = Recipe::where('product_id', $itemData['product_id'])
+                ->where('size_id', $itemData['size_id'])
+                ->with('ingredient')
+                ->get();
+
+            foreach ($recipes as $recipe) {
+                if (!$recipe->ingredient) continue;
+                $needed = $recipe->quantity * $qty;
+                if ($recipe->ingredient->stock_quantity < $needed) {
+                    $insufficient[] = sprintf(
+                        '%s: need %.2f %s, have %.2f %s',
+                        $recipe->ingredient->name,
+                        $needed,
+                        $recipe->ingredient->unit,
+                        $recipe->ingredient->stock_quantity,
+                        $recipe->ingredient->unit
+                    );
+                }
+            }
+
+            if (!empty($itemData['addon_id'])) {
+                $addonIngredients = AddonIngredient::where('addon_id', $itemData['addon_id'])
+                    ->with('ingredient')->get();
+                foreach ($addonIngredients as $ai) {
+                    if (!$ai->ingredient) continue;
+                    $needed = $ai->quantity * $qty;
+                    if ($ai->ingredient->stock_quantity < $needed) {
+                        $insufficient[] = sprintf(
+                            '%s: need %.2f %s, have %.2f %s',
+                            $ai->ingredient->name,
+                            $needed,
+                            $ai->ingredient->unit,
+                            $ai->ingredient->stock_quantity,
+                            $ai->ingredient->unit
+                        );
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'available' => empty($insufficient),
+            'errors' => $insufficient,
+        ]);
+    }
+
     private function getRecipes(int $productId, int $sizeId): \Illuminate\Database\Eloquent\Collection
     {
         return Recipe::where('product_id', $productId)
@@ -234,6 +328,7 @@ class OrderController extends Controller
 
             $recipes = $this->getRecipes($item->product_id, $sizeId);
             foreach ($recipes as $recipe) {
+                if (!$recipe->ingredient) continue;
                 $restoreQty = $recipe->quantity * $qty;
                 $recipe->ingredient->increment('stock_quantity', $restoreQty);
                 InventoryTransaction::create([
@@ -247,6 +342,7 @@ class OrderController extends Controller
             foreach ($item->addons as $orderAddon) {
                 $addonIngredients = AddonIngredient::where('addon_id', $orderAddon->addon_id)->get();
                 foreach ($addonIngredients as $ai) {
+                    if (!$ai->ingredient) continue;
                     $restoreQty = $ai->quantity * $qty;
                     $ai->ingredient->increment('stock_quantity', $restoreQty);
                     InventoryTransaction::create([

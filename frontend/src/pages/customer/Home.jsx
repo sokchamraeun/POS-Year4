@@ -3,10 +3,12 @@ import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
 import HeroSlider from '../../components/customer/HeroSlider.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
+import { useCart } from '../../context/CartContext.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 
 export default function Home() {
+  const { addItem } = useCart()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -52,7 +54,7 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 border bg-indigo-50 border-b   border-indigo-200 rounded-lg shadow-sm overflow-hidden rounded-xl shadow-sm p-6">
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} onAddToCart={(item) => addItem(product, item)} />
             ))}
           </div>
         )}
