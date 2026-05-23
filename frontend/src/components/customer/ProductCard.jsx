@@ -41,7 +41,7 @@ export default function ProductCard({ product, onAddToCart }) {
 
   return (
     <div 
-      className="group relative bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col transform hover:-translate-y-1"
+      className="group relative bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-400 flex flex-col transform hover:-translate-y-1"
     >
       {/* Badge for popular items (optional) */}
       {product.isPopular && (
@@ -215,7 +215,7 @@ export default function ProductCard({ product, onAddToCart }) {
       </div>
 
       {/* Add this CSS to your global styles or component */}
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.5; }
