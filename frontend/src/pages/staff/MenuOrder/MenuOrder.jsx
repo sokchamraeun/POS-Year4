@@ -35,8 +35,8 @@ export default function MenuOrder() {
 
 
   const filteredCustomers = customers.filter((c) =>
-    c.name.toLowerCase().includes(customerSearch.toLowerCase()) ||
-    c.phone.includes(customerSearch)
+    (c.name ?? '').toLowerCase().includes(customerSearch.toLowerCase()) ||
+    (c.phone ?? '').includes(customerSearch)
   )
 
   useEffect(() => {
