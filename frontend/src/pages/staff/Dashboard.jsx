@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
@@ -70,6 +70,50 @@ export default function Dashboard() {
   const [toDate, setToDate] = useState('')
   const [loading, setLoading] = useState(true)
   const [hoveredPoint, setHoveredPoint] = useState(null)
+  const [newOrderAlert, setNewOrderAlert] = useState(false)
+
+  const latestOrderIdRef = useRef(0)
+  const audioRef = useRef(null)
+
+  const unlockedRef = useRef(false)
+
+  useEffect(() => {
+    const audio = new Audio('/sound.mp3')
+    audio.volume = 0.5
+    audio.load()
+    audioRef.current = audio
+
+    function unlock() {
+      if (unlockedRef.current) return
+      unlockedRef.current = true
+      audio.play().then(() => {
+        audio.pause()
+        audio.currentTime = 0
+      }).catch(() => {})
+    }
+    document.addEventListener('pointerdown', unlock, { once: true })
+    document.addEventListener('keydown', unlock, { once: true })
+    return () => {
+      document.removeEventListener('pointerdown', unlock)
+      document.removeEventListener('keydown', unlock)
+    }
+  }, [])
+
+  function playNotificationSound() {
+    const audio = audioRef.current
+    if (!audio) return
+    const repeatCount = 3
+    let played = 0
+    function play() {
+      if (played >= repeatCount) return
+      played++
+      audio.currentTime = 0
+      audio.play().catch(() => {})
+    }
+    audio.addEventListener('ended', play, { once: true })
+    try { play() } catch {}
+  }
+  window.playNotificationSound = playNotificationSound
 
   useEffect(() => {
     async function load() {
@@ -79,6 +123,8 @@ export default function Dashboard() {
           fetchAllPages('/products'),
           fetchAllPages('/customers'),
         ])
+
+        latestOrderIdRef.current = orders.length > 0 ? Math.max(...orders.map((o) => o.id)) : 0
 
         setProducts(allProducts)
         const today = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10)
@@ -185,6 +231,51 @@ export default function Dashboard() {
     }
     load()
   }, [])
+
+  const poll = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}/orders?page=1`, { headers })
+      const json = await res.json()
+      const latest = json.data?.[0]
+      if (!latest) return
+      if (latest.id > latestOrderIdRef.current) {
+        latestOrderIdRef.current = latest.id
+        setNewOrderAlert(true)
+        setTimeout(() => setNewOrderAlert(false), 5000)
+        playNotificationSound()
+        const [orders, productsData, customersData] = await Promise.all([
+          fetchAllPages('/orders'),
+          fetchAllPages('/products'),
+          fetchAllPages('/customers'),
+        ])
+        setAllOrders(orders)
+        setProducts(productsData)
+        setRecentOrders(orders.slice(0, 5))
+        const today = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10)
+        const ordersToday = orders.filter((o) => {
+          const d = new Date(o.created_at ?? '')
+          if (isNaN(d)) return false
+          const kh = new Date(d.getTime() + 7 * 60 * 60 * 1000)
+          return kh.toISOString().slice(0, 10) === today
+        })
+        const paidToday = ordersToday.filter((o) => o.payment_status === 'Paid')
+        const revenueToday = paidToday.reduce((s, o) => s + Number(o.total ?? 0), 0)
+        setStats([
+          { label: 'Total Revenue Today', value: `$${revenueToday.toFixed(2)}`, change: ordersToday.length > 0 ? `${ordersToday.length} orders` : '-', color: 'bg-green-500' },
+          { label: 'Orders Today', value: String(ordersToday.length), change: `$${revenueToday.toFixed(2)}`, color: 'bg-blue-500' },
+          { label: 'Products', value: String(productsData.length), change: `${productsData.filter((p) => p.status).length} active`, color: 'bg-yellow-500' },
+          { label: 'Customers', value: String(customersData.length), change: '-', color: 'bg-purple-500' },
+        ])
+      }
+    } catch {
+      // ignore poll errors
+    }
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(poll, 1000)
+    return () => clearInterval(interval)
+  }, [poll])
 
   useEffect(() => {
     if (period === 'custom') {
@@ -337,7 +428,15 @@ export default function Dashboard() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">Dashboard</h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+            <button
+              onClick={() => { window.playNotificationSound?.(); playNotificationSound() }}
+              className="text-xs text-gray-400 hover:text-gray-600 underline"
+            >
+              Test Sound
+            </button>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {stats.map((stat, idx) => {
@@ -514,7 +613,14 @@ export default function Dashboard() {
 
             <div className="lg:w-1/2 w-full flex">
               <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col flex-1">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">Recent Orders</h2>
+                <div className="flex items-center gap-3 mb-4">
+                  <h2 className="text-lg font-semibold text-gray-800">Recent Orders</h2>
+                  {newOrderAlert && (
+                    <span className="animate-pulse px-2.5 py-0.5 rounded-full text-xs font-bold text-white bg-red-500 shadow-lg">
+                      New Order!
+                    </span>
+                  )}
+                </div>
                 {recentOrders.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">

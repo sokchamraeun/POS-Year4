@@ -1,8 +1,12 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 
 export default function ProductCard({ product, onAddToCart }) {
+  const navigate = useNavigate()
+  const { isLoggedIn } = useCustomerAuth()
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0]?.name || '')
   const [selectedSugar, setSelectedSugar] = useState(product.sugar_levels?.[0]?.name || '')
   const [selectedIce, setSelectedIce] = useState(product.ice_levels?.[0]?.name || '')
@@ -26,6 +30,10 @@ export default function ProductCard({ product, onAddToCart }) {
   const price = getBasePrice(selectedSize) + getAddOnPrice(selectedAddOn)
 
   async function handleAddToCart() {
+    if (!isLoggedIn) {
+      navigate('/customer/login')
+      return
+    }
     setStockMsg('')
     const size = product.sizes?.find((s) => s.name === selectedSize)
     const addon = product.addons?.find((a) => a.name === selectedAddOn)

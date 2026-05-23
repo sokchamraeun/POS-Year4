@@ -1,38 +1,28 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
+import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-function safeParseUser() {
-  try {
-    const raw = localStorage.getItem('user')
-    return raw ? JSON.parse(raw) : null
-  } catch {
-    return null
-  }
-}
-
 export default function History() {
+  const { customer } = useCustomerAuth()
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(false)
   const [phone, setPhone] = useState('')
   const [searched, setSearched] = useState(false)
-  const [mode, setMode] = useState('phone')
-
-  const loggedUser = safeParseUser()
 
   useEffect(() => {
-    if (loggedUser?.email && mode === 'email') {
-      fetchOrdersByEmail(loggedUser.email)
+    if (customer?.phone) {
+      fetchOrders(customer.phone)
     }
-  }, [mode])
+  }, [])
 
-  async function fetchOrdersByEmail(email) {
+  async function fetchOrders(phoneNumber) {
     setLoading(true)
     setSearched(true)
     try {
-      const res = await fetch(`${API_URL}/orders/user-history?email=${encodeURIComponent(email)}`, {
+      const res = await fetch(`${API_URL}/orders/history?phone=${encodeURIComponent(phoneNumber)}`, {
         headers: { 'Accept': 'application/json' },
       })
       const data = await res.json()
@@ -44,21 +34,9 @@ export default function History() {
     }
   }
 
-  async function fetchOrdersByPhone() {
+  function handleSearch() {
     if (!phone.trim()) return
-    setLoading(true)
-    setSearched(true)
-    try {
-      const res = await fetch(`${API_URL}/orders/history?phone=${encodeURIComponent(phone.trim())}`, {
-        headers: { 'Accept': 'application/json' },
-      })
-      const data = await res.json()
-      setOrders(data.data ?? [])
-    } catch {
-      setOrders([])
-    } finally {
-      setLoading(false)
-    }
+    fetchOrders(phone.trim())
   }
 
   return (
@@ -68,52 +46,28 @@ export default function History() {
       <div className="flex-1 max-w-4xl mx-auto w-full px-4 py-8 mt-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-6">Order History</h1>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => setMode('phone')}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                mode === 'phone'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              By Phone
-            </button>
-            {loggedUser?.email && (
-              <button
-                onClick={() => setMode('email')}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  mode === 'email'
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                By Email ({loggedUser.email})
-              </button>
-            )}
-          </div>
-
-          {mode === 'phone' && (
+        {!customer?.phone && (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Enter your phone number</label>
             <div className="flex gap-3">
               <input
                 type="tel"
                 placeholder="Enter your phone number"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && fetchOrdersByPhone()}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="flex-1 text-sm border border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
-                onClick={fetchOrdersByPhone}
+                onClick={handleSearch}
                 disabled={loading || !phone.trim()}
                 className="px-6 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50"
               >
                 {loading ? 'Searching...' : 'Search'}
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {loading && (
           <div className="text-center py-12">
