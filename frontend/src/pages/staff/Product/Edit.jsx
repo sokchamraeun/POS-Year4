@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import Cropper from 'react-easy-crop'
+import getCroppedImg from '../../../utils/cropImage.js'
 
 const API = import.meta.env.VITE_API_URL
 const token = localStorage.getItem('token')
@@ -26,6 +27,8 @@ export default function EditProduct() {
   const [crop, setCrop] = useState({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
+  const [outputWidth, setOutputWidth] = useState('')
+  const [outputHeight, setOutputHeight] = useState('')
   const fileInputRef = useRef(null)
 
   const [form, setForm] = useState({
@@ -121,65 +124,34 @@ export default function EditProduct() {
 
   const onCropComplete = (croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels)
-  }
-
-  const createCroppedImage = async () => {
-    try {
-      const canvas = document.createElement('canvas')
-      const image = new Image()
-      image.src = cropImage
-      
-      await new Promise((resolve) => {
-        image.onload = resolve
-      })
-
-      const scaleX = image.naturalWidth / image.width
-      const scaleY = image.naturalHeight / image.height
-      
-      const ctx = canvas.getContext('2d')
-      
-      canvas.width = croppedAreaPixels.width
-      canvas.height = croppedAreaPixels.height
-      
-      ctx.drawImage(
-        image,
-        croppedAreaPixels.x * scaleX,
-        croppedAreaPixels.y * scaleY,
-        croppedAreaPixels.width * scaleX,
-        croppedAreaPixels.height * scaleY,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      )
-      
-      return new Promise((resolve) => {
-        canvas.toBlob((blob) => {
-          const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' })
-          resolve(file)
-        }, 'image/jpeg', 0.95)
-      })
-    } catch (error) {
-      console.error('Error creating cropped image:', error)
-      return null
+    if (!outputWidth && !outputHeight) {
+      setOutputWidth(String(Math.round(croppedAreaPixels.width)))
+      setOutputHeight(String(Math.round(croppedAreaPixels.height)))
     }
   }
 
   const handleCropSave = async () => {
     if (croppedAreaPixels) {
-      const croppedFile = await createCroppedImage()
-      if (croppedFile) {
-        const previewUrl = URL.createObjectURL(croppedFile)
+      try {
+        const w = parseInt(outputWidth) || croppedAreaPixels.width
+        const h = parseInt(outputHeight) || croppedAreaPixels.height
+        const blob = await getCroppedImg(cropImage, croppedAreaPixels, { zoom, outputWidth: w, outputHeight: h })
+        const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' })
+        const previewUrl = URL.createObjectURL(file)
         setForm((prev) => ({
           ...prev,
-          image: croppedFile,
+          image: file,
           imagePreview: previewUrl,
         }))
+      } catch (error) {
+        console.error('Error creating cropped image:', error)
       }
       setCropOpen(false)
       setCropImage(null)
       setCrop({ x: 0, y: 0 })
       setZoom(1)
+      setOutputWidth('')
+      setOutputHeight('')
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
       }
@@ -191,6 +163,8 @@ export default function EditProduct() {
     setCropImage(null)
     setCrop({ x: 0, y: 0 })
     setZoom(1)
+    setOutputWidth('')
+    setOutputHeight('')
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -398,6 +372,30 @@ export default function EditProduct() {
                   onChange={(e) => setZoom(parseFloat(e.target.value))}
                   className="w-full"
                 />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Output Size</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={1}
+                    value={outputWidth}
+                    onChange={(e) => setOutputWidth(e.target.value)}
+                    placeholder="Width"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="text-gray-500">×</span>
+                  <input
+                    type="number"
+                    min={1}
+                    value={outputHeight}
+                    onChange={(e) => setOutputHeight(e.target.value)}
+                    placeholder="Height"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="text-xs text-gray-400">px</span>
+                </div>
               </div>
 
               <div className="flex gap-3">
