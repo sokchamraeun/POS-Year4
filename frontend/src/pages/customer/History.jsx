@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
+import { useSocket } from '../../hooks/useSocket'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -17,6 +18,18 @@ export default function History() {
       fetchOrders(customer.phone)
     }
   }, [])
+
+  useSocket('order:updated', (updatedOrder) => {
+    setOrders(prev => prev.map(o =>
+      o.id === updatedOrder.id ? updatedOrder : o
+    ))
+  })
+
+  useSocket('order:created', (newOrder) => {
+    if (customer?.id && newOrder.customer_id === customer.id) {
+      setOrders(prev => [newOrder, ...prev])
+    }
+  })
 
   async function fetchOrders(phoneNumber) {
     setLoading(true)
