@@ -4,6 +4,8 @@ import { useCart } from '../../context/CartContext.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
+const token = localStorage.getItem('token')
+const authHeaders = token ? { Authorization: `Bearer ${token}` } : {}
 
 export default function CartSidebar({ open, onClose }) {
   const { items, totalItems, totalPrice, clearCart } = useCart()
@@ -13,6 +15,7 @@ export default function CartSidebar({ open, onClose }) {
   const [phone, setPhone] = useState(customer?.phone || '')
   const [selectedTable, setSelectedTable] = useState('')
   const [tables, setTables] = useState([])
+  const [paymentMethod, setPaymentMethod] = useState('pay_later')
 
   useEffect(() => {
     if (customer?.phone) {
@@ -24,6 +27,7 @@ export default function CartSidebar({ open, onClose }) {
     setDone(false)
     setPhone('')
     setSelectedTable('')
+    setPaymentMethod('pay_later')
     onClose()
   }
 
@@ -81,18 +85,21 @@ export default function CartSidebar({ open, onClose }) {
         }
       })
 
+      const pm = paymentMethod === 'khqr' ? 'KHQR' : null
+      const orderPayload = {
+        customer_id: customerId,
+        table_id: selectedTable || null,
+        total: totalPrice,
+        status: 'New',
+        payment_method: pm,
+        payment_status: 'Unpaid',
+        items: orderItems,
+      }
+
       const res = await fetch(`${API_URL}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          customer_id: customerId,
-          table_id: selectedTable || null,
-          total: totalPrice,
-          status: 'New',
-          payment_method: null,
-          payment_status: 'Unpaid',
-          items: orderItems,
-        }),
+        body: JSON.stringify(orderPayload),
       })
 
       if (!res.ok) {
@@ -102,9 +109,29 @@ export default function CartSidebar({ open, onClose }) {
         return
       }
 
+      const createdOrder = await res.json()
+      const dbOrderId = createdOrder.id ?? null
+
       clearCart()
       setDone(true)
       setPlacing(false)
+
+      if (paymentMethod === 'khqr' && dbOrderId) {
+        try {
+          const initRes = await fetch(`${API_URL}/orders/payment/initiate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders },
+            body: JSON.stringify({ order_id: dbOrderId }),
+          })
+          const initData = await initRes.json()
+          if (initData.checkout_url) {
+            window.open(initData.checkout_url, '_blank')
+          }
+        } catch {
+          // fallback silently
+        }
+      }
+
       setTimeout(() => handleClose(), 5000)
     } catch {
       setPlacing(false)
@@ -176,6 +203,30 @@ export default function CartSidebar({ open, onClose }) {
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}
             </select>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('pay_later')}
+                className={`flex-1 text-sm font-medium py-2 rounded-xl transition-colors ${
+                  paymentMethod === 'pay_later'
+                    ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400'
+                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+              >
+                Pay Later
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('khqr')}
+                className={`flex-1 text-sm font-medium py-2 rounded-xl transition-colors ${
+                  paymentMethod === 'khqr'
+                    ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-400'
+                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+              >
+                KHQR
+              </button>
+            </div>
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold text-gray-800">Total</span>
               <span className="text-lg font-bold text-blue-600">${totalPrice.toFixed(2)}</span>

@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
+import { useSocket, useSocketConnect } from '../../hooks/useSocket'
 
 const API_URL = import.meta.env.VITE_API_URL
 const token = localStorage.getItem('token')
@@ -118,6 +119,15 @@ export default function Orders() {
     localStorage.removeItem('newOrders')
     loadOrders()
   }
+
+  useSocketConnect()
+
+  const handleSocketUpdate = useCallback(() => {
+    loadOrders()
+  }, [page])
+
+  useSocket('order:created', handleSocketUpdate)
+  useSocket('order:updated', handleSocketUpdate)
 
   useEffect(() => {
     loadOrders()

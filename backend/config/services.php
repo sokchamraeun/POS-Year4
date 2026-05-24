@@ -47,4 +47,9 @@ return [
         'secret_key' => env('KHQR_SECRET_KEY'),
     ],
 
+    'socket' => [
+        'url' => env('SOCKET_URL', 'http://127.0.0.1:3001'),
+        'secret' => env('SOCKET_SECRET', 'pos-secret-key'),
+    ],
+
 ];

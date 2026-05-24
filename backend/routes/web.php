@@ -5,6 +5,7 @@ use App\Http\Controllers\Addons\AddonController;
 use App\Http\Controllers\Auth\WebAuthController;
 use App\Http\Controllers\Categories\CategoryController;
 use App\Http\Controllers\Customer\CustomerOrderController;
+use App\Http\Controllers\HeroSliders\HeroSliderController;
 use App\Http\Controllers\KHQR\KhqrTestController;
 use App\Http\Controllers\Ingredients\IngredientController;
 use App\Http\Controllers\Inventory\InventoryController;
@@ -24,6 +25,7 @@ Route::get('/customer/order', [CustomerOrderController::class, 'showForm'])->nam
 Route::post('/customer/order', [CustomerOrderController::class, 'placeOrder'])->name('customer.order.place');
 Route::get('/customer/order/{order}/confirmation', [CustomerOrderController::class, 'confirmation'])->name('customer.order.confirmation');
 Route::post('/customer/order/webhook', [CustomerOrderController::class, 'webhook'])->name('customer.order.webhook');
+Route::get('/khqrpay/return', [CustomerOrderController::class, 'khqrpayReturn'])->name('khqrpay.return');
 Route::get('/khqr-test', [KhqrTestController::class, 'index'])->name('khqr.test');
 Route::post('/khqr-test', [KhqrTestController::class, 'generate'])->name('khqr.test.generate');
 
@@ -95,6 +97,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/tables/{table}/edit', [TableController::class, 'edit'])->name('tables.edit');
     Route::put('/tables/{table}', [TableController::class, 'update'])->name('tables.update');
     Route::delete('/tables/{table}', [TableController::class, 'destroy'])->name('tables.destroy');
+
+    Route::get('/hero-sliders', [HeroSliderController::class, 'index'])->name('hero-sliders.index');
+    Route::get('/hero-sliders/create', [HeroSliderController::class, 'create'])->name('hero-sliders.create');
+    Route::post('/hero-sliders', [HeroSliderController::class, 'store'])->name('hero-sliders.store');
+    Route::get('/hero-sliders/show/{id}', [HeroSliderController::class, 'show'])->name('hero-sliders.show');
+    Route::get('/hero-sliders/edit/{id}', [HeroSliderController::class, 'edit'])->name('hero-sliders.edit');
+    Route::put('/hero-sliders/update/{id}', [HeroSliderController::class, 'update'])->name('hero-sliders.update');
+    Route::delete('/hero-sliders/delete/{id}', [HeroSliderController::class, 'destroy'])->name('hero-sliders.destroy');
 
     Route::get('/ingredients', [IngredientController::class, 'index'])->name('ingredients.index');
     Route::get('/ingredients/create', [IngredientController::class, 'create'])->name('ingredients.create');

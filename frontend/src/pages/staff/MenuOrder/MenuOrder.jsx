@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { QRCodeCanvas } from 'qrcode.react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import CategoryFilter from './components/CategoryFilter.jsx'
@@ -28,10 +27,6 @@ export default function MenuOrder() {
   const [paymentMethod, setPaymentMethod] = useState('not_yet')
   const [placing, setPlacing] = useState(false)
   const [success, setSuccess] = useState('')
-  const [showQr, setShowQr] = useState(false)
-  const [qrData, setQrData] = useState('')
-  const [orderId, setOrderId] = useState(null)
-  const [qrAmount, setQrAmount] = useState(0)
 
 
   const filteredCustomers = customers.filter((c) =>
@@ -184,7 +179,7 @@ export default function MenuOrder() {
           total,
           status: 'New',
           payment_method: paymentMethod === 'not_yet' ? null : paymentMethod,
-          payment_status: paymentMethod === 'not_yet' ? 'Unpaid' : 'Paid',
+          payment_status: paymentMethod === 'not_yet' ? 'Unpaid' : (paymentMethod === 'KHQR' ? 'Unpaid' : 'Paid'),
           items,
         }),
       })
@@ -210,7 +205,7 @@ export default function MenuOrder() {
         total,
         date: new Date().toISOString().slice(0, 10),
         status: 'New',
-        payment: 'Unpaid',
+        payment: paymentMethod === 'not_yet' ? 'Unpaid' : (paymentMethod === 'KHQR' ? 'Unpaid' : 'Paid'),
         paymentMethod: paymentMethod === 'not_yet' ? null : paymentMethod,
         detail: cart.map((c) => ({
           name: c.name,
@@ -243,14 +238,12 @@ export default function MenuOrder() {
             body: JSON.stringify({ order_id: dbOrderId }),
           })
           const initData = await initRes.json()
-          setOrderId(dbOrderId)
-          setQrData(initData.qr_string || '')
-          setQrAmount(orderTotal)
+          if (initData.checkout_url) {
+            window.open(initData.checkout_url, '_blank')
+          }
         } catch {
-          setQrData('KHQR|ORDER:' + localOrder.id + '|AMOUNT:$' + orderTotal.toFixed(2))
-          setQrAmount(orderTotal)
+          // fallback silently
         }
-        setShowQr(true)
       }
 
       setSuccess(`Order placed successfully!`)
@@ -355,26 +348,6 @@ export default function MenuOrder() {
           </div>
         </main>
       </div>
-      {showQr && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowQr(false)}>
-          <div className="bg-white rounded-xl shadow-xl p-8 text-center" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-800 mb-1">Scan to Pay</h3>
-            <p className="text-sm text-gray-500 mb-4">KHQR Payment</p>
-            <div className="inline-block p-4 bg-white rounded-xl border border-gray-200">
-              <QRCodeCanvas value={qrData} size={220} level="M" />
-            </div>
-            <div className="mt-4 space-y-1 text-sm text-gray-600">
-              <p>Amount: <span className="font-medium text-gray-800">${qrAmount.toFixed(2)}</span></p>
-            </div>
-            <button
-              onClick={() => setShowQr(false)}
-              className="mt-2 bg-gray-100 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
-            >
-              Done
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

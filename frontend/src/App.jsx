@@ -5,7 +5,7 @@ import History from './pages/customer/History.jsx'
 import CustomerLogin from './pages/customer/CustomerLogin.jsx'
 import CustomerRegister from './pages/customer/CustomerRegister.jsx'
 import CustomerForgotPassword from './pages/customer/CustomerForgotPassword.jsx'
-import Dashboard from './pages/staff/Dashboard.jsx'
+import Dashboard from "./pages/staff/dashboard/Dashboard.jsx"
 import Products from './pages/staff/Product/Products.jsx'
 import CreateProduct from './pages/staff/Product/Create.jsx'
 import EditProduct from './pages/staff/Product/Edit.jsx'
@@ -31,6 +31,7 @@ import SugarLevel from './pages/staff/SugarLevel/SugarLevel.jsx'
 import UserTest from './pages/staff/UserTest.jsx'
 import Login from './pages/auth/Login.jsx'
 import Register from './pages/auth/Register.jsx'
+
 
 export default function App() {
   return (

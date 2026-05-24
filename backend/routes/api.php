@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerAuthController;
+use App\Http\Controllers\Api\HeroSliderController;
 use App\Http\Controllers\Api\IceLevelController;
 use App\Http\Controllers\Api\IngredientController;
 use App\Http\Controllers\Api\InventoryTransactionController;
@@ -38,7 +39,7 @@ Route::post('/orders/check-stock', [OrderController::class, 'checkStock']);
 Route::get('/orders/history', [OrderController::class, 'customerHistory']);
 Route::get('/orders/user-history', [OrderController::class, 'userHistory']);
 Route::get('/tables', [TableController::class, 'index']);
-
+Route::get('/hero-sliders', [HeroSliderController::class, 'index']);
 // Protected routes (staff + customer auth)
 Route::middleware('auth:sanctum')->group(function () {
     // Staff auth
@@ -129,6 +130,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tables', [TableController::class, 'store']);
     Route::put('/tables/{table}', [TableController::class, 'update']);
     Route::delete('/tables/{table}', [TableController::class, 'destroy']);
+
+    // Hero Slider management (staff)
+    Route::get('/hero-sliders/{heroSlider}', [HeroSliderController::class, 'show']);
+    Route::post('/hero-sliders', [HeroSliderController::class, 'store']);
+    Route::put('/hero-sliders/{heroSlider}', [HeroSliderController::class, 'update']);
+    Route::delete('/hero-sliders/{heroSlider}', [HeroSliderController::class, 'destroy']);
 
     // Ingredient & recipe management (staff)
     Route::get('/ingredients', [IngredientController::class, 'index']);

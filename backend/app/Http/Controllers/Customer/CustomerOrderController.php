@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Table;
+use App\Services\SocketService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -105,7 +106,8 @@ class CustomerOrderController extends Controller
             'payment_reference' => $transactionId,
         ]);
 
-        $order->load('table');
+        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
+        app(SocketService::class)->orderCreated($order->toArray());
         return view('customer.payment', compact('order', 'qrString', 'total', 'customerName'));
     }
 
@@ -125,6 +127,27 @@ class CustomerOrderController extends Controller
         }
 
         $order->load(['items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+        return view('customer.confirmation', compact('order'));
+    }
+
+    public function khqrpayReturn(Request $request)
+    {
+        $transactionId = $request->query('transaction_id');
+
+        if (!$transactionId) {
+            abort(400, 'Missing transaction_id');
+        }
+
+        $order = Order::where('payment_reference', $transactionId)->first();
+
+        if (!$order) {
+            abort(404, 'Order not found');
+        }
+
+        $order->update(['payment_status' => 'Paid']);
+
+        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
+        app(SocketService::class)->orderUpdated($order->toArray());
         return view('customer.confirmation', compact('order'));
     }
 
@@ -155,6 +178,8 @@ class CustomerOrderController extends Controller
 
         if ($status === 'SUCCESS') {
             $order->update(['payment_status' => 'Paid']);
+            $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
+            app(SocketService::class)->orderUpdated($order->toArray());
         }
 
         return response()->json(['status' => 'ok']);

@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\SocketService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use KHQR\BakongKHQR;
-use KHQR\Helpers\KHQRData;
-use KHQR\Models\IndividualInfo;
 
 class PaymentCheckoutController extends Controller
 {
@@ -28,28 +26,30 @@ class PaymentCheckoutController extends Controller
         }
 
         $transactionId = 'ORD_' . $order->id . '_' . time();
-        $amount = $order->total;
+        $amount = number_format($order->total, 2, '.', '');
 
-        $individualInfo = new IndividualInfo(
-            'sok_chamraeun@bkrt',
-            'CHAMRAEUN SOK',
-            'PHNOM PENH',
-            null,
-            null,
-            KHQRData::CURRENCY_USD,
-            (float) $amount,
-            null,
-            'POS Store',
-        );
+        $gatewayUrl = config('services.khqr.gateway_url');
+        $profileId = config('services.khqr.profile_id');
+        $secretKey = config('services.khqr.secret_key');
 
-        $khqrResponse = BakongKHQR::generateIndividual($individualInfo);
+        $successUrl = url('/khqrpay/return?transaction_id=' . $transactionId);
+        $remark = 'Order #' . $order->id;
 
-        if ($khqrResponse->status['code'] !== 0) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to generate KHQR: ' . ($khqrResponse->status['message'] ?? 'Unknown error'),
-            ], 500);
-        }
+        $rawString = $secretKey
+            . $transactionId
+            . $amount
+            . $successUrl
+            . $remark;
+
+        $hash = sha1($rawString);
+
+        $checkoutUrl = $gatewayUrl . '/' . $profileId . '?' . http_build_query([
+            'transaction_id' => $transactionId,
+            'amount' => $amount,
+            'success_url' => $successUrl,
+            'remark' => $remark,
+            'hash' => $hash,
+        ]);
 
         $order->update([
             'payment_reference' => $transactionId,
@@ -57,9 +57,9 @@ class PaymentCheckoutController extends Controller
 
         return response()->json([
             'status' => 'ok',
-            'qr_string' => $khqrResponse->data['qr'],
+            'checkout_url' => $checkoutUrl,
             'transaction_id' => $transactionId,
-            'amount' => $amount,
+            'amount' => (float) $amount,
         ]);
     }
 
@@ -80,6 +80,9 @@ class PaymentCheckoutController extends Controller
         $order->update([
             'payment_status' => 'Paid',
         ]);
+
+        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
+        app(SocketService::class)->orderUpdated($order->toArray());
 
         return response()->json([
             'status' => 'completed',

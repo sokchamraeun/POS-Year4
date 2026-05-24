@@ -20,6 +20,7 @@
                 <a href="{{ route('permissions.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('permissions.*') ? 'bg-gray-100 font-semibold' : '' }}">Permissions</a>
                 <a href="{{ route('products.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('products.*') ? 'bg-gray-100 font-semibold' : '' }}">Products</a>
                 <a href="{{ route('categories.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('categories.*') ? 'bg-gray-100 font-semibold' : '' }}">Categories</a>
+                <a href="{{ route('hero-sliders.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('hero-sliders.*') ? 'bg-gray-100 font-semibold' : '' }}">Hero Sliders</a>
                 <a href="{{ route('addons.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('addons.*') ? 'bg-gray-100 font-semibold' : '' }}">Addons</a>
                 <a href="{{ route('addon-ingredients.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('addon-ingredients.*') ? 'bg-gray-100 font-semibold' : '' }}">Addon Ingredients</a>
                 <a href="{{ route('tables.index') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('tables.*') ? 'bg-gray-100 font-semibold' : '' }}">Tables</a>

@@ -1,50 +1,47 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-const slides = [
-  {
-    title: 'Welcome to',
-    highlight: 'Visal Coffee',
-    text: 'Your all-in-one point of sale solution. Browse our coffee menu, customize your drink, and order with ease.',
-    image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1920&h=800&fit=crop',
-    badge: 'Since 2024',
-  },
-  {
-    title: 'Freshly Brewed',
-    highlight: 'Premium Coffee',
-    text: 'Enjoy premium coffee beans sourced from the finest farms around the world. Each cup is crafted with passion.',
-    image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920&h=800&fit=crop',
-    badge: 'Artisan Roast',
-  },
-  {
-    title: 'Special',
-    highlight: 'Daily Offers',
-    text: 'Get up to 20% off on selected beverages. Don\'t miss out on our daily deals and seasonal specials!',
-    image: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=1920&h=800&fit=crop',
-    badge: 'Limited Time',
-  },
-]
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
 
 export default function HeroSlider() {
+  const [slides, setSlides] = useState([])
   const [current, setCurrent] = useState(0)
   const [direction, setDirection] = useState(0)
 
   useEffect(() => {
+    const fetchSliders = async () => {
+      try {
+        const response = await fetch(`${API_URL}/hero-sliders`)
+        const data = await response.json()
+        const activeSliders = data.data.filter(s => s.is_active).sort((a, b) => a.order - b.order)
+        setSlides(activeSliders)
+      } catch (error) {
+        console.error('Error fetching hero sliders:', error)
+      }
+    }
+    fetchSliders()
+  }, [])
+
+  useEffect(() => {
+    if (slides.length <= 1) return
     const timer = setInterval(() => {
       setDirection(1)
       setCurrent((prev) => (prev + 1) % slides.length)
     }, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [slides.length])
 
   const handleDotClick = (index) => {
     setDirection(index > current ? 1 : -1)
     setCurrent(index)
   }
 
+  if (slides.length === 0) {
+    return null
+  }
+
   return (
     <section id="home" className="mx-4 sm:mx-6 md:mx-10 lg:mx-20 relative h-screen min-h-[600px] max-h-[800px] overflow-hidden">
-      {/* Background Image with Parallax Effect */}
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={current}
@@ -63,24 +60,9 @@ export default function HeroSlider() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
 
-      {/* Decorative Elements */}
-      {/* <div className="absolute top-20 right-10 opacity-20 animate-pulse">
-        <svg className="w-32 h-32 text-white" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M18 8H6C4.89543 8 4 8.89543 4 10V16C4 17.1046 4.89543 18 6 18H18C19.1046 18 20 17.1046 20 16V10C20 8.89543 19.1046 8 18 8Z" />
-        </svg>
-      </div>
-
-      <div className="absolute bottom-20 left-10 opacity-10 animate-bounce">
-        <svg className="w-24 h-24 text-white" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 13c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z"/>
-        </svg>
-      </div> */}
-
-      {/* Content */}
       <div className="relative h-full flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <motion.div
@@ -90,7 +72,6 @@ export default function HeroSlider() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="max-w-3xl"
           >
-            {/* Badge */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -106,7 +87,6 @@ export default function HeroSlider() {
               </span>
             </motion.div>
 
-            {/* Title */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -119,7 +99,6 @@ export default function HeroSlider() {
               </span>
             </motion.h1>
 
-            {/* Description */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -129,7 +108,6 @@ export default function HeroSlider() {
               {slides[current].text}
             </motion.p>
 
-            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -158,7 +136,6 @@ export default function HeroSlider() {
         </div>
       </div>
 
-      {/* Slide Indicators */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
         {slides.map((_, i) => (
           <button
@@ -182,7 +159,6 @@ export default function HeroSlider() {
         ))}
       </div>
 
-      {/* Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -197,7 +173,6 @@ export default function HeroSlider() {
         </div>
       </motion.div>
 
-      {/* CSS Animations */}
       <style jsx>{`
         @keyframes pulse {
           0%, 100% { opacity: 0.2; }
