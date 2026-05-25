@@ -6,6 +6,7 @@ if (import.meta.env.DEV) {
   Pusher.logToConsole = true
 }
 
+const scheme = import.meta.env.VITE_REVERB_SCHEME || 'http'
 const apiUrl = import.meta.env.VITE_API_URL || ''
 const reverbHost = import.meta.env.VITE_REVERB_HOST
 const wsHost = reverbHost && reverbHost !== 'localhost'
@@ -19,8 +20,8 @@ const echo = new Echo({
   wsHost,
   wsPort: Number(import.meta.env.VITE_REVERB_PORT),
   wssPort: Number(import.meta.env.VITE_REVERB_PORT),
-  forceTLS: import.meta.env.PROD,
-  encrypted: import.meta.env.PROD,
+  forceTLS: scheme === 'https',
+  encrypted: scheme === 'https',
   enableStats: false,
 })
 
