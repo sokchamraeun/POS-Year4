@@ -235,11 +235,14 @@ export default function MenuOrder() {
           const initRes = await fetch(`${API_URL}/orders/payment/initiate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', ...headers },
-            body: JSON.stringify({ order_id: dbOrderId }),
+            body: JSON.stringify({
+              order_id: dbOrderId,
+              return_url: window.location.origin + '/staff/menu-order',
+            }),
           })
           const initData = await initRes.json()
           if (initData.checkout_url) {
-            window.open(initData.checkout_url, '_blank')
+            window.location.href = initData.checkout_url
           }
         } catch {
           // fallback silently

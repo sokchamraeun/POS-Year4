@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Confirmed - {{ config('app.name') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    @if ($returnUrl)
+    <script>
+        setTimeout(() => { window.location.href = '{{ $returnUrl }}'; }, 3000);
+    </script>
+    @endif
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center">
     <div class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-lg w-full mx-4">

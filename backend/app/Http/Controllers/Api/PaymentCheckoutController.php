@@ -32,7 +32,8 @@ class PaymentCheckoutController extends Controller
         $profileId = config('services.khqr.profile_id');
         $secretKey = config('services.khqr.secret_key');
 
-        $successUrl = url('/khqrpay/return?transaction_id=' . $transactionId);
+        $returnUrl = $request->input('return_url');
+        $successUrl = url('/khqrpay/return?transaction_id=' . $transactionId . ($returnUrl ? '&return_url=' . urlencode($returnUrl) : ''));
         $remark = 'Order #' . $order->id;
 
         $rawString = $secretKey

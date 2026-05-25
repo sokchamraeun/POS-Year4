@@ -147,7 +147,10 @@ class CustomerOrderController extends Controller
         $order->update(['payment_status' => 'Paid']);
 
         dispatch_broadcast(new OrderUpdated($order));
-        return view('customer.confirmation', compact('order'));
+
+        $returnUrl = $request->query('return_url');
+
+        return view('customer.confirmation', compact('order', 'returnUrl'));
     }
 
     public function webhook(Request $request): JsonResponse
