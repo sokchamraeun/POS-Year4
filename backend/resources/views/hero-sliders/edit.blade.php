@@ -13,7 +13,7 @@
         <h1 class="text-3xl font-bold text-gray-800">Edit Hero Slider</h1>
     </div>
 
-    <form action="{{ route('hero-sliders.update', $heroSlider->id) }}" method="POST" class="bg-white rounded-2xl shadow-lg p-6 space-y-6">
+    <form action="{{ route('hero-sliders.update', $heroSlider->id) }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-lg p-6 space-y-6">
         @csrf
         @method('PUT')
 
@@ -43,8 +43,10 @@
             </div>
 
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-                <input type="url" name="image" value="{{ old('image', $heroSlider->image) }}" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="https://..." required>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Current Image</label>
+                <img src="{{ $heroSlider->image }}" alt="Current" class="h-32 object-cover rounded border mb-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Replace Image (leave empty to keep current)</label>
+                <input type="file" name="image" accept="image/jpeg,image/png,image/jpg,image/webp" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 @error('image') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
             </div>
 

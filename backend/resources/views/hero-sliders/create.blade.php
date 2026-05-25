@@ -13,7 +13,7 @@
         <h1 class="text-3xl font-bold text-gray-800">Create Hero Slider</h1>
     </div>
 
-    <form action="{{ route('hero-sliders.store') }}" method="POST" class="bg-white rounded-2xl shadow-lg p-6 space-y-6">
+    <form action="{{ route('hero-sliders.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-lg p-6 space-y-6">
         @csrf
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -42,8 +42,8 @@
             </div>
 
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-                <input type="url" name="image" value="{{ old('image') }}" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="https://..." required>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Image</label>
+                <input type="file" name="image" accept="image/jpeg,image/png,image/jpg,image/webp" class="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                 @error('image') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
             </div>
 
