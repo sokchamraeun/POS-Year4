@@ -9,7 +9,8 @@ use App\Models\InventoryTransaction;
 use App\Models\Order;
 use App\Models\Recipe;
 use App\Models\User;
-use App\Services\SocketService;
+use App\Events\OrderCreated;
+use App\Events\OrderUpdated;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -193,8 +194,7 @@ class OrderController extends Controller
             return $order;
         });
 
-        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
-        app(SocketService::class)->orderCreated($order->toArray());
+        dispatch_broadcast(new OrderCreated($order));
         return response()->json($order, 201);
     }
 
@@ -230,8 +230,7 @@ class OrderController extends Controller
             $order->update(['payment_status' => 'Paid']);
         }
 
-        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
-        app(SocketService::class)->orderUpdated($order->toArray());
+        dispatch_broadcast(new OrderUpdated($order));
         return response()->json($order);
     }
 

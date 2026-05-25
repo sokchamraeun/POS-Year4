@@ -13,6 +13,7 @@
         "cloudinary/cloudinary_php": "*",
         "khqr-gateway/bakong-khqr-php": "*",
         "laravel/framework": "^13.8",
+        "laravel/reverb": "*",
         "laravel/sanctum": "*",
         "laravel/tinker": "^3.0"
     },
@@ -28,6 +29,9 @@
         "pestphp/pest-plugin-laravel": "^4.1"
     },
     "autoload": {
+        "files": [
+            "app/helpers.php"
+        ],
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",

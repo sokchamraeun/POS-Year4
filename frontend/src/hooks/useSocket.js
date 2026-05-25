@@ -1,38 +1,26 @@
 import { useEffect, useRef } from 'react'
-import { io } from 'socket.io-client'
-
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://127.0.0.1:3001'
-
-let socket = null
-
-function getSocket() {
-  if (!socket) {
-    socket = io(SOCKET_URL, { autoConnect: false })
-  }
-  return socket
-}
+import echo from '../echo'
 
 export function useSocket(event, handler) {
   const handlerRef = useRef(handler)
   handlerRef.current = handler
 
   useEffect(() => {
-    const s = getSocket()
-    if (!s.connected) s.connect()
+    echo.connect()
+    const channel = echo.channel('orders')
 
-    const wrapped = (...args) => handlerRef.current(...args)
-    s.on(event, wrapped)
+    const wrapped = (e) => handlerRef.current(e)
+    channel.listen(`.${event}`, wrapped)
 
     return () => {
-      s.off(event, wrapped)
+      channel.stopListening(`.${event}`, wrapped)
     }
   }, [event])
 }
 
 export function useSocketConnect() {
   useEffect(() => {
-    const s = getSocket()
-    if (!s.connected) s.connect()
+    echo.connect()
     return () => {}
   }, [])
 }

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Events\OrderCreated;
+use App\Events\OrderUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Table;
-use App\Services\SocketService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -106,8 +107,7 @@ class CustomerOrderController extends Controller
             'payment_reference' => $transactionId,
         ]);
 
-        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
-        app(SocketService::class)->orderCreated($order->toArray());
+        dispatch_broadcast(new OrderCreated($order));
         return view('customer.payment', compact('order', 'qrString', 'total', 'customerName'));
     }
 
@@ -146,8 +146,7 @@ class CustomerOrderController extends Controller
 
         $order->update(['payment_status' => 'Paid']);
 
-        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
-        app(SocketService::class)->orderUpdated($order->toArray());
+        dispatch_broadcast(new OrderUpdated($order));
         return view('customer.confirmation', compact('order'));
     }
 
@@ -178,8 +177,7 @@ class CustomerOrderController extends Controller
 
         if ($status === 'SUCCESS') {
             $order->update(['payment_status' => 'Paid']);
-            $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
-            app(SocketService::class)->orderUpdated($order->toArray());
+            dispatch_broadcast(new OrderUpdated($order));
         }
 
         return response()->json(['status' => 'ok']);

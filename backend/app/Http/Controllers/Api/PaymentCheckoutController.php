@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Events\OrderUpdated;
 use App\Models\Order;
-use App\Services\SocketService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -81,8 +81,7 @@ class PaymentCheckoutController extends Controller
             'payment_status' => 'Paid',
         ]);
 
-        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
-        app(SocketService::class)->orderUpdated($order->toArray());
+        dispatch_broadcast(new OrderUpdated($order));
 
         return response()->json([
             'status' => 'completed',
