@@ -9,19 +9,12 @@ class PermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        $permissions = [
-            ['name' => 'Create Product', 'slug' => 'create-product'],
-            ['name' => 'Edit Product', 'slug' => 'edit-product'],
-            ['name' => 'Delete Product', 'slug' => 'delete-product'],
-            ['name' => 'View Orders', 'slug' => 'view-orders'],
-            ['name' => 'Manage Staff', 'slug' => 'manage-staff'],
-        ];
-
-        foreach ($permissions as $perm) {
-            Permission::firstOrCreate(
-                ['slug' => $perm['slug']],
-                ['name' => $perm['name']]
-            );
-        }
+        Permission::insert([
+            ['name' => 'Create Product', 'slug' => 'create-product', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Edit Product', 'slug' => 'edit-product', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Delete Product', 'slug' => 'delete-product', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'View Orders', 'slug' => 'view-orders', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Manage Staff', 'slug' => 'manage-staff', 'created_at' => now(), 'updated_at' => now()],
+        ]);
     }
 }

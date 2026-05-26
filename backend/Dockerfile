@@ -1,7 +1,8 @@
-FROM php:8.4-cli AS build
+FROM php:8.4-cli
 
 WORKDIR /var/www
 
+# Install system packages
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -13,10 +14,13 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_pgsql gd
 
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy project
 COPY . .
 
+# Create Laravel folders
 RUN mkdir -p \
     bootstrap/cache \
     storage/framework/cache \
@@ -24,38 +28,25 @@ RUN mkdir -p \
     storage/framework/views \
     storage/framework/testing
 
+# Permissions
 RUN chmod -R 775 storage bootstrap/cache
 
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
+# Storage link
 RUN php artisan storage:link || true
 
-FROM php:8.4-cli
-
-WORKDIR /var/www
-
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql gd
-
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main" | tee /etc/apt/sources.list.d/caddy-stable.list \
-    && apt-get update && apt-get install -y caddy
-
-COPY --from=build /var/www /var/www
-COPY Caddyfile /etc/caddy/Caddyfile
-
-RUN chmod -R 775 storage bootstrap/cache
-
+# Expose ports
+# 10000 = Laravel
+# 8080 = Reverb WebSocket
 EXPOSE 10000
+EXPOSE 8080
 
+# Start Laravel + Reverb
 CMD php artisan config:clear && \
     php artisan route:clear && \
     php artisan view:clear && \
-    php artisan serve --host=0.0.0.0 --port=9000 & \
+    php artisan migrate --force && \
     php artisan reverb:start --host=0.0.0.0 --port=8080 & \
-    caddy run --config /etc/caddy/Caddyfile
+    php artisan serve --host=0.0.0.0 --port=10000
