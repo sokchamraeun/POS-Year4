@@ -1,0 +1,81 @@
+services:
+  - type: web
+    name: pos-year4-backend
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        value: https://pos-year4-backend.onrender.com
+      - key: FRONTEND_URL
+        value: https://pos-year4.vercel.app
+      - key: LOG_LEVEL
+        value: error
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: CACHE_STORE
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: BROADCAST_CONNECTION
+        value: reverb
+      - key: REVERB_APP_ID
+        sync: false
+      - key: REVERB_APP_KEY
+        sync: false
+      - key: REVERB_APP_SECRET
+        sync: false
+      - key: REVERB_HOST
+        value: https://pos-year4-backend.onrender.com
+      - key: REVERB_PORT
+        value: 443
+      - key: REVERB_SCHEME
+        value: https
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: MAIL_MAILER
+        value: log
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: KHQR_GATEWAY_URL
+        sync: false
+      - key: KHQR_PROFILE_ID
+        sync: false
+      - key: KHQR_SECRET_KEY
+        sync: false
+      - key: DB_HOST
+        fromDatabase:
+          name: pos-year4-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: pos-year4-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: pos-year4-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: pos-year4-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: pos-year4-db
+          property: password
+
+databases:
+  - name: pos-year4-db
+    databaseName: pos
+    plan: starter

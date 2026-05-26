@@ -1,0 +1,16 @@
+:$PORT {
+    # Reverb WebSocket
+    handle_path /apps* {
+        reverse_proxy localhost:8080
+    }
+
+    # Reverb Socket.IO compatibility
+    handle_path /socket.io* {
+        reverse_proxy localhost:8080
+    }
+
+    # Everything else -> Laravel
+    handle {
+        reverse_proxy localhost:9000
+    }
+}
