@@ -135,6 +135,9 @@ export default function ProductCard({ product, onAddToCart }) {
                 imageLoaded ? 'opacity-100' : 'opacity-0'
               } group-hover:scale-105`}
             />
+            <span className="absolute top-2 right-2 bg-blue-600/80 text-white font-bold text-xs px-2 py-1 rounded-lg shadow-md backdrop-blur-sm">
+              ${price.toFixed(2)}
+            </span>
           </div>
         ) : (
           <div className="w-full aspect-square bg-gray-200 rounded-2xl"></div>
@@ -144,89 +147,93 @@ export default function ProductCard({ product, onAddToCart }) {
       {/* CONTENT */}
       <div className="px-3 pb-3 flex flex-col flex-1">
 
-        {/* NAME + PRICE */}
-        <div className="flex justify-between items-start mb-2">
-          <div>
-            <h3 className="font-bold text-sm sm:text-base text-gray-800 line-clamp-1">
-              {product.name}
-            </h3>
+        {/* NAME */}
+        <div className="mb-2">
+          <h3 className="font-bold text-sm sm:text-base text-gray-800 line-clamp-1">
+            {product.name}
+          </h3>
 
-            <p className="text-xs text-gray-500 line-clamp-1">
-              {product.description}
-            </p>
-          </div>
-
-          <span className="text-blue-600 font-bold text-sm sm:text-lg">
-            ${price.toFixed(2)}
-          </span>
+          <p className="text-xs text-gray-500 line-clamp-1">
+            {product.description}
+          </p>
         </div>
 
         {/* SIZE */}
-        <div className="mb-2">
-          <p className="text-xs font-semibold mb-1 text-gray-600">
-            Size
-          </p>
+        {product.sizes?.length > 0 && (
+          <div className="mb-2">
+            <p className="text-xs font-semibold mb-1 text-gray-600">
+              Size
+            </p>
 
-          <div className="flex gap-1">
-            {product.sizes?.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setSelectedSize(s.name)}
-                className={`flex-1 rounded-lg py-1.5 text-xs transition ${
-                  selectedSize === s.name
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100'
-                }`}
-              >
-                {s.name}
-              </button>
-            ))}
+            <div className="flex gap-1">
+              {product.sizes?.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setSelectedSize(s.name)}
+                  className={`flex-1 rounded-lg py-1.5 text-xs transition ${
+                    selectedSize === s.name
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100'
+                  }`}
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* SELECTS */}
-        <div className="grid grid-cols-2 gap-2 mb-2">
-          <select
-            value={selectedIce}
-            onChange={(e) => setSelectedIce(e.target.value)}
-            className="bg-gray-100 rounded-lg px-2 py-2 text-xs"
-          >
-            {product.ice_levels?.map((i) => (
-              <option key={i.id} value={i.name}>
-                {i.name}
-              </option>
-            ))}
-          </select>
+        {/* ICE / SUGAR */}
+        {(product.ice_levels?.length > 0 || product.sugar_levels?.length > 0) && (
+          <div className={`grid gap-2 mb-2 ${product.ice_levels?.length > 0 && product.sugar_levels?.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+            {product.ice_levels?.length > 0 && (
+              <select
+                value={selectedIce}
+                onChange={(e) => setSelectedIce(e.target.value)}
+                className="bg-gray-100 rounded-lg px-2 py-2 text-xs"
+              >
+                {product.ice_levels?.map((i) => (
+                  <option key={i.id} value={i.name}>
+                    {i.name}
+                  </option>
+                ))}
+              </select>
+            )}
 
-          <select
-            value={selectedSugar}
-            onChange={(e) => setSelectedSugar(e.target.value)}
-            className="bg-gray-100 rounded-lg px-2 py-2 text-xs"
-          >
-            {product.sugar_levels?.map((s) => (
-              <option key={s.id} value={s.name}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
+            {product.sugar_levels?.length > 0 && (
+              <select
+                value={selectedSugar}
+                onChange={(e) => setSelectedSugar(e.target.value)}
+                className="bg-gray-100 rounded-lg px-2 py-2 text-xs"
+              >
+                {product.sugar_levels?.map((s) => (
+                  <option key={s.id} value={s.name}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        )}
 
         {/* ADDON */}
-        <div className="mb-2">
-          <select
-            value={selectedAddOn}
-            onChange={(e) => setSelectedAddOn(e.target.value)}
-            className="w-full bg-gray-100 rounded-lg px-2 py-2 text-xs"
-          >
-            <option value="">No Add-on</option>
+        {product.addons?.length > 0 && (
+          <div className="mb-2">
+            <select
+              value={selectedAddOn}
+              onChange={(e) => setSelectedAddOn(e.target.value)}
+              className="w-full bg-gray-100 rounded-lg px-2 py-2 text-xs"
+            >
+              <option value="">No Add-on</option>
 
-            {product.addons?.map((a) => (
-              <option key={a.id} value={a.name}>
-                {a.name} (+${Number(a.price).toFixed(2)})
-              </option>
-            ))}
-          </select>
-        </div>
+              {product.addons?.map((a) => (
+                <option key={a.id} value={a.name}>
+                  {a.name} (+${Number(a.price).toFixed(2)})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* STOCK */}
         {stockMsg && (

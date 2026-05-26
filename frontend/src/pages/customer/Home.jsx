@@ -49,7 +49,7 @@ export default function Home() {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+              className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                 selectedCategory === cat
                   ? 'bg-blue-600 text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -68,7 +68,7 @@ export default function Home() {
         ) : filtered.length === 0 ? (
           <p className="text-center text-gray-400">No products in this category.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} onAddToCart={(item) => addItem(product, item)} />
             ))}
