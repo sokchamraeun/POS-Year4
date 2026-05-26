@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 const STORAGE_URL = import.meta.env.VITE_STORAGE_URL
 
 export default function ProductModal({
@@ -18,6 +20,17 @@ export default function ProductModal({
   onQtyChange,
   onAddToCart,
 }) {
+  useEffect(() => {
+    if (show) {
+      document.body.dataset.modalOpen = 'true'
+      document.body.style.overflow = 'hidden'
+    }
+    return () => {
+      delete document.body.dataset.modalOpen
+      document.body.style.overflow = ''
+    }
+  }, [show])
+
   if (!show) return null
 
   const imgSrc = product.image?.startsWith('http')

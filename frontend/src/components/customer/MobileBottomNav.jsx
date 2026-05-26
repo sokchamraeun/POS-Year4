@@ -1,8 +1,20 @@
+import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useCart } from '../../context/CartContext.jsx'
 
 export default function MobileBottomNav() {
   const { totalItems } = useCart()
+  const [hidden, setHidden] = useState(false)
+
+  useEffect(() => {
+    const check = () => setHidden(document.body.dataset.modalOpen === 'true')
+    check()
+    const observer = new MutationObserver(check)
+    observer.observe(document.body, { attributes: true, attributeFilter: ['data-modal-open'] })
+    return () => observer.disconnect()
+  }, [])
+
+  if (hidden) return null
   const navItems = [
     {
       to: '/',
