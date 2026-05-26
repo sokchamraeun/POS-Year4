@@ -37,8 +37,16 @@ RUN composer install --no-dev --optimize-autoloader
 # Storage link
 RUN php artisan storage:link || true
 
+# Expose ports
+# 10000 = Laravel
+# 8080 = Reverb WebSocket
+EXPOSE 10000
 EXPOSE 8080
 
-# Start Laravel — listen on Railway $PORT
-CMD php artisan migrate --force & \
-    php -S 0.0.0.0:"${PORT:-8080}" -t public
+# Start Laravel + Reverb
+CMD php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan view:clear && \
+    php artisan migrate --force && \
+    php artisan reverb:start --host=0.0.0.0 --port=8080 & \
+    php artisan serve --host=0.0.0.0 --port=10000
