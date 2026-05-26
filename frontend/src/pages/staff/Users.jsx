@@ -3,10 +3,10 @@ import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL
-const token = localStorage.getItem('token')
-const authHeaders = { Authorization: `Bearer ${token}` }
 
 export default function Users() {
+  const token = () => localStorage.getItem('token')
+  const authHeaders = () => ({ Authorization: `Bearer ${token()}` })
   const [users, setUsers] = useState([])
   const [roles, setRoles] = useState([])
   const [loading, setLoading] = useState(true)
@@ -16,6 +16,11 @@ export default function Users() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role_id: '', phone: '', status: true })
 
   useEffect(() => {
+    if (!token()) {
+      setError('No auth token found. Please log in again.')
+      setLoading(false)
+      return
+    }
     fetchUsers()
     fetchRoles()
   }, [])
@@ -23,7 +28,11 @@ export default function Users() {
   async function fetchUsers() {
     try {
       setLoading(true)
-      const res = await fetch(`${API_BASE}/users`, { headers: authHeaders })
+      const res = await fetch(`${API_BASE}/users`, { headers: authHeaders() })
+      if (res.status === 401) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.message || 'Unauthorized. Token may be expired — please log out and log in again.')
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const json = await res.json()
       setUsers(json.data ?? json)
@@ -36,7 +45,7 @@ export default function Users() {
 
   async function fetchRoles() {
     try {
-      const res = await fetch(`${API_BASE}/roles`, { headers: authHeaders })
+      const res = await fetch(`${API_BASE}/roles`, { headers: authHeaders() })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const json = await res.json()
       setRoles(json.data ?? json)
@@ -80,7 +89,7 @@ export default function Users() {
 
       const res = await fetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...authHeaders },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', ...authHeaders() },
         body: JSON.stringify(body),
       })
       if (!res.ok) {
@@ -99,7 +108,7 @@ export default function Users() {
   async function handleDelete(id) {
     if (!window.confirm('Delete this user?')) return
     try {
-      const res = await fetch(`${API_BASE}/users/${id}`, { method: 'DELETE', headers: authHeaders })
+      const res = await fetch(`${API_BASE}/users/${id}`, { method: 'DELETE', headers: authHeaders() })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       fetchUsers()
     } catch (err) {
@@ -136,9 +145,14 @@ export default function Users() {
           </div>
 
           {error && (
-            <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-              {error}
-              <button onClick={() => setError(null)} className="ml-2 font-bold">&times;</button>
+            <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex items-center justify-between">
+              <span>{error}</span>
+              <div className="flex items-center gap-2 ml-4 shrink-0">
+                <button onClick={() => { setError(null); fetchUsers(); fetchRoles() }} className="text-blue-600 hover:text-blue-800 font-medium text-xs underline">
+                  Retry
+                </button>
+                <button onClick={() => setError(null)} className="font-bold text-gray-400 hover:text-gray-600">&times;</button>
+              </div>
             </div>
           )}
 

@@ -49,8 +49,12 @@ export default function Login() {
       // optional UI cache (not trusted for auth)
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // redirect by role
-      navigate(data.user?.role ? "/staff/dashboard" : "/");
+      if (!data.user?.role) {
+        setError("Your account has no role assigned. Contact an administrator.");
+        return;
+      }
+
+      navigate("/staff/dashboard");
     } catch (err) {
       setError("Network error. Please try again.");
     } finally {
