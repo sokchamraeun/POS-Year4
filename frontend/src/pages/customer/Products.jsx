@@ -62,7 +62,7 @@ export default function Products() {
         ) : filtered.length === 0 ? (
           <p className="text-center text-gray-400">No products in this category.</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} onAddToCart={(item) => addItem(product, item)} />
             ))}
