@@ -89,12 +89,13 @@ class ReportController extends Controller
         return response()->json($items);
     }
 
-    public function inventory(): JsonResponse
+    public function inventory(Request $request): JsonResponse
     {
+        $perPage = min((int) $request->get('per_page', 100), 500);
         $ingredients = Ingredient::withCount('inventoryTransactions')
             ->orderBy('name')
-            ->get()
-            ->map(fn($i) => [
+            ->paginate($perPage)
+            ->through(fn($i) => [
                 'id' => $i->id,
                 'name' => $i->name,
                 'unit' => $i->unit,
@@ -104,13 +105,19 @@ class ReportController extends Controller
                 'transactions_count' => $i->inventory_transactions_count,
             ]);
 
-        $lowStock = $ingredients->filter(fn($i) => $i['status'] === 'Low Stock' || $i['status'] === 'Out of Stock')->values();
+        $all = Ingredient::selectRaw("CASE WHEN stock_quantity <= 0 THEN 'Out of Stock' WHEN stock_quantity <= reorder_level THEN 'Low Stock' ELSE 'In Stock' END as status, COUNT(*) as count")
+            ->groupBy('status')
+            ->pluck('count', 'status');
 
         return response()->json([
-            'ingredients' => $ingredients,
-            'low_stock' => $lowStock,
-            'total_ingredients' => $ingredients->count(),
-            'low_stock_count' => $lowStock->count(),
+            'ingredients' => $ingredients->items(),
+            'pagination' => [
+                'current_page' => $ingredients->currentPage(),
+                'last_page' => $ingredients->lastPage(),
+                'total' => $ingredients->total(),
+            ],
+            'low_stock_count' => ($all['Low Stock'] ?? 0) + ($all['Out of Stock'] ?? 0),
+            'total_ingredients' => $ingredients->total(),
         ]);
     }
 
@@ -181,24 +188,31 @@ class ReportController extends Controller
         $from = $request->get('from');
         $to = $request->get('to');
 
-        $query = Customer::withCount(['orders' => function ($q) use ($from, $to) {
-            if ($from) $q->whereDate('created_at', '>=', $from);
-            if ($to) $q->whereDate('created_at', '<=', $to);
-        }]);
-
-        $customers = $query->orderByDesc('orders_count')->limit(50)->get()->map(fn($c) => [
-            'id' => $c->id,
-            'name' => $c->name,
-            'phone' => $c->phone,
-            'points' => $c->points,
-            'orders_count' => $c->orders_count,
-            'total_spent' => (float) $c->orders()
-                ->whereIn('payment_status', ['Paid', 'Refunded'])
-                ->when($from, fn($q) => $q->whereDate('created_at', '>=', $from))
-                ->when($to, fn($q) => $q->whereDate('created_at', '<=', $to))
-                ->sum('total'),
-            'created_at' => $c->created_at,
-        ]);
+        $customers = Customer::select('customers.*')
+            ->selectSub(function ($q) use ($from, $to) {
+                $q->selectRaw('COALESCE(SUM(orders.total), 0)')
+                    ->from('orders')
+                    ->whereColumn('orders.customer_id', 'customers.id')
+                    ->whereIn('orders.payment_status', ['Paid', 'Refunded'])
+                    ->when($from, fn($q) => $q->whereDate('orders.created_at', '>=', $from))
+                    ->when($to, fn($q) => $q->whereDate('orders.created_at', '<=', $to));
+            }, 'total_spent')
+            ->withCount(['orders' => function ($q) use ($from, $to) {
+                if ($from) $q->whereDate('created_at', '>=', $from);
+                if ($to) $q->whereDate('created_at', '<=', $to);
+            }])
+            ->orderByDesc('orders_count')
+            ->limit(50)
+            ->get()
+            ->map(fn($c) => [
+                'id' => $c->id,
+                'name' => $c->name,
+                'phone' => $c->phone,
+                'points' => $c->points,
+                'orders_count' => $c->orders_count,
+                'total_spent' => (float) $c->total_spent,
+                'created_at' => $c->created_at,
+            ]);
 
         $totalCustomers = Customer::count();
         $newCustomers = Customer::when($from, fn($q) => $q->whereDate('created_at', '>=', $from))

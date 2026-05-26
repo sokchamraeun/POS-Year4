@@ -1,31 +1,19 @@
-// src/pages/staff/dashboard/utils/api.js
-
 const API_URL = import.meta.env.VITE_API_URL
 
 export const getAuthHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem('token')}`
 })
 
-export async function fetchAllPages(endpoint) {
-  const headers = getAuthHeaders()
-  const response = await fetch(`${API_URL}${endpoint}?page=1`, { headers })
-  const first = await response.json()
-  
-  let all = first.data ?? []
-  const lastPage = first.last_page ?? 1
-  const pages = []
-  
-  for (let p = 2; p <= lastPage; p++) {
-    pages.push(
-      fetch(`${API_URL}${endpoint}?page=${p}`, { headers })
-        .then(r => r.json())
-        .then(j => j.data ?? [])
-    )
+async function fetchAll(endpoint) {
+  try {
+    const headers = getAuthHeaders()
+    const res = await fetch(`${API_URL}${endpoint}`, { headers })
+    if (!res.ok) return []
+    const json = await res.json()
+    return Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : [])
+  } catch {
+    return []
   }
-  
-  const rest = await Promise.all(pages)
-  for (const arr of rest) all = all.concat(arr)
-  return all
 }
 
 export async function updateOrder(orderId, data) {
@@ -45,14 +33,14 @@ export async function markOrderPrinted(orderId) {
   }).catch(() => {})
 }
 
-export async function fetchOrders() {
-  return fetchAllPages('/orders')
+export async function fetchOrders(page = 1) {
+  return fetchAll(`/orders?per_page=50&page=${page}`)
 }
 
 export async function fetchProducts() {
-  return fetchAllPages('/products')
+  return fetchAll('/products?per_page=200')
 }
 
 export async function fetchCustomers() {
-  return fetchAllPages('/customers')
+  return fetchAll('/customers?per_page=200')
 }

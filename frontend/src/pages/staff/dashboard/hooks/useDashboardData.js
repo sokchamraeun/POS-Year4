@@ -1,4 +1,3 @@
-// src/pages/staff/dashboard/hooks/useDashboardData.js
 import { useState, useEffect } from 'react'
 import { fetchOrders, fetchProducts, fetchCustomers } from '../utils/api'
 import { calculateStats, processChartData, getTopProducts } from '../utils/helpers'
@@ -43,22 +42,6 @@ export function useDashboardData() {
     loadData()
   }, [])
 
-  const updateOrders = (orders) => {
-    setAllOrders(orders)
-    setRecentOrders(orders.slice(0, 5))
-    setStats(calculateStats(orders, products, []))
-    setChartData({
-      daily: processChartData(orders, 'daily'),
-      monthly: processChartData(orders, 'monthly'),
-      yearly: processChartData(orders, 'yearly'),
-    })
-  }
-
-  const refreshData = async () => {
-    setLoading(true)
-    await loadData()
-  }
-
   return {
     loading,
     stats,
@@ -71,7 +54,5 @@ export function useDashboardData() {
     setRecentOrders,
     setAllOrders,
     setChartData,
-    updateOrders,
-    refreshData,
   }
 }

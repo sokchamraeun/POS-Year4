@@ -15,20 +15,8 @@ export default function Home() {
   useEffect(() => {
     async function fetchAll() {
       try {
-        const res = await fetch(`${API_URL}/products?page=1`).then((r) => r.json())
-        let allProducts = res.data ?? []
-        const lastPage = res.last_page ?? 1
-        const pages = []
-        for (let p = 2; p <= lastPage; p++) {
-          pages.push(
-            fetch(`${API_URL}/products?page=${p}`)
-              .then((r) => r.json())
-              .then((j) => j.data ?? [])
-          )
-        }
-        const rest = await Promise.all(pages)
-        for (const arr of rest) allProducts = allProducts.concat(arr)
-        setProducts(allProducts)
+        const res = await fetch(`${API_URL}/products?per_page=200`).then((r) => r.json())
+        setProducts(res.data ?? [])
       } catch {
         // ignore
       } finally {

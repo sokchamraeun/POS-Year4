@@ -37,7 +37,7 @@ export default function Products() {
         return res.json()
       })
       .then((json) => {
-        setProducts(json.data ?? json)
+        setProducts(Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : []))
         setPage(json.current_page ?? 1)
         setLastPage(json.last_page ?? 1)
         setTotal(json.total ?? 0)

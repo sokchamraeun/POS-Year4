@@ -9,9 +9,10 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $categories = Category::withCount('products')->orderBy('id')->paginate(10);
+        $perPage = min((int) $request->get('per_page', 100), 500);
+        $categories = Category::withCount('products')->orderBy('id')->paginate($perPage);
         return response()->json($categories);
     }
 

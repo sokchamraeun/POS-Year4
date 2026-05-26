@@ -122,12 +122,16 @@ export default function Orders() {
 
   useSocketConnect()
 
-  const handleSocketUpdate = useCallback(() => {
-    loadOrders()
-  }, [page])
+  useSocket('order:created', useCallback((order) => {
+    const mapped = mapOrder(order)
+    setOrders(prev => [mapped, ...prev])
+    setTotal(prev => prev + 1)
+  }, []))
 
-  useSocket('order:created', handleSocketUpdate)
-  useSocket('order:updated', handleSocketUpdate)
+  useSocket('order:updated', useCallback((order) => {
+    const mapped = mapOrder(order)
+    setOrders(prev => prev.map(o => o.id === mapped.id ? mapped : o))
+  }, []))
 
   useEffect(() => {
     loadOrders()

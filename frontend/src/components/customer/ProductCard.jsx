@@ -267,7 +267,7 @@ export default function ProductCard({ product, onAddToCart }) {
       </div>
 
       {/* Add this CSS to your global styles or component */}
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.5; }

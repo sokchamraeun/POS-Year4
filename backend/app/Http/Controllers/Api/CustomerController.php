@@ -15,7 +15,14 @@ class CustomerController extends Controller
         if ($request->filled('phone')) {
             $query->where('phone', $request->phone);
         }
-        $customers = $query->orderBy('id')->paginate(10);
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('name', 'ilike', "%{$s}%")->orWhere('phone', 'ilike', "%{$s}%");
+            });
+        }
+        $perPage = min((int) $request->get('per_page', 20), 500);
+        $customers = $query->orderBy('id')->paginate($perPage);
         return response()->json($customers);
     }
 

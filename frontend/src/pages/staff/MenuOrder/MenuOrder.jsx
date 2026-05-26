@@ -37,26 +37,13 @@ export default function MenuOrder() {
   useEffect(() => {
     async function fetchAll() {
       try {
-        const [firstPage, catRes, tblRes, custRes] = await Promise.all([
-          fetch(`${API_URL}/products?page=1`, { headers }).then((r) => r.json()),
-          fetch(`${API_URL}/categories`, { headers }).then((r) => r.json()),
+        const [prodRes, catRes, tblRes, custRes] = await Promise.all([
+          fetch(`${API_URL}/products?per_page=200`, { headers }).then((r) => r.json()),
+          fetch(`${API_URL}/categories?per_page=100`, { headers }).then((r) => r.json()),
           fetch(`${API_URL}/tables/available`, { headers }).then((r) => r.json()),
-          fetch(`${API_URL}/customers`, { headers }).then((r) => r.json()),
+          fetch(`${API_URL}/customers?per_page=200`, { headers }).then((r) => r.json()),
         ])
-        let allProducts = firstPage.data ?? []
-        const lastPage = firstPage.last_page ?? 1
-        const pages = []
-        for (let p = 2; p <= lastPage; p++) {
-          pages.push(
-            fetch(`${API_URL}/products?page=${p}`, { headers })
-              .then((r) => r.json())
-              .then((j) => j.data ?? [])
-          )
-        }
-        const rest = await Promise.all(pages)
-        for (const arr of rest) allProducts = allProducts.concat(arr)
-
-        setProducts(allProducts)
+        setProducts(prodRes.data ?? [])
         const cats = (catRes.data ?? catRes).map((c) => c.name)
         setCategories(['All', ...cats])
         setTables(tblRes.data ?? tblRes ?? [])

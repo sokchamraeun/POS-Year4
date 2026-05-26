@@ -7,13 +7,22 @@ use App\Models\Product;
 use App\Services\CloudinaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $products = Product::with(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels'])->orderBy('id')->paginate(10);
-        return response()->json($products);
+        $perPage = min((int) $request->get('per_page', 100), 500);
+        $page = $request->get('page', 1);
+        $cacheKey = "products_page_{$perPage}_{$page}";
+        $data = Cache::remember($cacheKey, 300, function () use ($perPage, $page) {
+            return Product::with(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels'])
+                ->orderBy('id')
+                ->paginate($perPage)
+                ->toArray();
+        });
+        return response()->json($data);
     }
 
     public function show(Product $product): JsonResponse
@@ -74,6 +83,7 @@ class ProductController extends Controller
             $product->addons()->attach($data['addons']);
         }
 
+        Cache::flush();
         $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
         return response()->json($product, 201);
     }
@@ -136,6 +146,7 @@ class ProductController extends Controller
             $product->addons()->attach($data['addons']);
         }
 
+        Cache::flush();
         $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
         return response()->json($product);
     }
@@ -146,6 +157,7 @@ class ProductController extends Controller
             $cloudinary->delete($product->image);
         }
         $product->delete();
+        Cache::flush();
         return response()->json(['message' => 'Product deleted successfully.']);
     }
 }
