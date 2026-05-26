@@ -37,13 +37,12 @@ RUN composer install --no-dev --optimize-autoloader
 # Storage link
 RUN php artisan storage:link || true
 
-# Expose ports
 EXPOSE 8080
 
 # Start Laravel + Reverb — using Railway's $PORT for the web server
-CMD php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache && \
+CMD php artisan config:cache || true && \
+    php artisan route:cache || true && \
+    php artisan view:cache || true && \
     php artisan migrate --force && \
     php artisan reverb:start --host=0.0.0.0 --port="${REVERB_PORT:-8080}" & \
     php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"

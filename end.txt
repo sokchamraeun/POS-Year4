@@ -71,3 +71,8 @@ CLOUDINARY_URL=cloudinary://@
 
 
 
+VITE_API_URL = https://pos-year4-production.up.railway.app/api
+VITE_STORAGE_URL=https://pos-year4-production.up.railway.app/storage
+VITE_REVERB_HOST = https://pos-year4-production.up.railway.app
+VITE_REVERB_PORT = 443
+VITE_REVERB_SCHEME = https
