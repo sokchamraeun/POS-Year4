@@ -38,7 +38,7 @@ export default function Products() {
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       <Navbar />
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 overflow-x-auto scrollbar-hide">
+      <div className="sticky top-18 z-40 bg-white border-b border-gray-200 overflow-x-auto">
         <div className="flex gap-2 px-4 py-3 max-w-7xl mx-auto">
           {categories.map((cat) => (
             <button

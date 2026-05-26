@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import CartSidebar from "./CartSidebar.jsx";
 import { useCart } from "../../context/CartContext.jsx";
 import { useCustomerAuth } from "../../context/CustomerAuthContext.jsx";
+import logo from "../../assets/images/logo.jpg";
 
 export default function Navbar() {
   const { totalItems: cartCount } = useCart();
@@ -31,7 +32,7 @@ export default function Navbar() {
     if (path.startsWith("/#")) {
       const hash = path.replace("/#", "");
       return (
-        location.hash === hash ||
+        location.hash === "#" + hash ||
         (location.pathname === "/" && !location.hash && hash === "home")
       );
     }
@@ -93,8 +94,8 @@ export default function Navbar() {
                 {/* Logo image */}
                 <div className="relative z-10 bg-white rounded-full p-1 shadow-md">
                   <img
-                    src="https://imgs.search.brave.com/rj54reMyAhmf7uJxIXmv5WuP-7n-lESM9ai-4w5lKhU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/dmVjdG9yc3RvY2su/Y29tL2kvNTAwcC83/NS81OC9sYXVuY2gt/Y2FmZS1sb2dvLXZl/Y3Rvci0yNTU0NzU1/OC5qcGc"
-                    alt="VisalLogo"
+                    src={logo}
+                    alt="The Bird Nest Logo"
                     className="w-12 h-12 object-contain rounded-full  transition-all duration-200 group-hover:scale-110"
                   />
                 </div>
@@ -103,10 +104,10 @@ export default function Navbar() {
               {/* Text */}
               <div className="flex flex-col leading-tight">
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-700 to-cyan-600 bg-clip-text text-transparent">
-                  Visal
+                  The Bird Nest
                 </span>
-                <span className="text-xs text-gray-500 tracking-wide">
-                  Café POS
+                <span className="text-xl text-gray-500 tracking-wide">
+                  Café
                 </span>
               </div>
             </Link>
@@ -235,35 +236,55 @@ export default function Navbar() {
                 <a
                   href="/#home"
                   onClick={() => setMenuOpen(false)}
-                  className="px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 font-medium transition-all duration-200"
+                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+                    isActive("/#home")
+                      ? "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700"
+                      : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                  }`}
                 >
                   Home
                 </a>
                 <Link
                   to="/history"
                   onClick={() => setMenuOpen(false)}
-                  className="px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 font-medium transition-all duration-200"
+                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+                    isActive("/history")
+                      ? "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700"
+                      : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                  }`}
                 >
                   History
                 </Link>
                 <Link
                   to="/service"
                   onClick={() => setMenuOpen(false)}
-                  className="px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 font-medium transition-all duration-200"
+                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+                    isActive("/service")
+                      ? "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700"
+                      : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                  }`}
                 >
                   Service
                 </Link>
                 <a
                   href="/#products"
                   onClick={() => setMenuOpen(false)}
-                  className="px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 font-medium transition-all duration-200"
+                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+                    isActive("/#products")
+                      ? "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700"
+                      : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                  }`}
                 >
                   Products
                 </a>
                 <Link
                   to="/staff/dashboard"
                   onClick={() => setMenuOpen(false)}
-                  className="px-4 py-3 rounded-xl text-gray-600 hover:bg-blue-50 hover:text-blue-600 font-medium transition-all duration-200"
+                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+                    isActive("/staff/dashboard")
+                      ? "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700"
+                      : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                  }`}
                 >
                   Dashboard
                 </Link>
