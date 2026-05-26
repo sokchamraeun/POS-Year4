@@ -25,7 +25,7 @@ export default function ProductModal({
     : STORAGE_URL + '/' + product.image
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 pt-2 p-4" onClick={onClose}>
       <div className="w-full max-w-sm bg-white rounded-2xl overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="relative">
           <img src={imgSrc} alt={product.name} className="w-full aspect-square object-cover" />
@@ -38,10 +38,15 @@ export default function ProductModal({
         <div className="p-4">
           <div className="flex items-center justify-between mb-1">
             <h2 className="text-lg font-bold text-gray-800">{product.name}</h2>
-            <div className="flex items-center bg-gray-100 rounded-xl">
-              <button onClick={() => onQtyChange(Math.max(1, qty - 1))} className="w-8 h-8 flex items-center justify-center text-base">-</button>
-              <input type="number" min="1" value={qty} onChange={(e) => { const v = parseInt(e.target.value); if (!isNaN(v)) onQtyChange(Math.max(1, v)) }} className="w-8 text-center text-sm bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
-              <button onClick={() => onQtyChange(qty + 1)} className="w-8 h-8 flex items-center justify-center text-base">+</button>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center bg-gray-100 rounded-xl">
+                <button onClick={() => onQtyChange(Math.max(1, qty - 1))} className="w-8 h-8 flex items-center justify-center text-base">-</button>
+                <input type="number" min="1" value={qty} onChange={(e) => { const v = parseInt(e.target.value); if (!isNaN(v)) onQtyChange(Math.max(1, v)) }} className="w-8 text-center text-sm bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none" />
+                <button onClick={() => onQtyChange(qty + 1)} className="w-8 h-8 flex items-center justify-center text-base">+</button>
+              </div>
+              <button onClick={onAddToCart} className="rounded-xl px-4 py-2 text-sm font-bold text-white bg-blue-600 active:scale-95 transition whitespace-nowrap">
+                Add
+              </button>
             </div>
           </div>
           {product.description && <p className="text-sm text-gray-500 mb-4">{product.description}</p>}
@@ -88,13 +93,6 @@ export default function ProductModal({
           )}
 
           {stockMsg && <div className="bg-red-50 text-red-600 text-xs rounded-lg p-2 mb-3">{stockMsg}</div>}
-
-          <button
-            onClick={onAddToCart}
-            className="w-full mt-3 rounded-xl py-3 text-sm font-bold text-white bg-blue-600 active:scale-95 transition"
-          >
-            Add to Cart
-          </button>
         </div>
       </div>
     </div>
