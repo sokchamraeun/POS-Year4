@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import CartSidebar from "./CartSidebar.jsx";
 import { useCart } from "../../context/CartContext.jsx";
 import { useCustomerAuth } from "../../context/CustomerAuthContext.jsx";
+import images from "../../assets/images/logo.jpg";
 
 export default function Navbar() {
   const { totalItems: cartCount } = useCart();
@@ -93,8 +94,8 @@ export default function Navbar() {
                 {/* Logo image */}
                 <div className="relative z-10 bg-white rounded-full p-1 shadow-md">
                   <img
-                    src="https://imgs.search.brave.com/rj54reMyAhmf7uJxIXmv5WuP-7n-lESM9ai-4w5lKhU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/dmVjdG9yc3RvY2su/Y29tL2kvNTAwcC83/NS81OC9sYXVuY2gt/Y2FmZS1sb2dvLXZl/Y3Rvci0yNTU0NzU1/OC5qcGc"
-                    alt="VisalLogo"
+                    src={images}
+                    alt="Bird Nest logo"
                     className="w-12 h-12 object-contain rounded-full  transition-all duration-200 group-hover:scale-110"
                   />
                 </div>
@@ -103,10 +104,10 @@ export default function Navbar() {
               {/* Text */}
               <div className="flex flex-col leading-tight">
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-700 to-cyan-600 bg-clip-text text-transparent">
-                  Visal
+                  The Bird Nest
                 </span>
-                <span className="text-xs text-gray-500 tracking-wide">
-                  Café POS
+                <span className="text-xl text-gray-500 tracking-wide">
+                  Café 
                 </span>
               </div>
             </Link>
