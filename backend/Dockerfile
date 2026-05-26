@@ -39,9 +39,6 @@ RUN php artisan storage:link || true
 
 EXPOSE 8080
 
-# Start Laravel — using Railway's $PORT
-CMD php artisan config:clear && \
-    php artisan route:clear && \
-    php artisan view:clear && \
-    php artisan migrate --force && \
-    php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"
+# Start Laravel — listen on Railway $PORT
+CMD php artisan migrate --force & \
+    php -S 0.0.0.0:"${PORT:-8080}" -t public
