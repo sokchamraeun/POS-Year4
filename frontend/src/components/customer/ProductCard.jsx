@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
+import ProductModal from './ProductModal.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -25,6 +26,7 @@ export default function ProductCard({ product, onAddToCart }) {
   const [isAdded, setIsAdded] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const [stockMsg, setStockMsg] = useState('')
+  const [showModal, setShowModal] = useState(false)
 
   function getBasePrice(sizeName) {
     const size = product.sizes?.find((s) => s.name === sizeName)
@@ -113,12 +115,13 @@ export default function ProductCard({ product, onAddToCart }) {
   }
 
   return (
+    <>
     <div className="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col w-full">
       
       {/* IMAGE */}
       <div className="relative p-3">
         {product.image ? (
-          <div className="relative overflow-hidden rounded-2xl bg-gray-100">
+          <div className="relative overflow-hidden rounded-2xl bg-gray-100 cursor-pointer" onClick={() => setShowModal(true)}>
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
             )}
@@ -140,7 +143,7 @@ export default function ProductCard({ product, onAddToCart }) {
             </span>
           </div>
         ) : (
-          <div className="w-full aspect-square bg-gray-200 rounded-2xl"></div>
+          <div className="w-full aspect-square bg-gray-200 rounded-2xl cursor-pointer" onClick={() => setShowModal(true)}></div>
         )}
       </div>
 
@@ -243,24 +246,31 @@ export default function ProductCard({ product, onAddToCart }) {
         )}
 
         {/* FOOTER */}
-        <div className="flex items-center gap-2 mt-auto">
+        <div className="grid grid-cols-2 gap-2 mt-auto">
 
           {/* QTY */}
-          <div className="flex items-center bg-gray-100 rounded-xl">
+          <div className="flex items-center bg-gray-100 rounded-xl justify-center">
             <button
               onClick={() => setQty(Math.max(1, qty - 1))}
-              className="w-8 h-8 flex items-center justify-center"
+              className="flex-1 h-8 flex items-center justify-center"
             >
               -
             </button>
 
-            <span className="w-8 text-center text-sm">
-              {qty}
-            </span>
+            <input
+              type="number"
+              min="1"
+              value={qty}
+              onChange={(e) => {
+                const v = parseInt(e.target.value)
+                if (!isNaN(v)) setQty(Math.max(1, v))
+              }}
+              className="w-9 text-center text-xs bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
 
             <button
               onClick={() => setQty(qty + 1)}
-              className="w-8 h-8 flex items-center justify-center"
+              className="flex-1 h-8 flex items-center justify-center"
             >
               +
             </button>
@@ -269,7 +279,7 @@ export default function ProductCard({ product, onAddToCart }) {
           {/* BTN */}
           <button
             onClick={handleAddToCart}
-            className={`flex-1 rounded-xl py-2 text-sm font-semibold text-white transition ${
+            className={`rounded-xl py-2 text-sm font-semibold text-white transition ${
               isAdded
                 ? 'bg-green-500'
                 : 'bg-blue-600 active:scale-95'
@@ -280,5 +290,25 @@ export default function ProductCard({ product, onAddToCart }) {
         </div>
       </div>
     </div>
+
+      <ProductModal
+        product={product}
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        selectedSize={selectedSize}
+        selectedSugar={selectedSugar}
+        selectedIce={selectedIce}
+        selectedAddOn={selectedAddOn}
+        qty={qty}
+        price={price}
+        stockMsg={stockMsg}
+        onSizeChange={setSelectedSize}
+        onSugarChange={setSelectedSugar}
+        onIceChange={setSelectedIce}
+        onAddOnChange={setSelectedAddOn}
+        onQtyChange={setQty}
+        onAddToCart={() => { handleAddToCart(); setShowModal(false) }}
+      />
+    </>
   )
 }
