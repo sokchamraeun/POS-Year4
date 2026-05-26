@@ -38,15 +38,12 @@ RUN composer install --no-dev --optimize-autoloader
 RUN php artisan storage:link || true
 
 # Expose ports
-# 10000 = Laravel
-# 8080 = Reverb WebSocket
-EXPOSE 10000
 EXPOSE 8080
 
-# Start Laravel + Reverb
-CMD php artisan config:clear && \
-    php artisan route:clear && \
-    php artisan view:clear && \
+# Start Laravel + Reverb — using Railway's $PORT for the web server
+CMD php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache && \
     php artisan migrate --force && \
-    php artisan reverb:start --host=0.0.0.0 --port=8080 & \
-    php artisan serve --host=0.0.0.0 --port=10000
+    php artisan reverb:start --host=0.0.0.0 --port="${REVERB_PORT:-8080}" & \
+    php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"
