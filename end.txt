@@ -1,0 +1,68 @@
+
+# ---------------- APP ----------------
+APP_NAME=Laravel
+APP_ENV=production
+APP_KEY=base64:LjbtZKEMnZkV5zwUzu70JqNAkGqoWPcp12wTZUaCpgA=
+APP_DEBUG=false
+APP_URL=https://pos-year4-production.up.railway.app
+
+APP_LOCALE=en
+APP_FALLBACK_LOCALE=en
+APP_FAKER_LOCALE=en_US
+
+APP_MAINTENANCE_DRIVER=file
+
+BCRYPT_ROUNDS=12
+
+# ---------------- FRONTEND ----------------
+FRONTEND_URL=https://pos-year4.vercel.app
+
+# ---------------- LOG ----------------
+LOG_CHANNEL=stack
+LOG_LEVEL=error
+
+# ---------------- DATABASE (RAILWAY POSTGRES) ----------------
+DB_CONNECTION=pgsql
+DB_HOST=interchange.proxy.rlwy.net
+DB_PORT=18008
+DB_DATABASE=railway
+DB_USERNAME=postgres
+DB_PASSWORD=ZYqYHcYyUWZneagIttrxVdBWzZecePEF
+
+# ---------------- SESSION / CACHE / QUEUE ----------------
+SESSION_DRIVER=cookie
+SESSION_SECURE_COOKIE=true
+SESSION_LIFETIME=120
+
+CACHE_STORE=file
+QUEUE_CONNECTION=sync
+
+# ---------------- REVERB (REALTIME) ----------------
+REVERB_APP_ID=173023
+REVERB_APP_KEY=a9973eb89c326506212bb61e8f3062d0
+REVERB_APP_SECRET=84e3bbb89e59deeeb4e177569c1c0c85
+
+REVERB_HOST=https://pos-year4-production.up.railway.app
+REVERB_PORT=443
+REVERB_SCHEME=https
+
+BROADCAST_CONNECTION=reverb
+
+# ---------------- FILE STORAGE ----------------
+FILESYSTEM_DISK=local
+
+# ---------------- MAIL ----------------
+MAIL_MAILER=log
+
+# ---------------- KHQR PAYMENT ----------------
+KHQR_GATEWAY_URL=https://khqr.cc/api/payment/request
+KHQR_PROFILE_ID=T8fwOdhxwIcZyKdx2GOnAcUGBIVr9spH
+KHQR_SECRET_KEY=gHcmI7Gyk5RcBUiNj0T1FucquYUzsJsb
+
+# ---------------- CLOUDINARY ----------------
+
+
+CLOUDINARY_CLOUD_NAME=ddroxkhuc
+CLOUDINARY_API_KEY=627463436182921
+CLOUDINARY_API_SECRET=pfy5GPa5HKM_yuEh9f4A5bdDDzs
+CLOUDINARY_URL=cloudinary://@
