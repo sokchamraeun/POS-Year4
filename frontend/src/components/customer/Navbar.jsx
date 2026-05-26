@@ -169,7 +169,7 @@ export default function Navbar() {
               {/* Cart Button */}
               <button
                 onClick={() => setCartOpen(true)}
-                className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group"
+                className="hidden md:block relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 group"
               >
                 {cartIcon}
                 {cartCount > 0 && (

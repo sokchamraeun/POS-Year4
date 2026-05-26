@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../../components/customer/Navbar.jsx'
-import Footer from '../../components/customer/Footer.jsx'
-import HeroSlider from '../../components/customer/HeroSlider.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-export default function Home() {
+export default function Products() {
   const { addItem } = useCart()
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
@@ -40,9 +38,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 pb-24">
       <Navbar />
-
-      <HeroSlider />
-
       <div className="sticky top-0 z-40 bg-white border-b border-gray-200 overflow-x-auto scrollbar-hide">
         <div className="flex gap-2 px-4 py-3 max-w-7xl mx-auto">
           {categories.map((cat) => (
@@ -60,11 +55,10 @@ export default function Home() {
           ))}
         </div>
       </div>
-
-      <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Our Menu</h2>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Products</h1>
         {loading ? (
-          <p className="text-center text-gray-500">Loading menu...</p>
+          <p className="text-center text-gray-500">Loading...</p>
         ) : filtered.length === 0 ? (
           <p className="text-center text-gray-400">No products in this category.</p>
         ) : (
@@ -74,9 +68,7 @@ export default function Home() {
             ))}
           </div>
         )}
-      </section>
-        
-      <Footer />
+      </div>
       <MobileBottomNav />
     </div>
   )

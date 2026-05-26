@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
+import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
+import Invoice from '../../components/customer/Invoice.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
 import { useSocket } from '../../hooks/useSocket'
 
@@ -12,6 +14,7 @@ export default function History() {
   const [loading, setLoading] = useState(false)
   const [phone, setPhone] = useState('')
   const [searched, setSearched] = useState(false)
+  const [receiptOrder, setReceiptOrder] = useState(null)
 
   useEffect(() => {
     if (customer?.phone) {
@@ -53,7 +56,7 @@ export default function History() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 pb-24">
       <Navbar />
 
       <div className="flex-1 max-w-4xl mx-auto w-full px-4 py-8 mt-8">
@@ -118,18 +121,28 @@ export default function History() {
                 </div>
 
                 <div className="space-y-2 mb-3">
-                  {order.items?.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between text-sm">
-                      <div>
-                        <span className="font-medium text-gray-700">{item.product?.name}</span>
-                        <span className="text-gray-400 ml-2">
-                          x{item.qty}
-                          {item.size && <span className="ml-1">({item.size.name})</span>}
-                        </span>
+                  {order.items?.map((item) => {
+                    const opts = [
+                      item.size?.name,
+                      item.sugar_level?.name,
+                      item.ice_level?.name,
+                      ...(item.addons?.map(a => a.addon?.name).filter(Boolean) ?? []),
+                    ].filter(Boolean).join(' | ')
+                    return (
+                      <div key={item.id} className="flex items-start justify-between text-sm">
+                        <div>
+                          <span className="font-medium text-gray-700">{item.product?.name}</span>
+                          <span className="text-gray-400 ml-1">
+                            x{item.qty}
+                          </span>
+                          {opts && (
+                            <div className="text-[11px] text-gray-400 mt-0.5">{opts}</div>
+                          )}
+                        </div>
+                        <span className="text-gray-600 shrink-0 ml-2">${Number(item.subtotal || 0).toFixed(2)}</span>
                       </div>
-                      <span className="text-gray-600">${Number(item.subtotal || 0).toFixed(2)}</span>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
 
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100">
@@ -141,7 +154,15 @@ export default function History() {
                     )}
                     {order.table && <span className="ml-3">Table: {order.table.name}</span>}
                   </span>
-                  <span className="text-lg font-bold text-blue-600">${Number(order.total || 0).toFixed(2)}</span>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setReceiptOrder(order)}
+                      className="text-xs text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Receipt
+                    </button>
+                    <span className="text-lg font-bold text-blue-600">${Number(order.total || 0).toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
             ))}
@@ -149,7 +170,22 @@ export default function History() {
         )}
       </div>
 
+      {receiptOrder && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setReceiptOrder(null)}>
+          <div className="w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+            <Invoice order={receiptOrder} customer={customer} />
+            <button
+              onClick={() => setReceiptOrder(null)}
+              className="mt-3 w-full bg-gray-100 text-gray-700 py-2 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       <Footer />
+      <MobileBottomNav />
     </div>
   )
 }

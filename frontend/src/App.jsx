@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import PrivateRoute from './routes/PrivateRoute.jsx'
 import Home from './pages/customer/Home.jsx'
+import CustomerProducts from './pages/customer/Products.jsx'
+import Cart from './pages/customer/Cart.jsx'
 import History from './pages/customer/History.jsx'
 import CustomerLogin from './pages/customer/CustomerLogin.jsx'
 import CustomerRegister from './pages/customer/CustomerRegister.jsx'
@@ -39,6 +41,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/products" element={<CustomerProducts />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/history" element={<History />} />
         <Route path="/customer/login" element={<CustomerLogin />} />
         <Route path="/customer/register" element={<CustomerRegister />} />
