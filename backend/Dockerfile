@@ -39,10 +39,9 @@ RUN php artisan storage:link || true
 
 EXPOSE 8080
 
-# Start Laravel + Reverb — using Railway's $PORT for the web server
-CMD php artisan config:cache || true && \
-    php artisan route:cache || true && \
-    php artisan view:cache || true && \
+# Start Laravel — using Railway's $PORT
+CMD php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan view:clear && \
     php artisan migrate --force && \
-    php artisan reverb:start --host=0.0.0.0 --port="${REVERB_PORT:-8080}" & \
     php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"
