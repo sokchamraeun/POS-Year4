@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
+import Cropper from 'react-easy-crop'
+import getCroppedImg from '../../../utils/cropImage.js'
 
 const API = import.meta.env.VITE_API_URL
 const token = localStorage.getItem('token')
@@ -16,6 +18,14 @@ export default function CreateProduct() {
   const [iceLevels, setIceLevels] = useState([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const fileInputRef = useRef(null)
+  const [cropOpen, setCropOpen] = useState(false)
+  const [cropImage, setCropImage] = useState(null)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
+  const [outputWidth, setOutputWidth] = useState('')
+  const [outputHeight, setOutputHeight] = useState('')
 
   const [form, setForm] = useState({
     name: '',
@@ -82,6 +92,45 @@ export default function CreateProduct() {
     })
   }
 
+  function onCropComplete(croppedArea, croppedAreaPixels) {
+    setCroppedAreaPixels(croppedAreaPixels)
+    if (!outputWidth && !outputHeight) {
+      setOutputWidth(String(Math.round(croppedAreaPixels.width)))
+      setOutputHeight(String(Math.round(croppedAreaPixels.height)))
+    }
+  }
+
+  async function handleCropSave() {
+    if (croppedAreaPixels) {
+      try {
+        const w = parseInt(outputWidth) || croppedAreaPixels.width
+        const h = parseInt(outputHeight) || croppedAreaPixels.height
+        const blob = await getCroppedImg(cropImage, croppedAreaPixels, { zoom, outputWidth: w, outputHeight: h })
+        const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' })
+        setForm(prev => ({ ...prev, image: file }))
+      } catch (error) {
+        console.error('Error creating cropped image:', error)
+      }
+      setCropOpen(false)
+      setCropImage(null)
+      setCrop({ x: 0, y: 0 })
+      setZoom(1)
+      setOutputWidth('')
+      setOutputHeight('')
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  function handleCropCancel() {
+    setCropOpen(false)
+    setCropImage(null)
+    setCrop({ x: 0, y: 0 })
+    setZoom(1)
+    setOutputWidth('')
+    setOutputHeight('')
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSaving(true)
@@ -142,11 +191,6 @@ export default function CreateProduct() {
 
             <form onSubmit={handleSubmit} encType="multipart/form-data">
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" name="name" value={form.name} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-
-              <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                 <select name="category_id" value={form.category_id} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <option value="">Select Category</option>
@@ -157,13 +201,28 @@ export default function CreateProduct() {
               </div>
 
               <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input type="text" name="name" value={form.name} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+
+              <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea name="description" value={form.description} onChange={handleChange} rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
-                <input type="file" accept="image/*" onChange={(e) => setForm((prev) => ({ ...prev, image: e.target.files[0] }))} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                {form.image && (
+                  <div className="mb-2"><img src={URL.createObjectURL(form.image)} alt="Preview" className="w-20 h-20 rounded-lg object-cover" /></div>
+                )}
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={(e) => {
+                  const file = e.target.files[0]
+                  if (file) {
+                    const reader = new FileReader()
+                    reader.readAsDataURL(file)
+                    reader.onload = () => { setCropImage(reader.result); setCropOpen(true) }
+                  }
+                }} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
               </div>
 
               <div className="mb-4">
@@ -227,6 +286,36 @@ export default function CreateProduct() {
               <button type="submit" disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50">
                 {saving ? 'Saving...' : 'Save Product'}
               </button>
+
+              {cropOpen && cropImage && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-75">
+                  <div className="bg-white rounded-lg w-full max-w-2xl m-4">
+                    <div className="p-4 border-b"><h3 className="text-lg font-semibold">Crop Image</h3></div>
+                    <div className="relative h-96">
+                      <Cropper image={cropImage} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
+                    </div>
+                    <div className="p-4 border-t">
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Zoom</label>
+                        <input type="range" min={1} max={3} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} className="w-full" />
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Output Size</label>
+                        <div className="flex items-center gap-2">
+                          <input type="number" min={1} value={outputWidth} onChange={(e) => setOutputWidth(e.target.value)} placeholder="Width" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                          <span className="text-gray-500">×</span>
+                          <input type="number" min={1} value={outputHeight} onChange={(e) => setOutputHeight(e.target.value)} placeholder="Height" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                          <span className="text-xs text-gray-400">px</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <button onClick={handleCropCancel} className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+                        <button onClick={handleCropSave} className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Apply</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </form>
           </div>
         </main>

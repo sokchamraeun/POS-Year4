@@ -10,7 +10,8 @@ import CustomerForgotPassword from './pages/customer/CustomerForgotPassword.jsx'
 import Dashboard from "./pages/staff/dashboard/Dashboard.jsx"
 import Products from './pages/staff/Product/Products.jsx'
 import CreateProduct from './pages/staff/Product/Create.jsx'
-import EditProduct from './pages/staff/Product/Edit.jsx'
+import { Navigate } from 'react-router-dom'
+const EditProductOld = () => <Navigate to="/staff/products" replace />
 import ViewProduct from './pages/staff/Product/View.jsx'
 import Orders from './pages/staff/Orders.jsx'
 import Inventory from './pages/staff/Inventory/Inventory.jsx'
@@ -50,7 +51,7 @@ export default function App() {
         <Route path="/staff/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/staff/products" element={<PrivateRoute><Products /></PrivateRoute>} />
         <Route path="/staff/products/add" element={<PrivateRoute><CreateProduct /></PrivateRoute>} />
-        <Route path="/staff/products/edit/:id" element={<PrivateRoute><EditProduct /></PrivateRoute>} />
+        <Route path="/staff/products/edit/:id" element={<PrivateRoute><EditProductOld /></PrivateRoute>} />
         <Route path="/staff/products/:id" element={<PrivateRoute><ViewProduct /></PrivateRoute>} />
         <Route path="/staff/orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
         <Route path="/staff/inventory" element={<PrivateRoute><Inventory /></PrivateRoute>} />

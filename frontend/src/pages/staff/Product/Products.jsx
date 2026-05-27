@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
+import EditModalProduct from './EditModalProduct.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL + '/products'
 const token = localStorage.getItem('token')
@@ -19,7 +20,10 @@ export default function Products() {
   const [searchParams] = useSearchParams()
   const updated = searchParams.get('updated')
   const [search, setSearch] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [categories, setCategories] = useState([])
   const [viewProduct, setViewProduct] = useState(null)
+  const [editProduct, setEditProduct] = useState(null)
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -53,6 +57,10 @@ export default function Products() {
 
   useEffect(() => {
     fetchProducts(1)
+    fetch(`${import.meta.env.VITE_API_URL}/categories`, { headers })
+      .then(r => r.json())
+      .then(json => setCategories(json.data ?? json))
+      .catch(() => {})
   }, [updated])
 
   function handleDelete(id, name) {
@@ -65,10 +73,13 @@ export default function Products() {
       .catch(() => alert('Failed to delete product'))
   }
 
+
+
   const filtered = products.filter(
     (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      (p.category?.name ?? '').toLowerCase().includes(search.toLowerCase())
+      (!selectedCategory || p.category_id == selectedCategory) &&
+      (p.name.toLowerCase().includes(search.toLowerCase()) ||
+      (p.category?.name ?? '').toLowerCase().includes(search.toLowerCase()))
   )
 
   return (
@@ -115,6 +126,16 @@ export default function Products() {
                     className="w-full pl-11 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all duration-200"
                   />
                 </div>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-full">
                   <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
                   <span className="text-xs font-medium text-blue-700">{total} product{total !== 1 ? 's' : ''}</span>
@@ -236,12 +257,12 @@ export default function Products() {
                               >
                                 View
                               </button>
-                              <Link
-                                to={`/staff/products/edit/${product.id}`}
+                              <button
+                                onClick={() => setEditProduct(product)}
                                 className="px-3 py-1.5 text-xs font-medium text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-200"
                               >
                                 Edit
-                              </Link>
+                              </button>
                               <button
                                 onClick={() => handleDelete(product.id, product.name)}
                                 className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
@@ -342,7 +363,7 @@ export default function Products() {
                         </span>
                         <div className="flex gap-2">
                           <button onClick={() => setViewProduct(product)} className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition-all">View</button>
-                          <Link to={`/staff/products/edit/${product.id}`} className="px-4 py-2 text-sm font-medium text-amber-600 bg-amber-50 rounded-xl hover:bg-amber-100 transition-all">Edit</Link>
+                          <button onClick={() => setEditProduct(product)} className="px-4 py-2 text-sm font-medium text-amber-600 bg-amber-50 rounded-xl hover:bg-amber-100 transition-all">Edit</button>
                           <button onClick={() => handleDelete(product.id, product.name)} className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-xl hover:bg-red-100 transition-all">Delete</button>
                         </div>
                       </div>
@@ -419,6 +440,14 @@ export default function Products() {
           </div>
         </main>
       </div>
+
+      {editProduct && (
+        <EditModalProduct
+          product={editProduct}
+          onClose={() => setEditProduct(null)}
+          onSaved={() => fetchProducts(page)}
+        />
+      )}
 
       {/* Product Details Modal */}
       {viewProduct && (
@@ -513,12 +542,12 @@ export default function Products() {
             </div>
 
             <div className="sticky bottom-0 bg-white border-t border-gray-100 px-6 py-4 flex items-center justify-end gap-3">
-              <Link
-                to={`/staff/products/edit/${viewProduct.id}`}
+              <button
+                onClick={() => { const p = viewProduct; setViewProduct(null); setEditProduct(p) }}
                 className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:shadow-lg transition-all duration-300"
               >
                 Edit Product
-              </Link>
+              </button>
               <button
                 onClick={() => setViewProduct(null)}
                 className="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-all duration-200"
