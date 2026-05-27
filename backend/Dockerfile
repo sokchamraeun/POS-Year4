@@ -2,7 +2,7 @@ FROM php:8.4-cli
 
 WORKDIR /var/www
 
-# Install system dependencies
+# Install system dependencies + nginx + supervisor
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     libonig-dev \
+    nginx \
+    supervisor \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_pgsql gd pcntl
 
@@ -43,11 +45,19 @@ RUN php artisan config:clear && \
 # Storage link
 RUN php artisan storage:link || true
 
+# Configure Nginx
+RUN rm -f /etc/nginx/sites-enabled/default && \
+    mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled
+COPY docker/nginx.conf /etc/nginx/sites-available/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+
+# Supervisor config
+COPY docker/supervisord.conf /etc/supervisor/conf.d/laravel.conf
+
 # Render only uses ONE port
 EXPOSE 10000
 
-# Start Laravel + Reverb
+# Start all services via supervisor
 CMD sh -c "\
 php artisan migrate --force && \
-php artisan reverb:start --host=0.0.0.0 --port=8080 & \
-php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
+exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf"
