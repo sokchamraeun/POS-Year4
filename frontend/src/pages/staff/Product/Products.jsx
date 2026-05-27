@@ -5,8 +5,7 @@ import Topbar from '../../../components/staff/Topbar.jsx'
 import EditModalProduct from './EditModalProduct.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL + '/products'
-const token = localStorage.getItem('token')
-const headers = { Authorization: `Bearer ${token}` }
+const getHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
 
 const categoryColors = {
   Coffee: 'bg-gradient-to-r from-amber-500 to-amber-600 text-white',
@@ -35,7 +34,7 @@ export default function Products() {
 
   const fetchProducts = (p) => {
     setLoading(true)
-    fetch(`${API_URL}?page=${p}`, { headers })
+    fetch(`${API_URL}?page=${p}`, { headers: getHeaders() })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch products')
         return res.json()
@@ -57,7 +56,7 @@ export default function Products() {
 
   useEffect(() => {
     fetchProducts(1)
-    fetch(`${import.meta.env.VITE_API_URL}/categories`, { headers })
+    fetch(`${import.meta.env.VITE_API_URL}/categories`, { headers: getHeaders() })
       .then(r => r.json())
       .then(json => setCategories(json.data ?? json))
       .catch(() => {})
@@ -65,7 +64,7 @@ export default function Products() {
 
   function handleDelete(id, name) {
     if (!confirm(`Delete product "${name}"? This cannot be undone.`)) return
-    fetch(`${API_URL}/${id}`, { method: 'DELETE', headers })
+    fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: getHeaders() })
       .then((res) => {
         if (!res.ok) throw new Error('Failed to delete')
         fetchProducts(page)
