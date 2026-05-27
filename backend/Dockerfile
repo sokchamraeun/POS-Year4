@@ -17,37 +17,34 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy project
+# Copy application
 COPY . .
 
-# Create Laravel folders
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Create Laravel directories
 RUN mkdir -p \
-    bootstrap/cache \
     storage/framework/cache \
     storage/framework/sessions \
     storage/framework/views \
-    storage/framework/testing
+    bootstrap/cache
 
 # Permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Laravel optimization
+RUN php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache
 
 # Storage link
 RUN php artisan storage:link || true
 
-# Expose ports (EXPOSE is metadata only - actual port is controlled via $PORT at runtime)
-# Laravel / primary web
+# Expose ports
 EXPOSE 10000
-# Reverb WebSocket
 EXPOSE 8080
 
-# Start Laravel + Reverb
-# Use Render's $PORT env var, fallback to 10000 for local Docker
-CMD php artisan config:clear && \
-    php artisan route:clear && \
-    php artisan view:clear && \
-    php artisan migrate --force && \
-    php artisan reverb:start --host=0.0.0.0 --port=8080 & \
+# Start Reverb + Laravel
+CMD php artisan reverb:start --host=0.0.0.0 --port=8080 & \
     php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
