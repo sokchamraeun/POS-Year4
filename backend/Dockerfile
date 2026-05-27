@@ -2,7 +2,7 @@ FROM php:8.3-cli
 
 WORKDIR /var/www
 
-# Install system packages
+# Install system packages + PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql gd pcntl \
+    && docker-php-ext-install pdo pdo_pgsql gd pcntl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -28,18 +28,18 @@ RUN mkdir -p \
     storage/framework/views \
     storage/framework/testing
 
-# Set permissions
+# Permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Install PHP dependencies
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Laravel optimization
+# Laravel optimization (safe for production build)
 RUN php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache
 
-# Storage symlink
+# Storage link
 RUN php artisan storage:link || true
 
 # Expose ports
