@@ -6,6 +6,7 @@ WORKDIR /var/www
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    ca-certificates \
     unzip \
     libpq-dev \
     libpng-dev \
