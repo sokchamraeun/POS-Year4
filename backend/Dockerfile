@@ -31,23 +31,18 @@ RUN mkdir -p \
 # Permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Install PHP dependencies
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
 # Storage link
 RUN php artisan storage:link || true
 
-# Expose ports (EXPOSE is metadata only - actual port is controlled via $PORT at runtime)
-# Laravel / primary web
+# ONLY ONE PORT for Render
 EXPOSE 10000
-# Reverb WebSocket
-EXPOSE 8080
 
-# Start Laravel + Reverb
-# Use Render's $PORT env var, fallback to 10000 for local Docker
+# Start app
 CMD php artisan config:clear && \
     php artisan route:clear && \
     php artisan view:clear && \
     php artisan migrate --force && \
-    php artisan reverb:start --host=0.0.0.0 --port=10000 & \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+    php artisan reverb:start --host=0.0.0.0 --port=${PORT:-10000}
