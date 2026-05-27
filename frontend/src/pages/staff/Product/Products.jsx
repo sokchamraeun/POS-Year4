@@ -180,7 +180,7 @@ export default function Products() {
                             <div className="flex items-center gap-3">
                               <div className="relative">
                                 {product.image ? (
-                                  <img src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`} alt={product.name} className="w-12 h-12 rounded-xl object-cover shadow-md group-hover:scale-105 transition-transform duration-200" />
+                                  <img src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`} alt={product.name} className="w-12 h-12 rounded-xl object-cover object-center shadow-md group-hover:scale-105 transition-transform duration-200 shrink-0" />
                                 ) : (
                                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-400 text-xs shadow-inner">
                                     N/A
@@ -296,7 +296,7 @@ export default function Products() {
                     <div key={product.id} className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-lg transition-all duration-300">
                       <div className="flex items-start gap-4 mb-4">
                         {product.image ? (
-                          <img src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`} alt={product.name} className="w-16 h-16 rounded-xl object-cover shadow-md" />
+                          <img src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`} alt={product.name} className="w-16 h-16 rounded-xl object-cover object-center shadow-md shrink-0" />
                         ) : (
                           <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-400 text-xs">N/A</div>
                         )}
@@ -467,7 +467,7 @@ export default function Products() {
             <div className="p-6 space-y-6">
               <div className="flex items-center gap-5">
                 {viewProduct.image ? (
-                  <img src={`${viewProduct.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${viewProduct.image}`} alt={viewProduct.name} className="w-24 h-24 rounded-2xl object-cover shadow-lg" />
+                  <img src={`${viewProduct.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${viewProduct.image}`} alt={viewProduct.name} className="w-24 h-24 rounded-2xl object-cover object-center shadow-lg shrink-0" />
                 ) : (
                   <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-400">N/A</div>
                 )}
