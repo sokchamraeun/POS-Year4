@@ -6,8 +6,7 @@ import ProductCard from './components/ProductCard.jsx'
 import CartSidebar from './components/CartSidebar.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
-const token = localStorage.getItem('token')
-const headers = { Authorization: `Bearer ${token}` }
+const headers = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
 
 export default function MenuOrder() {
   const [category, setCategory] = useState('All')
@@ -38,10 +37,10 @@ export default function MenuOrder() {
     async function fetchAll() {
       try {
         const [prodRes, catRes, tblRes, custRes] = await Promise.all([
-          fetch(`${API_URL}/products?per_page=200`, { headers }).then((r) => r.json()),
-          fetch(`${API_URL}/categories?per_page=100`, { headers }).then((r) => r.json()),
-          fetch(`${API_URL}/tables/available`, { headers }).then((r) => r.json()),
-          fetch(`${API_URL}/customers?per_page=200`, { headers }).then((r) => r.json()),
+          fetch(`${API_URL}/products?per_page=200`, { headers: headers() }).then((r) => r.json()),
+          fetch(`${API_URL}/categories?per_page=100`, { headers: headers() }).then((r) => r.json()),
+          fetch(`${API_URL}/tables/available`, { headers: headers() }).then((r) => r.json()),
+          fetch(`${API_URL}/customers?per_page=200`, { headers: headers() }).then((r) => r.json()),
         ])
         setProducts(prodRes.data ?? [])
         const cats = (catRes.data ?? catRes).map((c) => c.name)
@@ -130,7 +129,7 @@ export default function MenuOrder() {
       if (!finalCustomerId && customerName) {
         const custRes = await fetch(`${API_URL}/customers`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...headers },
+          headers: { 'Content-Type': 'application/json', ...headers() },
           body: JSON.stringify({ name: customerName, phone: phone || null }),
         })
         if (custRes.ok) {
@@ -159,7 +158,7 @@ export default function MenuOrder() {
 
       const orderRes = await fetch(`${API_URL}/orders`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers },
+        headers: { 'Content-Type': 'application/json', ...headers() },
         body: JSON.stringify({
           customer_id: finalCustomerId || null,
           table_id: tableId || null,
@@ -221,7 +220,7 @@ export default function MenuOrder() {
         try {
           const initRes = await fetch(`${API_URL}/orders/payment/initiate`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...headers },
+            headers: { 'Content-Type': 'application/json', ...headers() },
             body: JSON.stringify({
               order_id: dbOrderId,
               return_url: window.location.origin + '/staff/menu-order',
