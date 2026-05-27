@@ -4,8 +4,6 @@ import { useCart } from '../../context/CartContext.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
-const token = localStorage.getItem('token')
-const authHeaders = token ? { Authorization: `Bearer ${token}` } : {}
 
 export default function CartSidebar({ open, onClose }) {
   const { items, totalItems, totalPrice, clearCart } = useCart()
@@ -113,29 +111,28 @@ export default function CartSidebar({ open, onClose }) {
       const dbOrderId = createdOrder.id ?? null
 
       clearCart()
-      setDone(true)
-      setPlacing(false)
 
       if (paymentMethod === 'khqr' && dbOrderId) {
-        try {
-          const initRes = await fetch(`${API_URL}/orders/payment/initiate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...authHeaders },
-            body: JSON.stringify({ order_id: dbOrderId }),
-          })
-          const initData = await initRes.json()
-          if (initData.checkout_url) {
-            window.open(initData.checkout_url, '_blank')
-          }
-        } catch {
-          // fallback silently
+        const initRes = await fetch(`${API_URL}/orders/payment/initiate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ order_id: dbOrderId }),
+        })
+        const initData = await initRes.json()
+        if (initData.checkout_url) {
+          window.location.href = initData.checkout_url
+          return
         }
+        alert(initData.message || 'KHQR payment initiation failed')
+        setPlacing(false)
+        return
       }
 
-      setTimeout(() => handleClose(), 5000)
-    } catch {
+      setDone(true)
       setPlacing(false)
-      alert('Failed to place order. Check connection.')
+    } catch (err) {
+      setPlacing(false)
+      alert('Error: ' + (err.message || 'Check connection.'))
     }
   }
 
@@ -248,12 +245,7 @@ export default function CartSidebar({ open, onClose }) {
             </svg>
             <p className="text-lg font-bold text-gray-800 mb-1">Order Placed!</p>
             <p className="text-sm text-gray-500 mb-4">Your order has been submitted.</p>
-            <button
-              onClick={handleClose}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-            >
-              Close
-            </button>
+            <button onClick={handleClose} className="text-sm text-blue-600 hover:text-blue-700 font-medium">Close</button>
           </div>
         )}
     </div>

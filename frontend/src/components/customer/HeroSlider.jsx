@@ -41,7 +41,7 @@ export default function HeroSlider() {
   }
 
   return (
-    <section id="home" className="mx-4 sm:mx-6 md:mx-10 lg:mx-20 relative h-screen min-h-[600px] max-h-[800px] overflow-hidden">
+    <section id="home" className="mx-4 sm:mx-6 md:mx-8 lg:mx-10 relative h-screen min-h-[600px] max-h-[800px] overflow-hidden">
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={current}

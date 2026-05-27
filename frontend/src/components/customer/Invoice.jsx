@@ -81,7 +81,13 @@ export default function Invoice({ order, customer }) {
           </div>
 
           <div className="text-[10px] text-gray-500 mt-1">
-            {order.created_at?.slice(0, 19).replace('T', ' ')}
+            {order.created_at
+              ? new Date(order.created_at).toLocaleString('en-US', {
+                  year: 'numeric', month: '2-digit', day: '2-digit',
+                  hour: '2-digit', minute: '2-digit', second: '2-digit',
+                  hour12: false, timeZone: 'Asia/Phnom_Penh',
+                })
+              : ''}
           </div>
 
           <div className="text-[10px] mt-1 text-gray-600">
@@ -94,12 +100,12 @@ export default function Invoice({ order, customer }) {
         </div>
 
         {/* TABLE HEADER */}
-        <div className="grid grid-cols-[14px_auto_24px_52px_50px] text-[10px] font-bold px-7 pt-5 pb-3" style={{ borderBottom: '1px dashed #ccc' }}>
+        <div className="grid grid-cols-[14px_auto_24px_52px_50px] text-[10px] font-bold px-5 pt-5 pb-3" style={{ borderBottom: '1px dashed #ccc' }}>
           <span className="text-center">No</span>
           <span>Item</span>
           <span className="text-center">Qty</span>
           <span className="text-right">Price</span>
-          <span className="text-right">Subtotal</span>
+          <span className="mx-3 text-right">Subtotal</span>
         </div>
 
         {/* ITEMS */}
@@ -123,7 +129,7 @@ export default function Invoice({ order, customer }) {
 
             return (
               <div key={i} className="py-1" style={{ borderBottom: i < items.length - 1 ? '1px dashed #e5e5e5' : 'none' }}>
-                <div className="grid grid-cols-[14px_auto_24px_52px_50px] text-[11px]">
+                <div className="grid grid-cols-[14px_auto_24px_52px_50px] text-[11px] py-2">
                   <span className="text-center text-gray-400">{i + 1}</span>
                   <span className="truncate text-gray-800 font-medium">{name}</span>
                   <span className="text-center text-gray-700">{qty}</span>
@@ -132,7 +138,7 @@ export default function Invoice({ order, customer }) {
                 </div>
 
                 {opts && (
-                  <div className="text-[9px] text-gray-400 ml-7 mt-0.5">
+                  <div className="text-[9px] text-gray-400 ml-7 mt-0.5 mb-1">
                     {opts}
                   </div>
                 )}
@@ -142,7 +148,7 @@ export default function Invoice({ order, customer }) {
         </div>
 
         {/* TOTAL */}
-        <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] font-bold px-3 py-2" style={{ borderTop: '2px solid #333' }}>
+        <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] font-bold px-10 py-2" style={{ borderTop: '2px solid #333' }}>
           <span />
           <span className="text-right col-span-3 text-gray-800">TOTAL</span>
           <span className="text-right text-gray-800">${Number(order.total || 0).toFixed(2)}</span>

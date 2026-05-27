@@ -38,8 +38,12 @@ Route::post('/orders', [OrderController::class, 'store']);
 Route::post('/orders/check-stock', [OrderController::class, 'checkStock']);
 Route::get('/orders/history', [OrderController::class, 'customerHistory']);
 Route::get('/orders/user-history', [OrderController::class, 'userHistory']);
+Route::get('/orders/{order}', [OrderController::class, 'show']);
 Route::get('/tables', [TableController::class, 'index']);
 Route::get('/hero-sliders', [HeroSliderController::class, 'index']);
+Route::get('/orders/{order}/khqr-qr', [OrderController::class, 'generateKhqrQr']);
+Route::post('/orders/payment/initiate', [PaymentCheckoutController::class, 'initiate']);
+Route::match(['get', 'post'], '/orders/payment/callback', [PaymentCheckoutController::class, 'callback']);
 // Protected routes (staff + customer auth)
 Route::middleware('auth:sanctum')->group(function () {
     // Staff auth
@@ -122,8 +126,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/orders/{order}', [OrderController::class, 'update']);
     Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
     Route::post('/orders/{order}/mark-printed', [OrderController::class, 'markPrinted']);
-    Route::post('/orders/payment/initiate', [PaymentCheckoutController::class, 'initiate']);
-    Route::match(['get', 'post'], '/orders/payment/callback', [PaymentCheckoutController::class, 'callback']);
 
     // Table management (staff)
     Route::get('/tables/{table}', [TableController::class, 'show']);
