@@ -25,19 +25,15 @@ services:
       - key: QUEUE_CONNECTION
         value: sync
       - key: BROADCAST_CONNECTION
-        value: reverb
-      - key: REVERB_APP_ID
+        value: pusher
+      - key: PUSHER_APP_ID
         sync: false
-      - key: REVERB_APP_KEY
+      - key: PUSHER_APP_KEY
         sync: false
-      - key: REVERB_APP_SECRET
+      - key: PUSHER_APP_SECRET
         sync: false
-      - key: REVERB_HOST
-        value: https://pos-year4-backend.onrender.com
-      - key: REVERB_PORT
-        value: 443
-      - key: REVERB_SCHEME
-        value: https
+      - key: PUSHER_APP_CLUSTER
+        value: mt1
       - key: FILESYSTEM_DISK
         value: local
       - key: MAIL_MAILER

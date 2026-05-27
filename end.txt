@@ -37,16 +37,14 @@ SESSION_LIFETIME=120
 CACHE_STORE=file
 QUEUE_CONNECTION=sync
 
-# ---------------- REVERB (REALTIME) ----------------
-REVERB_APP_ID=173023
-REVERB_APP_KEY=a9973eb89c326506212bb61e8f3062d0
-REVERB_APP_SECRET=84e3bbb89e59deeeb4e177569c1c0c85
+# ---------------- PUSHER (REALTIME) ----------------
+# Replace with your real Pusher credentials from https://pusher.com
+PUSHER_APP_ID=173023
+PUSHER_APP_KEY=a9973eb89c326506212bb61e8f3062d0
+PUSHER_APP_SECRET=84e3bbb89e59deeeb4e177569c1c0c85
+PUSHER_APP_CLUSTER=mt1
 
-REVERB_HOST=https://pos-year4-production.up.railway.app
-REVERB_PORT=443
-REVERB_SCHEME=https
-
-BROADCAST_CONNECTION=reverb
+BROADCAST_CONNECTION=pusher
 
 # ---------------- FILE STORAGE ----------------
 FILESYSTEM_DISK=local
@@ -73,6 +71,5 @@ CLOUDINARY_URL=cloudinary://@
 
 VITE_API_URL = https://pos-year4-production.up.railway.app/api
 VITE_STORAGE_URL=https://pos-year4-production.up.railway.app/storage
-VITE_REVERB_HOST = https://pos-year4-production.up.railway.app
-VITE_REVERB_PORT = 443
-VITE_REVERB_SCHEME = https   vv
+VITE_PUSHER_APP_KEY = a9973eb89c326506212bb61e8f3062d0
+VITE_PUSHER_APP_CLUSTER = mt1
