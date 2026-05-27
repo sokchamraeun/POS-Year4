@@ -1,4 +1,4 @@
-FROM php:8.4-cli
+FROM php:8.3-cli
 
 WORKDIR /var/www
 
@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql gd
+    && docker-php-ext-install pdo pdo_pgsql gd pcntl \
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
