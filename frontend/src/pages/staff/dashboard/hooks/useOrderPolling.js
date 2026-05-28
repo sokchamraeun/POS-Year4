@@ -16,6 +16,10 @@ export function useOrderPolling(
   const lastOrderIdRef = useRef(0)
   const ordersRef = useRef(allOrders)
 
+  function isVisibleOrder(o) {
+    return !(o.payment_method === 'KHQR' && o.payment_status !== 'Paid')
+  }
+
   useEffect(() => {
     ordersRef.current = allOrders
   }, [allOrders])
@@ -29,17 +33,19 @@ export function useOrderPolling(
   useSocketConnect()
 
   const recalc = useCallback((orders) => {
-    setAllOrders(orders)
-    setRecentOrders(orders.slice(0, 5))
-    setStats(calculateStats(orders, [], []))
+    const visible = orders.filter(isVisibleOrder)
+    setAllOrders(visible)
+    setRecentOrders(visible.slice(0, 5))
+    setStats(calculateStats(visible, [], []))
     setChartData({
-      daily: processChartData(orders, 'daily'),
-      monthly: processChartData(orders, 'monthly'),
-      yearly: processChartData(orders, 'yearly'),
+      daily: processChartData(visible, 'daily'),
+      monthly: processChartData(visible, 'monthly'),
+      yearly: processChartData(visible, 'yearly'),
     })
   }, [setAllOrders, setRecentOrders, setStats, setChartData])
 
   useSocket('order:created', useCallback((order) => {
+    if (!isVisibleOrder(order)) return
     const orderId = Number(order.id)
     if (orderId <= lastOrderIdRef.current) return
     lastOrderIdRef.current = orderId
@@ -51,9 +57,18 @@ export function useOrderPolling(
   }, [recalc, playNotificationSound]))
 
   useSocket('order:updated', useCallback((order) => {
-    const updated = ordersRef.current.map(o => o.id === Number(order.id) ? order : o)
-    recalc(updated)
-  }, [recalc]))
+    const arr = ordersRef.current
+    const idx = arr.findIndex(o => o.id === Number(order.id))
+    if (idx >= 0) {
+      const updated = arr.map(o => o.id === Number(order.id) ? order : o)
+      recalc(updated)
+    } else if (isVisibleOrder(order)) {
+      recalc([order, ...arr])
+      setNewOrderAlert(true)
+      setTimeout(() => setNewOrderAlert(false), 5000)
+      playNotificationSound()
+    }
+  }, [recalc, playNotificationSound, setNewOrderAlert]))
 
   useEffect(() => {
     let alertTimeout
@@ -71,7 +86,9 @@ export function useOrderPolling(
           alertTimeout = setTimeout(() => setNewOrderAlert(false), 5000)
           playNotificationSound()
         }
-      } catch {}
+      } catch {
+            // Silently ignore polling errors
+          }
     }, 8000)
     return () => {
       clearInterval(interval)

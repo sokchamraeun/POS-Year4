@@ -11,6 +11,10 @@ export function useDashboardData() {
   const [recentOrders, setRecentOrders] = useState([])
   const [allOrders, setAllOrders] = useState([])
 
+  function isVisibleOrder(o) {
+    return !(o.payment_method === 'KHQR' && o.payment_status !== 'Paid')
+  }
+
   const loadData = async () => {
     try {
       const [orders, allProducts, customers] = await Promise.all([
@@ -19,16 +23,18 @@ export function useDashboardData() {
         fetchCustomers(),
       ])
 
+      const visible = orders.filter(isVisibleOrder)
+
       setProducts(allProducts)
-      setAllOrders(orders)
-      setRecentOrders(orders.slice(0, 5))
-      setStats(calculateStats(orders, allProducts, customers))
-      setTopProducts(getTopProducts(orders, allProducts))
+      setAllOrders(visible)
+      setRecentOrders(visible.slice(0, 5))
+      setStats(calculateStats(visible, allProducts, customers))
+      setTopProducts(getTopProducts(visible, allProducts))
       
       setChartData({
-        daily: processChartData(orders, 'daily'),
-        monthly: processChartData(orders, 'monthly'),
-        yearly: processChartData(orders, 'yearly'),
+        daily: processChartData(visible, 'daily'),
+        monthly: processChartData(visible, 'monthly'),
+        yearly: processChartData(visible, 'yearly'),
       })
     } catch (error) {
       console.error('Error loading dashboard data:', error)
