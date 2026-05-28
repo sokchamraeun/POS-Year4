@@ -12,12 +12,14 @@ class RoleController extends Controller
     public function index(): JsonResponse
     {
         $roles = Role::with('permissions')->paginate(10);
+
         return response()->json($roles);
     }
 
     public function show(Role $role): JsonResponse
     {
         $role->load('permissions');
+
         return response()->json($role);
     }
 
@@ -37,7 +39,7 @@ class RoleController extends Controller
             'description' => $data['description'] ?? null,
         ]);
 
-        if (!empty($data['permissions'])) {
+        if (! empty($data['permissions'])) {
             $role->permissions()->sync($data['permissions']);
         }
 
@@ -50,7 +52,7 @@ class RoleController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:roles,slug,' . $role->id,
+            'slug' => 'required|string|max:255|unique:roles,slug,'.$role->id,
             'description' => 'nullable|string',
             'permissions' => 'nullable|array',
             'permissions.*' => 'exists:permissions,id',

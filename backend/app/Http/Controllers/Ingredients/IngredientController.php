@@ -11,6 +11,7 @@ class IngredientController extends Controller
     public function index()
     {
         $ingredients = Ingredient::orderBy('created_at', 'desc')->paginate(10);
+
         return view('ingredients.index', compact('ingredients'));
     }
 
@@ -60,6 +61,7 @@ class IngredientController extends Controller
     public function destroy(Ingredient $ingredient)
     {
         $ingredient->delete();
+
         return redirect()->route('ingredients.index')->with('success', 'Ingredient deleted successfully.');
     }
 }

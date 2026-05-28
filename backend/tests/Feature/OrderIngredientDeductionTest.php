@@ -1,9 +1,11 @@
 <?php
 
 use App\Models\Addon;
+use App\Models\AddonIngredient;
 use App\Models\Customer;
 use App\Models\IceLevel;
 use App\Models\Ingredient;
+use App\Models\InventoryTransaction;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Recipe;
@@ -228,7 +230,7 @@ it('creates inventory_transactions for each deduction', function () {
     ]);
 
     $order = Order::first();
-    $transactions = App\Models\InventoryTransaction::all();
+    $transactions = InventoryTransaction::all();
     expect($transactions)->toHaveCount(1);
     expect($transactions[0]->type)->toEqual('deduct');
     expect((float) $transactions[0]->quantity)->toEqual(-10.0);
@@ -307,7 +309,7 @@ it('deducts ingredients with addons included in order', function () {
         'ingredient_id' => $productIngredient->id,
         'quantity' => 10,
     ]);
-    App\Models\AddonIngredient::factory()->create([
+    AddonIngredient::factory()->create([
         'addon_id' => $this->addon->id,
         'ingredient_id' => $addonIngredient->id,
         'quantity' => 15,
@@ -342,7 +344,7 @@ it('deducts ingredients with addons included in order', function () {
 it('deducts addon ingredients even when product has no recipe', function () {
     $product = Product::factory()->create();
     $addonIngredient = Ingredient::factory()->create(['stock_quantity' => 100]);
-    App\Models\AddonIngredient::factory()->create([
+    AddonIngredient::factory()->create([
         'addon_id' => $this->addon->id,
         'ingredient_id' => $addonIngredient->id,
         'quantity' => 20,
@@ -375,7 +377,7 @@ it('deducts addon ingredients even when product has no recipe', function () {
 it('returns 422 when addon ingredient stock is insufficient', function () {
     $product = Product::factory()->create();
     $addonIngredient = Ingredient::factory()->create(['stock_quantity' => 5]);
-    App\Models\AddonIngredient::factory()->create([
+    AddonIngredient::factory()->create([
         'addon_id' => $this->addon->id,
         'ingredient_id' => $addonIngredient->id,
         'quantity' => 20,
@@ -414,7 +416,7 @@ it('deducts both product recipe and addon ingredients together', function () {
         'ingredient_id' => $productIng->id,
         'quantity' => 50,
     ]);
-    App\Models\AddonIngredient::factory()->create([
+    AddonIngredient::factory()->create([
         'addon_id' => $this->addon->id,
         'ingredient_id' => $addonIng->id,
         'quantity' => 25,
@@ -449,12 +451,12 @@ it('deducts multiple addon ingredients for a single addon', function () {
     $product = Product::factory()->create();
     $ing1 = Ingredient::factory()->create(['stock_quantity' => 200]);
     $ing2 = Ingredient::factory()->create(['stock_quantity' => 200]);
-    App\Models\AddonIngredient::factory()->create([
+    AddonIngredient::factory()->create([
         'addon_id' => $this->addon->id,
         'ingredient_id' => $ing1->id,
         'quantity' => 10,
     ]);
-    App\Models\AddonIngredient::factory()->create([
+    AddonIngredient::factory()->create([
         'addon_id' => $this->addon->id,
         'ingredient_id' => $ing2->id,
         'quantity' => 20,

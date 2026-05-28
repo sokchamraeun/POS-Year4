@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('recipes', function (Blueprint $table) {
             $table->foreignId('size_id')->nullable()->after('product_id')
-                  ->constrained()->cascadeOnDelete();
+                ->constrained()->cascadeOnDelete();
 
             $table->dropUnique('recipes_product_id_ingredient_id_unique');
 

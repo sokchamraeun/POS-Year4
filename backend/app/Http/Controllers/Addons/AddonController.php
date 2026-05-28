@@ -11,6 +11,7 @@ class AddonController extends Controller
     public function index()
     {
         $addons = Addon::withCount('products')->paginate(10);
+
         return view('addons.index', compact('addons'));
     }
 
@@ -34,6 +35,7 @@ class AddonController extends Controller
     public function show(Addon $addon)
     {
         $addon->loadCount('products');
+
         return view('addons.show', compact('addon'));
     }
 
@@ -57,6 +59,7 @@ class AddonController extends Controller
     public function destroy(Addon $addon)
     {
         $addon->delete();
+
         return redirect()->route('addons.index')->with('success', 'Addon deleted successfully.');
     }
 }

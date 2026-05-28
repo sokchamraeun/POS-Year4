@@ -12,18 +12,21 @@ class RoleController extends Controller
     public function index()
     {
         $roles = Role::with('permissions')->paginate(10);
+
         return view('roles.index', compact('roles'));
     }
 
     public function show(Role $role)
     {
         $role->load('permissions');
+
         return view('roles.show', compact('role'));
     }
 
     public function create()
     {
         $permissions = Permission::all();
+
         return view('roles.create', compact('permissions'));
     }
 
@@ -43,7 +46,7 @@ class RoleController extends Controller
             'description' => $data['description'] ?? null,
         ]);
 
-        if (!empty($data['permissions'])) {
+        if (! empty($data['permissions'])) {
             $role->permissions()->sync($data['permissions']);
         }
 
@@ -54,6 +57,7 @@ class RoleController extends Controller
     {
         $role->load('permissions');
         $permissions = Permission::all();
+
         return view('roles.edit', compact('role', 'permissions'));
     }
 
@@ -61,7 +65,7 @@ class RoleController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:roles,slug,' . $role->id,
+            'slug' => 'required|string|max:255|unique:roles,slug,'.$role->id,
             'description' => 'nullable|string',
             'permissions' => 'nullable|array',
             'permissions.*' => 'exists:permissions,id',

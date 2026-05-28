@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Events\OrderUpdated;
+use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,7 +25,7 @@ class PaymentCheckoutController extends Controller
             ], 422);
         }
 
-        $transactionId = 'ORD_' . $order->id . '_' . time();
+        $transactionId = 'ORD_'.$order->id.'_'.time();
         $amount = number_format($order->total, 2, '.', '');
 
         $gatewayUrl = config('services.khqr.gateway_url');
@@ -33,18 +33,18 @@ class PaymentCheckoutController extends Controller
         $secretKey = config('services.khqr.secret_key');
 
         $returnUrl = $request->input('return_url');
-        $successUrl = url('/khqrpay/return?transaction_id=' . $transactionId . ($returnUrl ? '&return_url=' . urlencode($returnUrl) : ''));
-        $remark = 'Order #' . $order->id;
+        $successUrl = url('/khqrpay/return?transaction_id='.$transactionId.($returnUrl ? '&return_url='.urlencode($returnUrl) : ''));
+        $remark = 'Order #'.$order->id;
 
         $rawString = $secretKey
-            . $transactionId
-            . $amount
-            . $successUrl
-            . $remark;
+            .$transactionId
+            .$amount
+            .$successUrl
+            .$remark;
 
         $hash = sha1($rawString);
 
-        $checkoutUrl = $gatewayUrl . '/' . $profileId . '?' . http_build_query([
+        $checkoutUrl = $gatewayUrl.'/'.$profileId.'?'.http_build_query([
             'transaction_id' => $transactionId,
             'amount' => $amount,
             'success_url' => $successUrl,
@@ -68,13 +68,13 @@ class PaymentCheckoutController extends Controller
     {
         $transactionId = $request->input('transaction_id');
 
-        if (!$transactionId) {
+        if (! $transactionId) {
             return response()->json(['status' => 'error', 'message' => 'Missing transaction_id'], 400);
         }
 
         $order = Order::where('payment_reference', $transactionId)->first();
 
-        if (!$order) {
+        if (! $order) {
             return response()->json(['status' => 'error', 'message' => 'Order not found'], 404);
         }
 

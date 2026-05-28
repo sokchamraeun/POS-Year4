@@ -22,6 +22,7 @@ class IceLevelController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate(['name' => 'required|string|max:255']);
+
         return response()->json(IceLevel::create($data), 201);
     }
 
@@ -29,12 +30,14 @@ class IceLevelController extends Controller
     {
         $data = $request->validate(['name' => 'required|string|max:255']);
         $iceLevel->update($data);
+
         return response()->json($iceLevel);
     }
 
     public function destroy(IceLevel $iceLevel): JsonResponse
     {
         $iceLevel->delete();
+
         return response()->json(['message' => 'Ice level deleted successfully.']);
     }
 }

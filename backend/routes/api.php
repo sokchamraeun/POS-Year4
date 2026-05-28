@@ -4,8 +4,8 @@ use App\Http\Controllers\Api\AddonController;
 use App\Http\Controllers\Api\AddonIngredientController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerAuthController;
+use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\HeroSliderController;
 use App\Http\Controllers\Api\IceLevelController;
 use App\Http\Controllers\Api\IngredientController;
@@ -22,6 +22,9 @@ use App\Http\Controllers\Api\SugarLevelController;
 use App\Http\Controllers\Api\TableController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+
+// Health check (keep-alive for Render free tier)
+Route::get('/health', fn () => response()->json(['status' => 'ok', 'time' => now()->toISOString()]));
 
 // Public auth routes
 Route::post('/login', [AuthController::class, 'login']);

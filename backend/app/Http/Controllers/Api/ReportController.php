@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\Ingredient;
 use App\Models\InventoryTransaction;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,8 +20,12 @@ class ReportController extends Controller
         $to = $request->get('to');
 
         $query = Order::query();
-        if ($from) $query->whereDate('created_at', '>=', $from);
-        if ($to) $query->whereDate('created_at', '<=', $to);
+        if ($from) {
+            $query->whereDate('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->whereDate('created_at', '<=', $to);
+        }
 
         $totalSales = (clone $query)->whereIn('payment_status', ['Paid', 'Refunded'])->sum('total');
         $totalOrders = (clone $query)->count();
@@ -44,8 +48,12 @@ class ReportController extends Controller
 
         $bestSellers = OrderItem::select('product_id', DB::raw('SUM(qty) as total_qty'), DB::raw('COALESCE(SUM(subtotal), 0) as revenue'))
             ->whereHas('order', function ($q) use ($from, $to) {
-                if ($from) $q->whereDate('created_at', '>=', $from);
-                if ($to) $q->whereDate('created_at', '<=', $to);
+                if ($from) {
+                    $q->whereDate('created_at', '>=', $from);
+                }
+                if ($to) {
+                    $q->whereDate('created_at', '<=', $to);
+                }
                 $q->whereIn('payment_status', ['Paid', 'Refunded']);
             })
             ->groupBy('product_id')
@@ -77,8 +85,12 @@ class ReportController extends Controller
             DB::raw('COALESCE(SUM(subtotal), 0) as revenue')
         )
             ->whereHas('order', function ($q) use ($from, $to) {
-                if ($from) $q->whereDate('created_at', '>=', $from);
-                if ($to) $q->whereDate('created_at', '<=', $to);
+                if ($from) {
+                    $q->whereDate('created_at', '>=', $from);
+                }
+                if ($to) {
+                    $q->whereDate('created_at', '<=', $to);
+                }
                 $q->whereIn('payment_status', ['Paid', 'Refunded']);
             })
             ->groupBy('product_id', 'size_id')
@@ -95,7 +107,7 @@ class ReportController extends Controller
         $ingredients = Ingredient::withCount('inventoryTransactions')
             ->orderBy('name')
             ->paginate($perPage)
-            ->through(fn($i) => [
+            ->through(fn ($i) => [
                 'id' => $i->id,
                 'name' => $i->name,
                 'unit' => $i->unit,
@@ -130,16 +142,20 @@ class ReportController extends Controller
             ->where('type', 'purchase')
             ->orderByDesc('id');
 
-        if ($from) $query->whereDate('created_at', '>=', $from);
-        if ($to) $query->whereDate('created_at', '<=', $to);
+        if ($from) {
+            $query->whereDate('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->whereDate('created_at', '<=', $to);
+        }
 
         $transactions = $query->paginate(20);
 
         $summary = [
             'total_transactions' => $transactions->total(),
             'total_quantity' => (float) InventoryTransaction::where('type', 'purchase')
-                ->when($from, fn($q) => $q->whereDate('created_at', '>=', $from))
-                ->when($to, fn($q) => $q->whereDate('created_at', '<=', $to))
+                ->when($from, fn ($q) => $q->whereDate('created_at', '>=', $from))
+                ->when($to, fn ($q) => $q->whereDate('created_at', '<=', $to))
                 ->sum('quantity'),
         ];
 
@@ -160,8 +176,12 @@ class ReportController extends Controller
         $to = $request->get('to');
 
         $query = Order::whereIn('payment_status', ['Paid', 'Refunded']);
-        if ($from) $query->whereDate('created_at', '>=', $from);
-        if ($to) $query->whereDate('created_at', '<=', $to);
+        if ($from) {
+            $query->whereDate('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->whereDate('created_at', '<=', $to);
+        }
 
         $revenue = (float) (clone $query)->sum('total');
 
@@ -194,17 +214,21 @@ class ReportController extends Controller
                     ->from('orders')
                     ->whereColumn('orders.customer_id', 'customers.id')
                     ->whereIn('orders.payment_status', ['Paid', 'Refunded'])
-                    ->when($from, fn($q) => $q->whereDate('orders.created_at', '>=', $from))
-                    ->when($to, fn($q) => $q->whereDate('orders.created_at', '<=', $to));
+                    ->when($from, fn ($q) => $q->whereDate('orders.created_at', '>=', $from))
+                    ->when($to, fn ($q) => $q->whereDate('orders.created_at', '<=', $to));
             }, 'total_spent')
             ->withCount(['orders' => function ($q) use ($from, $to) {
-                if ($from) $q->whereDate('created_at', '>=', $from);
-                if ($to) $q->whereDate('created_at', '<=', $to);
+                if ($from) {
+                    $q->whereDate('created_at', '>=', $from);
+                }
+                if ($to) {
+                    $q->whereDate('created_at', '<=', $to);
+                }
             }])
             ->orderByDesc('orders_count')
             ->limit(50)
             ->get()
-            ->map(fn($c) => [
+            ->map(fn ($c) => [
                 'id' => $c->id,
                 'name' => $c->name,
                 'phone' => $c->phone,
@@ -215,8 +239,8 @@ class ReportController extends Controller
             ]);
 
         $totalCustomers = Customer::count();
-        $newCustomers = Customer::when($from, fn($q) => $q->whereDate('created_at', '>=', $from))
-            ->when($to, fn($q) => $q->whereDate('created_at', '<=', $to))
+        $newCustomers = Customer::when($from, fn ($q) => $q->whereDate('created_at', '>=', $from))
+            ->when($to, fn ($q) => $q->whereDate('created_at', '<=', $to))
             ->count();
 
         return response()->json([
@@ -232,8 +256,12 @@ class ReportController extends Controller
         $to = $request->get('to');
 
         $query = Order::query();
-        if ($from) $query->whereDate('created_at', '>=', $from);
-        if ($to) $query->whereDate('created_at', '<=', $to);
+        if ($from) {
+            $query->whereDate('created_at', '>=', $from);
+        }
+        if ($to) {
+            $query->whereDate('created_at', '<=', $to);
+        }
 
         $byMethod = (clone $query)
             ->select('payment_method', DB::raw('COUNT(*) as count'), DB::raw('COALESCE(SUM(total), 0) as revenue'))

@@ -12,6 +12,7 @@ class HeroSliderController extends Controller
     public function index()
     {
         $sliders = HeroSlider::orderBy('order')->paginate(10);
+
         return view('hero-sliders.index', compact('sliders'));
     }
 
@@ -43,12 +44,14 @@ class HeroSliderController extends Controller
     public function show($id)
     {
         $heroSlider = HeroSlider::findOrFail($id);
+
         return view('hero-sliders.show', compact('heroSlider'));
     }
 
     public function edit($id)
     {
         $heroSlider = HeroSlider::findOrFail($id);
+
         return view('hero-sliders.edit', compact('heroSlider'));
     }
 
@@ -83,6 +86,7 @@ class HeroSliderController extends Controller
         $heroSlider = HeroSlider::findOrFail($id);
         $cloudinary->delete($heroSlider->image);
         $heroSlider->delete();
+
         return redirect()->route('hero-sliders.index')->with('success', 'Hero slider deleted successfully.');
     }
 }

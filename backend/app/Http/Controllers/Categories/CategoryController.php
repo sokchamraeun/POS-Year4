@@ -11,6 +11,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::withCount('products')->paginate(10);
+
         return view('categories.index', compact('categories'));
     }
 
@@ -33,6 +34,7 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         $category->loadCount('products');
+
         return view('categories.show', compact('category'));
     }
 
@@ -55,6 +57,7 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
+
         return redirect()->route('categories.index')->with('success', 'Category deleted successfully.');
     }
 }

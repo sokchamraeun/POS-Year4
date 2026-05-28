@@ -39,7 +39,7 @@ class CustomerAuthController extends Controller
 
         $customer = Customer::where('phone', $data['phone'])->first();
 
-        if (!$customer || !Hash::check($data['password'], $customer->password)) {
+        if (! $customer || ! Hash::check($data['password'], $customer->password)) {
             return response()->json(['message' => 'Invalid credentials.'], 401);
         }
 
@@ -69,7 +69,7 @@ class CustomerAuthController extends Controller
 
         $customer = Customer::where('phone', $data['phone'])->first();
 
-        if (!$customer) {
+        if (! $customer) {
             return response()->json(['message' => 'Phone number not found. Please check and try again.'], 404);
         }
 

@@ -12,6 +12,7 @@ class PermissionController extends Controller
     public function index(): JsonResponse
     {
         $permissions = Permission::paginate(50);
+
         return response()->json($permissions);
     }
 
@@ -37,7 +38,7 @@ class PermissionController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:100',
-            'slug' => 'required|string|max:100|unique:permissions,slug,' . $permission->id,
+            'slug' => 'required|string|max:100|unique:permissions,slug,'.$permission->id,
             'module' => 'nullable|string|max:100',
         ]);
 

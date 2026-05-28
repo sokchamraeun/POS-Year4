@@ -14,12 +14,14 @@ class InventoryTransactionController extends Controller
     {
         $transactions = InventoryTransaction::with('ingredient:id,name,unit')
             ->orderByDesc('id')->paginate(20);
+
         return response()->json($transactions);
     }
 
     public function show(InventoryTransaction $inventoryTransaction): JsonResponse
     {
         $inventoryTransaction->load('ingredient');
+
         return response()->json($inventoryTransaction);
     }
 
@@ -36,7 +38,7 @@ class InventoryTransactionController extends Controller
 
         if ($data['type'] === 'deduct' && $data['quantity'] > $ingredient->stock_quantity) {
             return response()->json([
-                'message' => 'Cannot deduct more than current stock (' . number_format($ingredient->stock_quantity, 2) . ').',
+                'message' => 'Cannot deduct more than current stock ('.number_format($ingredient->stock_quantity, 2).').',
             ], 422);
         }
 
@@ -56,12 +58,14 @@ class InventoryTransactionController extends Controller
         ]);
 
         $transaction->load('ingredient:id,name,unit');
+
         return response()->json($transaction, 201);
     }
 
     public function destroy(InventoryTransaction $inventoryTransaction): JsonResponse
     {
         $inventoryTransaction->delete();
+
         return response()->json(['message' => 'Transaction deleted successfully.']);
     }
 }

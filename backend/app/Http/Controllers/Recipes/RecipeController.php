@@ -7,7 +7,6 @@ use App\Models\Ingredient;
 use App\Models\Product;
 use App\Models\Recipe;
 use App\Models\Size;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -20,6 +19,7 @@ class RecipeController extends Controller
             $q->orderBy('ingredients.name');
         }])->orderBy('name')->paginate(15);
         $sizes = Size::orderBy('name')->get()->keyBy('id');
+
         return view('recipes.index', compact('products', 'sizes'));
     }
 
@@ -30,6 +30,7 @@ class RecipeController extends Controller
         $sizes = Size::orderBy('name')->get();
         $selectedProductId = $request->query('product_id');
         $selectedSizeId = $request->query('size_id');
+
         return view('recipes.create', compact('products', 'ingredients', 'sizes', 'selectedProductId', 'selectedSizeId'));
     }
 
@@ -60,6 +61,7 @@ class RecipeController extends Controller
     public function show(Recipe $recipe)
     {
         $recipe->load(['product', 'size', 'ingredient']);
+
         return view('recipes.show', compact('recipe'));
     }
 
@@ -108,6 +110,7 @@ class RecipeController extends Controller
         $products = Product::orderBy('name')->get();
         $ingredients = Ingredient::orderBy('name')->get();
         $sizes = Size::orderBy('name')->get();
+
         return view('recipes.edit', compact('recipe', 'products', 'ingredients', 'sizes'));
     }
 
@@ -128,6 +131,7 @@ class RecipeController extends Controller
     public function destroy(Recipe $recipe)
     {
         $recipe->delete();
+
         return redirect()->route('recipes.index')->with('success', 'Recipe deleted successfully.');
     }
 }

@@ -23,12 +23,14 @@ class CustomerController extends Controller
         }
         $perPage = min((int) $request->get('per_page', 20), 500);
         $customers = $query->orderBy('id')->paginate($perPage);
+
         return response()->json($customers);
     }
 
     public function show(Customer $customer): JsonResponse
     {
         $customer->loadCount('orders');
+
         return response()->json($customer);
     }
 
@@ -40,6 +42,7 @@ class CustomerController extends Controller
             'points' => 'nullable|integer|min:0',
         ]);
         $customer = Customer::create($data);
+
         return response()->json($customer, 201);
     }
 
@@ -51,12 +54,14 @@ class CustomerController extends Controller
             'points' => 'nullable|integer|min:0',
         ]);
         $customer->update($data);
+
         return response()->json($customer);
     }
 
     public function destroy(Customer $customer): JsonResponse
     {
         $customer->delete();
+
         return response()->json(['message' => 'Customer deleted successfully.']);
     }
 }

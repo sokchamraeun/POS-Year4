@@ -12,18 +12,21 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('role')->paginate(10);
+
         return view('users.index', compact('users'));
     }
 
     public function show(User $user)
     {
         $user->load('role');
+
         return view('users.show', compact('user'));
     }
 
     public function create()
     {
         $roles = Role::all();
+
         return view('users.create', compact('roles'));
     }
 
@@ -47,6 +50,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $roles = Role::all();
+
         return view('users.edit', compact('user', 'roles'));
     }
 
@@ -54,7 +58,7 @@ class UserController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8',
             'phone' => 'nullable|string|max:30',
             'role_id' => 'nullable|exists:roles,id',

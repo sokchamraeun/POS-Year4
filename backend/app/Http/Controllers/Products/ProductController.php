@@ -7,9 +7,9 @@ use App\Models\Addon;
 use App\Models\Category;
 use App\Models\IceLevel;
 use App\Models\Product;
-use App\Services\CloudinaryService;
 use App\Models\Size;
 use App\Models\SugarLevel;
+use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -17,6 +17,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with(['category', 'sizes', 'addons', 'sugarLevels', 'iceLevels'])->paginate(10);
+
         return view('products.index', compact('products'));
     }
 
@@ -27,6 +28,7 @@ class ProductController extends Controller
         $addons = Addon::all();
         $sugarLevels = SugarLevel::all();
         $iceLevels = IceLevel::all();
+
         return view('products.create', compact('categories', 'sizes', 'addons', 'sugarLevels', 'iceLevels'));
     }
 
@@ -63,24 +65,24 @@ class ProductController extends Controller
             'status' => $request->boolean('status'),
         ]);
 
-        if (!empty($data['sugar_levels'])) {
+        if (! empty($data['sugar_levels'])) {
             $product->sugarLevels()->attach($data['sugar_levels']);
         }
 
-        if (!empty($data['ice_levels'])) {
+        if (! empty($data['ice_levels'])) {
             $product->iceLevels()->attach($data['ice_levels']);
         }
 
-        if (!empty($data['sizes'])) {
+        if (! empty($data['sizes'])) {
             $sizeData = [];
             foreach ($data['sizes'] as $sizeId) {
                 $price = $data['prices'][$sizeId] ?? 0;
-                $sizeData[$sizeId] = ['price' => is_numeric($price) ? (float)$price : 0];
+                $sizeData[$sizeId] = ['price' => is_numeric($price) ? (float) $price : 0];
             }
             $product->sizes()->attach($sizeData);
         }
 
-        if (!empty($data['addons'])) {
+        if (! empty($data['addons'])) {
             $product->addons()->attach($data['addons']);
         }
 
@@ -90,6 +92,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $product->load(['category', 'sizes', 'addons', 'sugarLevels', 'iceLevels']);
+
         return view('products.show', compact('product'));
     }
 
@@ -101,6 +104,7 @@ class ProductController extends Controller
         $addons = Addon::all();
         $sugarLevels = SugarLevel::all();
         $iceLevels = IceLevel::all();
+
         return view('products.edit', compact('product', 'categories', 'sizes', 'addons', 'sugarLevels', 'iceLevels'));
     }
 
@@ -141,26 +145,26 @@ class ProductController extends Controller
         ]);
 
         $product->sugarLevels()->detach();
-        if (!empty($data['sugar_levels'])) {
+        if (! empty($data['sugar_levels'])) {
             $product->sugarLevels()->attach($data['sugar_levels']);
         }
 
         $product->iceLevels()->detach();
-        if (!empty($data['ice_levels'])) {
+        if (! empty($data['ice_levels'])) {
             $product->iceLevels()->attach($data['ice_levels']);
         }
 
         $product->sizes()->detach();
-        if (!empty($data['sizes'])) {
+        if (! empty($data['sizes'])) {
             $sizeData = [];
             foreach ($data['sizes'] as $sizeId) {
                 $price = $data['prices'][$sizeId] ?? 0;
-                $sizeData[$sizeId] = ['price' => is_numeric($price) ? (float)$price : 0];
+                $sizeData[$sizeId] = ['price' => is_numeric($price) ? (float) $price : 0];
             }
             $product->sizes()->attach($sizeData);
         }
         $product->addons()->detach();
-        if (!empty($data['addons'])) {
+        if (! empty($data['addons'])) {
             $product->addons()->attach($data['addons']);
         }
 
@@ -173,6 +177,7 @@ class ProductController extends Controller
             $cloudinary->delete($product->image);
         }
         $product->delete();
+
         return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }
 }

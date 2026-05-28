@@ -47,4 +47,4 @@ return [
         'secret_key' => env('KHQR_SECRET_KEY'),
     ],
 
-    ];
+];

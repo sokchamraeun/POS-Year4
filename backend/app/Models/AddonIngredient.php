@@ -17,7 +17,6 @@ class AddonIngredient extends Model
         return $this->belongsTo(Addon::class);
     }
 
-
     public function ingredient(): BelongsTo
     {
         return $this->belongsTo(Ingredient::class);

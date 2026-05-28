@@ -22,7 +22,7 @@ class AuthController extends Controller
         $data['password'] = bcrypt($data['password']);
 
         $user = User::create($data);
-        
+
         $user->tokens()->delete();
 
         $token = $user->createToken('api-token')->plainTextToken;
@@ -42,7 +42,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $data['email'])->first();
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials.'], 401);
         }
 

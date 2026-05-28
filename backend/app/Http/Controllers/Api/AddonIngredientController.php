@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Addon;
 use App\Models\AddonIngredient;
-use App\Models\Ingredient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -53,6 +52,7 @@ class AddonIngredientController extends Controller
     public function destroy(AddonIngredient $addonIngredient): JsonResponse
     {
         $addonIngredient->delete();
+
         return response()->json(['message' => 'Addon ingredient deleted successfully.']);
     }
 }

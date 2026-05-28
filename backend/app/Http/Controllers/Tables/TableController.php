@@ -11,6 +11,7 @@ class TableController extends Controller
     public function index()
     {
         $tables = Table::withCount('orders')->orderBy('name')->paginate(10);
+
         return view('tables.index', compact('tables'));
     }
 
@@ -39,6 +40,7 @@ class TableController extends Controller
     public function show(Table $table)
     {
         $table->loadCount('orders');
+
         return view('tables.show', compact('table'));
     }
 
@@ -67,6 +69,7 @@ class TableController extends Controller
     public function destroy(Table $table)
     {
         $table->delete();
+
         return redirect()->route('tables.index')->with('success', 'Table deleted successfully.');
     }
 }

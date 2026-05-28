@@ -22,4 +22,8 @@ if (key) {
   window.Echo = echo
 }
 
+export function getEcho() {
+  return window.Echo || echo
+}
+
 export default echo

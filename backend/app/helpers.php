@@ -7,8 +7,8 @@ if (! function_exists('dispatch_broadcast')) {
     {
         try {
             event($event);
-        } catch (\Throwable $e) {
-            Log::warning('Broadcast failed: ' . $e->getMessage());
+        } catch (Throwable $e) {
+            Log::warning('Broadcast failed: '.$e->getMessage());
         }
     }
 }

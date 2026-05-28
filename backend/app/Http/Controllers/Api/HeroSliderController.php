@@ -13,6 +13,7 @@ class HeroSliderController extends Controller
     public function index(): JsonResponse
     {
         $sliders = HeroSlider::orderBy('order')->paginate(10);
+
         return response()->json($sliders);
     }
 
@@ -37,6 +38,7 @@ class HeroSliderController extends Controller
         $data['image'] = $imageUrl;
 
         $slider = HeroSlider::create($data);
+
         return response()->json($slider, 201);
     }
 
@@ -60,6 +62,7 @@ class HeroSliderController extends Controller
         }
 
         $heroSlider->update($data);
+
         return response()->json($heroSlider);
     }
 
@@ -67,6 +70,7 @@ class HeroSliderController extends Controller
     {
         $cloudinary->delete($heroSlider->image);
         $heroSlider->delete();
+
         return response()->json(['message' => 'Hero slider deleted successfully.']);
     }
 }

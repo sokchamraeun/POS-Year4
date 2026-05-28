@@ -6,9 +6,9 @@ use App\Http\Controllers\Auth\WebAuthController;
 use App\Http\Controllers\Categories\CategoryController;
 use App\Http\Controllers\Customer\CustomerOrderController;
 use App\Http\Controllers\HeroSliders\HeroSliderController;
-use App\Http\Controllers\KHQR\KhqrTestController;
 use App\Http\Controllers\Ingredients\IngredientController;
 use App\Http\Controllers\Inventory\InventoryController;
+use App\Http\Controllers\KHQR\KhqrTestController;
 use App\Http\Controllers\Orders\OrderController;
 use App\Http\Controllers\Permissions\PermissionController;
 use App\Http\Controllers\Products\ProductController;
@@ -31,9 +31,9 @@ Route::post('/khqr-test', [KhqrTestController::class, 'generate'])->name('khqr.t
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [WebAuthController::class, 'logout'])->name('auth.logout');
-    
+
     // Route::get('/', fn () => redirect()->route('auth.login.post'));
-    
+
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');

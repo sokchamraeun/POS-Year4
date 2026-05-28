@@ -12,12 +12,14 @@ class TableController extends Controller
     public function index(): JsonResponse
     {
         $tables = Table::withCount('orders')->orderBy('name')->paginate(10);
+
         return response()->json($tables);
     }
 
     public function show(Table $table): JsonResponse
     {
         $table->loadCount('orders');
+
         return response()->json($table);
     }
 
@@ -58,12 +60,14 @@ class TableController extends Controller
     public function destroy(Table $table): JsonResponse
     {
         $table->delete();
+
         return response()->json(['message' => 'Table deleted successfully.']);
     }
 
     public function available(): JsonResponse
     {
         $tables = Table::where('status', 'available')->orderBy('name')->get();
+
         return response()->json($tables);
     }
 }

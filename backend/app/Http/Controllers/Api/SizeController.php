@@ -22,6 +22,7 @@ class SizeController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate(['name' => 'required|string|max:255']);
+
         return response()->json(Size::create($data), 201);
     }
 
@@ -29,12 +30,14 @@ class SizeController extends Controller
     {
         $data = $request->validate(['name' => 'required|string|max:255']);
         $size->update($data);
+
         return response()->json($size);
     }
 
     public function destroy(Size $size): JsonResponse
     {
         $size->delete();
+
         return response()->json(['message' => 'Size deleted successfully.']);
     }
 }

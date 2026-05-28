@@ -16,18 +16,20 @@ class ProductController extends Controller
         $perPage = min((int) $request->get('per_page', 100), 500);
         $page = $request->get('page', 1);
         $cacheKey = "products_page_{$perPage}_{$page}";
-        $data = Cache::remember($cacheKey, 300, function () use ($perPage, $page) {
+        $data = Cache::remember($cacheKey, 300, function () use ($perPage) {
             return Product::with(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels'])
                 ->orderBy('id')
                 ->paginate($perPage)
                 ->toArray();
         });
+
         return response()->json($data);
     }
 
     public function show(Product $product): JsonResponse
     {
         $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
+
         return response()->json($product);
     }
 
@@ -63,15 +65,15 @@ class ProductController extends Controller
             'status' => $request->boolean('status'),
         ]);
 
-        if (!empty($data['sugar_levels'])) {
+        if (! empty($data['sugar_levels'])) {
             $product->sugarLevels()->attach($data['sugar_levels']);
         }
 
-        if (!empty($data['ice_levels'])) {
+        if (! empty($data['ice_levels'])) {
             $product->iceLevels()->attach($data['ice_levels']);
         }
 
-        if (!empty($data['sizes'])) {
+        if (! empty($data['sizes'])) {
             $sizeData = [];
             foreach ($data['sizes'] as $size) {
                 $sizeData[$size['id']] = ['price' => $size['price'] ?? 0];
@@ -79,12 +81,13 @@ class ProductController extends Controller
             $product->sizes()->attach($sizeData);
         }
 
-        if (!empty($data['addons'])) {
+        if (! empty($data['addons'])) {
             $product->addons()->attach($data['addons']);
         }
 
         Cache::flush();
         $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
+
         return response()->json($product, 201);
     }
 
@@ -124,17 +127,17 @@ class ProductController extends Controller
         ]);
 
         $product->sugarLevels()->detach();
-        if (!empty($data['sugar_levels'])) {
+        if (! empty($data['sugar_levels'])) {
             $product->sugarLevels()->attach($data['sugar_levels']);
         }
 
         $product->iceLevels()->detach();
-        if (!empty($data['ice_levels'])) {
+        if (! empty($data['ice_levels'])) {
             $product->iceLevels()->attach($data['ice_levels']);
         }
 
         $product->sizes()->detach();
-        if (!empty($data['sizes'])) {
+        if (! empty($data['sizes'])) {
             $sizeData = [];
             foreach ($data['sizes'] as $size) {
                 $sizeData[$size['id']] = ['price' => $size['price'] ?? 0];
@@ -142,12 +145,13 @@ class ProductController extends Controller
             $product->sizes()->attach($sizeData);
         }
         $product->addons()->detach();
-        if (!empty($data['addons'])) {
+        if (! empty($data['addons'])) {
             $product->addons()->attach($data['addons']);
         }
 
         Cache::flush();
         $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
+
         return response()->json($product);
     }
 
@@ -158,6 +162,7 @@ class ProductController extends Controller
         }
         $product->delete();
         Cache::flush();
+
         return response()->json(['message' => 'Product deleted successfully.']);
     }
 }

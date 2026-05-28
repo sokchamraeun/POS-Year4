@@ -13,12 +13,14 @@ class CategoryController extends Controller
     {
         $perPage = min((int) $request->get('per_page', 100), 500);
         $categories = Category::withCount('products')->orderBy('id')->paginate($perPage);
+
         return response()->json($categories);
     }
 
     public function show(Category $category): JsonResponse
     {
         $category->loadCount('products');
+
         return response()->json($category);
     }
 
@@ -26,6 +28,7 @@ class CategoryController extends Controller
     {
         $data = $request->validate(['name' => 'required|string|max:255']);
         $category = Category::create($data);
+
         return response()->json($category, 201);
     }
 
@@ -33,12 +36,14 @@ class CategoryController extends Controller
     {
         $data = $request->validate(['name' => 'required|string|max:255']);
         $category->update($data);
+
         return response()->json($category);
     }
 
     public function destroy(Category $category): JsonResponse
     {
         $category->delete();
+
         return response()->json(['message' => 'Category deleted successfully.']);
     }
 }

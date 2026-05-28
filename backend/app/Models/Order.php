@@ -14,6 +14,7 @@ class Order extends Model
     use HasFactory;
 
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = null;
 
     public function customer(): BelongsTo

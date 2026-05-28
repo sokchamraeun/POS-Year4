@@ -20,12 +20,14 @@ class UserController extends Controller
         }
 
         $users = $query->orderBy('id')->paginate(10);
+
         return response()->json($users);
     }
 
     public function show(User $user): JsonResponse
     {
         $user->load('role');
+
         return response()->json($user);
     }
 
@@ -50,14 +52,14 @@ class UserController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8',
             'phone' => 'nullable|string|max:30',
             'role_id' => 'nullable|exists:roles,id',
             'status' => 'boolean',
         ]);
 
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $data['password'] = bcrypt($data['password']);
         } else {
             unset($data['password']);

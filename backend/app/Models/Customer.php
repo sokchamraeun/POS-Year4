@@ -14,6 +14,7 @@ class Customer extends Model
     use HasApiTokens, HasFactory;
 
     public const CREATED_AT = 'created_at';
+
     public const UPDATED_AT = null;
 
     protected $hidden = [

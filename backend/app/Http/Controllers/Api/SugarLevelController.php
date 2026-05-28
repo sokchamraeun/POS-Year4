@@ -22,6 +22,7 @@ class SugarLevelController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate(['name' => 'required|string|max:255']);
+
         return response()->json(SugarLevel::create($data), 201);
     }
 
@@ -29,12 +30,14 @@ class SugarLevelController extends Controller
     {
         $data = $request->validate(['name' => 'required|string|max:255']);
         $sugarLevel->update($data);
+
         return response()->json($sugarLevel);
     }
 
     public function destroy(SugarLevel $sugarLevel): JsonResponse
     {
         $sugarLevel->delete();
+
         return response()->json(['message' => 'Sugar level deleted successfully.']);
     }
 }

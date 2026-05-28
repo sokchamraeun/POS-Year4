@@ -15,6 +15,7 @@ class AddonIngredientController extends Controller
         $addons = Addon::with(['ingredients' => function ($q) {
             $q->orderBy('ingredients.name');
         }])->orderBy('name')->paginate(15);
+
         return view('addon-ingredients.index', compact('addons'));
     }
 
@@ -23,6 +24,7 @@ class AddonIngredientController extends Controller
         $addons = Addon::orderBy('name')->get();
         $ingredients = Ingredient::orderBy('name')->get();
         $selectedAddonId = $request->query('addon_id');
+
         return view('addon-ingredients.create', compact('addons', 'ingredients', 'selectedAddonId'));
     }
 
@@ -42,6 +44,7 @@ class AddonIngredientController extends Controller
     public function show(AddonIngredient $addonIngredient)
     {
         $addonIngredient->load(['addon', 'ingredient']);
+
         return view('addon-ingredients.show', compact('addonIngredient'));
     }
 
@@ -49,6 +52,7 @@ class AddonIngredientController extends Controller
     {
         $addons = Addon::orderBy('name')->get();
         $ingredients = Ingredient::orderBy('name')->get();
+
         return view('addon-ingredients.edit', compact('addonIngredient', 'addons', 'ingredients'));
     }
 
@@ -68,6 +72,7 @@ class AddonIngredientController extends Controller
     public function destroy(AddonIngredient $addonIngredient)
     {
         $addonIngredient->delete();
+
         return redirect()->route('addon-ingredients.index')->with('success', 'Addon ingredient deleted successfully.');
     }
 }

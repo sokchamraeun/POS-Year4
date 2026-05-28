@@ -12,7 +12,8 @@ class InventoryController extends Controller
     public function index()
     {
         $ingredients = Ingredient::withCount('inventoryTransactions')->orderBy('name')->get();
-        $lowStock = $ingredients->filter(fn($i) => $i->stock_quantity <= $i->reorder_level);
+        $lowStock = $ingredients->filter(fn ($i) => $i->stock_quantity <= $i->reorder_level);
+
         return view('inventory.index', compact('ingredients', 'lowStock'));
     }
 
@@ -20,6 +21,7 @@ class InventoryController extends Controller
     {
         $ingredients = Ingredient::orderBy('name')->get();
         $selectedIngredientId = $request->query('ingredient_id');
+
         return view('inventory.create', compact('ingredients', 'selectedIngredientId'));
     }
 
@@ -35,7 +37,7 @@ class InventoryController extends Controller
         $ingredient = Ingredient::findOrFail($data['ingredient_id']);
 
         if ($data['type'] === 'deduct' && $data['quantity'] > $ingredient->stock_quantity) {
-            return back()->withErrors(['quantity' => 'Cannot deduct more than current stock (' . number_format($ingredient->stock_quantity, 2) . ').'])->withInput();
+            return back()->withErrors(['quantity' => 'Cannot deduct more than current stock ('.number_format($ingredient->stock_quantity, 2).').'])->withInput();
         }
 
         $change = match ($data['type']) {
@@ -59,6 +61,7 @@ class InventoryController extends Controller
     public function history()
     {
         $transactions = InventoryTransaction::with('ingredient')->orderByDesc('id')->paginate(20);
+
         return view('inventory.history', compact('transactions'));
     }
 }

@@ -22,6 +22,7 @@ class CustomerOrderController extends Controller
     {
         $products = Product::with(['category', 'sizes', 'sugarLevels', 'iceLevels', 'addons'])->where('status', true)->get();
         $tables = Table::where('status', 'available')->get();
+
         return view('customer.order', compact('products', 'tables'));
     }
 
@@ -39,7 +40,7 @@ class CustomerOrderController extends Controller
 
         $customerId = null;
         $customerName = 'Guest';
-        if (!empty($data['customer_name'])) {
+        if (! empty($data['customer_name'])) {
             $customerName = $data['customer_name'];
             $customer = Customer::firstOrCreate(
                 ['phone' => $data['phone'] ?? ''],
@@ -69,7 +70,7 @@ class CustomerOrderController extends Controller
                     'subtotal' => $itemData['subtotal'] ?? 0,
                 ]);
 
-                if (!empty($itemData['addons'])) {
+                if (! empty($itemData['addons'])) {
                     foreach ($itemData['addons'] as $addonData) {
                         $item->addons()->create([
                             'addon_id' => $addonData['addon_id'],
@@ -82,7 +83,7 @@ class CustomerOrderController extends Controller
             return $order;
         });
 
-        $transactionId = 'ORD_' . $order->id . '_' . time();
+        $transactionId = 'ORD_'.$order->id.'_'.time();
 
         $individualInfo = new IndividualInfo(
             'sok_chamraeun@bkrt',
@@ -108,6 +109,7 @@ class CustomerOrderController extends Controller
         ]);
 
         dispatch_broadcast(new OrderCreated($order));
+
         return view('customer.payment', compact('order', 'qrString', 'total', 'customerName'));
     }
 
@@ -120,13 +122,14 @@ class CustomerOrderController extends Controller
         $successAmount = $request->query('success_amount');
 
         if ($successHash && $successTime && $successAmount) {
-            $expectedHash = hash('sha256', $secretKey . $successTime . $successAmount . 'SUCCESS');
+            $expectedHash = hash('sha256', $secretKey.$successTime.$successAmount.'SUCCESS');
             if ($successHash === $expectedHash) {
                 $order->update(['payment_status' => 'Paid']);
             }
         }
 
         $order->load(['items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+
         return view('customer.confirmation', compact('order'));
     }
 
@@ -134,13 +137,13 @@ class CustomerOrderController extends Controller
     {
         $transactionId = $request->query('transaction_id');
 
-        if (!$transactionId) {
+        if (! $transactionId) {
             abort(400, 'Missing transaction_id');
         }
 
         $order = Order::where('payment_reference', $transactionId)->first();
 
-        if (!$order) {
+        if (! $order) {
             abort(404, 'Order not found');
         }
 
@@ -163,18 +166,18 @@ class CustomerOrderController extends Controller
         $hash = $request->input('hash');
         $reqTime = $request->input('req_time');
 
-        if (!$transactionId || !$hash) {
+        if (! $transactionId || ! $hash) {
             return response()->json(['error' => 'Missing required fields'], 400);
         }
 
-        $expectedHash = hash('sha256', $secretKey . $reqTime . $transactionId . $amount . 'SUCCESS');
+        $expectedHash = hash('sha256', $secretKey.$reqTime.$transactionId.$amount.'SUCCESS');
 
         if ($hash !== $expectedHash) {
             return response()->json(['error' => 'Invalid hash'], 403);
         }
 
         $order = Order::where('payment_reference', $transactionId)->first();
-        if (!$order) {
+        if (! $order) {
             return response()->json(['error' => 'Order not found'], 404);
         }
 

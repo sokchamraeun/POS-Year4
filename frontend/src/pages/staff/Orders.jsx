@@ -115,6 +115,18 @@ export default function Orders() {
       .finally(() => setLoading(false))
   }
 
+  function pollOrders() {
+    fetch(`${API_URL}/orders?page=1&per_page=50`, { headers: authHeaders })
+      .then((res) => res.json())
+      .then((json) => {
+        const apiOrders = (json.data ?? []).map(mapOrder)
+        setOrders(apiOrders)
+        setLastPage(json.last_page ?? 1)
+        setTotal(json.total ?? 0)
+      })
+      .catch(() => {})
+  }
+
   function clearLocal() {
     localStorage.removeItem('newOrders')
     loadOrders()
@@ -136,6 +148,12 @@ export default function Orders() {
   useEffect(() => {
     loadOrders()
   }, [page])
+
+  useEffect(() => {
+    pollOrders()
+    const interval = setInterval(pollOrders, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     if (deductMsg) {

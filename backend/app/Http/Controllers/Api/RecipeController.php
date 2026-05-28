@@ -22,12 +22,14 @@ class RecipeController extends Controller
         }
 
         $recipes = $query->orderBy('id')->paginate(15);
+
         return response()->json($recipes);
     }
 
     public function show(Recipe $recipe): JsonResponse
     {
         $recipe->load(['product:id,name,image', 'size', 'ingredient']);
+
         return response()->json($recipe);
     }
 
@@ -42,6 +44,7 @@ class RecipeController extends Controller
         ]);
         $recipe = Recipe::create($data);
         $recipe->load(['product:id,category_id,name,image', 'size:id,name', 'ingredient:id,name,unit,cost_per_unit']);
+
         return response()->json($recipe, 201);
     }
 
@@ -56,12 +59,14 @@ class RecipeController extends Controller
         ]);
         $recipe->update($data);
         $recipe->load(['product:id,category_id,name,image', 'size:id,name', 'ingredient:id,name,unit,cost_per_unit']);
+
         return response()->json($recipe);
     }
 
     public function destroy(Recipe $recipe): JsonResponse
     {
         $recipe->delete();
+
         return response()->json(['message' => 'Recipe deleted successfully.']);
     }
 
