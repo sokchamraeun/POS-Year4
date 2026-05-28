@@ -6,6 +6,7 @@ export function useSocket(event, handler) {
   handlerRef.current = handler
 
   useEffect(() => {
+    if (!echo) return
     echo.connect()
     const channel = echo.channel('orders')
 
@@ -20,6 +21,7 @@ export function useSocket(event, handler) {
 
 export function useSocketConnect() {
   useEffect(() => {
+    if (!echo) return
     echo.connect()
     return () => {}
   }, [])

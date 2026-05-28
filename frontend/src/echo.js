@@ -1,16 +1,25 @@
 import Echo from 'laravel-echo'
-import Pusher from 'pusher-js'
+import Pusher from 'pusher-js/dist/web/pusher'
 
-window.Pusher = Pusher
-if (import.meta.env.DEV) {
-  Pusher.logToConsole = true
+const key = import.meta.env.VITE_PUSHER_APP_KEY
+const cluster = import.meta.env.VITE_PUSHER_APP_CLUSTER || 'mt1'
+
+let echo = null
+
+if (key) {
+  window.Pusher = Pusher
+  if (import.meta.env.DEV) {
+    Pusher.logToConsole = true
+  }
+
+  echo = new Echo({
+    broadcaster: 'pusher',
+    key,
+    cluster,
+    forceTLS: true,
+  })
+
+  window.Echo = echo
 }
-
-const echo = new Echo({
-  broadcaster: 'pusher',
-  key: import.meta.env.VITE_PUSHER_APP_KEY,
-  cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'mt1',
-  forceTLS: true,
-})
 
 export default echo

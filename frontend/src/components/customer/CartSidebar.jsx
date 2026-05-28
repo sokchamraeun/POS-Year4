@@ -83,14 +83,14 @@ export default function CartSidebar({ open, onClose }) {
         }
       })
 
-      const pm = paymentMethod === 'khqr' ? 'KHQR' : null
+      const pm = paymentMethod === 'khqr' ? 'KHQR' : paymentMethod === 'cash' ? 'Cash' : null
       const orderPayload = {
         customer_id: customerId,
         table_id: selectedTable || null,
         total: totalPrice,
         status: 'New',
         payment_method: pm,
-        payment_status: 'Unpaid',
+        payment_status: paymentMethod === 'cash' ? 'Paid' : 'Unpaid',
         items: orderItems,
       }
 
@@ -211,6 +211,17 @@ export default function CartSidebar({ open, onClose }) {
                 }`}
               >
                 Pay Later
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('cash')}
+                className={`flex-1 text-sm font-medium py-2 rounded-xl transition-colors ${
+                  paymentMethod === 'cash'
+                    ? 'bg-green-100 text-green-700 ring-2 ring-green-400'
+                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+              >
+                Cash
               </button>
               <button
                 type="button"

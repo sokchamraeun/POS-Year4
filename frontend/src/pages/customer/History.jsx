@@ -23,13 +23,14 @@ export default function History() {
   }, [])
 
   useSocket('order:updated', (updatedOrder) => {
+    if (customer?.id && Number(updatedOrder.customer_id) !== Number(customer.id)) return
     setOrders(prev => prev.map(o =>
-      o.id === updatedOrder.id ? updatedOrder : o
+      Number(o.id) === Number(updatedOrder.id) ? updatedOrder : o
     ))
   })
 
   useSocket('order:created', (newOrder) => {
-    if (customer?.id && newOrder.customer_id === customer.id) {
+    if (customer?.id && Number(newOrder.customer_id) === Number(customer.id)) {
       setOrders(prev => [newOrder, ...prev])
     }
   })
