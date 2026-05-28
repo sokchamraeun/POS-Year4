@@ -4,7 +4,7 @@ import Footer from '../../components/customer/Footer.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
 import Invoice from '../../components/customer/Invoice.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
-import { useSocket } from '../../hooks/useSocket'
+import { useSocket, useSocketConnect } from '../../hooks/useSocket'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -15,28 +15,41 @@ export default function History() {
   const [phone, setPhone] = useState('')
   const [searched, setSearched] = useState(false)
   const [receiptOrder, setReceiptOrder] = useState(null)
+  const [searchPhone, setSearchPhone] = useState('')
+
+  useSocketConnect()
 
   useEffect(() => {
-    if (customer?.phone) {
-      fetchOrders(customer.phone)
-    }
-  }, [])
+    const phoneToSearch = customer?.phone || searchPhone
+    if (!phoneToSearch) return
+    fetchOrders(phoneToSearch)
+    const interval = setInterval(() => {
+      fetchOrders(phoneToSearch, true)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [customer?.phone, searchPhone])
 
   useSocket('order:updated', (updatedOrder) => {
-    if (customer?.id && Number(updatedOrder.customer_id) !== Number(customer.id)) return
-    setOrders(prev => prev.map(o =>
-      Number(o.id) === Number(updatedOrder.id) ? updatedOrder : o
-    ))
+    setOrders(prev => {
+      if (customer?.id && Number(updatedOrder.customer_id) !== Number(customer.id)) {
+        return prev
+      }
+      const exists = prev.some(o => Number(o.id) === Number(updatedOrder.id))
+      if (!exists) return prev
+      return prev.map(o =>
+        Number(o.id) === Number(updatedOrder.id) ? updatedOrder : o
+      )
+    })
   })
 
   useSocket('order:created', (newOrder) => {
-    if (customer?.id && Number(newOrder.customer_id) === Number(customer.id)) {
-      setOrders(prev => [newOrder, ...prev])
-    }
+    if (!customer?.id) return
+    if (Number(newOrder.customer_id) !== Number(customer.id)) return
+    setOrders(prev => [newOrder, ...prev])
   })
 
-  async function fetchOrders(phoneNumber) {
-    setLoading(true)
+  async function fetchOrders(phoneNumber, silent = false) {
+    if (!silent) setLoading(true)
     setSearched(true)
     try {
       const res = await fetch(`${API_URL}/orders/history?phone=${encodeURIComponent(phoneNumber)}`, {
@@ -45,14 +58,15 @@ export default function History() {
       const data = await res.json()
       setOrders(data.data ?? [])
     } catch {
-      setOrders([])
+      if (!silent) setOrders([])
     } finally {
-      setLoading(false)
+      if (!silent) setLoading(false)
     }
   }
 
   function handleSearch() {
     if (!phone.trim()) return
+    setSearchPhone(phone.trim())
     fetchOrders(phone.trim())
   }
 
