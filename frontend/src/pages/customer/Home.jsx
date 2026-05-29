@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
 import HeroSlider from '../../components/customer/HeroSlider.jsx'
+import PromotionSlider from '../../components/customer/PromotionSlider.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
 import { useCart } from '../../context/CartContext.jsx'
+import promotedProducts from '../../data/promotedProducts.js'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -42,6 +45,22 @@ export default function Home() {
       <Navbar />
 
       <HeroSlider />
+
+      <PromotionSlider />
+
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-800">Promotion Products</h2>
+          <Link to="/promotion" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+            View All
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {promotedProducts.map((product) => (
+            <ProductCard key={product.id} product={product} onAddToCart={(item) => addItem(product, item)} />
+          ))}
+        </div>
+      </section>
 
       <div className="sticky top-0 z-40 bg-white border-b border-gray-200 overflow-x-auto">
         <div className="flex gap-2 px-4 py-3 max-w-7xl mx-auto">

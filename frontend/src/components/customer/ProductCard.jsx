@@ -126,6 +126,14 @@ export default function ProductCard({ product, onAddToCart }) {
               <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
             )}
 
+            {product.is_promoted && (
+              <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+                <span className={`${product.deal ? 'bg-orange-500' : 'bg-red-500'} text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md`}>
+                  {product.deal ? product.deal.label : 'PROMO'}
+                </span>
+              </div>
+            )}
+
             <img
               onLoad={() => setImageLoaded(true)}
               src={`${
@@ -143,7 +151,15 @@ export default function ProductCard({ product, onAddToCart }) {
             </span>
           </div>
         ) : (
-          <div className="w-full aspect-square bg-gray-200 rounded-2xl cursor-pointer" onClick={() => setShowModal(true)}></div>
+          <div className="relative w-full aspect-square bg-gray-200 rounded-2xl cursor-pointer" onClick={() => setShowModal(true)}>
+            {product.is_promoted && (
+              <div className="absolute top-2 left-2 z-10">
+                <span className={`${product.deal ? 'bg-orange-500' : 'bg-red-500'} text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md`}>
+                  {product.deal ? product.deal.label : 'PROMO'}
+                </span>
+              </div>
+            )}
+          </div>
         )}
       </div>
 

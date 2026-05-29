@@ -104,7 +104,7 @@
                 strokeWidth={1.5} 
             />
 
-            {data.length > 1 && (
+            {data.length > 0 && (
                 <ChartLines 
                 data={data} 
                 maxVal={maxVal} 
@@ -115,9 +115,9 @@
                 />
             )}
 
-            {data.length <= 1 && (
+            {data.length === 0 && (
                 <text x={SVG_WIDTH / 2} y={SVG_HEIGHT / 2} textAnchor="middle" fill="#9ca3af" fontSize={13}>
-                Need more data points for a line chart
+                No data available
                 </text>
             )}
             </svg>

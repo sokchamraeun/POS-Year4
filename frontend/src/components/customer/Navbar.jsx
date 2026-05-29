@@ -78,8 +78,8 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 w-full z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-white/95 backdrop-blur-lg shadow-lg"
-            : "bg-gradient-to-r from-blue-50/90 via-white/90 to-cyan-50/90 backdrop-blur-md"
+            ? "bg-white shadow-lg"
+            : "bg-white border-b border-gray-200"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 py-2">
@@ -142,6 +142,16 @@ export default function Navbar() {
                 }`}
               >
                 Service
+              </Link>
+              <Link
+                to="/promotion"
+                className={`px-4 py-2 rounded-4xl text-sm font-medium transition-all duration-200 ${
+                  isActive("/promotion")
+                    ? "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700 shadow-sm"
+                    : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                }`}
+              >
+                Promotions
               </Link>
               <a
                 href="/#products"
@@ -265,6 +275,17 @@ export default function Navbar() {
                   }`}
                 >
                   Service
+                </Link>
+                <Link
+                  to="/promotion"
+                  onClick={() => setMenuOpen(false)}
+                  className={`px-4 py-3 rounded-xl font-medium transition-all duration-200 ${
+                    isActive("/promotion")
+                      ? "bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-700"
+                      : "text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                  }`}
+                >
+                  Promotions
                 </Link>
                 <a
                   href="/#products"
