@@ -81,10 +81,13 @@ export function useOrderPolling(
         if (newMax > prevMax) {
           lastOrderIdRef.current = newMax
           recalc(orders)
-          setNewOrderAlert(true)
-          clearTimeout(alertTimeout)
-          alertTimeout = setTimeout(() => setNewOrderAlert(false), 5000)
-          playNotificationSound()
+          const newOrders = orders.filter(o => o.id > prevMax)
+          if (newOrders.some(o => isVisibleOrder(o))) {
+            setNewOrderAlert(true)
+            clearTimeout(alertTimeout)
+            alertTimeout = setTimeout(() => setNewOrderAlert(false), 5000)
+            playNotificationSound()
+          }
         }
       } catch {
             // Silently ignore polling errors
