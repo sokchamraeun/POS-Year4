@@ -47,7 +47,7 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
         <div className="flex items-center justify-between mb-2">
           <h3 className="md:text-base text-sm font-semibold text-gray-800">{product.name}</h3>
           <div className="text-right">
-            {hasDiscount && <span className="md:text-base text-sm line-through text-gray-400 mr-1">${price.toFixed(2)}</span>}
+            {hasDiscount && <span className="md:text-base text-sm line-through text-red-500 mr-1">${price.toFixed(2)}</span>}
             <span className="md:text-base text-sm font-bold text-blue-600">${finalPrice.toFixed(2)}</span>
           </div>
         </div>

@@ -157,7 +157,7 @@ export default function ProductCard({ product, onAddToCart }) {
               ${finalPrice.toFixed(2)}
             </span>
             {hasDiscount && (
-              <span className="absolute top-2 right-2 mt-8 mr-0.5 text-sm text-gray-300 line-through">
+              <span className="absolute top-2 right-2 mt-8 mr-0.5 text-sm text-red-400 line-through">
                 ${price.toFixed(2)}
               </span>
             )}

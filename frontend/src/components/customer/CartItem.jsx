@@ -31,7 +31,7 @@ export default function CartItem({ item }) {
           </p>
           {finalPrice < item.unitPrice ? (
             <p className="text-sm mt-1">
-              <span className="text-base line-through text-gray-400">${item.unitPrice.toFixed(2)}</span>
+              <span className="text-base line-through text-red-500">${item.unitPrice.toFixed(2)}</span>
               {' '}
               <span className="text-blue-600 font-medium">${finalPrice.toFixed(2)}</span>
             </p>
