@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/customer/Navbar.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
@@ -131,9 +131,12 @@ export default function Cart() {
     }
   }
 
+  const navigateRef = useRef(navigate)
+  navigateRef.current = navigate
+
   useEffect(() => {
     if (done) {
-      const timer = setTimeout(() => navigate('/products'), 3000)
+      const timer = setTimeout(() => navigateRef.current('/products'), 3000)
       return () => clearTimeout(timer)
     }
   }, [done])

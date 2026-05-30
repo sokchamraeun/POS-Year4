@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import CartItem from './CartItem.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
@@ -41,9 +41,12 @@ export default function CartSidebar({ open, onClose }) {
     }
   }, [open])
 
+  const handleCloseRef = useRef(handleClose)
+  handleCloseRef.current = handleClose
+
   useEffect(() => {
     if (done) {
-      const timer = setTimeout(handleClose, 3000)
+      const timer = setTimeout(() => handleCloseRef.current(), 3000)
       return () => clearTimeout(timer)
     }
   }, [done])
