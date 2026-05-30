@@ -8,20 +8,14 @@ use App\Services\CloudinaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-
 class ProductController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
         $perPage = min((int) $request->get('per_page', 100), 500);
-        $page = $request->get('page', 1);
-        $cacheKey = "products_page_{$perPage}_{$page}";
-        $data = Cache::remember($cacheKey, 300, function () use ($perPage) {
-            return Product::with(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels', 'promotions'])
-                ->orderBy('id')
-                ->paginate($perPage)
-                ->toArray();
-        });
+        $data = Product::with(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels', 'promotions'])
+            ->orderBy('id')
+            ->paginate($perPage);
 
         return response()->json($data);
     }

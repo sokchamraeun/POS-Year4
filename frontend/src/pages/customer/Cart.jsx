@@ -14,6 +14,7 @@ export default function Cart() {
   const { items, updateQty, removeItem, clearCart, totalItems, totalPrice } = useCart()
   const { customer, isLoggedIn } = useCustomerAuth()
   const [orderNote, setOrderNote] = useState('')
+  const [name, setName] = useState(customer?.name || '')
   const [phone, setPhone] = useState(customer?.phone || '')
   const [selectedTable, setSelectedTable] = useState('')
   const [tables, setTables] = useState([])
@@ -50,7 +51,7 @@ export default function Cart() {
           const createRes = await fetch(`${API_URL}/customers`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ phone: phone.trim(), name: phone.trim() }),
+            body: JSON.stringify({ phone: phone.trim(), name: name.trim() || phone.trim() }),
           })
           if (createRes.ok) {
             const created = await createRes.json()
@@ -130,9 +131,16 @@ export default function Cart() {
     }
   }
 
+  useEffect(() => {
+    if (done) {
+      const timer = setTimeout(() => navigate('/products'), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [done])
+
   if (done) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center pb-24">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center pb-24 sm:pb-0">
         <Navbar />
         <div className="text-center max-w-sm mx-auto px-4">
           <svg className="w-16 h-16 mx-auto text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,7 +161,7 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-24 sm:pb-0">
       <Navbar />
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
@@ -210,13 +218,22 @@ export default function Cart() {
                   {customer?.name} ({customer?.phone})
                 </div>
               ) : (
-                <input
-                  type="tel"
-                  placeholder="Phone number (optional)"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <>
+                  <input
+                    type="text"
+                    placeholder="Your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </>
               )}
               <select
                 value={selectedTable}

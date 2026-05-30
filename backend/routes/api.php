@@ -48,6 +48,11 @@ Route::get('/hero-sliders', [HeroSliderController::class, 'index']);
 Route::get('/orders/{order}/khqr-qr', [OrderController::class, 'generateKhqrQr']);
 Route::post('/orders/payment/initiate', [PaymentCheckoutController::class, 'initiate']);
 Route::match(['get', 'post'], '/orders/payment/callback', [PaymentCheckoutController::class, 'callback']);
+// Public customer routes (for guest checkout)
+Route::get('/customers', [CustomerController::class, 'index']);
+Route::post('/customers', [CustomerController::class, 'store']);
+Route::put('/customers/{customer}', [CustomerController::class, 'update']);
+
 // Protected routes (staff + customer auth)
 Route::middleware('auth:sanctum')->group(function () {
     // Staff auth
@@ -118,10 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/products/{product}', [ProductController::class, 'destroy']);
 
     // Customer management (staff)
-    Route::get('/customers', [CustomerController::class, 'index']);
     Route::get('/customers/{customer}', [CustomerController::class, 'show']);
-    Route::post('/customers', [CustomerController::class, 'store']);
-    Route::put('/customers/{customer}', [CustomerController::class, 'update']);
     Route::delete('/customers/{customer}', [CustomerController::class, 'destroy']);
 
     // Staff order management

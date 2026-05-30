@@ -29,6 +29,7 @@ export default function CartItem({ item }) {
             {item.size}{item.sugar ? `, ${item.sugar}` : ''}{item.ice ? `, ${item.ice}` : ''}
             {item.addOn ? `, +${item.addOn}` : ''}
           </p>
+
           {finalPrice < item.unitPrice ? (
             <p className="text-sm mt-1">
               <span className="text-base line-through text-red-500">${item.unitPrice.toFixed(2)}</span>

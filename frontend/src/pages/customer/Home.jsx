@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
-import HeroSlider from '../../components/customer/HeroSlider.jsx'
 import PromotionSlider from '../../components/customer/PromotionSlider.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
@@ -25,7 +23,7 @@ export default function Home() {
         const data = Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : [])
         setProducts(data)
         const cats = [...new Set(data.map((p) => p.category?.name).filter(Boolean))]
-        setCategories(['All', ...cats])
+        setCategories(['All', 'Promotion', ...cats])
       } catch {
         // ignore
       } finally {
@@ -33,69 +31,61 @@ export default function Home() {
       }
     }
     fetchAll()
+    const interval = setInterval(fetchAll, 15000)
+    return () => clearInterval(interval)
   }, [])
 
   const promoProducts = products.filter((p) => p.promotion)
+  const categoriesWithPromo = new Set(promoProducts.map((p) => p.category?.name).filter(Boolean))
   const filtered = selectedCategory === 'All'
     ? products
-    : products.filter((p) => p.category?.name === selectedCategory)
+    : selectedCategory === 'Promotion'
+      ? products.filter((p) => p.promotion)
+      : products.filter((p) => p.category?.name === selectedCategory)
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 flex flex-col pb-24 sm:pb-0">
       <Navbar />
 
-      <HeroSlider />
+      <div className="flex-1">
+        <PromotionSlider products={promoProducts} />
 
-      <PromotionSlider products={promoProducts} />
-
-      {promoProducts.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Promotion Products</h2>
-            <Link to="/promotion" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-              View All
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {promoProducts.map((product) => (
-              <ProductCard key={product.id} product={product} onAddToCart={(item) => addItem(product, item)} />
+        <div className="sticky top-0 z-40 bg-white border-b border-gray-200 overflow-x-auto">
+          <div className="flex gap-2 px-4 py-3 max-w-7xl mx-auto">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`whitespace-nowrap px-4 py-2 sm:rounded text-sm font-medium transition-all ${
+                  selectedCategory === cat
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {cat}
+                {cat !== 'All' && cat !== 'Promotion' && categoriesWithPromo.has(cat) && (
+                  <span className="ml-1 text-[9px] bg-red-500 text-white px-1 py-0.5 rounded">Promo</span>
+                )}
+              </button>
             ))}
           </div>
-        </section>
-      )}
-
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 overflow-x-auto">
-        <div className="flex gap-2 px-4 py-3 max-w-7xl mx-auto">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-                selectedCategory === cat
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
         </div>
-      </div>
 
-      <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Our Menu</h2>
-        {loading ? (
-          <p className="text-center text-gray-500">Loading menu...</p>
-        ) : filtered.length === 0 ? (
-          <p className="text-center text-gray-400">No products in this category.</p>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} onAddToCart={(item) => addItem(product, item)} />
-            ))}
-          </div>
-        )}
-      </section>
+        <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6">Our Menu</h2>
+          {loading ? (
+            <p className="text-center text-gray-500">Loading menu...</p>
+          ) : filtered.length === 0 ? (
+            <p className="text-center text-gray-400">No products in this category.</p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {filtered.map((product) => (
+                <ProductCard key={product.id} product={product} onAddToCart={(item) => addItem(product, item)} />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
         
       <Footer />
       <MobileBottomNav />

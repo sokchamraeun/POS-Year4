@@ -11,6 +11,7 @@ export default function CartSidebar({ open, onClose }) {
   const { customer, isLoggedIn } = useCustomerAuth()
   const [placing, setPlacing] = useState(false)
   const [done, setDone] = useState(false)
+  const [name, setName] = useState(customer?.name || '')
   const [phone, setPhone] = useState(customer?.phone || '')
   const [selectedTable, setSelectedTable] = useState('')
   const [tables, setTables] = useState([])
@@ -24,6 +25,7 @@ export default function CartSidebar({ open, onClose }) {
 
   function handleClose() {
     setDone(false)
+    setName('')
     setPhone('')
     setSelectedTable('')
     setPaymentMethod('pay_later')
@@ -39,9 +41,20 @@ export default function CartSidebar({ open, onClose }) {
     }
   }, [open])
 
+  useEffect(() => {
+    if (done) {
+      const timer = setTimeout(handleClose, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [done])
+
   if (!open) return null
 
   async function placeOrder() {
+    if (!isLoggedIn) {
+      if (!name.trim()) { setPlacing(false); alert('Please enter your name'); return }
+      if (!phone.trim()) { setPlacing(false); alert('Please enter your phone number'); return }
+    }
     setPlacing(true)
     try {
       let customerId = customer?.id || null
@@ -53,11 +66,18 @@ export default function CartSidebar({ open, onClose }) {
         const existing = custData.data?.find(c => c.phone === phone.trim())
         if (existing) {
           customerId = existing.id
+          if (name.trim() && existing.name !== name.trim()) {
+            await fetch(`${API_URL}/customers/${existing.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({ name: name.trim() }),
+            })
+          }
         } else {
           const createRes = await fetch(`${API_URL}/customers`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ phone: phone.trim(), name: phone.trim() }),
+            body: JSON.stringify({ phone: phone.trim(), name: name.trim() || phone.trim() }),
           })
           if (createRes.ok) {
             const created = await createRes.json()
@@ -183,13 +203,22 @@ export default function CartSidebar({ open, onClose }) {
                 {customer?.name} ({customer?.phone})
               </div>
             ) : (
-              <input
-                type="tel"
-                placeholder="Phone number (optional)"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <>
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  type="tel"
+                  placeholder="Phone number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </>
             )}
             <select
               value={selectedTable}
