@@ -1,3 +1,5 @@
+import { calcFinalPrice } from '../../../../utils/promotion.js'
+
 const API_URL = import.meta.env.VITE_API_URL
 
 export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
@@ -12,11 +14,23 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
     }
   }
   const price = basePrice + addonPrice
+  const finalPrice = calcFinalPrice(price, product.promotion)
+  const hasDiscount = finalPrice < price
 
   return (
     <div className="rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col bg-cover bg-center border border-blue-200" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=60')" }}>
       <div className="bg-white/90 backdrop-blur-sm flex flex-col flex-1">
-      <div className="p-3 pb-0">
+      <div className="p-3 pb-0 relative">
+        {product.promotion && (
+          <div className="absolute top-4 left-4 z-10">
+            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md">
+              {product.promotion.type === 'percentage' && `${parseFloat(product.promotion.value)}% OFF`}
+              {product.promotion.type === 'fixed_amount' && `$${product.promotion.value} OFF`}
+              {product.promotion.type === 'buy_x_get_y' && `Buy ${product.promotion.buy_qty} Get ${product.promotion.free_qty}`}
+              {product.promotion.type === 'combo' && 'COMBO'}
+            </span>
+          </div>
+        )}
         {product.image ? (
           <img
             src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`}
@@ -31,8 +45,11 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
       </div>
       <div className="p-3 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="md:text-sm text-xs font-semibold text-gray-800">{product.name}</h3>
-          <span className="md:text-sm text-xs font-bold text-blue-600">${price.toFixed(2)}</span>
+          <h3 className="md:text-base text-sm font-semibold text-gray-800">{product.name}</h3>
+          <div className="text-right">
+            {hasDiscount && <span className="md:text-base text-sm line-through text-gray-400 mr-1">${price.toFixed(2)}</span>}
+            <span className="md:text-base text-sm font-bold text-blue-600">${finalPrice.toFixed(2)}</span>
+          </div>
         </div>
 
         <select

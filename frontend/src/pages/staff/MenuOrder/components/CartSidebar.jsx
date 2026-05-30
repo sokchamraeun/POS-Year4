@@ -5,6 +5,7 @@ import PaymentSelector from './PaymentSelector.jsx'
 
 export default function CartSidebar({
   cart,
+  products,
   total,
   placing,
   onUpdateQty,
@@ -50,13 +51,13 @@ export default function CartSidebar({
           <>
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
               {cart.map((c) => (
-                <CartItem key={c.key} item={c} onUpdateQty={onUpdateQty} />
+                <CartItem key={c.key} item={c} products={products} onUpdateQty={onUpdateQty} />
               ))}
             </div>
             <div className="border-t border-gray-200 px-4 py-4 shrink-0">
-              <div className="flex items-center justify-between text-sm font-semibold text-gray-800 mb-3">
+              <div className="flex items-center justify-between text-base font-bold text-gray-800 mb-3">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span className="text-lg">${total.toFixed(2)}</span>
               </div>
               <PaymentSelector value={paymentMethod} onChange={onPaymentChange} />
               <button

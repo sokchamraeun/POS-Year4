@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { calcFinalPrice } from '../utils/promotion.js'
 
 const CartContext = createContext()
 
@@ -52,7 +53,7 @@ export function CartProvider({ children }) {
   }
 
   const totalItems = items.reduce((sum, i) => sum + i.qty, 0)
-  const totalPrice = items.reduce((sum, i) => sum + i.unitPrice * i.qty, 0)
+  const totalPrice = items.reduce((sum, i) => sum + calcFinalPrice(i.unitPrice, i.promotion) * i.qty, 0)
 
   return (
     <CartContext.Provider value={{ items, addItem, updateQty, removeItem, clearCart, totalItems, totalPrice }}>

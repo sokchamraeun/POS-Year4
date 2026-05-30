@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentCheckoutController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\PromotionController;
 use App\Http\Controllers\Api\RecipeController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
@@ -141,6 +142,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/hero-sliders', [HeroSliderController::class, 'store']);
     Route::put('/hero-sliders/{heroSlider}', [HeroSliderController::class, 'update']);
     Route::delete('/hero-sliders/{heroSlider}', [HeroSliderController::class, 'destroy']);
+
+    // Promotion management (staff)
+    Route::get('/promotions', [PromotionController::class, 'index']);
+    Route::post('/promotions', [PromotionController::class, 'store']);
+    Route::get('/promotions/{promotion}', [PromotionController::class, 'show']);
+    Route::put('/promotions/{promotion}', [PromotionController::class, 'update']);
+    Route::delete('/promotions/{promotion}', [PromotionController::class, 'destroy']);
 
     // Ingredient & recipe management (staff)
     Route::get('/ingredients', [IngredientController::class, 'index']);

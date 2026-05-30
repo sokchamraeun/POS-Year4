@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import CartItem from './CartItem.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
+import { calcFinalPrice } from '../../utils/promotion.js'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -70,15 +71,15 @@ export default function CartSidebar({ open, onClose }) {
         const sugarId = (c.sugar_levels || c.sugarLevels)?.find(s => s.name === c.sugar)?.id ?? null
         const iceId = (c.ice_levels || c.iceLevels)?.find(i => i.name === c.ice)?.id ?? null
         const addonObj = c.addons?.find(a => a.name === c.addOn)
-
+        const price = calcFinalPrice(c.unitPrice, c.promotion)
         return {
           product_id: c.id,
           size_id: sizeId,
           sugar_level_id: sugarId,
           ice_level_id: iceId,
           qty: c.qty,
-          unit_price: c.unitPrice,
-          subtotal: c.unitPrice * c.qty,
+          unit_price: price,
+          subtotal: price * c.qty,
           addons: addonObj ? [{ addon_id: addonObj.id, price: 0 }] : [],
         }
       })

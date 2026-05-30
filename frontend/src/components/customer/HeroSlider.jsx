@@ -117,20 +117,6 @@ export default function HeroSlider() {
         })}
       </div>
 
-      <button
-        onClick={() => setCurrent((current - 1 + slides.length) % slides.length)}
-        className="absolute top-1/2 left-5 -translate-y-1/2 w-14 h-14 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 text-white text-2xl transition flex items-center justify-center"
-      >
-        ❮
-      </button>
-
-      <button
-        onClick={() => setCurrent((current + 1) % slides.length)}
-        className="absolute top-1/2 right-5 -translate-y-1/2 w-14 h-14 rounded-full bg-white/10 backdrop-blur-md hover:bg-white/20 text-white text-2xl transition flex items-center justify-center"
-      >
-        ❯
-      </button>
-
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3">
         {slides.map((_, i) => {
           const c = colors[i % colors.length]

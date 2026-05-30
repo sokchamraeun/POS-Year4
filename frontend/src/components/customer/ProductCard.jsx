@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
+import { calcFinalPrice } from '../../utils/promotion.js'
 import ProductModal from './ProductModal.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -43,6 +44,8 @@ export default function ProductCard({ product, onAddToCart }) {
 
   const price =
     getBasePrice(selectedSize) + getAddOnPrice(selectedAddOn)
+  const finalPrice = calcFinalPrice(price, product.promotion)
+  const hasDiscount = finalPrice < price
 
   async function handleAddToCart() {
     if (!isLoggedIn) {
@@ -97,6 +100,7 @@ export default function ProductCard({ product, onAddToCart }) {
 
     const item = {
       ...product,
+      promotion: product.promotion,
       size: selectedSize,
       sugar: selectedSugar,
       ice: selectedIce,
@@ -126,10 +130,13 @@ export default function ProductCard({ product, onAddToCart }) {
               <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
             )}
 
-            {product.is_promoted && (
+            {product.promotion && (
               <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
-                <span className={`${product.deal ? 'bg-orange-500' : 'bg-red-500'} text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md`}>
-                  {product.deal ? product.deal.label : 'PROMO'}
+                <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md">
+                  {product.promotion.type === 'percentage' && `${parseFloat(product.promotion.value)}% OFF`}
+                  {product.promotion.type === 'fixed_amount' && `$${product.promotion.value} OFF`}
+                  {product.promotion.type === 'buy_x_get_y' && `Buy ${product.promotion.buy_qty} Get ${product.promotion.free_qty}`}
+                  {product.promotion.type === 'combo' && 'COMBO'}
                 </span>
               </div>
             )}
@@ -146,16 +153,24 @@ export default function ProductCard({ product, onAddToCart }) {
                 imageLoaded ? 'opacity-100' : 'opacity-0'
               } group-hover:scale-105`}
             />
-            <span className="absolute top-2 right-2 bg-blue-600/80 text-white font-bold text-xs px-2 py-1 rounded-lg shadow-md backdrop-blur-sm">
-              ${price.toFixed(2)}
+            <span className="absolute top-2 right-2 bg-blue-600/80 text-white font-bold text-sm px-3 py-1.5 rounded-lg shadow-md backdrop-blur-sm">
+              ${finalPrice.toFixed(2)}
             </span>
+            {hasDiscount && (
+              <span className="absolute top-2 right-2 mt-8 mr-0.5 text-sm text-gray-300 line-through">
+                ${price.toFixed(2)}
+              </span>
+            )}
           </div>
         ) : (
           <div className="relative w-full aspect-square bg-gray-200 rounded-2xl cursor-pointer" onClick={() => setShowModal(true)}>
-            {product.is_promoted && (
+            {product.promotion && (
               <div className="absolute top-2 left-2 z-10">
-                <span className={`${product.deal ? 'bg-orange-500' : 'bg-red-500'} text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md`}>
-                  {product.deal ? product.deal.label : 'PROMO'}
+                <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md">
+                  {product.promotion.type === 'percentage' && `${parseFloat(product.promotion.value)}% OFF`}
+                  {product.promotion.type === 'fixed_amount' && `$${product.promotion.value} OFF`}
+                  {product.promotion.type === 'buy_x_get_y' && `Buy ${product.promotion.buy_qty} Get ${product.promotion.free_qty}`}
+                  {product.promotion.type === 'combo' && 'COMBO'}
                 </span>
               </div>
             )}
@@ -189,7 +204,7 @@ export default function ProductCard({ product, onAddToCart }) {
                 <button
                   key={s.id}
                   onClick={() => setSelectedSize(s.name)}
-                  className={`flex-1 rounded-lg py-1.5 text-xs transition ${
+                  className={`flex-1 rounded-lg py-2 text-sm transition ${
                     selectedSize === s.name
                       ? 'bg-blue-600 text-white'
                       : 'bg-gray-100'

@@ -17,7 +17,7 @@ class ProductController extends Controller
         $page = $request->get('page', 1);
         $cacheKey = "products_page_{$perPage}_{$page}";
         $data = Cache::remember($cacheKey, 300, function () use ($perPage) {
-            return Product::with(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels'])
+            return Product::with(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels', 'promotions'])
                 ->orderBy('id')
                 ->paginate($perPage)
                 ->toArray();
@@ -28,7 +28,7 @@ class ProductController extends Controller
 
     public function show(Product $product): JsonResponse
     {
-        $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
+        $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels', 'promotions']);
 
         return response()->json($product);
     }
@@ -86,7 +86,7 @@ class ProductController extends Controller
         }
 
         Cache::flush();
-        $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
+        $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels', 'promotions']);
 
         return response()->json($product, 201);
     }
@@ -150,7 +150,7 @@ class ProductController extends Controller
         }
 
         Cache::flush();
-        $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels']);
+        $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels', 'promotions']);
 
         return response()->json($product);
     }

@@ -14,6 +14,10 @@ class Product extends Model
 {
     use HasFactory;
 
+    protected $appends = ['promotion'];
+
+    protected $hidden = ['promotions'];
+
     protected function casts(): array
     {
         return [
@@ -55,5 +59,20 @@ class Product extends Model
     public function ingredients(): BelongsToMany
     {
         return $this->belongsToMany(Ingredient::class, 'recipes')->withPivot(['id', 'size_id', 'quantity']);
+    }
+
+    public function promotions(): BelongsToMany
+    {
+        return $this->belongsToMany(Promotion::class, 'promotion_product');
+    }
+
+    public function getPromotionAttribute(): ?array
+    {
+        $now = now();
+        $active = $this->promotions
+            ->filter(fn ($p) => $p->active && $p->start_date <= $now && $p->end_date >= $now)
+            ->first();
+
+        return $active?->only(['id', 'name', 'type', 'value', 'buy_qty', 'free_qty']);
     }
 }

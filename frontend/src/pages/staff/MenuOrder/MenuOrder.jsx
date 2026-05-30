@@ -4,6 +4,7 @@ import Topbar from '../../../components/staff/Topbar.jsx'
 import CategoryFilter from './components/CategoryFilter.jsx'
 import ProductCard from './components/ProductCard.jsx'
 import CartSidebar from './components/CartSidebar.jsx'
+import { calcFinalPrice } from '../../../utils/promotion.js'
 
 const API_URL = import.meta.env.VITE_API_URL
 const headers = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
@@ -43,7 +44,7 @@ export default function MenuOrder() {
           fetch(`${API_URL}/customers?per_page=200`, { headers: headers() }).then((r) => r.json()),
         ])
         setProducts(prodRes.data ?? [])
-        const cats = (catRes.data ?? catRes).map((c) => c.name)
+        const cats = [...new Set((catRes.data ?? catRes).map((c) => c.name))]
         setCategories(['All', ...cats])
         setTables(tblRes.data ?? tblRes ?? [])
         setCustomers(custRes.data ?? custRes ?? [])
@@ -144,14 +145,15 @@ export default function MenuOrder() {
         const sugar = product?.sugar_levels?.find((s) => s.name === c.sugar)
         const ice = product?.ice_levels?.find((i) => i.name === c.ice)
         const addon = product?.addons?.find((a) => a.name === c.addOn)
+        const price = calcFinalPrice(c.unitPrice, product?.promotion)
         return {
           product_id: c.id,
           size_id: size?.id ?? null,
           sugar_level_id: sugar?.id ?? null,
           ice_level_id: ice?.id ?? null,
           qty: c.qty,
-          unit_price: c.unitPrice,
-          subtotal: c.unitPrice * c.qty,
+          unit_price: price,
+          subtotal: price * c.qty,
           addons: addon ? [{ addon_id: addon.id, price: Number(addon.price ?? 0) }] : [],
         }
       })
@@ -244,7 +246,10 @@ export default function MenuOrder() {
     }
   }
 
-  const total = cart.reduce((sum, c) => sum + c.unitPrice * c.qty, 0)
+  const total = cart.reduce((sum, c) => {
+    const cur = products.find((p) => p.id === c.id)
+    return sum + calcFinalPrice(c.unitPrice, cur?.promotion) * c.qty
+  }, 0)
 
   function handleCustomerSearchChange(value) {
     setCustomerSearch(value)
@@ -317,6 +322,7 @@ export default function MenuOrder() {
 
             <CartSidebar
               cart={cart}
+              products={products}
               total={total}
               placing={placing}
               onUpdateQty={updateQty}

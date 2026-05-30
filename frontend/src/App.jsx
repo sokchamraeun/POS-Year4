@@ -32,6 +32,7 @@ import Category from './pages/staff/Category/Category.jsx'
 import SizePage from './pages/staff/Size/Size.jsx'
 import IceLevel from './pages/staff/IceLevel/IceLevel.jsx'
 import SugarLevel from './pages/staff/SugarLevel/SugarLevel.jsx'
+import Promotions from './pages/staff/Promotion/Promotion.jsx'
 import HeroSliderPage from './pages/staff/HeroSlider/Heroslider.jsx'
 import UserTest from './pages/staff/UserTest.jsx'
 import Login from './pages/auth/Login.jsx'
@@ -73,6 +74,7 @@ export default function App() {
         <Route path="/staff/sizes" element={<PrivateRoute><SizePage /></PrivateRoute>} />
         <Route path="/staff/ice-levels" element={<PrivateRoute><IceLevel /></PrivateRoute>} />
         <Route path="/staff/sugar-levels" element={<PrivateRoute><SugarLevel /></PrivateRoute>} />
+        <Route path="/staff/promotions" element={<PrivateRoute><Promotions /></PrivateRoute>} />
         <Route path="/staff/hero-sliders" element={<PrivateRoute><HeroSliderPage /></PrivateRoute>} />
         <Route path="/staff/user-test" element={<PrivateRoute><UserTest /></PrivateRoute>} />
         <Route path="/staff/login" element={<Login />} />

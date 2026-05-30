@@ -42,9 +42,9 @@ export default function ProductModal({
       <div className="w-full max-w-sm bg-white rounded-2xl overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="relative">
           <img src={imgSrc} alt={product.name} className="w-full aspect-square object-cover" />
-          <span className="absolute top-3 right-3 bg-blue-600/80 text-white font-bold text-sm px-3 py-1.5 rounded-lg shadow-md backdrop-blur-sm">
-            ${price.toFixed(2)}
-          </span>
+            <span className="absolute top-3 right-3 bg-blue-600/80 text-white font-bold text-base px-4 py-2 rounded-lg shadow-md backdrop-blur-sm">
+              ${price.toFixed(2)}
+            </span>
           <button onClick={onClose} className="absolute top-3 left-3 w-8 h-8 bg-black/40 text-white rounded-full flex items-center justify-center text-lg hover:bg-black/60">&times;</button>
         </div>
 
