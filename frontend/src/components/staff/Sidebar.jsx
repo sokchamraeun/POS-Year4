@@ -222,26 +222,26 @@ export default function Sidebar() {
 
   if (collapsed) {
     return (
-      <div className="w-14 bg-gray-900 text-white flex flex-col shrink-0">
+      <div className="w-20 bg-zinc-950 text-zinc-100 flex flex-col shrink-0 border-r border-zinc-800/80 transition-all duration-300 shadow-2xl relative z-20">
         <button
           onClick={() => setCollapsedPersist(false)}
-          className="flex items-center justify-center h-14 text-gray-400 hover:text-white transition-colors border-b border-gray-700"
+          className="flex items-center justify-center h-20 text-zinc-400 hover:text-white transition-colors border-b border-zinc-800/80 hover:bg-zinc-900/50"
           title="Open sidebar"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
           </svg>
         </button>
-        <nav className="flex-1 py-4 flex flex-col items-center gap-1 overflow-y-auto">
+        <nav className="flex-1 py-6 flex flex-col items-center gap-3 overflow-y-auto custom-scrollbar">
           {links.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `flex items-center justify-center w-10 h-10 rounded-lg transition-colors ${
+                `flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-200 ${
                   isActive
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                    ? 'bg-gradient-to-tr from-blue-600 to-indigo-500 text-white shadow-lg shadow-blue-500/30 transform scale-105'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/80 hover:scale-105'
                 }`
               }
               title={link.label}
@@ -251,10 +251,10 @@ export default function Sidebar() {
           ))}
           <button
             onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' }}
-            className="flex items-center justify-center w-10 h-10 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors mt-auto"
+            className="flex items-center justify-center w-12 h-12 rounded-2xl text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 mt-auto hover:scale-105"
             title="Logout"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
           </button>
@@ -264,45 +264,48 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-64 bg-gray-900 text-white flex flex-col shrink-0">
-      <div className="flex items-center gap-2 px-6 h-16 border-b border-gray-700">
-        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-          <span className="text-white font-bold text-sm">V</span>
+    <aside className="w-72 bg-zinc-950 text-zinc-100 flex flex-col shrink-0 border-r border-zinc-800/80 transition-all duration-300 shadow-2xl relative z-20">
+      <div className="flex items-center gap-4 px-6 h-20 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
+        <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 transform -rotate-2">
+          <span className="text-white font-extrabold text-xl">{user?.username?.[0]?.toUpperCase() || 'V'}</span>
         </div>
-        <span className="text-xl font-bold">Visal</span>
-        <span className="text-xs text-gray-400 ml-auto">{user?.role?.name || 'Staff'}</span>
+        <div className="flex flex-col">
+          <span className="text-base font-bold tracking-wide text-zinc-100">{user?.username || 'Visal'}</span>
+          <span className="text-xs font-semibold text-blue-400 uppercase tracking-widest">{user?.role?.name || 'Staff'}</span>
+        </div>
         <button
           onClick={() => setCollapsedPersist(true)}
-          className="p-1 text-gray-400 hover:text-white transition-colors ml-2"
+          className="p-2 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/80 rounded-lg transition-all ml-auto"
           title="Close sidebar"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
           </svg>
         </button>
       </div>
-      <nav className="flex-1 py-4 overflow-y-auto">
+      
+      <nav className="flex-1 py-6 overflow-y-auto custom-scrollbar px-4 flex flex-col gap-1">
         {links.map((link) => (
           <NavLink
             key={link.to}
             to={link.to}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors ${
+              `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/20'
+                  : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60'
               }`
             }
           >
-            {link.icon}
+            <div className="shrink-0">{link.icon}</div>
             {link.label}
           </NavLink>
         ))}
 
-        <div className="pt-1">
+        <div className="pt-2 mt-2 border-t border-zinc-800/50">
           <button
             onClick={toggle}
-            className="flex items-center gap-3 px-6 py-3 w-full text-sm font-medium text-gray-400 hover:text-white transition-colors text-left"
+            className={`flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-medium transition-all duration-200 text-left ${open ? 'bg-zinc-800/40 text-zinc-200' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60'}`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -310,37 +313,38 @@ export default function Sidebar() {
             User Management
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 ml-auto transition-transform ${open ? 'rotate-180' : ''}`}
+              className={`h-4 w-4 ml-auto transition-transform duration-300 ${open ? 'rotate-180 text-blue-400' : ''}`}
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          {open && (
-            <div className="bg-gray-800">
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+            <div className="bg-zinc-900/40 rounded-xl border border-zinc-800/50 py-2 mx-2">
               {userLinks.map((l) => (
                 <NavLink
                   key={l.to}
                   to={l.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-6 py-2.5 pl-14 text-sm font-medium transition-colors ${
+                    `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                        ? 'bg-blue-500/10 text-blue-400 font-semibold'
+                        : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/80'
                     }`
                   }
                 >
+                  <div className={`w-1.5 h-1.5 rounded-full ${window.location.pathname === l.to ? 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]' : 'bg-zinc-600'}`}></div>
                   {l.label}
                 </NavLink>
               ))}
             </div>
-          )}
+          </div>
         </div>
 
         <div className="pt-1">
           <button
             onClick={toggleIp}
-            className="flex items-center gap-3 px-6 py-3 w-full text-sm font-medium text-gray-400 hover:text-white transition-colors text-left"
+            className={`flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-medium transition-all duration-200 text-left ${ipOpen ? 'bg-zinc-800/40 text-zinc-200' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60'}`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -348,37 +352,38 @@ export default function Sidebar() {
             Item Product
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 ml-auto transition-transform ${ipOpen ? 'rotate-180' : ''}`}
+              className={`h-4 w-4 ml-auto transition-transform duration-300 ${ipOpen ? 'rotate-180 text-blue-400' : ''}`}
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          {ipOpen && (
-            <div className="bg-gray-800">
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${ipOpen ? 'max-h-[500px] opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+            <div className="bg-zinc-900/40 rounded-xl border border-zinc-800/50 py-2 mx-2">
               {itemProductLinks.map((l) => (
                 <NavLink
                   key={l.to}
                   to={l.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-6 py-2.5 pl-14 text-sm font-medium transition-colors ${
+                    `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                        ? 'bg-blue-500/10 text-blue-400 font-semibold'
+                        : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/80'
                     }`
                   }
                 >
+                  <div className={`w-1.5 h-1.5 rounded-full ${window.location.pathname === l.to ? 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]' : 'bg-zinc-600'}`}></div>
                   {l.label}
                 </NavLink>
               ))}
             </div>
-          )}
+          </div>
         </div>
 
         <div className="pt-1">
           <button
             onClick={toggleSettings}
-            className="flex items-center gap-3 px-6 py-3 w-full text-sm font-medium text-gray-400 hover:text-white transition-colors text-left"
+            className={`flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-medium transition-all duration-200 text-left ${settingsOpen ? 'bg-zinc-800/40 text-zinc-200' : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60'}`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -387,37 +392,39 @@ export default function Sidebar() {
             Settings
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 ml-auto transition-transform ${settingsOpen ? 'rotate-180' : ''}`}
+              className={`h-4 w-4 ml-auto transition-transform duration-300 ${settingsOpen ? 'rotate-180 text-blue-400' : ''}`}
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          {settingsOpen && (
-            <div className="bg-gray-800">
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${settingsOpen ? 'max-h-[500px] opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+            <div className="bg-zinc-900/40 rounded-xl border border-zinc-800/50 py-2 mx-2">
               {settingsLinks.map((l) => (
                 <NavLink
                   key={l.to}
                   to={l.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-6 py-2.5 pl-14 text-sm font-medium transition-colors ${
+                    `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                        ? 'bg-blue-500/10 text-blue-400 font-semibold'
+                        : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/80'
                     }`
                   }
                 >
+                  <div className={`w-1.5 h-1.5 rounded-full ${window.location.pathname === l.to ? 'bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]' : 'bg-zinc-600'}`}></div>
                   {l.label}
                 </NavLink>
               ))}
             </div>
-          )}
+          </div>
         </div>
-       </nav>
-      <div className="px-6 py-4 border-t border-gray-700">
+      </nav>
+      
+      <div className="p-4 border-t border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
         <button
           onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' }}
-          className="flex items-center gap-3 text-sm font-medium text-gray-400 hover:text-white transition-colors"
+          className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-semibold text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -428,3 +435,4 @@ export default function Sidebar() {
     </aside>
   )
 }
+
