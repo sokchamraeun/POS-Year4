@@ -47,12 +47,15 @@ export default function Products() {
       {promoProducts.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800">Promotion Products</h2>
-            <Link to="/promotion" className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+            <h2 className="text-lg sm:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+              <span>Promotion Products</span>
+              <span className="w-1 h-5 bg-linear-to-b from-blue-600 to-cyan-600 rounded-full"></span>
+            </h2>
+            <Link to="/promotion" className="text-sm text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200">
               View All
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {promoProducts.map((product) => (
               <ProductCard key={product.id} product={product} onAddToCart={(item) => addItem(product, item)} />
             ))}
@@ -60,16 +63,16 @@ export default function Products() {
         </section>
       )}
 
-      <div className="sticky top-18 z-40 bg-white border-b border-gray-200 overflow-x-auto">
-        <div className="flex gap-2 px-4 py-3 max-w-7xl mx-auto">
+      <div className="sticky top-16 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 overflow-x-auto shadow-sm">
+        <div className="flex gap-2.5 px-4 py-3.5 max-w-7xl mx-auto">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+              className={`whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
                 selectedCategory === cat
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-100 scale-[1.02]'
+                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-100 active:scale-95'
               }`}
             >
               {cat}
@@ -78,13 +81,16 @@ export default function Products() {
         </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Products</h1>
+        <h1 className="text-xl sm:text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-2">
+          <span>Products</span>
+          <span className="w-1.5 h-6 bg-linear-to-b from-blue-600 to-cyan-600 rounded-full"></span>
+        </h1>
         {loading ? (
-          <p className="text-center text-gray-500">Loading...</p>
+          <p className="text-center text-slate-500 py-10 font-medium">Loading...</p>
         ) : filtered.length === 0 ? (
-          <p className="text-center text-gray-400">No products in this category.</p>
+          <p className="text-center text-slate-400 py-10">No products in this category.</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {filtered.map((product) => (
               <ProductCard key={product.id} product={product} onAddToCart={(item) => addItem(product, item)} />
             ))}

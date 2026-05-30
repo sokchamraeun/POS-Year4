@@ -8,16 +8,13 @@ export default function PromotionSlider({ products: propProducts }) {
   const { addItem } = useCart()
   const [current, setCurrent] = useState(0)
   const [fetched, setFetched] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!propProducts)
+  const [addedSlideId, setAddedSlideId] = useState(null)
 
   const products = propProducts ?? fetched
 
   useEffect(() => {
-    if (propProducts) {
-      setLoading(false)
-      return
-    }
-    setLoading(true)
+    if (propProducts) return
     fetch(`${API_URL}/products?per_page=200`)
       .then((r) => r.json())
       .then((json) => {
@@ -51,12 +48,12 @@ export default function PromotionSlider({ products: propProducts }) {
   if (loading) {
     return (
       <section className="relative w-full max-w-7xl mx-auto mt-6 sm:mt-10 px-4">
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
+        <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden">
           <div className="animate-pulse">
-            <div className="h-[400px] sm:h-[500px] md:h-[600px] bg-gray-200 flex items-center justify-center">
+            <div className="h-[400px] sm:h-[500px] md:h-[600px] bg-slate-100 flex items-center justify-center">
               <div className="text-center">
-                <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-gray-500">Loading promotions...</p>
+                <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-slate-500 font-medium">Loading promotions...</p>
               </div>
             </div>
           </div>
@@ -69,14 +66,14 @@ export default function PromotionSlider({ products: propProducts }) {
   if (total === 0) {
     return (
       <section className="relative w-full max-w-7xl mx-auto mt-6 sm:mt-10 px-4">
-        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
+        <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden">
           <div className="h-[400px] sm:h-[500px] md:h-[600px] flex items-center justify-center">
             <div className="text-center px-4">
-              <svg className="w-20 h-20 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-20 h-20 mx-auto text-slate-300 mb-4 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">No promotions available</h3>
-              <p className="text-gray-500">Check back later for exciting offers!</p>
+              <h3 className="text-xl font-bold text-slate-700 mb-2">No promotions available</h3>
+              <p className="text-slate-500">Check back later for exciting offers!</p>
             </div>
           </div>
         </div>
@@ -84,46 +81,46 @@ export default function PromotionSlider({ products: propProducts }) {
     )
   }
 
-  const color = colors[current % colors.length]
-  const product = products[current]
-  const price = Number(product.sizes?.[0]?.pivot?.price ?? 0)
-
-  function handleAdd() {
+  function handleAdd(p, slidePrice) {
     const item = {
-      ...product,
-      size: product.sizes?.[0]?.name || '',
-      sugar: product.sugar_levels?.[0]?.name || '',
-      ice: product.ice_levels?.[0]?.name || '',
+      ...p,
+      size: p.sizes?.[0]?.name || '',
+      sugar: p.sugar_levels?.[0]?.name || '',
+      ice: p.ice_levels?.[0]?.name || '',
       addOn: '',
-      unitPrice: price,
+      unitPrice: Number(slidePrice),
       qty: 1,
     }
-    addItem(product, item)
+    addItem(p, item)
+    setAddedSlideId(p.id)
+    setTimeout(() => {
+      setAddedSlideId(null)
+    }, 1200)
   }
 
   const badgeColors = { 
-    orange: 'bg-gradient-to-r from-orange-500 to-orange-600', 
-    red: 'bg-gradient-to-r from-red-500 to-red-600', 
-    green: 'bg-gradient-to-r from-green-500 to-green-600' 
+    orange: 'bg-linear-to-r from-orange-500 to-amber-600', 
+    red: 'bg-linear-to-r from-rose-500 to-red-600', 
+    green: 'bg-linear-to-r from-emerald-500 to-teal-600' 
   }
   
   const btnColors = { 
-    orange: 'bg-orange-500 hover:bg-orange-600 active:bg-orange-700', 
-    red: 'bg-red-500 hover:bg-red-600 active:bg-red-700', 
-    green: 'bg-green-500 hover:bg-green-600 active:bg-green-700' 
+    orange: 'bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 active:scale-95 shadow-md shadow-orange-500/10', 
+    red: 'bg-linear-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 active:scale-95 shadow-md shadow-rose-500/10', 
+    green: 'bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 active:scale-95 shadow-md shadow-emerald-500/10' 
   }
   
   const priceColors = { 
-    orange: 'text-orange-500', 
-    red: 'text-red-500', 
-    green: 'text-green-500' 
+    orange: 'text-amber-500', 
+    red: 'text-rose-500', 
+    green: 'text-emerald-500' 
   }
 
   const promoNames = ['🔥 HOT PROMOTION', '⚡ LIMITED OFFER', '🚚 FREE DELIVERY']
 
   return (
     <section className="relative w-full max-w-7xl mx-auto mt-6 sm:mt-10 px-2 sm:px-4">
-      <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden">
+      <div className="relative bg-linear-to-br from-slate-950 to-slate-900 rounded-3xl shadow-2xl overflow-hidden">
         {/* Slider Container */}
         <div
           className="flex transition-transform duration-700 ease-in-out"
@@ -136,54 +133,65 @@ export default function PromotionSlider({ products: propProducts }) {
             return (
               <div key={p.id} className="min-w-full relative">
                 {/* Background Image with better scaling */}
-                <div className="relative h-[500px] sm:h-[550px] md:h-[600px] lg:h-[650px]">
+                <div className="relative h-[480px] sm:h-[520px] md:h-[580px] lg:h-[620px]">
                   <img
                     src={p.image || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover opacity-85 select-none"
                     alt={p.name}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+                  <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/65 to-transparent" />
                 </div>
 
                 {/* Content Overlay */}
-                <div className="absolute inset-0 flex flex-col lg:flex-row items-center justify-between px-4 sm:px-8 md:px-12 lg:px-16 py-6 sm:py-8">
+                <div className="absolute inset-0 flex flex-col lg:flex-row items-center justify-between px-6 sm:px-12 md:px-16 lg:px-20 py-8 sm:py-10">
                   {/* Left Side - Text Content */}
-                  <div className="text-white text-center lg:text-left max-w-2xl lg:max-w-xl mb-6 lg:mb-0">
-                    <span className={`${badgeColors[slideColor]} inline-block px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-lg mb-4 sm:mb-6`}>
-                      {promoNames[i % promoNames.length]}
+                  <div className="text-white text-center lg:text-left max-w-2xl lg:max-w-xl mb-6 lg:mb-0 flex flex-col items-center lg:items-start">
+                    <span className={`${badgeColors[slideColor]} inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold shadow-lg mb-4 sm:mb-6 select-none tracking-wider uppercase backdrop-blur-xs`}>
+                      <span>{promoNames[i % promoNames.length]}</span>
+                      {p.promotion && (
+                        <span className="w-1 h-3 bg-white/40 rounded-full"></span>
+                      )}
+                      {p.promotion && (
+                        <span>
+                          {p.promotion.type === 'percentage' && `${parseFloat(p.promotion.value)}% OFF`}
+                          {p.promotion.type === 'fixed_amount' && `$${p.promotion.value} OFF`}
+                          {p.promotion.type === 'buy_x_get_y' && `Buy ${p.promotion.buy_qty} Get ${p.promotion.free_qty}`}
+                          {p.promotion.type === 'combo' && 'COMBO'}
+                        </span>
+                      )}
                     </span>
 
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mt-3 sm:mt-5 leading-tight">
-                      Special Offers
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight text-white drop-shadow-md line-clamp-2">
+                      {p.name}
                     </h1>
 
-                    <p className="mt-3 sm:mt-5 text-sm sm:text-base md:text-lg text-gray-200 max-w-md mx-auto lg:mx-0">
-                      Don't miss out on these amazing deals!
+                    <p className="mt-3 sm:mt-5 text-sm sm:text-base md:text-lg text-slate-200/90 max-w-md line-clamp-2 leading-relaxed">
+                      {p.description || "Don't miss out on this amazing promo deal!"}
                     </p>
 
                     <a
                       href="/promotion"
-                      className={`mt-6 sm:mt-8 inline-flex items-center gap-2 ${btnColors[slideColor]} transition-all transform hover:scale-105 active:scale-95 px-6 sm:px-8 py-3 sm:py-4 rounded-full font-semibold text-sm sm:text-base md:text-lg shadow-lg`}
+                      className={`mt-6 sm:mt-8 inline-flex items-center gap-2 ${btnColors[slideColor]} transition-all duration-300 hover:scale-105 active:scale-95 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-sm sm:text-base shadow-lg`}
                     >
-                      Order Now
+                      <span>Explore Offers</span>
                       <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                       </svg>
                     </a>
                   </div>
 
-                  {/* Right Side - Product Card */}
+                  {/* Right Side - Product Card Overlay */}
                   {/* Mobile version (simplified) */}
-                  <div className="block lg:hidden w-full max-w-[260px] bg-white/95 backdrop-blur-sm rounded-xl shadow-2xl p-3">
-                    <div className="relative">
+                  <div className="block lg:hidden w-full max-w-[260px] bg-white/95 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl p-3">
+                    <div className="relative overflow-hidden rounded-xl bg-slate-50 aspect-4/3 mb-2.5">
                       {/* Promotion Badge */}
                       {p.promotion && (
-                        <div className="absolute -top-2 -left-2 z-10">
-                          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-md transform -rotate-6 whitespace-nowrap">
+                        <div className="absolute top-2 left-2 z-10">
+                          <div className="bg-linear-to-r from-orange-500 to-rose-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-md whitespace-nowrap">
                             {p.promotion.type === 'percentage' 
                               ? `${parseFloat(p.promotion.value)}% OFF`
                               : p.promotion.type === 'buy_x_get_y'
-                                ? `${p.promotion.buy_qty}+${p.promotion.free_qty}`
+                                ? `Buy ${p.promotion.buy_qty} Get ${p.promotion.free_qty}`
                                 : 'PROMO'}
                           </div>
                         </div>
@@ -191,53 +199,57 @@ export default function PromotionSlider({ products: propProducts }) {
                       
                       {/* Product Image */}
                       <img
-                        src={p.image}
-                        className="w-full h-32 object-cover rounded-lg"
+                        src={`${p.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${p.image}`}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                         alt={p.name}
                       />
                     </div>
 
-                    <div className="mt-2">
-                      <h3 className="text-sm font-bold text-gray-800 line-clamp-1">
+                    <div>
+                      <h3 className="text-xs sm:text-sm font-bold text-slate-800 line-clamp-1">
                         {p.name}
                       </h3>
 
-                      <div className="flex items-center justify-between mt-2">
-                        <span className={`text-lg font-bold ${priceColors[slideColor]}`}>
+                      <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-100/60">
+                        <span className={`text-sm sm:text-base font-extrabold ${priceColors[slideColor]}`}>
                           ${slidePrice.toFixed(2)}
                         </span>
 
                         <button
-                          onClick={() => {
-                            const item = {
-                              ...p,
-                              size: p.sizes?.[0]?.name || '',
-                              sugar: p.sugar_levels?.[0]?.name || '',
-                              ice: p.ice_levels?.[0]?.name || '',
-                              addOn: '',
-                              unitPrice: Number(slidePrice),
-                              qty: 1,
-                            }
-                            addItem(p, item)
-                          }}
-                          className={`${btnColors[slideColor]} text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-md flex items-center gap-1`}
+                          onClick={() => handleAdd(p, slidePrice)}
+                          className={`px-3 py-1.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-300 active:scale-95 flex items-center gap-1 ${
+                            addedSlideId === p.id
+                              ? 'bg-emerald-500 text-white'
+                              : `${btnColors[slideColor]} text-white`
+                          }`}
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 18v3" />
-                          </svg>
-                          Add
+                          {addedSlideId === p.id ? (
+                            <>
+                              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                              <span>Added</span>
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              </svg>
+                              <span>Add</span>
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>
                   </div>
 
                   {/* Desktop/Tablet version (full details) */}
-                  <div className="hidden lg:block w-full sm:w-auto bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-2xl p-4 sm:p-5 md:p-6 max-w-[280px] sm:max-w-[320px] md:max-w-[350px] transition-all hover:shadow-3xl">
-                    <div className="relative">
+                  <div className="hidden lg:block bg-white/10 border border-white/20 backdrop-blur-md rounded-3xl p-5 sm:p-6 w-full sm:w-auto max-w-[280px] sm:max-w-[320px] transition-all hover:bg-white/15 duration-300 shadow-2xl">
+                    <div className="relative overflow-hidden rounded-2xl bg-slate-50 aspect-4/3 mb-4 shadow-inner">
                       {/* Promotion Badge */}
                       {p.promotion && (
-                        <div className="absolute -top-2 -left-2 z-10">
-                          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-lg transform -rotate-6">
+                        <div className="absolute top-3 left-3 z-10">
+                          <div className="bg-linear-to-r from-orange-500 to-rose-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
                             {p.promotion.type === 'buy_x_get_y'
                               ? `Buy ${p.promotion.buy_qty} Get ${p.promotion.free_qty} Free`
                               : p.promotion.type === 'percentage'
@@ -252,55 +264,57 @@ export default function PromotionSlider({ products: propProducts }) {
                       )}
                       
                       {/* Product Image */}
-                      <div className="relative overflow-hidden rounded-lg sm:rounded-xl">
-                        <img
-                          src={p.image}
-                          className="w-full h-40 sm:h-48 md:h-52 object-cover rounded-lg sm:rounded-xl transition-transform duration-300 hover:scale-105"
-                          alt={p.name}
-                        />
-                      </div>
+                      <img
+                        src={`${p.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${p.image}`}
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        alt={p.name}
+                      />
                     </div>
 
-                    <div className="mt-4 sm:mt-5">
-                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 line-clamp-1">
+                    <div>
+                      <h3 className="text-base sm:text-lg font-bold text-white line-clamp-1">
                         {p.name}
                       </h3>
 
-                      <p className="text-xs sm:text-sm text-gray-500 mt-2 line-clamp-2">
-                        {p.description}
+                      <p className="text-xs text-slate-300 mt-1 line-clamp-2 leading-relaxed min-h-8">
+                        {p.description || 'Delicately crafted beverage made from selected premium ingredients.'}
                       </p>
 
-                      <div className="flex items-center justify-between mt-4 sm:mt-5">
-                        <div>
-                          <span className={`text-2xl sm:text-3xl font-bold ${priceColors[slideColor]}`}>
-                            ${slidePrice.toFixed(2)}
-                          </span>
+                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/15">
+                        <div className="flex flex-col">
                           {p.original_price && (
-                            <span className="ml-2 text-xs sm:text-sm text-gray-400 line-through">
+                            <span className="text-xs text-white/50 line-through mb-0.5">
                               ${p.original_price}
                             </span>
                           )}
+                          <span className={`text-xl sm:text-2xl font-extrabold ${priceColors[slideColor]}`}>
+                            ${slidePrice.toFixed(2)}
+                          </span>
                         </div>
 
                         <button
-                          onClick={() => {
-                            const item = {
-                              ...p,
-                              size: p.sizes?.[0]?.name || '',
-                              sugar: p.sugar_levels?.[0]?.name || '',
-                              ice: p.ice_levels?.[0]?.name || '',
-                              addOn: '',
-                              unitPrice: Number(slidePrice),
-                              qty: 1,
-                            }
-                            addItem(p, item)
-                          }}
-                          className={`${btnColors[slideColor]} text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 text-xs sm:text-sm font-semibold shadow-md`}
+                          onClick={() => handleAdd(p, slidePrice)}
+                          className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl transition-all duration-300 active:scale-95 flex items-center gap-2 text-xs sm:text-sm font-bold shadow-md hover:shadow-lg ${
+                            addedSlideId === p.id
+                              ? 'bg-emerald-500 text-white shadow-emerald-100 scale-105'
+                              : `${btnColors[slideColor]} text-white`
+                          }`}
                         >
-                          <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 18v3" />
-                          </svg>
-                          Add Cart
+                          {addedSlideId === p.id ? (
+                            <>
+                              <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                              <span>Added</span>
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 18v3" />
+                              </svg>
+                              <span>Add Cart</span>
+                            </>
+                          )}
                         </button>
                       </div>
                     </div>
@@ -314,31 +328,35 @@ export default function PromotionSlider({ products: propProducts }) {
         {/* Navigation Arrows - Touch friendly */}
         <button
           onClick={prev}
-          className="absolute top-1/2 left-2 sm:left-4 md:left-5 -translate-y-1/2 bg-white/90 hover:bg-white backdrop-blur-sm w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full shadow-lg text-xl sm:text-2xl flex items-center justify-center text-gray-800 transition-all hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-500 z-10"
+          className="absolute top-1/2 left-4 sm:left-6 -translate-y-1/2 bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 backdrop-blur-md w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-white transition-all duration-300 z-10 hover:scale-105"
           aria-label="Previous slide"
         >
-          ❮
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+          </svg>
         </button>
 
         <button
           onClick={next}
-          className="absolute top-1/2 right-2 sm:right-4 md:right-5 -translate-y-1/2 bg-white/90 hover:bg-white backdrop-blur-sm w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full shadow-lg text-xl sm:text-2xl flex items-center justify-center text-gray-800 transition-all hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-orange-500 z-10"
+          className="absolute top-1/2 right-4 sm:right-6 -translate-y-1/2 bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 backdrop-blur-md w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-white transition-all duration-300 z-10 hover:scale-105"
           aria-label="Next slide"
         >
-          ❯
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+          </svg>
         </button>
 
         {/* Dots Navigation */}
-        <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-10">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
           {products.map((_, i) => (
             <button
               key={i}
               onClick={() => goTo(i)}
-              className={`transition-all duration-300 ${
+              className={`transition-all duration-300 rounded-full ${
                 i === current 
-                  ? 'w-6 sm:w-8 h-2 sm:h-2.5 bg-white shadow-lg' 
-                  : 'w-2 h-2 bg-white/50 hover:bg-white/70'
-              } rounded-full`}
+                  ? 'w-8 h-2 bg-white shadow-lg' 
+                  : 'w-2 h-2 bg-white/40 hover:bg-white/60'
+              }`}
               aria-label={`Go to slide ${i + 1}`}
             />
           ))}

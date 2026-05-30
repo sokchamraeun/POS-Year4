@@ -50,21 +50,21 @@ export default function Home() {
       <div className="flex-1">
         <PromotionSlider products={promoProducts} />
 
-        <div className="sticky top-0 z-40 bg-white border-b border-gray-200 overflow-x-auto">
-          <div className="flex gap-2 px-4 py-3 max-w-7xl mx-auto">
+        <div className="sticky top-16 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 overflow-x-auto shadow-sm">
+          <div className="flex gap-2.5 px-4 py-3.5 max-w-7xl mx-auto">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`whitespace-nowrap px-4 py-2 sm:rounded text-sm font-medium transition-all ${
+                className={`whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
                   selectedCategory === cat
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    ? 'bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-100 scale-[1.02]'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-100 active:scale-95'
                 }`}
               >
                 {cat}
                 {cat !== 'All' && cat !== 'Promotion' && categoriesWithPromo.has(cat) && (
-                  <span className="ml-1 text-[9px] bg-red-500 text-white px-1 py-0.5 rounded">Promo</span>
+                  <span className="ml-1.5 text-[8px] bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Promo</span>
                 )}
               </button>
             ))}
@@ -72,13 +72,16 @@ export default function Home() {
         </div>
 
         <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Our Menu</h2>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-2">
+            <span>Our Menu</span>
+            <span className="w-1.5 h-6 bg-linear-to-b from-blue-600 to-cyan-600 rounded-full"></span>
+          </h2>
           {loading ? (
-            <p className="text-center text-gray-500">Loading menu...</p>
+            <p className="text-center text-slate-500 py-10 font-medium">Loading menu...</p>
           ) : filtered.length === 0 ? (
-            <p className="text-center text-gray-400">No products in this category.</p>
+            <p className="text-center text-slate-400 py-10">No products in this category.</p>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {filtered.map((product) => (
                 <ProductCard key={product.id} product={product} onAddToCart={(item) => addItem(product, item)} />
               ))}
