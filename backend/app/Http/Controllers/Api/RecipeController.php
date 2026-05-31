@@ -21,7 +21,8 @@ class RecipeController extends Controller
             $query->where('size_id', $request->query('size_id'));
         }
 
-        $recipes = $query->orderBy('id')->paginate(15);
+        $perPage = min((int) $request->get('per_page', 15), 500);
+        $recipes = $query->orderBy('id')->paginate($perPage);
 
         return response()->json($recipes);
     }

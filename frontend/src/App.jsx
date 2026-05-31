@@ -35,6 +35,7 @@ import SugarLevel from './pages/staff/SugarLevel/SugarLevel.jsx'
 import Promotions from './pages/staff/Promotion/Promotion.jsx'
 import HeroSliderPage from './pages/staff/HeroSlider/Heroslider.jsx'
 import UserTest from './pages/staff/UserTest.jsx'
+import GlobalOrderNotification from './components/staff/GlobalOrderNotification.jsx'
 import Login from './pages/auth/Login.jsx'
 import Register from './pages/auth/Register.jsx'
 
@@ -42,6 +43,7 @@ import Register from './pages/auth/Register.jsx'
 export default function App() {
   return (
     <BrowserRouter>
+      <GlobalOrderNotification />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<CustomerProducts />} />

@@ -8,6 +8,7 @@ use App\Services\CloudinaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+
 class ProductController extends Controller
 {
     public function index(Request $request): JsonResponse

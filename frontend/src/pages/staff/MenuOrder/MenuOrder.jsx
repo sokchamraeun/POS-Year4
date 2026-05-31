@@ -14,6 +14,7 @@ export default function MenuOrder() {
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState(['All'])
   const [loading, setLoading] = useState(true)
+  const [recipes, setRecipes] = useState([])
   const [cart, setCart] = useState([])
   const [options, setOptions] = useState({})
   const [customerName, setCustomerName] = useState('')
@@ -37,17 +38,19 @@ export default function MenuOrder() {
   useEffect(() => {
     async function fetchAll() {
       try {
-        const [prodRes, catRes, tblRes, custRes] = await Promise.all([
+        const [prodRes, catRes, tblRes, custRes, recRes] = await Promise.all([
           fetch(`${API_URL}/products?per_page=200`, { headers: headers() }).then((r) => r.json()),
           fetch(`${API_URL}/categories?per_page=100`, { headers: headers() }).then((r) => r.json()),
           fetch(`${API_URL}/tables/available`, { headers: headers() }).then((r) => r.json()),
           fetch(`${API_URL}/customers?per_page=200`, { headers: headers() }).then((r) => r.json()),
+          fetch(`${API_URL}/recipes?per_page=500`, { headers: headers() }).then((r) => r.json()),
         ])
         setProducts(prodRes.data ?? [])
         const cats = [...new Set((catRes.data ?? catRes).map((c) => c.name))]
         setCategories(['All', ...cats])
         setTables(tblRes.data ?? tblRes ?? [])
         setCustomers(custRes.data ?? custRes ?? [])
+        setRecipes(recRes.data ?? recRes ?? [])
         setLoading(false)
       } catch {
         setLoading(false)
@@ -96,7 +99,15 @@ export default function MenuOrder() {
   function addToCart(product) {
     const opt = { ...getDefaultOpt(product), ...getOpt(product.id) }
     const { size, sugar, ice, addOn } = opt
-    const key = `${product.id}-${size}-${sugar}-${ice}-${addOn}`
+
+    const sizeObj = product.sizes?.find((s) => s.name === size)
+    const sizeId = sizeObj?.id
+    if (!sizeId || !recipes.some((r) => r.product_id === product.id && r.size_id === sizeId)) {
+      alert('No recipe defined for this product size. Cannot add to order.')
+      return
+    }
+
+    const key = `${product.id}-${sizeId}-${sugar}-${ice}-${addOn}`
     const unitPrice = getBasePrice(product, size) + addOnPrice(product, addOn, size)
     setCart((prev) => {
       const existing = prev.find((c) => c.key === key)

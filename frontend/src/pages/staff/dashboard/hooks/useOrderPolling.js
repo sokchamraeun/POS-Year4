@@ -9,8 +9,7 @@ export function useOrderPolling(
   setStats,
   setChartData,
   setProducts,
-  setRecentOrders,
-  playNotificationSound
+  setRecentOrders
 ) {
   const [newOrderAlert, setNewOrderAlert] = useState(false)
   const lastOrderIdRef = useRef(0)
@@ -53,8 +52,7 @@ export function useOrderPolling(
     recalc(updated)
     setNewOrderAlert(true)
     setTimeout(() => setNewOrderAlert(false), 5000)
-    playNotificationSound()
-  }, [recalc, playNotificationSound]))
+  }, [recalc]))
 
   useSocket('order:updated', useCallback((order) => {
     const arr = ordersRef.current
@@ -66,9 +64,8 @@ export function useOrderPolling(
       recalc([order, ...arr])
       setNewOrderAlert(true)
       setTimeout(() => setNewOrderAlert(false), 5000)
-      playNotificationSound()
     }
-  }, [recalc, playNotificationSound, setNewOrderAlert]))
+  }, [recalc, setNewOrderAlert]))
 
   useEffect(() => {
     let alertTimeout
@@ -81,12 +78,10 @@ export function useOrderPolling(
         if (newMax > prevMax) {
           lastOrderIdRef.current = newMax
           recalc(orders)
-          const newOrders = orders.filter(o => o.id > prevMax)
-          if (newOrders.some(o => isVisibleOrder(o))) {
+          if (orders.some(o => o.id > prevMax && isVisibleOrder(o))) {
             setNewOrderAlert(true)
             clearTimeout(alertTimeout)
             alertTimeout = setTimeout(() => setNewOrderAlert(false), 5000)
-            playNotificationSound()
           }
         }
       } catch {
@@ -97,7 +92,7 @@ export function useOrderPolling(
       clearInterval(interval)
       clearTimeout(alertTimeout)
     }
-  }, [recalc, playNotificationSound])
+  }, [recalc])
 
   return { newOrderAlert, setNewOrderAlert }
 }

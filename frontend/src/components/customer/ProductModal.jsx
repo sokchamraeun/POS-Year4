@@ -145,9 +145,6 @@ export default function ProductModal({
             {product.sizes?.length > 0 && (
               <div>
                 <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                  </svg>
                   <span>Select Size</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -180,11 +177,6 @@ export default function ProductModal({
             {product.ice_levels?.length > 0 && (
               <div>
                 <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v18" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.5 7.5L12 12l7.5-4.5" />
-                  </svg>
                   <span>Ice Level</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -213,10 +205,6 @@ export default function ProductModal({
             {product.sugar_levels?.length > 0 && (
               <div>
                 <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth={2} />
-                  </svg>
                   <span>Sugar Level</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -246,10 +234,6 @@ export default function ProductModal({
             {product.addons?.length > 0 && (
               <div>
                 <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth={2} />
-                  </svg>
                   <span>Add-ons</span>
                 </p>
                 <select 
@@ -260,7 +244,7 @@ export default function ProductModal({
                   <option value="">No Add-on</option>
                   {product.addons.map((a) => (
                     <option key={a.id} value={a.name}>
-                      ➕ {a.name} (+${Number(a.price).toFixed(2)})
+                      {a.name} (+${Number(a.price).toFixed(2)})
                     </option>
                   ))}
                 </select>
