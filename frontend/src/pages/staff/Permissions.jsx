@@ -3,7 +3,7 @@ import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
 const API = import.meta.env.VITE_API_URL || '/api'
-const moduleOptions = ['', 'Dashboard', 'Products', 'Orders', 'Inventory', 'Recipe', 'Reports', 'Permissions']
+const moduleOptions = ['', 'Dashboard', 'Products', 'Categories', 'Sizes', 'Sugar Levels', 'Ice Levels', 'Addons', 'Tables', 'Orders', 'Inventory', 'Ingredients', 'Recipe', 'Reports', 'Promotions', 'Hero Sliders', 'Permissions', 'Roles', 'Staff', 'Customers']
 
 export default function Permissions() {
   const [permissions, setPermissions] = useState([])

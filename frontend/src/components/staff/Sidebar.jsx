@@ -11,17 +11,18 @@ function safeParseUser() {
 }
 
 const userLinks = [
-  { to: '/staff/roles', label: 'Roles' },
-  { to: '/staff/users', label: 'Users' },
-  { to: '/staff/customers', label: 'Customers' },
-  { to: '/staff/permissions', label: 'Permissions' },
-  { to: '/staff/user-test', label: 'User Test' },
-]
+  { to: '/staff/roles', label: 'Roles', perm: 'manage-roles' },
+  { to: '/staff/users', label: 'Users', perm: 'manage-staff' },
+  { to: '/staff/customers', label: 'Customers', perm: 'manage-customers' },
+  { to: '/staff/permissions', label: 'Permissions', perm: 'manage-permissions' },
+  { to: '/staff/user-test', label: 'User Test', perm: 'manage-staff' },
+].filter(l => hasPerm(l.perm))
 
 const itemProductLinks = [
   {
     to: '/staff/sizes',
     label: 'Sizes',
+    perm: 'view-size',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -31,6 +32,7 @@ const itemProductLinks = [
   {
     to: '/staff/categories',
     label: 'Categories',
+    perm: 'view-category',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -40,6 +42,7 @@ const itemProductLinks = [
   {
     to: '/staff/ice-levels',
     label: 'Ice Levels',
+    perm: 'view-ice-level',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M8 16h.01M8 8h.01M12 20h.01M12 4h.01M16 16h.01M16 8h.01M20 12h.01M4 12h.01" />
@@ -49,6 +52,7 @@ const itemProductLinks = [
   {
     to: '/staff/sugar-levels',
     label: 'Sugar Levels',
+    perm: 'view-sugar-level',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
@@ -58,6 +62,7 @@ const itemProductLinks = [
   {
     to: '/staff/addons',
     label: 'Addons',
+    perm: 'view-addon',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -67,6 +72,7 @@ const itemProductLinks = [
   {
     to: '/staff/addon-ingredients',
     label: 'Addon Ingredients',
+    perm: 'view-ingredient',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -76,6 +82,7 @@ const itemProductLinks = [
   {
     to: '/staff/promotions',
     label: 'Promotions',
+    perm: 'view-promotion',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -88,6 +95,7 @@ const settingsLinks = [
   {
     to: '/staff/hero-sliders',
     label: 'Hero Sliders',
+    perm: 'view-hero-slider',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -109,6 +117,7 @@ const links = [
   {
     to: '/staff/menu-order',
     label: 'Menu Order',
+    perm: 'view-orders',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
@@ -118,6 +127,7 @@ const links = [
   {
     to: '/staff/orders',
     label: 'Orders',
+    perm: 'view-orders',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -127,6 +137,7 @@ const links = [
   {
     to: '/staff/tables',
     label: 'Tables',
+    perm: 'view-table',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -136,6 +147,7 @@ const links = [
   {
     to: '/staff/products',
     label: 'Products',
+    perm: 'view-product',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -145,6 +157,7 @@ const links = [
   {
     to: '/staff/ingredients',
     label: 'Ingredients',
+    perm: 'view-ingredient',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -154,6 +167,7 @@ const links = [
   {
     to: '/staff/inventory',
     label: 'Inventory',
+    perm: 'manage-inventory',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -163,6 +177,7 @@ const links = [
   {
     to: '/staff/recipe',
     label: 'Recipe',
+    perm: 'view-recipe',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -172,6 +187,7 @@ const links = [
   {
     to: '/staff/reports',
     label: 'Reports',
+    perm: 'view-reports',
     icon: (
       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -179,6 +195,15 @@ const links = [
     ),
   },
 ]
+
+const filteredLinks = links.filter(l => !l.perm || hasPerm(l.perm))
+const filteredItemProductLinks = itemProductLinks.filter(l => !l.perm || hasPerm(l.perm))
+const filteredSettingsLinks = settingsLinks.filter(l => !l.perm || hasPerm(l.perm))
+
+function hasPerm(slug) {
+  const u = safeParseUser()
+  return u?.role?.permissions?.some(p => p.slug === slug) ?? false
+}
 
 export default function Sidebar() {
   const [user, setUser] = useState(safeParseUser)
@@ -233,7 +258,7 @@ export default function Sidebar() {
           </svg>
         </button>
         <nav className="flex-1 py-6 flex flex-col items-center gap-3 overflow-y-auto custom-scrollbar">
-          {links.map((link) => (
+          {filteredLinks.map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
@@ -285,7 +310,7 @@ export default function Sidebar() {
       </div>
       
       <nav className="flex-1 py-6 overflow-y-auto custom-scrollbar px-4 flex flex-col gap-1">
-        {links.map((link) => (
+        {filteredLinks.map((link) => (
           <NavLink
             key={link.to}
             to={link.to}
@@ -360,7 +385,7 @@ export default function Sidebar() {
           </button>
           <div className={`overflow-hidden transition-all duration-300 ease-in-out ${ipOpen ? 'max-h-[500px] opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
             <div className="bg-zinc-900/40 rounded-xl border border-zinc-800/50 py-2 mx-2">
-              {itemProductLinks.map((l) => (
+              {filteredItemProductLinks.map((l) => (
                 <NavLink
                   key={l.to}
                   to={l.to}
@@ -400,7 +425,7 @@ export default function Sidebar() {
           </button>
           <div className={`overflow-hidden transition-all duration-300 ease-in-out ${settingsOpen ? 'max-h-[500px] opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
             <div className="bg-zinc-900/40 rounded-xl border border-zinc-800/50 py-2 mx-2">
-              {settingsLinks.map((l) => (
+              {filteredSettingsLinks.map((l) => (
                 <NavLink
                   key={l.to}
                   to={l.to}

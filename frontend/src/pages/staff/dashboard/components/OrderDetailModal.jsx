@@ -78,7 +78,8 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
                   html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">${getPromotionLabel(prom)} &mdash; ${name} x${freeQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">-${d.toFixed(2)}</td></tr>`
                 })
                 if (html) {
-                  html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">Total Discount</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">-${Number(order.discount).toFixed(2)}</td></tr>`
+                  const pNames = [...new Set(items.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', ')
+                  html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">Total Discount${pNames ? ' ('+pNames+')' : ''}</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">-${Number(order.discount).toFixed(2)}</td></tr>`
                 } else if (Number(order.discount ?? 0) > 0) {
                   html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">Promotion</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">-${Number(order.discount).toFixed(2)}</td></tr>`
                 }
@@ -216,7 +217,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
               {Number(order.discount ?? 0) > 0 && (
                 <tr>
                   <td colSpan={7} className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">
-                    {(order.items ?? []).some(i => i.promotion) ? 'Total Discount' : 'Promotion'}
+                    {(order.items ?? []).some(i => i.promotion) ? (() => { const pNames = [...new Set((order.items ?? []).filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', '); return `Total Discount${pNames ? ' ('+pNames+')' : ''}` })() : 'Promotion'}
                   </td>
                   <td className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">-${Number(order.discount).toFixed(2)}</td>
                 </tr>

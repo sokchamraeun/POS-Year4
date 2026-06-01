@@ -28,7 +28,7 @@ class AuthController extends Controller
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            'user' => $user->load('role'),
+            'user' => $user->load('role.permissions'),
             'token' => $token,
         ], 201);
     }
@@ -49,8 +49,37 @@ class AuthController extends Controller
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            'user' => $user->load('role'),
+            'user' => $user->load('role.permissions'),
             'token' => $token,
+            'must_change_password' => $user->must_change_password,
+        ]);
+    }
+
+    public function changePassword(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|different:current_password',
+        ]);
+
+        $user = $request->user();
+
+        if (! Hash::check($data['current_password'], $user->password)) {
+            return response()->json(['message' => 'Current password is incorrect.'], 422);
+        }
+
+        $user->update([
+            'password' => bcrypt($data['new_password']),
+            'must_change_password' => false,
+        ]);
+
+        $user->tokens()->delete();
+        $newToken = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Password changed successfully. Please log in again.',
+            'token' => $newToken,
+            'user' => $user->load('role.permissions'),
         ]);
     }
 
@@ -65,6 +94,6 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        return response()->json($request->user()->load('role'));
+        return response()->json($request->user()->load('role.permissions'));
     }
 }

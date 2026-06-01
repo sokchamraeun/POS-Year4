@@ -34,101 +34,174 @@ Route::middleware('auth')->group(function () {
 
     // Route::get('/', fn () => redirect()->route('auth.login.post'));
 
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-    Route::post('/users', [UserController::class, 'store'])->name('users.store');
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
-    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    // Staff management
+    Route::middleware('permission:manage-staff')->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
 
-    Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
-    Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
-    Route::post('/permissions', [PermissionController::class, 'store'])->name('permissions.store');
-    Route::get('/permissions/{permission}', [PermissionController::class, 'show'])->name('permissions.show');
-    Route::get('/permissions/{permission}/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
-    Route::put('/permissions/{permission}', [PermissionController::class, 'update'])->name('permissions.update');
-    Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+    // Permissions management
+    Route::middleware('permission:manage-permissions')->group(function () {
+        Route::get('/permissions', [PermissionController::class, 'index'])->name('permissions.index');
+        Route::get('/permissions/create', [PermissionController::class, 'create'])->name('permissions.create');
+        Route::post('/permissions', [PermissionController::class, 'store'])->name('permissions.store');
+        Route::get('/permissions/{permission}', [PermissionController::class, 'show'])->name('permissions.show');
+        Route::get('/permissions/{permission}/edit', [PermissionController::class, 'edit'])->name('permissions.edit');
+        Route::put('/permissions/{permission}', [PermissionController::class, 'update'])->name('permissions.update');
+        Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy'])->name('permissions.destroy');
+    });
 
-    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
-    Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
-    Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
-    Route::get('/roles/{role}', [RoleController::class, 'show'])->name('roles.show');
-    Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
-    Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
-    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+    // Roles management
+    Route::middleware('permission:manage-roles')->group(function () {
+        Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+        Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+        Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+        Route::get('/roles/{role}', [RoleController::class, 'show'])->name('roles.show');
+        Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+        Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+        Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
+    });
 
+    // Products (viewable by all authenticated staff)
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
-    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
-    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
+    Route::middleware('permission:create-product')->group(function () {
+        Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    });
+    Route::middleware('permission:edit-product')->group(function () {
+        Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+        Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+    });
+    Route::middleware('permission:delete-product')->group(function () {
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    });
+
+    // Categories (viewable by all authenticated staff)
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
-    Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
     Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
-    Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
-    Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
-    Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
 
+    Route::middleware('permission:create-category')->group(function () {
+        Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    });
+    Route::middleware('permission:edit-category')->group(function () {
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    });
+    Route::middleware('permission:delete-category')->group(function () {
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    });
+
+    // Addons (viewable by all authenticated staff)
     Route::get('/addons', [AddonController::class, 'index'])->name('addons.index');
-    Route::get('/addons/create', [AddonController::class, 'create'])->name('addons.create');
-    Route::post('/addons', [AddonController::class, 'store'])->name('addons.store');
     Route::get('/addons/{addon}', [AddonController::class, 'show'])->name('addons.show');
-    Route::get('/addons/{addon}/edit', [AddonController::class, 'edit'])->name('addons.edit');
-    Route::put('/addons/{addon}', [AddonController::class, 'update'])->name('addons.update');
-    Route::delete('/addons/{addon}', [AddonController::class, 'destroy'])->name('addons.destroy');
 
-    Route::get('/addon-ingredients', [AddonIngredientController::class, 'index'])->name('addon-ingredients.index');
-    Route::get('/addon-ingredients/create', [AddonIngredientController::class, 'create'])->name('addon-ingredients.create');
-    Route::post('/addon-ingredients', [AddonIngredientController::class, 'store'])->name('addon-ingredients.store');
-    Route::get('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'show'])->name('addon-ingredients.show');
-    Route::get('/addon-ingredients/{addonIngredient}/edit', [AddonIngredientController::class, 'edit'])->name('addon-ingredients.edit');
-    Route::put('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'update'])->name('addon-ingredients.update');
-    Route::delete('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'destroy'])->name('addon-ingredients.destroy');
+    Route::middleware('permission:create-addon')->group(function () {
+        Route::get('/addons/create', [AddonController::class, 'create'])->name('addons.create');
+        Route::post('/addons', [AddonController::class, 'store'])->name('addons.store');
+    });
+    Route::middleware('permission:edit-addon')->group(function () {
+        Route::get('/addons/{addon}/edit', [AddonController::class, 'edit'])->name('addons.edit');
+        Route::put('/addons/{addon}', [AddonController::class, 'update'])->name('addons.update');
+    });
+    Route::middleware('permission:delete-addon')->group(function () {
+        Route::delete('/addons/{addon}', [AddonController::class, 'destroy'])->name('addons.destroy');
+    });
 
+    Route::middleware('permission:manage-ingredients,manage-staff')->group(function () {
+        Route::get('/addon-ingredients', [AddonIngredientController::class, 'index'])->name('addon-ingredients.index');
+        Route::get('/addon-ingredients/create', [AddonIngredientController::class, 'create'])->name('addon-ingredients.create');
+        Route::post('/addon-ingredients', [AddonIngredientController::class, 'store'])->name('addon-ingredients.store');
+        Route::get('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'show'])->name('addon-ingredients.show');
+        Route::get('/addon-ingredients/{addonIngredient}/edit', [AddonIngredientController::class, 'edit'])->name('addon-ingredients.edit');
+        Route::put('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'update'])->name('addon-ingredients.update');
+        Route::delete('/addon-ingredients/{addonIngredient}', [AddonIngredientController::class, 'destroy'])->name('addon-ingredients.destroy');
+    });
+
+    // Tables (viewable by all authenticated staff)
     Route::get('/tables', [TableController::class, 'index'])->name('tables.index');
-    Route::get('/tables/create', [TableController::class, 'create'])->name('tables.create');
-    Route::post('/tables', [TableController::class, 'store'])->name('tables.store');
     Route::get('/tables/{table}', [TableController::class, 'show'])->name('tables.show');
-    Route::get('/tables/{table}/edit', [TableController::class, 'edit'])->name('tables.edit');
-    Route::put('/tables/{table}', [TableController::class, 'update'])->name('tables.update');
-    Route::delete('/tables/{table}', [TableController::class, 'destroy'])->name('tables.destroy');
 
+    Route::middleware('permission:create-table')->group(function () {
+        Route::get('/tables/create', [TableController::class, 'create'])->name('tables.create');
+        Route::post('/tables', [TableController::class, 'store'])->name('tables.store');
+    });
+    Route::middleware('permission:edit-table')->group(function () {
+        Route::get('/tables/{table}/edit', [TableController::class, 'edit'])->name('tables.edit');
+        Route::put('/tables/{table}', [TableController::class, 'update'])->name('tables.update');
+    });
+    Route::middleware('permission:delete-table')->group(function () {
+        Route::delete('/tables/{table}', [TableController::class, 'destroy'])->name('tables.destroy');
+    });
+
+    // Hero Sliders (viewable by all authenticated staff)
     Route::get('/hero-sliders', [HeroSliderController::class, 'index'])->name('hero-sliders.index');
-    Route::get('/hero-sliders/create', [HeroSliderController::class, 'create'])->name('hero-sliders.create');
-    Route::post('/hero-sliders', [HeroSliderController::class, 'store'])->name('hero-sliders.store');
     Route::get('/hero-sliders/show/{id}', [HeroSliderController::class, 'show'])->name('hero-sliders.show');
-    Route::get('/hero-sliders/edit/{id}', [HeroSliderController::class, 'edit'])->name('hero-sliders.edit');
-    Route::put('/hero-sliders/update/{id}', [HeroSliderController::class, 'update'])->name('hero-sliders.update');
-    Route::delete('/hero-sliders/delete/{id}', [HeroSliderController::class, 'destroy'])->name('hero-sliders.destroy');
 
+    Route::middleware('permission:create-hero-slider')->group(function () {
+        Route::get('/hero-sliders/create', [HeroSliderController::class, 'create'])->name('hero-sliders.create');
+        Route::post('/hero-sliders', [HeroSliderController::class, 'store'])->name('hero-sliders.store');
+    });
+    Route::middleware('permission:edit-hero-slider')->group(function () {
+        Route::get('/hero-sliders/edit/{id}', [HeroSliderController::class, 'edit'])->name('hero-sliders.edit');
+        Route::put('/hero-sliders/update/{id}', [HeroSliderController::class, 'update'])->name('hero-sliders.update');
+    });
+    Route::middleware('permission:delete-hero-slider')->group(function () {
+        Route::delete('/hero-sliders/delete/{id}', [HeroSliderController::class, 'destroy'])->name('hero-sliders.destroy');
+    });
+
+    // Ingredients (viewable by all authenticated staff)
     Route::get('/ingredients', [IngredientController::class, 'index'])->name('ingredients.index');
-    Route::get('/ingredients/create', [IngredientController::class, 'create'])->name('ingredients.create');
-    Route::post('/ingredients', [IngredientController::class, 'store'])->name('ingredients.store');
     Route::get('/ingredients/{ingredient}', [IngredientController::class, 'show'])->name('ingredients.show');
-    Route::get('/ingredients/{ingredient}/edit', [IngredientController::class, 'edit'])->name('ingredients.edit');
-    Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update'])->name('ingredients.update');
-    Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy'])->name('ingredients.destroy');
 
+    Route::middleware('permission:create-ingredient')->group(function () {
+        Route::get('/ingredients/create', [IngredientController::class, 'create'])->name('ingredients.create');
+        Route::post('/ingredients', [IngredientController::class, 'store'])->name('ingredients.store');
+    });
+    Route::middleware('permission:edit-ingredient')->group(function () {
+        Route::get('/ingredients/{ingredient}/edit', [IngredientController::class, 'edit'])->name('ingredients.edit');
+        Route::put('/ingredients/{ingredient}', [IngredientController::class, 'update'])->name('ingredients.update');
+    });
+    Route::middleware('permission:delete-ingredient')->group(function () {
+        Route::delete('/ingredients/{ingredient}', [IngredientController::class, 'destroy'])->name('ingredients.destroy');
+    });
+
+    // Recipes (viewable by all authenticated staff)
     Route::get('/recipes', [RecipeController::class, 'index'])->name('recipes.index');
-    Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
-    Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
-    Route::get('/recipes/{product}/{size}/batch-edit', [RecipeController::class, 'batchEdit'])->name('recipes.batch-edit');
-    Route::put('/recipes/batch-update', [RecipeController::class, 'batchUpdate'])->name('recipes.batch-update');
     Route::get('/recipes/{recipe}', [RecipeController::class, 'show'])->name('recipes.show');
-    Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
-    Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
-    Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
 
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::middleware('permission:create-recipe')->group(function () {
+        Route::get('/recipes/create', [RecipeController::class, 'create'])->name('recipes.create');
+        Route::post('/recipes', [RecipeController::class, 'store'])->name('recipes.store');
+    });
+    Route::middleware('permission:edit-recipe')->group(function () {
+        Route::get('/recipes/{product}/{size}/batch-edit', [RecipeController::class, 'batchEdit'])->name('recipes.batch-edit');
+        Route::put('/recipes/batch-update', [RecipeController::class, 'batchUpdate'])->name('recipes.batch-update');
+        Route::get('/recipes/{recipe}/edit', [RecipeController::class, 'edit'])->name('recipes.edit');
+        Route::put('/recipes/{recipe}', [RecipeController::class, 'update'])->name('recipes.update');
+    });
+    Route::middleware('permission:delete-recipe')->group(function () {
+        Route::delete('/recipes/{recipe}', [RecipeController::class, 'destroy'])->name('recipes.destroy');
+    });
 
-    Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
-    Route::get('/inventory/create', [InventoryController::class, 'create'])->name('inventory.create');
-    Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
-    Route::get('/inventory/history', [InventoryController::class, 'history'])->name('inventory.history');
+    // Orders (view only in web)
+    Route::middleware('permission:view-orders')->group(function () {
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    });
+
+    // Inventory
+    Route::middleware('permission:manage-inventory,manage-staff')->group(function () {
+        Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+        Route::get('/inventory/create', [InventoryController::class, 'create'])->name('inventory.create');
+        Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
+        Route::get('/inventory/history', [InventoryController::class, 'history'])->name('inventory.history');
+    });
 });

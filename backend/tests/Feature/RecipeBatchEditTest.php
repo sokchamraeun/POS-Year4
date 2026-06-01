@@ -1,13 +1,19 @@
 <?php
 
 use App\Models\Ingredient;
+use App\Models\Permission;
 use App\Models\Product;
 use App\Models\Recipe;
+use App\Models\Role;
 use App\Models\Size;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->actingAs(User::factory()->create());
+    $editRecipe = Permission::firstOrCreate(['slug' => 'edit-recipe'], ['name' => 'Edit Recipe']);
+    $createRecipe = Permission::firstOrCreate(['slug' => 'create-recipe'], ['name' => 'Create Recipe']);
+    $role = Role::create(['name' => 'Admin', 'slug' => 'admin']);
+    $role->permissions()->sync([$editRecipe->id, $createRecipe->id]);
+    $this->actingAs(User::factory()->create(['role_id' => $role->id]));
     $this->product = Product::factory()->create();
     $this->size = Size::factory()->create();
     $this->ing1 = Ingredient::factory()->create(['name' => 'Coffee', 'unit' => 'g']);

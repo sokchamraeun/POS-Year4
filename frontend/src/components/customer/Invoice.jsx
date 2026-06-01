@@ -174,7 +174,7 @@ export default function Invoice({ order, customer }) {
             })}
             <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] px-10 py-1" style={{ borderTop: '1px dashed #ccc' }}>
               <span />
-              <span className="text-right col-span-3 text-green-600 font-semibold">Total Discount</span>
+              <span className="text-right col-span-3 text-green-600 font-semibold">Total Discount{(() => { const pNames = [...new Set(items.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', '); return pNames ? ' ('+pNames+')' : '' })()}</span>
               <span className="text-right text-green-600 font-semibold">-${Number(order.discount).toFixed(2)}</span>
             </div>
           </>

@@ -54,7 +54,11 @@ export default function Login() {
         return;
       }
 
-      navigate("/staff/dashboard");
+      if (data.must_change_password) {
+        navigate("/staff/change-password");
+      } else {
+        navigate("/staff/dashboard");
+      }
     } catch (err) {
       setError("Network error. Please try again.");
     } finally {

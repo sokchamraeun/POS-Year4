@@ -37,6 +37,7 @@ import HeroSliderPage from './pages/staff/HeroSlider/Heroslider.jsx'
 import UserTest from './pages/staff/UserTest.jsx'
 import GlobalOrderNotification from './components/staff/GlobalOrderNotification.jsx'
 import Login from './pages/auth/Login.jsx'
+import ChangePassword from './pages/auth/ChangePassword.jsx'
 import Register from './pages/auth/Register.jsx'
 
 
@@ -81,6 +82,7 @@ export default function App() {
         <Route path="/staff/user-test" element={<PrivateRoute><UserTest /></PrivateRoute>} />
         <Route path="/staff/login" element={<Login />} />
         <Route path="/staff/register" element={<Register />} />
+        <Route path="/staff/change-password" element={<ChangePassword />} />
       </Routes>
     </BrowserRouter>
   )

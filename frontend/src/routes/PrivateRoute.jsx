@@ -33,5 +33,9 @@ export default function PrivateRoute({ children }) {
     )
   }
 
+  if (user.must_change_password) {
+    return <Navigate to="/staff/change-password" replace />
+  }
+
   return children
 }
