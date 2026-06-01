@@ -15,13 +15,13 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         $sizes = collect(['Small', 'Medium', 'Large'])
-            ->map(fn ($name) => Size::create(['name' => $name]));
+            ->map(fn ($name) => Size::firstOrCreate(['name' => $name]));
 
         $sugarLevels = collect(['No Sugar', 'Less Sugar', 'Normal Sugar', 'Extra Sugar'])
-            ->map(fn ($name) => SugarLevel::create(['name' => $name]));
+            ->map(fn ($name) => SugarLevel::firstOrCreate(['name' => $name]));
 
         $iceLevels = collect(['No Ice', 'Less Ice', 'Normal Ice', 'Extra Ice'])
-            ->map(fn ($name) => IceLevel::create(['name' => $name]));
+            ->map(fn ($name) => IceLevel::firstOrCreate(['name' => $name]));
 
         $addons = collect([
             ['name' => 'Boba', 'price' => 0.50],
@@ -29,7 +29,7 @@ class ProductSeeder extends Seeder
             ['name' => 'Whipped Cream', 'price' => 0.75],
             ['name' => 'Coffee Jelly', 'price' => 1.00],
             ['name' => 'Tapioca', 'price' => 0.50],
-        ])->map(fn ($data) => Addon::create($data));
+        ])->map(fn ($data) => Addon::firstOrCreate(['name' => $data['name']], $data));
 
         $categoryData = [
             'Coffee' => [
@@ -59,21 +59,19 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($categoryData as $categoryName => $products) {
-            $category = Category::create(['name' => $categoryName]);
+            $category = Category::firstOrCreate(['name' => $categoryName]);
 
             foreach ($products as $productData) {
-                $product = Product::create([
-                    'category_id' => $category->id,
-                    'name' => $productData['name'],
-                    'description' => $productData['desc'],
-                    'status' => true,
-                ]);
+                $product = Product::firstOrCreate(
+                    ['category_id' => $category->id, 'name' => $productData['name']],
+                    ['description' => $productData['desc'], 'status' => true],
+                );
 
-                $product->sugarLevels()->attach(
+                $product->sugarLevels()->syncWithoutDetaching(
                     $sugarLevels->random(rand(1, 3))->pluck('id')->toArray()
                 );
 
-                $product->iceLevels()->attach(
+                $product->iceLevels()->syncWithoutDetaching(
                     $iceLevels->random(rand(1, 3))->pluck('id')->toArray()
                 );
 
@@ -82,9 +80,9 @@ class ProductSeeder extends Seeder
                     $size = $sizes->firstWhere('name', $sizeName);
                     $sizeIds[$size->id] = ['price' => $price];
                 }
-                $product->sizes()->attach($sizeIds);
+                $product->sizes()->syncWithoutDetaching($sizeIds);
 
-                $product->addons()->attach(
+                $product->addons()->syncWithoutDetaching(
                     $addons->random(rand(2, 4))->pluck('id')->toArray()
                 );
             }

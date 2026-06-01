@@ -40,7 +40,10 @@ class HeroSliderSeeder extends Seeder
         ];
 
         foreach ($sliders as $slider) {
-            HeroSlider::create($slider);
+            HeroSlider::firstOrCreate(
+                ['order' => $slider['order']],
+                $slider,
+            );
         }
     }
 }

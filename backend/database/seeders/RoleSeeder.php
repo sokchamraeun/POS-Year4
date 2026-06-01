@@ -10,15 +10,13 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        // Remove old roles with wrong IDs to reset to 1,2,3
+        // Clean orphaned roles (ids > 3 that no longer exist in seeder)
         Role::where('id', '>', 3)->each(fn ($r) => $r->permissions()->detach());
         Role::where('id', '>', 3)->delete();
-        Role::whereIn('slug', ['admin', 'manage', 'staff'])->each(fn ($r) => $r->permissions()->detach());
-        Role::whereIn('slug', ['admin', 'manage', 'staff'])->delete();
 
-        $admin = Role::create(['id' => 1, 'name' => 'Admin', 'slug' => 'admin']);
-        $manage = Role::create(['id' => 2, 'name' => 'Manage', 'slug' => 'manage']);
-        $staff = Role::create(['id' => 3, 'name' => 'Staff', 'slug' => 'staff']);
+        $admin = Role::firstOrCreate(['slug' => 'admin'], ['id' => 1, 'name' => 'Admin']);
+        $manage = Role::firstOrCreate(['slug' => 'manage'], ['id' => 2, 'name' => 'Manage']);
+        $staff = Role::firstOrCreate(['slug' => 'staff'], ['id' => 3, 'name' => 'Staff']);
 
         $allPermIds = Permission::pluck('id');
 
