@@ -73,6 +73,6 @@ class Product extends Model
             ->filter(fn ($p) => $p->active && $p->start_date <= $now && $p->end_date >= $now)
             ->first();
 
-        return $active?->only(['id', 'name', 'type', 'value', 'buy_qty', 'free_qty']);
+        return $active?->only(['id', 'name', 'type', 'value', 'buy_qty', 'free_qty', 'combo_discount_type', 'combo_apply_to', 'combo_groups']);
     }
 }

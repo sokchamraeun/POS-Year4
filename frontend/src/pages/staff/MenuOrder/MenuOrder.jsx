@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import CategoryFilter from './components/CategoryFilter.jsx'
 import ProductCard from './components/ProductCard.jsx'
 import CartSidebar from './components/CartSidebar.jsx'
-import { calcFinalPrice } from '../../../utils/promotion.js'
+import { calcFinalPrice, calcComboCart } from '../../../utils/promotion.js'
 
 const API_URL = import.meta.env.VITE_API_URL
-const headers = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
+const headers = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' })
 
 export default function MenuOrder() {
   const [category, setCategory] = useState('All')
@@ -26,6 +26,7 @@ export default function MenuOrder() {
   const [customerSearch, setCustomerSearch] = useState('')
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('not_yet')
+  const [productSearch, setProductSearch] = useState('')
   const [placing, setPlacing] = useState(false)
   const [success, setSuccess] = useState('')
 
@@ -61,6 +62,7 @@ export default function MenuOrder() {
 
   const filtered = (category === 'All' ? products : products.filter((p) => p.category?.name === category))
     .filter((p) => p.status)
+    .filter((p) => !productSearch || p.name.toLowerCase().includes(productSearch.toLowerCase()))
 
   function getDefaultOpt(product) {
     return {
@@ -156,16 +158,16 @@ export default function MenuOrder() {
         const sugar = product?.sugar_levels?.find((s) => s.name === c.sugar)
         const ice = product?.ice_levels?.find((i) => i.name === c.ice)
         const addon = product?.addons?.find((a) => a.name === c.addOn)
-        const price = calcFinalPrice(c.unitPrice, product?.promotion)
         return {
           product_id: c.id,
           size_id: size?.id ?? null,
           sugar_level_id: sugar?.id ?? null,
           ice_level_id: ice?.id ?? null,
           qty: c.qty,
-          unit_price: price,
-          subtotal: price * c.qty,
+          unit_price: c.unitPrice,
+          subtotal: c.unitPrice * c.qty,
           addons: addon ? [{ addon_id: addon.id, price: Number(addon.price ?? 0) }] : [],
+          promotion_snapshot: product?.promotion ?? null,
         }
       })
 
@@ -176,6 +178,7 @@ export default function MenuOrder() {
           customer_id: finalCustomerId || null,
           table_id: tableId || null,
           total,
+          discount: discountTotal,
           status: 'New',
           payment_method: paymentMethod === 'not_yet' ? null : paymentMethod,
           payment_status: paymentMethod === 'not_yet' ? 'Unpaid' : (paymentMethod === 'KHQR' ? 'Unpaid' : 'Paid'),
@@ -206,15 +209,19 @@ export default function MenuOrder() {
         status: 'New',
         payment: paymentMethod === 'not_yet' ? 'Unpaid' : (paymentMethod === 'KHQR' ? 'Unpaid' : 'Paid'),
         paymentMethod: paymentMethod === 'not_yet' ? null : paymentMethod,
-        detail: cart.map((c) => ({
-          name: c.name,
-          qty: c.qty,
-          price: c.unitPrice,
-          size: c.size,
-          sugar: c.sugar,
-          ice: c.ice,
-          addOn: c.addOn,
-        })),
+        detail: cart.map((c) => {
+          const cur = products.find((p) => p.id === c.id)
+          return {
+            name: c.name,
+            qty: c.qty,
+            price: c.unitPrice,
+            size: c.size,
+            sugar: c.sugar,
+            ice: c.ice,
+            addOn: c.addOn,
+            promotion: cur?.promotion ?? null,
+          }
+        }),
       }
       const existing = JSON.parse(localStorage.getItem('newOrders') || '[]')
       localStorage.setItem('newOrders', JSON.stringify([localOrder, ...existing]))
@@ -257,10 +264,15 @@ export default function MenuOrder() {
     }
   }
 
+  const fullTotal = cart.reduce((sum, c) => sum + c.unitPrice * c.qty, 0)
+  const comboResult = useMemo(() => calcComboCart(cart, products), [cart, products])
   const total = cart.reduce((sum, c) => {
     const cur = products.find((p) => p.id === c.id)
-    return sum + calcFinalPrice(c.unitPrice, cur?.promotion) * c.qty
+    const baseFinal = calcFinalPrice(c.unitPrice, cur?.promotion, c.qty)
+    const comboDisc = (comboResult.itemDiscounts[c.key] || 0) / c.qty
+    return sum + (baseFinal - comboDisc) * c.qty
   }, 0)
+  const discountTotal = fullTotal - total
 
   function handleCustomerSearchChange(value) {
     setCustomerSearch(value)
@@ -300,7 +312,14 @@ export default function MenuOrder() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 flex flex-col overflow-hidden">
-          <CategoryFilter categories={categories} category={category} onSelect={setCategory} />
+          <CategoryFilter
+            categories={categories}
+            category={category}
+            onSelect={setCategory}
+            search={productSearch}
+            onSearchChange={setProductSearch}
+            onSearchClear={() => setProductSearch('')}
+          />
 
           {success && (
             <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg text-sm font-medium">
@@ -334,10 +353,13 @@ export default function MenuOrder() {
             <CartSidebar
               cart={cart}
               products={products}
+              fullTotal={fullTotal}
               total={total}
+              discountTotal={discountTotal}
               placing={placing}
               onUpdateQty={updateQty}
               onPlaceOrder={placeOrder}
+              comboResult={comboResult}
               customerSearch={customerSearch}
               showCustomerDropdown={showCustomerDropdown}
               filteredCustomers={filteredCustomers}

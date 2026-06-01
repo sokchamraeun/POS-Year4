@@ -5,13 +5,13 @@ import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
 import CartItem from '../../components/customer/CartItem.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
-import { calcFinalPrice } from '../../utils/promotion.js'
+import { getPromotionLabel } from '../../utils/promotion.js'
 
 const API_URL = import.meta.env.VITE_API_URL
 
 export default function Cart() {
   const navigate = useNavigate()
-  const { items, updateQty, removeItem, clearCart, totalItems, totalPrice } = useCart()
+  const { items, updateQty, removeItem, clearCart, totalItems, fullTotal, discountTotal, totalPrice } = useCart()
   const { customer, isLoggedIn } = useCustomerAuth()
   const [orderNote, setOrderNote] = useState('')
   const [name, setName] = useState(customer?.name || '')
@@ -65,15 +65,14 @@ export default function Cart() {
         const sugarId = (c.sugar_levels || c.sugarLevels)?.find(s => s.name === c.sugar)?.id ?? null
         const iceId = (c.ice_levels || c.iceLevels)?.find(i => i.name === c.ice)?.id ?? null
         const addonObj = c.addons?.find(a => a.name === c.addOn)
-        const price = calcFinalPrice(c.unitPrice, c.promotion)
         return {
           product_id: c.id,
           size_id: sizeId,
           sugar_level_id: sugarId,
           ice_level_id: iceId,
           qty: c.qty,
-          unit_price: price,
-          subtotal: price * c.qty,
+          unit_price: c.unitPrice,
+          subtotal: c.unitPrice * c.qty,
           addons: addonObj ? [{ addon_id: addonObj.id, price: 0 }] : [],
         }
       })
@@ -83,6 +82,7 @@ export default function Cart() {
         customer_id: customerId,
         table_id: selectedTable || null,
         total: totalPrice,
+        discount: discountTotal,
         status: 'New',
         payment_method: pm,
         payment_status: paymentMethod === 'cash' ? 'Paid' : 'Unpaid',
@@ -283,6 +283,17 @@ export default function Cart() {
                   KHQR
                 </button>
               </div>
+              {discountTotal > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <div className="text-gray-500">
+                    <span>Discount</span>
+                    {items.map(i => i.promotion && i.promotion.type !== 'combo_discount' && i.promotion.type !== 'combo' ? getPromotionLabel(i.promotion) : '').filter(Boolean).map((l, idx) => (
+                      <span key={idx} className="ml-1 text-xs text-gray-400">({l})</span>
+                    ))}
+                  </div>
+                  <span className="text-green-600 font-medium">-${discountTotal.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-gray-800">Total</span>
                 <span className="text-lg font-bold text-blue-600">${totalPrice.toFixed(2)}</span>

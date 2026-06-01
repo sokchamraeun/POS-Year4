@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 import { useSocket, useSocketConnect } from '../../hooks/useSocket'
+import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
 
 const API_URL = import.meta.env.VITE_API_URL
 const token = localStorage.getItem('token')
@@ -15,6 +16,7 @@ function mapOrder(o) {
     table: o.table?.name ?? '-',
     items: o.items?.reduce((s, i) => s + i.qty, 0) ?? 0,
     total: Number(o.total ?? 0),
+    discount: Number(o.discount ?? 0),
     date: (o.created_at ?? '').slice(0, 10),
     datetime: (() => {
       const d = new Date(o.created_at ?? '')
@@ -33,6 +35,7 @@ function mapOrder(o) {
       sugar: i.sugar_level?.name ?? '',
       ice: i.ice_level?.name ?? '',
       addOn: i.addons?.map((a) => a.addon?.name).filter(Boolean).join(', ') ?? '',
+      promotion: i.promotion ?? null,
     })),
   }
 }
@@ -432,7 +435,14 @@ export default function Orders() {
                         const recipe = recipes[item.name]
                         return (
                           <tr key={i} className="border-b border-gray-50">
-                            <td className="py-2.5 text-gray-800 font-medium">{item.name}</td>
+                            <td className="py-2.5 text-gray-800 font-medium">
+                              {item.name}
+                              {item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' && (
+                                <span className="ml-1.5 text-[10px] text-green-600 font-medium">
+                                  ({getPromotionLabel(item.promotion)})
+                                </span>
+                              )}
+                            </td>
                             <td className="py-2.5 text-gray-600">{item.size || '-'}</td>
                             <td className="py-2.5 text-gray-600">{item.sugar || '-'}</td>
                             <td className="py-2.5 text-gray-600">{item.ice || '-'}</td>
@@ -445,6 +455,29 @@ export default function Orders() {
                       })}
                     </tbody>
                     <tfoot>
+                      {selectedOrder.discount > 0 && selectedOrder.detail.filter(i => i.promotion).length > 0 && (
+                        selectedOrder.detail.filter(i => i.promotion).map((item, idx) => {
+                          const d = calcDiscount(item.price, item.promotion, item.qty)
+                          if (d <= 0) return null
+                          const freeQty = Math.round(d / item.price)
+                          return (
+                            <tr key={idx}>
+                              <td colSpan={7} className="pt-1 text-right text-[11px] text-green-600 font-medium">
+                                {getPromotionLabel(item.promotion)} &mdash; {item.name} x{freeQty}
+                              </td>
+                              <td className="pt-1 text-right text-[11px] text-green-600 font-medium">-${d.toFixed(2)}</td>
+                            </tr>
+                          )
+                        })
+                      )}
+                      {selectedOrder.discount > 0 && (
+                        <tr>
+                          <td colSpan={7} className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">
+                            {selectedOrder.detail.some(i => i.promotion) ? 'Total Discount' : 'Promotion'}
+                          </td>
+                          <td className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">-${selectedOrder.discount.toFixed(2)}</td>
+                        </tr>
+                      )}
                       <tr>
                         <td colSpan={7} className="pt-3 text-right font-semibold text-gray-800">Total</td>
                         <td className="pt-3 text-right font-semibold text-gray-800">${selectedOrder.total.toFixed(2)}</td>
@@ -463,7 +496,8 @@ export default function Orders() {
                       const o = selectedOrder
                       const itemsHtml = o.detail.map((item, idx) => {
                         const vars = [item.size, item.sugar, item.ice, item.addOn].filter(Boolean).join('|')
-                        return `<tr><td style="padding:4px 4px;text-align:center;font-size:10px">${idx + 1}</td><td style="padding:4px 4px;font-size:10px">${item.name}${vars ? '<br><span style="color:#666;font-size:8px">'+vars+'</span>' : ''}</td><td style="padding:4px 4px;text-align:center;font-size:10px">${item.qty}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${item.price.toFixed(2)}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${(item.qty * item.price).toFixed(2)}</td></tr>`
+                        const promLabel = item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' ? `<br><span style="color:#16a34a;font-size:8px">${getPromotionLabel(item.promotion)}</span>` : ''
+                        return `<tr><td style="padding:4px 4px;text-align:center;font-size:10px">${idx + 1}</td><td style="padding:4px 4px;font-size:10px">${item.name}${vars ? '<br><span style="color:#666;font-size:8px">'+vars+'</span>' : ''}${promLabel}</td><td style="padding:4px 4px;text-align:center;font-size:10px">${item.qty}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${item.price.toFixed(2)}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${(item.qty * item.price).toFixed(2)}</td></tr>`
                       }).join('')
                       w.document.write(`
                         <html><head><title>Receipt ${o.id}</title>
@@ -491,7 +525,22 @@ export default function Orders() {
                         <table>
                           <thead><tr><th style="text-align:center">No.</th><th>Item</th><th style="text-align:center">Qty</th><th class="right">Price</th><th class="right">Subtotal</th></tr></thead>
                           <tbody>${itemsHtml}</tbody>
-                          <tfoot><tr class="total"><td colspan="4" style="text-align:right">Total</td><td style="text-align:right">$${o.total.toFixed(2)}</td></tr></tfoot>
+                          <tfoot>${(() => {
+                            const promoItems = o.detail.filter(i => i.promotion)
+                            let html = ''
+                            promoItems.forEach((item) => {
+                              const d = calcDiscount(item.price, item.promotion, item.qty)
+                              if (d <= 0) return
+                              const freeQty = Math.round(d / item.price)
+                              html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">${getPromotionLabel(item.promotion)} &mdash; ${item.name} x${freeQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">-${d.toFixed(2)}</td></tr>`
+                            })
+                            if (html) {
+                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">Total Discount</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">-${o.discount.toFixed(2)}</td></tr>`
+                            } else if (o.discount > 0) {
+                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">Promotion</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">-${o.discount.toFixed(2)}</td></tr>`
+                            }
+                            return html
+                          })()}<tr class="total"><td colspan="4" style="text-align:right">Total</td><td style="text-align:right">$${o.total.toFixed(2)}</td></tr></tfoot>
                         </table>
                         <hr>
                         <div class="footer">Thank you for your visit!</div>

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useSocket, useSocketConnect } from '../../hooks/useSocket'
 
 const API_URL = import.meta.env.VITE_API_URL
-const headers = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
+const headers = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' })
 
 export default function GlobalOrderNotification() {
   const { pathname } = useLocation()
@@ -19,6 +19,8 @@ export default function GlobalOrderNotification() {
   const isStaffPageRef = useRef(pathname.startsWith('/staff'))
   isStaffPageRef.current = pathname.startsWith('/staff')
 
+  const audioCtxRef = useRef(null)
+
   useEffect(() => {
     if (!token) return
     const audio = new Audio('/sound.mp3')
@@ -33,6 +35,11 @@ export default function GlobalOrderNotification() {
         audio.pause()
         audio.currentTime = 0
       }).catch(() => {})
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)()
+        if (ctx.state === 'suspended') ctx.resume()
+        audioCtxRef.current = ctx
+      } catch {}
     }
 
     document.addEventListener('pointerdown', unlock, { once: true })
@@ -41,21 +48,48 @@ export default function GlobalOrderNotification() {
     return () => {
       document.removeEventListener('pointerdown', unlock)
       document.removeEventListener('keydown', unlock)
+      audioCtxRef.current?.close()
     }
   }, [token])
 
+  function beep(count = 3) {
+    try {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)()
+      }
+      const ctx = audioCtxRef.current
+      if (ctx.state === 'suspended') ctx.resume()
+      let b = 0
+      function next() {
+        if (b >= count) return
+        b++
+        const osc = ctx.createOscillator()
+        const gain = ctx.createGain()
+        osc.connect(gain)
+        gain.connect(ctx.destination)
+        osc.frequency.value = 880
+        gain.gain.setValueAtTime(0.3, ctx.currentTime)
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35)
+        osc.start(ctx.currentTime)
+        osc.stop(ctx.currentTime + 0.35)
+        osc.addEventListener('ended', next, { once: true })
+      }
+      next()
+    } catch {}
+  }
+
   function playSound() {
     const audio = audioRef.current
-    if (!audio) return
+    if (!audio) { beep(); return }
     let played = 0
     function play() {
       if (played >= 3) return
       played++
       audio.currentTime = 0
-      audio.play().catch(() => {})
+      audio.play().catch(() => { beep(); return })
+      audio.addEventListener('ended', play, { once: true })
     }
-    audio.addEventListener('ended', play, { once: true })
-    try { play() } catch {}
+    play()
   }
 
   function onNewOrder(order) {
@@ -80,16 +114,23 @@ export default function GlobalOrderNotification() {
     if (order?.id) onNewOrder(order)
   })
 
-  useSocket('order:updated', (order) => {
-    if (order?.id && !seenIdsRef.current.has(Number(order.id))) {
-      onNewOrder(order)
-    }
-  })
+  useSocket('order:updated', () => {})
 
   useEffect(() => {
     if (!token) return
     let interval
     let mounted = true
+    async function initMaxId() {
+      try {
+        const res = await fetch(`${API_URL}/orders?per_page=1`, { headers: headers() })
+        const json = await res.json()
+        const orders = json.data ?? []
+        if (orders.length > 0) {
+          lastOrderIdRef.current = Math.max(...orders.map(o => o.id))
+        }
+      } catch {}
+    }
+    initMaxId()
     async function poll() {
       try {
         const res = await fetch(`${API_URL}/orders?per_page=20`, { headers: headers() })

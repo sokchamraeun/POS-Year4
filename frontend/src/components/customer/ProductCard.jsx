@@ -34,7 +34,7 @@ export default function ProductCard({ product, onAddToCart }) {
 
   const price =
     getBasePrice(selectedSize) + getAddOnPrice(selectedAddOn)
-  const finalPrice = calcFinalPrice(price, product.promotion)
+  const finalPrice = product.promotion?.type === 'buy_x_get_y' ? price : calcFinalPrice(price, product.promotion)
   const hasDiscount = finalPrice < price
 
   async function handleAddToCart(quantity = 1) {

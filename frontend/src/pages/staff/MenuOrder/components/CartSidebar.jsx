@@ -3,10 +3,14 @@ import TableSelector from './TableSelector.jsx'
 import CartItem from './CartItem.jsx'
 import PaymentSelector from './PaymentSelector.jsx'
 
+import { calcDiscount, getPromotionLabel } from '../../../../utils/promotion.js'
+
 export default function CartSidebar({
   cart,
   products,
+  fullTotal,
   total,
+  discountTotal,
   placing,
   onUpdateQty,
   onPlaceOrder,
@@ -22,6 +26,7 @@ export default function CartSidebar({
   tables,
   paymentMethod,
   onPaymentChange,
+  comboResult,
 }) {
   return (
     <div className="w-80 shrink-0 flex flex-col">
@@ -55,6 +60,41 @@ export default function CartSidebar({
               ))}
             </div>
             <div className="border-t border-gray-200 px-4 py-4 shrink-0">
+              {discountTotal > 0 && (
+                <div className="mb-2">
+                  <p className="text-xs text-gray-500 font-medium mb-1">Promotions</p>
+                  {cart.map(c => {
+                    const cur = products?.find(p => p.id === c.id)
+                    const rows = []
+                    if (cur?.promotion && cur.promotion.type !== 'combo_discount' && cur.promotion.type !== 'combo') {
+                      const d = calcDiscount(c.unitPrice, cur.promotion, c.qty)
+                      if (d > 0) {
+                        const freeQty = Math.round(d / c.unitPrice)
+                        rows.push(
+                          <div key={c.key + '-reg'} className="flex items-center justify-between text-xs text-green-600 mb-0.5">
+                            <span>{getPromotionLabel(cur.promotion)} &mdash; {c.name} x{freeQty}</span>
+                            <span>-${d.toFixed(2)}</span>
+                          </div>
+                        )
+                      }
+                    }
+                    return rows
+                  })}
+                  {comboResult?.totalDiscount > 0 && (() => {
+                    const comboKeys = Object.keys(comboResult.itemDiscounts)
+                    const comboItems = cart.filter(c => comboKeys.includes(c.key))
+                    const promo = comboItems[0]?.promotion
+                    const names = [...new Set(comboItems.map(c => c.name))]
+                    const label = names.join(' + ') + (promo?.value ? ` = $${Number(promo.value).toFixed(2)}` : '')
+                    return (
+                      <div key="combo-total" className="flex items-center justify-between text-xs text-green-600 mb-0.5">
+                        <span>{label}</span>
+                        <span>-${comboResult.totalDiscount.toFixed(2)}</span>
+                      </div>
+                    )
+                  })()}
+                </div>
+              )}
               <div className="flex items-center justify-between text-base font-bold text-gray-800 mb-3">
                 <span>Total</span>
                 <span className="text-lg">${total.toFixed(2)}</span>

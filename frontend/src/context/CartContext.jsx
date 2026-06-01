@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import { calcFinalPrice } from '../utils/promotion.js'
+import { createContext, useContext, useState, useEffect, useMemo } from 'react'
+import { calcFinalPrice, calcDiscount, calcComboCart } from '../utils/promotion.js'
 
 const CartContext = createContext()
 
@@ -53,10 +53,31 @@ export function CartProvider({ children }) {
   }
 
   const totalItems = items.reduce((sum, i) => sum + i.qty, 0)
-  const totalPrice = items.reduce((sum, i) => sum + calcFinalPrice(i.unitPrice, i.promotion) * i.qty, 0)
+  const fullTotal = items.reduce((sum, i) => sum + i.unitPrice * i.qty, 0)
+  const comboResult = useMemo(() => calcComboCart(items, []), [items])
+  const discountTotal = items.reduce((sum, i) => sum + calcDiscount(i.unitPrice, i.promotion, i.qty), 0) + comboResult.totalDiscount
+  const totalPrice = items.reduce((sum, i) => {
+    const baseFinal = calcFinalPrice(i.unitPrice, i.promotion, i.qty)
+    const comboDisc = (comboResult.itemDiscounts[i.key] || 0) / i.qty
+    return sum + (baseFinal - comboDisc) * i.qty
+  }, 0)
+
+  const promotions = useMemo(() => {
+    const map = {}
+    items.forEach((i) => {
+      if (i.promotion) {
+        const key = i.promotion.id || i.promotion.type + i.unitPrice
+        if (!map[key]) {
+          map[key] = { ...i.promotion, discount: 0, unitPrice: i.unitPrice }
+        }
+        map[key].discount += calcDiscount(i.unitPrice, i.promotion, i.qty)
+      }
+    })
+    return Object.values(map)
+  }, [items])
 
   return (
-    <CartContext.Provider value={{ items, addItem, updateQty, removeItem, clearCart, totalItems, totalPrice }}>
+    <CartContext.Provider value={{ items, addItem, updateQty, removeItem, clearCart, totalItems, fullTotal, discountTotal, totalPrice, promotions, comboResult }}>
       {children}
     </CartContext.Provider>
   )

@@ -5,7 +5,7 @@ import Topbar from '../../../components/staff/Topbar.jsx'
 import EditModalProduct from './EditModalProduct.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL + '/products'
-const getHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
+const getHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' })
 
 const categoryColors = {
   Coffee: 'bg-amber-100 text-amber-700 ring-1 ring-amber-600/20',

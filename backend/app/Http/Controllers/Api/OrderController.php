@@ -70,6 +70,7 @@ class OrderController extends Controller
             'customer_id' => 'nullable|exists:customers,id',
             'table_id' => 'nullable|exists:tables,id',
             'total' => 'required|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0',
             'payment_method' => 'nullable|string|max:50',
             'payment_status' => 'nullable|string|max:50',
             'status' => 'nullable|string|max:50',
@@ -84,6 +85,7 @@ class OrderController extends Controller
             'items.*.addons' => 'nullable|array',
             'items.*.addons.*.addon_id' => 'required|exists:addons,id',
             'items.*.addons.*.price' => 'nullable|numeric|min:0',
+            'items.*.promotion_snapshot' => 'nullable',
         ]);
 
         $productSizePairs = collect($data['items'])->map(fn ($i) => ['product_id' => $i['product_id'], 'size_id' => $i['size_id'] ?? null])->unique();
@@ -138,10 +140,13 @@ class OrderController extends Controller
         }
 
         $order = DB::transaction(function () use ($data, $allRecipes, $allAddonIngredients) {
+            $discount = $data['discount'] ?? 0;
+
             $order = Order::create([
                 'customer_id' => $data['customer_id'] ?? null,
                 'table_id' => $data['table_id'] ?? null,
                 'total' => $data['total'],
+                'discount' => $discount,
                 'payment_method' => $data['payment_method'] ?? null,
                 'payment_status' => $data['payment_status'] ?? null,
                 'status' => $data['status'] ?? null,
@@ -162,6 +167,7 @@ class OrderController extends Controller
                     'qty' => $qty,
                     'unit_price' => $itemData['unit_price'] ?? 0,
                     'subtotal' => $itemData['subtotal'] ?? 0,
+                    'promotion_snapshot' => $itemData['promotion_snapshot'] ?? null,
                 ]);
 
                 foreach (($itemData['addons'] ?? []) as $addonData) {

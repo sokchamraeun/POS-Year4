@@ -19,7 +19,7 @@ export default function Heroslider() {
   const [submitting, setSubmitting] = useState(false)
   const fileRef = useRef(null)
 
-  const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
+  const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' })
 
   const fetchSliders = () => {
     setLoading(true)

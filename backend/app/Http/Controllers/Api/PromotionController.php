@@ -19,7 +19,7 @@ class PromotionController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:percentage,fixed_amount,buy_x_get_y,combo',
+            'type' => 'required|in:percentage,fixed_amount,buy_x_get_y,combo,combo_discount',
             'value' => 'nullable|numeric|min:0',
             'buy_qty' => 'nullable|integer|min:1',
             'free_qty' => 'nullable|integer|min:1',
@@ -28,6 +28,14 @@ class PromotionController extends Controller
             'active' => 'boolean',
             'product_ids' => 'nullable|array',
             'product_ids.*' => 'exists:products,id',
+            'combo_discount_type' => 'nullable|in:percentage,fixed_amount,fixed_price',
+            'combo_apply_to' => 'nullable|in:cheapest,each,total',
+            'combo_groups' => 'nullable|array',
+            'combo_groups.*.label' => 'nullable|string|max:255',
+            'combo_groups.*.categories' => 'nullable|array',
+            'combo_groups.*.categories.*' => 'exists:categories,id',
+            'combo_groups.*.products' => 'nullable|array',
+            'combo_groups.*.products.*' => 'exists:products,id',
         ]);
 
         $promotion = Promotion::create($data);
@@ -51,7 +59,7 @@ class PromotionController extends Controller
     {
         $data = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'type' => 'sometimes|in:percentage,fixed_amount,buy_x_get_y,combo',
+            'type' => 'sometimes|in:percentage,fixed_amount,buy_x_get_y,combo,combo_discount',
             'value' => 'nullable|numeric|min:0',
             'buy_qty' => 'nullable|integer|min:1',
             'free_qty' => 'nullable|integer|min:1',
@@ -60,6 +68,14 @@ class PromotionController extends Controller
             'active' => 'boolean',
             'product_ids' => 'nullable|array',
             'product_ids.*' => 'exists:products,id',
+            'combo_discount_type' => 'nullable|in:percentage,fixed_amount,fixed_price',
+            'combo_apply_to' => 'nullable|in:cheapest,each,total',
+            'combo_groups' => 'nullable|array',
+            'combo_groups.*.label' => 'nullable|string|max:255',
+            'combo_groups.*.categories' => 'nullable|array',
+            'combo_groups.*.categories.*' => 'exists:categories,id',
+            'combo_groups.*.products' => 'nullable|array',
+            'combo_groups.*.products.*' => 'exists:products,id',
         ]);
 
         $promotion->update($data);

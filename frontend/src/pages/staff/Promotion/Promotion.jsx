@@ -6,11 +6,14 @@ import Topbar from '../../../components/staff/Topbar.jsx'
 const API_URL = import.meta.env.VITE_API_URL + '/promotions'
 const PRODUCTS_URL = import.meta.env.VITE_API_URL + '/products'
 
+const CATEGORIES_URL = import.meta.env.VITE_API_URL + '/categories'
+
 const types = [
   { value: 'percentage', label: 'Percentage' },
   { value: 'fixed_amount', label: 'Fixed Amount' },
   { value: 'buy_x_get_y', label: 'Buy X Get Y' },
   { value: 'combo', label: 'Combo' },
+  { value: 'combo_discount', label: 'Combo Discount' },
 ]
 
 function toLocalDatetime(iso) {
@@ -23,6 +26,7 @@ function toLocalDatetime(iso) {
 export default function Promotions() {
   const [items, setItems] = useState([])
   const [allProducts, setAllProducts] = useState([])
+  const [allCategories, setAllCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showModal, setShowModal] = useState(false)
@@ -37,9 +41,12 @@ export default function Promotions() {
     end_date: '',
     active: true,
     product_ids: [],
+    combo_discount_type: 'percentage',
+    combo_apply_to: 'each',
+    combo_groups: [],
   })
 
-  const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
+  const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' })
 
   const fetchProducts = async () => {
     try {
@@ -51,6 +58,16 @@ export default function Promotions() {
     } catch {}
   }
 
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(CATEGORIES_URL, { headers: authHeaders() })
+      if (!res.ok) return
+      const json = await res.json()
+      const list = json.data ?? json
+      setAllCategories(Array.isArray(list) ? list : [])
+    } catch {}
+  }
+
   const fetchItems = () => {
     setLoading(true)
     fetch(API_URL, { headers: authHeaders() })
@@ -59,11 +76,11 @@ export default function Promotions() {
       .catch(err => { setError(err.message); setLoading(false) })
   }
 
-  useEffect(() => { fetchItems(); fetchProducts() }, [])
+  useEffect(() => { fetchItems(); fetchProducts(); fetchCategories() }, [])
 
   const openCreate = () => {
     setEditing(null)
-    setForm({ name: '', type: 'percentage', value: '', buy_qty: '', free_qty: '', start_date: '', end_date: '', active: true, product_ids: [] })
+    setForm({ name: '', type: 'percentage', value: '', buy_qty: '', free_qty: '', start_date: '', end_date: '', active: true, product_ids: [], combo_discount_type: 'percentage', combo_apply_to: 'each', combo_groups: [] })
     setShowModal(true)
   }
 
@@ -89,6 +106,9 @@ export default function Promotions() {
       end_date: toLocalDatetime(item.end_date),
       active: item.active,
       product_ids: productIds,
+      combo_discount_type: item.combo_discount_type ?? 'percentage',
+      combo_apply_to: item.combo_apply_to ?? 'each',
+      combo_groups: item.combo_groups ?? [],
     })
     setShowModal(true)
   }
@@ -102,21 +122,75 @@ export default function Promotions() {
     }))
   }
 
+  const addGroup = () => {
+    setForm((prev) => ({
+      ...prev,
+      combo_groups: [...prev.combo_groups, { label: '', categories: [], products: [] }],
+    }))
+  }
+
+  const removeGroup = (index) => {
+    setForm((prev) => ({
+      ...prev,
+      combo_groups: prev.combo_groups.filter((_, i) => i !== index),
+    }))
+  }
+
+  const updateGroup = (index, field, value) => {
+    setForm((prev) => {
+      const groups = [...prev.combo_groups]
+      groups[index] = { ...groups[index], [field]: value }
+      return { ...prev, combo_groups: groups }
+    })
+  }
+
+  const toggleGroupCategory = (groupIndex, categoryId) => {
+    setForm((prev) => {
+      const groups = [...prev.combo_groups]
+      const catIds = groups[groupIndex].categories
+      groups[groupIndex] = {
+        ...groups[groupIndex],
+        categories: catIds.includes(categoryId)
+          ? catIds.filter((id) => id !== categoryId)
+          : [...catIds, categoryId],
+      }
+      return { ...prev, combo_groups: groups }
+    })
+  }
+
+  const toggleGroupProduct = (groupIndex, productId) => {
+    setForm((prev) => {
+      const groups = [...prev.combo_groups]
+      const prodIds = groups[groupIndex].products
+      groups[groupIndex] = {
+        ...groups[groupIndex],
+        products: prodIds.includes(productId)
+          ? prodIds.filter((id) => id !== productId)
+          : [...prodIds, productId],
+      }
+      return { ...prev, combo_groups: groups }
+    })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     const token = localStorage.getItem('token')
     const url = editing ? `${API_URL}/${editing.id}` : API_URL
     const method = editing ? 'PUT' : 'POST'
+    const isCombo = form.type === 'combo' || form.type === 'combo_discount'
     const body = {
       name: form.name,
       type: form.type,
-      value: form.type === 'percentage' || form.type === 'fixed_amount' ? form.value : null,
+      value: isCombo ? form.value : (form.type === 'percentage' || form.type === 'fixed_amount' ? form.value : null),
       buy_qty: form.type === 'buy_x_get_y' ? form.buy_qty : null,
       free_qty: form.type === 'buy_x_get_y' ? form.free_qty : null,
       start_date: form.start_date,
       end_date: form.end_date,
       active: form.active,
       product_ids: form.product_ids,
+      combo_discount_type: form.type === 'combo_discount' ? form.combo_discount_type : null,
+      combo_apply_to: form.type === 'combo_discount' ? form.combo_apply_to : null,
+      combo_groups: isCombo ? form.combo_groups : null,
     }
     try {
       const res = await fetch(url, {
@@ -159,6 +233,8 @@ export default function Promotions() {
   const typeLabel = (val) => types.find((t) => t.value === val)?.label ?? val
   const isBuyXGetY = form.type === 'buy_x_get_y'
   const needsValue = form.type === 'percentage' || form.type === 'fixed_amount'
+  const isComboDiscount = form.type === 'combo_discount'
+  const isCombo = form.type === 'combo' || form.type === 'combo_discount'
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -210,7 +286,13 @@ export default function Promotions() {
                           {item.type === 'percentage' && `${item.value}%`}
                           {item.type === 'fixed_amount' && `$${parseFloat(item.value).toFixed(2)}`}
                           {item.type === 'buy_x_get_y' && `Buy ${item.buy_qty} Get ${item.free_qty}`}
-                          {item.type === 'combo' && item.value ? `$${parseFloat(item.value).toFixed(2)}` : '-'}
+                          {item.type === 'combo' && item.value ? `Combo $${parseFloat(item.value).toFixed(2)}` : '-'}
+                          {item.type === 'combo_discount' && (
+                            <>
+                              {item.combo_discount_type === 'percentage' ? `${item.value}%` : item.combo_discount_type === 'fixed_price' ? `Combo $${parseFloat(item.value).toFixed(2)}` : `$${parseFloat(item.value).toFixed(2)}`}
+                              {item.combo_discount_type !== 'fixed_price' && ` — ${item.combo_apply_to === 'cheapest' ? 'Cheapest' : item.combo_apply_to === 'each' ? 'Each' : 'Total'}`}
+                            </>
+                          )}
                         </td>
                         <td className="px-6 py-4">
                           <span className="text-gray-800 font-medium">{item.products_count ?? 0}</span>
@@ -303,6 +385,98 @@ export default function Promotions() {
                       <input type="number" min="1" value={form.free_qty} onChange={e => setForm({ ...form, free_qty: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
                     </div>
                   </div>
+                )}
+
+                {isCombo && (
+                  <>
+                    {form.type === 'combo_discount' && (
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Discount Type</label>
+                          <select value={form.combo_discount_type} onChange={e => setForm({ ...form, combo_discount_type: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="percentage">Percentage</option>
+                            <option value="fixed_amount">Fixed Amount</option>
+                            <option value="fixed_price">Fixed Combo Price</option>
+                          </select>
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {form.type === 'combo' ? 'Fixed Combo Price ($)' : form.combo_discount_type === 'percentage' ? 'Percentage (%)' : 'Amount ($)'}
+                          </label>
+                          <input type="number" step="0.01" min="0" value={form.value} onChange={e => setForm({ ...form, value: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        </div>
+                      </div>
+                    )}
+                    {form.type === 'combo' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Fixed Combo Price ($)</label>
+                        <input type="number" step="0.01" min="0" value={form.value} onChange={e => setForm({ ...form, value: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      </div>
+                    )}
+                    {form.type === 'combo_discount' && form.combo_discount_type !== 'fixed_price' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Apply Discount To</label>
+                        <select value={form.combo_apply_to} onChange={e => setForm({ ...form, combo_apply_to: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                          <option value="cheapest">Cheapest Item</option>
+                          <option value="each">Each Item</option>
+                          <option value="total">Total of Items</option>
+                        </select>
+                      </div>
+                    )}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Combo Groups</label>
+                      {form.combo_groups.map((group, gi) => (
+                        <div key={gi} className="border border-gray-300 rounded-lg p-3 mb-2">
+                          <div className="flex items-center justify-between mb-2">
+                            <input
+                              type="text"
+                              placeholder="Group label (e.g. Coffee)"
+                              value={group.label}
+                              onChange={e => updateGroup(gi, 'label', e.target.value)}
+                              className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <button type="button" onClick={() => removeGroup(gi)} className="ml-2 text-red-500 text-sm hover:text-red-700">Remove</button>
+                          </div>
+                          <div className="mb-1">
+                            <span className="text-xs text-gray-500 font-medium">Categories</span>
+                            <div className="max-h-24 overflow-y-auto border border-gray-200 rounded p-1 mt-1 space-y-0.5">
+                              {allCategories.map((cat) => (
+                                <label key={cat.id} className="flex items-center gap-1.5 px-1.5 py-0.5 rounded hover:bg-gray-50 cursor-pointer text-xs">
+                                  <input
+                                    type="checkbox"
+                                    checked={group.categories.includes(cat.id)}
+                                    onChange={() => toggleGroupCategory(gi, cat.id)}
+                                    className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                  />
+                                  <span>{cat.name}</span>
+                                </label>
+                              ))}
+                              {allCategories.length === 0 && <p className="text-xs text-gray-400 p-1">No categories</p>}
+                            </div>
+                          </div>
+                          <div>
+                            <span className="text-xs text-gray-500 font-medium">Products</span>
+                            <div className="max-h-24 overflow-y-auto border border-gray-200 rounded p-1 mt-1 space-y-0.5">
+                              {allProducts.map((p) => (
+                                <label key={p.id} className="flex items-center gap-1.5 px-1.5 py-0.5 rounded hover:bg-gray-50 cursor-pointer text-xs">
+                                  <input
+                                    type="checkbox"
+                                    checked={group.products.includes(p.id)}
+                                    onChange={() => toggleGroupProduct(gi, p.id)}
+                                    className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                  />
+                                  <span>{p.name}</span>
+                                </label>
+                              ))}
+                              {allProducts.length === 0 && <p className="text-xs text-gray-400 p-1">No products</p>}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      <button type="button" onClick={addGroup} className="text-sm text-blue-600 hover:text-blue-800 font-medium">+ Add Group</button>
+                      {form.combo_groups.length === 0 && <p className="text-xs text-gray-400 mt-1">Add at least 2 groups to define the combo</p>}
+                    </div>
+                  </>
                 )}
 
                 <div className="flex gap-4">

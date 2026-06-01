@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
 import { useRef, useState } from 'react'
+import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
 
 export default function Invoice({ order, customer }) {
   const receiptRef = useRef(null)
@@ -117,6 +118,7 @@ export default function Invoice({ order, customer }) {
             const price = item.unit_price
               ? Number(item.unit_price)
               : subtotal / qty
+            const prom = item.promotion ?? item.product?.promotion
 
             const opts = [
               item.size?.name,
@@ -142,10 +144,48 @@ export default function Invoice({ order, customer }) {
                     {opts}
                   </div>
                 )}
+                {prom && prom.type !== 'combo_discount' && prom.type !== 'combo' && (
+                  <div className="text-[9px] text-green-600 ml-7 mb-1 font-medium">
+                    {getPromotionLabel(prom)}
+                  </div>
+                )}
               </div>
             )
           })}
         </div>
+
+        {/* PROMOTION DISCOUNT */}
+        {Number(order.discount ?? 0) > 0 && items.filter(i => i.promotion).length > 0 && (
+          <>
+            {items.filter(i => i.promotion).map((item, idx) => {
+            const prom = item.promotion
+              const price = item.unit_price ? Number(item.unit_price) : Number(item.subtotal ?? 0) / (item.qty ?? 1)
+              const d = calcDiscount(price, prom, item.qty ?? 1)
+              if (d <= 0) return null
+              const freeQty = Math.round(d / price)
+              const name = item.product?.name ?? item.name ?? 'Item'
+              return (
+                <div key={idx} className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[9px] px-10 py-0.5">
+                  <span />
+                  <span className="text-right col-span-3 text-green-600 font-medium">{getPromotionLabel(prom)} &mdash; {name} x{freeQty}</span>
+                  <span className="text-right text-green-600 font-medium">-${d.toFixed(2)}</span>
+                </div>
+              )
+            })}
+            <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] px-10 py-1" style={{ borderTop: '1px dashed #ccc' }}>
+              <span />
+              <span className="text-right col-span-3 text-green-600 font-semibold">Total Discount</span>
+              <span className="text-right text-green-600 font-semibold">-${Number(order.discount).toFixed(2)}</span>
+            </div>
+          </>
+        )}
+        {Number(order.discount ?? 0) > 0 && items.filter(i => i.promotion).length === 0 && (
+          <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] px-10 py-1" style={{ borderTop: '1px dashed #ccc' }}>
+            <span />
+            <span className="text-right col-span-3 text-green-600 font-medium">Promotion</span>
+            <span className="text-right text-green-600 font-medium">-${Number(order.discount).toFixed(2)}</span>
+          </div>
+        )}
 
         {/* TOTAL */}
         <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] font-bold px-10 py-2" style={{ borderTop: '2px solid #333' }}>

@@ -1,9 +1,9 @@
 import { useCart } from '../../context/CartContext.jsx'
-import { calcFinalPrice } from '../../utils/promotion.js'
+import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
 
 export default function CartItem({ item }) {
   const { updateQty, removeItem } = useCart()
-  const finalPrice = calcFinalPrice(item.unitPrice, item.promotion)
+  const hasPromotion = !!item.promotion
 
   return (
     <div className="flex items-start justify-between gap-3 p-3 bg-white border border-gray-200 rounded-xl">
@@ -25,20 +25,17 @@ export default function CartItem({ item }) {
         </div>
         <div className="min-w-0">
           <p className="text-sm font-semibold text-gray-800 truncate">{item.name}</p>
+          {hasPromotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' && (
+            <p className="text-xs text-green-600 font-medium mt-0.5">
+              {getPromotionLabel(item.promotion)}
+            </p>
+          )}
           <p className="text-xs text-gray-400 mt-0.5">
             {item.size}{item.sugar ? `, ${item.sugar}` : ''}{item.ice ? `, ${item.ice}` : ''}
             {item.addOn ? `, +${item.addOn}` : ''}
           </p>
 
-          {finalPrice < item.unitPrice ? (
-            <p className="text-sm mt-1">
-              <span className="text-base line-through text-red-500">${item.unitPrice.toFixed(2)}</span>
-              {' '}
-              <span className="text-blue-600 font-medium">${finalPrice.toFixed(2)}</span>
-            </p>
-          ) : (
-            <p className="text-sm text-gray-500 mt-1">${item.unitPrice.toFixed(2)}</p>
-          )}
+          <p className="text-sm mt-1 text-gray-500">${item.unitPrice.toFixed(2)}</p>
         </div>
       </div>
       <div className="flex flex-col items-end gap-2 shrink-0">
@@ -69,7 +66,7 @@ export default function CartItem({ item }) {
             </svg>
           </button>
         </div>
-        <span className="text-xs font-bold text-gray-800">${(finalPrice * item.qty).toFixed(2)}</span>
+        <span className="text-xs font-bold text-gray-800">${(item.unitPrice * item.qty).toFixed(2)}</span>
       </div>
     </div>
   )

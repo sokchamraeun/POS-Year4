@@ -4,7 +4,7 @@ import getCroppedImg from '../../../utils/cropImage.js'
 
 const API_URL = import.meta.env.VITE_API_URL
 const token = localStorage.getItem('token')
-const headers = { Authorization: `Bearer ${token}` }
+const headers = { Authorization: `Bearer ${token}`, Accept: 'application/json' }
 
 export default function EditModalProduct({ product, onClose, onSaved }) {
   const [form, setForm] = useState({
@@ -161,12 +161,12 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
     try {
       const res = await fetch(`${API_URL}/products/${product.id}`, {
         method: 'PUT',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: token ? { Authorization: `Bearer ${token}`, Accept: 'application/json' } : {},
         body: fd,
       })
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}))
-        throw new Error(errData.message || JSON.stringify(errData.errors ?? errData) || 'Failed to update product')
+        throw new Error(errData.message || errData.error || 'Failed to update product')
       }
       onSaved?.()
       onClose?.()

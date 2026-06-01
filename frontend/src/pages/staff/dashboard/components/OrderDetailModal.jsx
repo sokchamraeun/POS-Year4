@@ -2,6 +2,7 @@
 import { statusColors, paymentColors } from '../utils/constants'
 import { formatKhmerTime } from '../utils/helpers'
 import { markOrderPrinted } from '../utils/api'
+import { calcDiscount, getPromotionLabel } from '../../../../utils/promotion.js'
 
 export default function OrderDetailModal({ order, onClose, onStatusChange, onPaymentChange }) {
   const handlePrint = async () => {
@@ -17,8 +18,10 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
       const ice = item.ice_level?.name ?? ''
       const addOn = (item.addons ?? []).map(a => a.addon?.name).filter(Boolean).join(', ')
       const vars = [size, sugar, ice, addOn].filter(Boolean).join('|')
+      const prom = item.promotion
+      const promLabel = prom && prom.type !== 'combo_discount' && prom.type !== 'combo' ? `<br><span style="color:#16a34a;font-size:8px">${getPromotionLabel(prom)}</span>` : ''
       
-      return `<tr><td style="padding:4px 4px;text-align:center;font-size:10px">${idx + 1}</td><td style="padding:4px 4px;font-size:10px">${name}${vars ? '<br><span style="color:#666;font-size:8px">'+vars+'</span>' : ''}</td><td style="padding:4px 4px;text-align:center;font-size:10px">${qty}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${price.toFixed(2)}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${(qty * price).toFixed(2)}</td></tr>`
+      return `<tr><td style="padding:4px 4px;text-align:center;font-size:10px">${idx + 1}</td><td style="padding:4px 4px;font-size:10px">${name}${vars ? '<br><span style="color:#666;font-size:8px">'+vars+'</span>' : ''}${promLabel}</td><td style="padding:4px 4px;text-align:center;font-size:10px">${qty}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${price.toFixed(2)}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${(qty * price).toFixed(2)}</td></tr>`
     }).join('')
 
     w.document.write(`
@@ -61,6 +64,26 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
             </thead>
             <tbody>${itemsHtml}</tbody>
             <tfoot>
+              ${(() => {
+                const items = order.items ?? []
+                const promoItems = items.filter(i => i.promotion)
+                let html = ''
+                promoItems.forEach((item) => {
+                  const prom = item.promotion
+                  const unitPrice = Number(item.unit_price ?? item.price ?? 0)
+                  const d = calcDiscount(unitPrice, prom, item.qty ?? 1)
+                  if (d <= 0) return
+                  const freeQty = Math.round(d / unitPrice)
+                  const name = item.product?.name ?? item.name ?? 'Item'
+                  html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">${getPromotionLabel(prom)} &mdash; ${name} x${freeQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">-${d.toFixed(2)}</td></tr>`
+                })
+                if (html) {
+                  html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">Total Discount</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">-${Number(order.discount).toFixed(2)}</td></tr>`
+                } else if (Number(order.discount ?? 0) > 0) {
+                  html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">Promotion</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">-${Number(order.discount).toFixed(2)}</td></tr>`
+                }
+                return html
+              })()}
               <tr class="total">
                 <td colspan="4" style="text-align:right">Total</td>
                 <td style="text-align:right">$${Number(order.total ?? 0).toFixed(2)}</td>
@@ -149,9 +172,17 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
                 const sugar = item.sugar_level?.name ?? ''
                 const ice = item.ice_level?.name ?? ''
                 const addOn = (item.addons ?? []).map(a => a.addon?.name).filter(Boolean).join(', ')
+                const prom = item.promotion
                 return (
                   <tr key={i} className="border-b border-gray-50">
-                    <td className="py-2.5 text-gray-800 font-medium">{name}</td>
+                    <td className="py-2.5 text-gray-800 font-medium">
+                      {name}
+                      {prom && prom.type !== 'combo_discount' && prom.type !== 'combo' && (
+                        <span className="ml-1.5 text-[10px] text-green-600 font-medium">
+                          ({getPromotionLabel(prom)})
+                        </span>
+                      )}
+                    </td>
                     <td className="py-2.5 text-gray-600">{size || '-'}</td>
                     <td className="py-2.5 text-gray-600">{sugar || '-'}</td>
                     <td className="py-2.5 text-gray-600">{ice || '-'}</td>
@@ -164,6 +195,32 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
               })}
             </tbody>
             <tfoot>
+              {Number(order.discount ?? 0) > 0 && (order.items ?? []).filter(i => i.promotion).length > 0 && (
+                (order.items ?? []).filter(i => i.promotion).map((item, idx) => {
+                  const prom = item.promotion
+                  const unitPrice = Number(item.unit_price ?? item.price ?? 0)
+                  const d = calcDiscount(unitPrice, prom, item.qty ?? 1)
+                  if (d <= 0) return null
+                  const freeQty = Math.round(d / unitPrice)
+                  const name = item.product?.name ?? item.name ?? 'Item'
+                  return (
+                    <tr key={idx}>
+                      <td colSpan={7} className="pt-1 text-right text-[11px] text-green-600 font-medium">
+                        {getPromotionLabel(prom)} &mdash; {name} x{freeQty}
+                      </td>
+                      <td className="pt-1 text-right text-[11px] text-green-600 font-medium">-${d.toFixed(2)}</td>
+                    </tr>
+                  )
+                })
+              )}
+              {Number(order.discount ?? 0) > 0 && (
+                <tr>
+                  <td colSpan={7} className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">
+                    {(order.items ?? []).some(i => i.promotion) ? 'Total Discount' : 'Promotion'}
+                  </td>
+                  <td className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">-${Number(order.discount).toFixed(2)}</td>
+                </tr>
+              )}
               <tr>
                 <td colSpan={7} className="pt-3 text-right font-semibold text-gray-800">Total</td>
                 <td className="pt-3 text-right font-semibold text-gray-800">${Number(order.total ?? 0).toFixed(2)}</td>
