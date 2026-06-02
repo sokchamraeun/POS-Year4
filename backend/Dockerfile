@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libonig-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql gd pcntl
+    && docker-php-ext-install pdo pdo_pgsql gd pcntl zip
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
