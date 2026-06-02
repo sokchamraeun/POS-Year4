@@ -112,26 +112,137 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Topbar />
           <main className="flex-1 flex items-center justify-center">
-            <p className="text-gray-500">Loading dashboard...</p>
+            <div className="text-center">
+              {/* Animated Coffee Cup */}
+              <div className="relative w-24 h-24 mx-auto mb-6">
+                <div className="absolute inset-0 animate-ping-slow">
+                  <div className="w-full h-full rounded-full bg-teal-200 opacity-30"></div>
+                </div>
+                <div className="relative z-10 w-24 h-24 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg animate-bounce-slow">
+                  <svg className="w-12 h-12 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7h-4a2 2 0 00-2 2v6a2 2 0 002 2h4a2 2 0 002-2V9a2 2 0 00-2-2z" />
+                  </svg>
+                </div>
+                {/* Steam animation */}
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                  <div className="flex gap-1">
+                    <div className="w-1 h-3 bg-teal-300 rounded-full animate-steam-1"></div>
+                    <div className="w-1 h-4 bg-teal-300 rounded-full animate-steam-2"></div>
+                    <div className="w-1 h-2 bg-teal-300 rounded-full animate-steam-3"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <h2 className="text-xl font-semibold text-slate-700 mb-2">Loading Dashboard</h2>
+              <p className="text-slate-400 text-sm mb-6">Please wait while we fetch your data...</p>
+              
+              {/* Progress Bar */}
+              <div className="w-64 mx-auto">
+                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-teal-500 to-teal-600 rounded-full animate-loading-bar"></div>
+                </div>
+              </div>
+              
+              {/* Loading dots */}
+              <div className="flex justify-center gap-2 mt-4">
+                <div className="w-2 h-2 bg-teal-400 rounded-full animate-loading-dot-1"></div>
+                <div className="w-2 h-2 bg-teal-500 rounded-full animate-loading-dot-2"></div>
+                <div className="w-2 h-2 bg-teal-600 rounded-full animate-loading-dot-3"></div>
+              </div>
+            </div>
           </main>
         </div>
+        
+        {/* Custom CSS for animations */}
+        <style jsx>{`
+          @keyframes ping-slow {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.1; transform: scale(1.1); }
+          }
+          @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+          }
+          @keyframes steam-1 {
+            0% { transform: translateY(0) translateX(0); opacity: 0.6; }
+            100% { transform: translateY(-20px) translateX(-5px); opacity: 0; }
+          }
+          @keyframes steam-2 {
+            0% { transform: translateY(0) translateX(0); opacity: 0.6; }
+            100% { transform: translateY(-25px) translateX(0); opacity: 0; }
+          }
+          @keyframes steam-3 {
+            0% { transform: translateY(0) translateX(0); opacity: 0.6; }
+            100% { transform: translateY(-18px) translateX(5px); opacity: 0; }
+          }
+          @keyframes loading-bar {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+          }
+          @keyframes loading-dot-1 {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          @keyframes loading-dot-2 {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          @keyframes loading-dot-3 {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          .animate-ping-slow {
+            animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+          }
+          .animate-bounce-slow {
+            animation: bounce-slow 1.5s ease-in-out infinite;
+          }
+          .animate-steam-1 {
+            animation: steam-1 2s ease-out infinite;
+          }
+          .animate-steam-2 {
+            animation: steam-2 2.5s ease-out infinite;
+          }
+          .animate-steam-3 {
+            animation: steam-3 1.8s ease-out infinite;
+          }
+          .animate-loading-bar {
+            animation: loading-bar 2s ease-in-out infinite;
+          }
+          .animate-loading-dot-1 {
+            animation: loading-dot-1 1.2s ease-in-out infinite;
+          }
+          .animate-loading-dot-2 {
+            animation: loading-dot-2 1.2s ease-in-out 0.3s infinite;
+          }
+          .animate-loading-dot-3 {
+            animation: loading-dot-3 1.2s ease-in-out 0.6s infinite;
+          }
+        `}</style>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-500 bg-clip-text text-transparent">
+                Dashboard
+              </h1>
+              <p className="text-sm text-slate-500 mt-1">Welcome back! Here's what's happening today.</p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

@@ -30,7 +30,7 @@ export default function Promotions() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showModal, setShowModal] = useState(false)
-  const [editing, setEditing] = useState(null)
+  const [editing, setEditing] = useState(nulll)
   const [form, setForm] = useState({
     name: '',
     type: 'percentage',
