@@ -8,6 +8,8 @@ export default function Roles() {
   const [roles, setRoles] = useState([])
   const [allPermissions, setAllPermissions] = useState([])
   const [showModal, setShowModal] = useState(false)
+  const [showDetail, setShowDetail] = useState(false)
+  const [detailRole, setDetailRole] = useState(null)
   const [editing, setEditing] = useState(null)
   const [formData, setFormData] = useState({ name: '', slug: '', permissions: [] })
 
@@ -121,43 +123,59 @@ export default function Roles() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-gray-500 font-medium bg-gray-50 border-b border-gray-200">
-                  <th className="px-6 py-4">ID</th>
-                  <th className="px-6 py-4">Name</th>
+                  <th className="px-6 py-4 w-16">ID</th>
+                  <th className="px-6 py-4">Role Name</th>
                   <th className="px-6 py-4">Slug</th>
                   <th className="px-6 py-4">Permissions</th>
-                  <th className="px-6 py-4">Actions</th>
+                  <th className="px-6 py-4 w-56">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {roles.map((role) => (
-                  <tr key={role.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="px-6 py-4 text-gray-800 font-medium">{role.id}</td>
-                    <td className="px-6 py-4 text-gray-800">{role.name}</td>
-                    <td className="px-6 py-4 text-gray-600">{role.slug}</td>
+                  <tr key={role.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 text-gray-400 text-xs font-mono">{String(role.id).padStart(2, '0')}</td>
                     <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1.5">
-                        {role.permissions.length > 0
-                          ? role.permissions.map((p) => (
-                              <span key={p.id} className="px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 text-blue-700">
-                                {p.name}
-                              </span>
-                            ))
-                          : <span className="text-gray-400">-</span>
-                        }
-                      </div>
+                      <span className="font-semibold text-gray-800">{role.name}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
+                      <span className="text-gray-500 text-xs font-mono bg-gray-100 px-2 py-0.5 rounded">{role.slug}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        {role.permissions.length} Permission{role.permissions.length !== 1 ? 's' : ''}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => { setDetailRole(role); setShowDetail(true) }}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 transition-colors"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          View
+                        </button>
                         <button
                           onClick={() => openEditModal(role)}
-                          className="text-amber-600 hover:text-amber-800 text-xs font-medium transition-colors"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors"
                         >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(role.id)}
-                          className="text-red-600 hover:text-red-800 text-xs font-medium transition-colors"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 transition-colors"
                         >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
                           Delete
                         </button>
                       </div>
@@ -167,6 +185,81 @@ export default function Roles() {
               </tbody>
             </table>
           </div>
+
+          {showDetail && detailRole && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    <span className="text-gray-400 font-normal">Role &mdash;</span> {detailRole.name}
+                    <span className="text-gray-400 font-normal text-base ml-2">({detailRole.slug})</span>
+                  </h2>
+                  <button
+                    onClick={() => setShowDetail(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="px-6 py-4 space-y-4">
+                  <div className="flex items-center gap-4 text-sm">
+                    <span className="text-gray-500">Slug:</span>
+                    <span className="text-gray-800 font-mono text-xs bg-gray-100 px-2 py-0.5 rounded">{detailRole.slug}</span>
+                    <span className="text-gray-500 ml-4">Permissions:</span>
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700">
+                      {detailRole.permissions.length}
+                    </span>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">All Permissions</label>
+                    <div className="border border-gray-200 rounded-lg max-h-64 overflow-y-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="text-left text-gray-500 font-medium bg-gray-50 border-b border-gray-200">
+                            <th className="px-4 py-2 w-12">#</th>
+                            <th className="px-4 py-2">Permission Name</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {detailRole.permissions.length > 0 ? (
+                            detailRole.permissions.map((p, idx) => (
+                              <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                                <td className="px-4 py-2 text-gray-400 text-xs font-mono">{String(idx + 1).padStart(2, '0')}</td>
+                                <td className="px-4 py-2 text-gray-700">{p.name}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan={2} className="px-4 py-6 text-center text-gray-400">No permissions assigned</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                  <button
+                    onClick={() => { setShowDetail(false); openEditModal(detailRole) }}
+                    className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-100 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit Role
+                  </button>
+                  <button
+                    onClick={() => setShowDetail(false)}
+                    className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {showModal && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

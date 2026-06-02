@@ -4,7 +4,7 @@ import Topbar from '../../../components/staff/Topbar.jsx'
 import CategoryFilter from './components/CategoryFilter.jsx'
 import ProductCard from './components/ProductCard.jsx'
 import CartSidebar from './components/CartSidebar.jsx'
-import { calcFinalPrice, calcComboCart } from '../../../utils/promotion.js'
+import { calcFinalPrice, calcComboCart, calcBuyXGetYGrouped } from '../../../utils/promotion.js'
 
 const API_URL = import.meta.env.VITE_API_URL
 const headers = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' })
@@ -266,11 +266,13 @@ export default function MenuOrder() {
 
   const fullTotal = cart.reduce((sum, c) => sum + c.unitPrice * c.qty, 0)
   const comboResult = useMemo(() => calcComboCart(cart, products), [cart, products])
+  const buyXGetYResult = useMemo(() => calcBuyXGetYGrouped(cart), [cart])
   const total = cart.reduce((sum, c) => {
     const cur = products.find((p) => p.id === c.id)
-    const baseFinal = calcFinalPrice(c.unitPrice, cur?.promotion, c.qty)
+    const baseFinal = cur?.promotion?.type === 'buy_x_get_y' ? c.unitPrice : calcFinalPrice(c.unitPrice, cur?.promotion, c.qty)
     const comboDisc = (comboResult.itemDiscounts[c.key] || 0) / c.qty
-    return sum + (baseFinal - comboDisc) * c.qty
+    const bxgyDisc = (buyXGetYResult.itemDiscounts[c.key] || 0) / c.qty
+    return sum + (baseFinal - comboDisc - bxgyDisc) * c.qty
   }, 0)
   const discountTotal = fullTotal - total
 
@@ -360,6 +362,7 @@ export default function MenuOrder() {
               onUpdateQty={updateQty}
               onPlaceOrder={placeOrder}
               comboResult={comboResult}
+              buyXGetYResult={buyXGetYResult}
               customerSearch={customerSearch}
               showCustomerDropdown={showCustomerDropdown}
               filteredCustomers={filteredCustomers}

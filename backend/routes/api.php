@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\HeroSliderController;
 use App\Http\Controllers\Api\IceLevelController;
 use App\Http\Controllers\Api\IngredientController;
 use App\Http\Controllers\Api\InventoryTransactionController;
+use App\Http\Controllers\Api\LoginHistoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentCheckoutController;
 use App\Http\Controllers\Api\PermissionController;
@@ -71,6 +72,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/users', [UserController::class, 'store']);
         Route::put('/users/{user}', [UserController::class, 'update']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
+        Route::get('/login-histories', [LoginHistoryController::class, 'index']);
+        Route::get('/login-histories/export-excel', [LoginHistoryController::class, 'exportExcel']);
     });
 
     Route::middleware('permission:manage-roles')->group(function () {

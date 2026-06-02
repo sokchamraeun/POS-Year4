@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
 const API_URL = import.meta.env.VITE_API_URL
-const token = localStorage.getItem('token')
-const headers = { Authorization: `Bearer ${token}` }
+const headers = { Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' }
 
 const periods = [
   { key: 'daily', label: 'Daily' },

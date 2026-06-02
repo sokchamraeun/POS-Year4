@@ -11,7 +11,7 @@ class UserController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = User::with('role');
+        $query = User::with('role', 'loginHistories');
 
         if ($request->type === 'customer') {
             $query->whereDoesntHave('role', function ($q) {
@@ -26,7 +26,7 @@ class UserController extends Controller
 
     public function show(User $user): JsonResponse
     {
-        $user->load('role');
+        $user->load('role', 'loginHistories');
 
         return response()->json($user);
     }
@@ -57,7 +57,20 @@ class UserController extends Controller
             'phone' => 'nullable|string|max:30',
             'role_id' => 'nullable|exists:roles,id',
             'status' => 'boolean',
+            'last_login_at' => 'nullable|date',
+            'logout_at' => 'nullable|date',
         ]);
+
+        if (array_key_exists('last_login_at', $data) && is_null($data['last_login_at'])) {
+            $user->last_login_at = null;
+        } elseif (array_key_exists('last_login_at', $data)) {
+            $user->last_login_at = $data['last_login_at'];
+        }
+        if (array_key_exists('logout_at', $data) && is_null($data['logout_at'])) {
+            $user->logout_at = null;
+        } elseif (array_key_exists('logout_at', $data)) {
+            $user->logout_at = $data['logout_at'];
+        }
 
         if (! empty($data['password'])) {
             $data['password'] = bcrypt($data['password']);

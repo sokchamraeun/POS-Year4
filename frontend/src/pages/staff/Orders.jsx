@@ -455,15 +455,19 @@ export default function Orders() {
                       })}
                     </tbody>
                     <tfoot>
+                      <tr>
+                        <td colSpan={7} className="pt-3 text-right text-sm text-gray-500">Subtotal</td>
+                        <td className="pt-3 text-right text-sm text-gray-500">${(selectedOrder.total + selectedOrder.discount).toFixed(2)}</td>
+                      </tr>
                       {selectedOrder.discount > 0 && selectedOrder.detail.filter(i => i.promotion).length > 0 && (
                         selectedOrder.detail.filter(i => i.promotion).map((item, idx) => {
                           const d = calcDiscount(item.price, item.promotion, item.qty)
                           if (d <= 0) return null
-                          const freeQty = Math.round(d / item.price)
+                          const displayQty = item.promotion?.type === 'buy_x_get_y' ? Math.round(d / item.price) : item.qty
                           return (
                             <tr key={idx}>
                               <td colSpan={7} className="pt-1 text-right text-[11px] text-green-600 font-medium">
-                                {getPromotionLabel(item.promotion)} &mdash; {item.name} x{freeQty}
+                                {getPromotionLabel(item.promotion)} &mdash; {item.name}{item.size ? ` (${item.size})` : ''} x{displayQty}
                               </td>
                               <td className="pt-1 text-right text-[11px] text-green-600 font-medium">-${d.toFixed(2)}</td>
                             </tr>
@@ -531,14 +535,18 @@ export default function Orders() {
                             promoItems.forEach((item) => {
                               const d = calcDiscount(item.price, item.promotion, item.qty)
                               if (d <= 0) return
-                              const freeQty = Math.round(d / item.price)
-                              html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">${getPromotionLabel(item.promotion)} &mdash; ${item.name} x${freeQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">-${d.toFixed(2)}</td></tr>`
+                              const displayQty = item.promotion?.type === 'buy_x_get_y' ? Math.round(d / item.price) : item.qty
+                              html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">${getPromotionLabel(item.promotion)} &mdash; ${item.name}${item.size ? ' ('+item.size+')' : ''} x${displayQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">-${d.toFixed(2)}</td></tr>`
                             })
                             if (html) {
                               const pNames = [...new Set(o.detail.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', ')
                               html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">Total Discount${pNames ? ' ('+pNames+')' : ''}</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">-${o.discount.toFixed(2)}</td></tr>`
                             } else if (o.discount > 0) {
                               html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">Promotion</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">-${o.discount.toFixed(2)}</td></tr>`
+                            }
+                            if (html) {
+                              const subtotal = o.total + o.discount
+                              html = `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#666">Subtotal</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#666">$${subtotal.toFixed(2)}</td></tr>` + html
                             }
                             return html
                           })()}<tr class="total"><td colspan="4" style="text-align:right">Total</td><td style="text-align:right">$${o.total.toFixed(2)}</td></tr></tfoot>

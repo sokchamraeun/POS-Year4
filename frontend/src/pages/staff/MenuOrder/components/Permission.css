@@ -1,0 +1,50 @@
+/* Permission component styling */
+:root {
+  --admin-bg: linear-gradient(135deg, #ff416c, #ff4b2b);
+  --manager-bg: linear-gradient(135deg, #1e90ff, #00bfff);
+  --staff-bg: linear-gradient(135deg, #32cd32, #7cfc00);
+  --guest-bg: linear-gradient(135deg, #ffb347, #ffcc33);
+  --default-bg: linear-gradient(135deg, #e0e0e0, #ffffff);
+  --blur: 12px;
+  --radius: 12px;
+}
+
+.permission-admin,
+.permission-manager,
+.permission-staff,
+.permission-guest,
+.permission-default {
+  padding: 1rem;
+  border-radius: var(--radius);
+  backdrop-filter: blur(var(--blur));
+  color: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.permission-admin {
+  background: var(--admin-bg);
+}
+.permission-manager {
+  background: var(--manager-bg);
+}
+.permission-staff {
+  background: var(--staff-bg);
+}
+.permission-guest {
+  background: var(--guest-bg);
+  color: #333333;
+}
+.permission-default {
+  background: var(--default-bg);
+  color: #333333;
+}
+
+/* Hover animation for premium feel */
+.permission-admin:hover,
+.permission-manager:hover,
+.permission-staff:hover,
+.permission-guest:hover,
+.permission-default:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}

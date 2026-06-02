@@ -35,6 +35,7 @@ import SugarLevel from './pages/staff/SugarLevel/SugarLevel.jsx'
 import Promotions from './pages/staff/Promotion/Promotion.jsx'
 import HeroSliderPage from './pages/staff/HeroSlider/Heroslider.jsx'
 import UserTest from './pages/staff/UserTest.jsx'
+import LoginHistory from './pages/staff/LogHistory/LoginHistory.jsx'
 import GlobalOrderNotification from './components/staff/GlobalOrderNotification.jsx'
 import Login from './pages/auth/Login.jsx'
 import ChangePassword from './pages/auth/ChangePassword.jsx'
@@ -79,6 +80,7 @@ export default function App() {
         <Route path="/staff/sugar-levels" element={<PrivateRoute><SugarLevel /></PrivateRoute>} />
         <Route path="/staff/promotions" element={<PrivateRoute><Promotions /></PrivateRoute>} />
         <Route path="/staff/hero-sliders" element={<PrivateRoute><HeroSliderPage /></PrivateRoute>} />
+        <Route path="/staff/login-history" element={<PrivateRoute><LoginHistory /></PrivateRoute>} />
         <Route path="/staff/user-test" element={<PrivateRoute><UserTest /></PrivateRoute>} />
         <Route path="/staff/login" element={<Login />} />
         <Route path="/staff/register" element={<Register />} />

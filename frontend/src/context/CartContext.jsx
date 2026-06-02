@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo } from 'react'
-import { calcFinalPrice, calcDiscount, calcComboCart } from '../utils/promotion.js'
+import { calcFinalPrice, calcDiscount, calcComboCart, calcBuyXGetYGrouped } from '../utils/promotion.js'
 
 const CartContext = createContext()
 
@@ -55,16 +55,24 @@ export function CartProvider({ children }) {
   const totalItems = items.reduce((sum, i) => sum + i.qty, 0)
   const fullTotal = items.reduce((sum, i) => sum + i.unitPrice * i.qty, 0)
   const comboResult = useMemo(() => calcComboCart(items, []), [items])
-  const discountTotal = items.reduce((sum, i) => sum + calcDiscount(i.unitPrice, i.promotion, i.qty), 0) + comboResult.totalDiscount
+  const buyXGetYResult = useMemo(() => calcBuyXGetYGrouped(items), [items])
+
+  const discountTotal = items.reduce((sum, i) => {
+    if (i.promotion?.type === 'buy_x_get_y') return sum
+    return sum + calcDiscount(i.unitPrice, i.promotion, i.qty)
+  }, 0) + comboResult.totalDiscount + buyXGetYResult.totalDiscount
+
   const totalPrice = items.reduce((sum, i) => {
-    const baseFinal = calcFinalPrice(i.unitPrice, i.promotion, i.qty)
+    const baseFinal = i.promotion?.type === 'buy_x_get_y' ? i.unitPrice : calcFinalPrice(i.unitPrice, i.promotion, i.qty)
     const comboDisc = (comboResult.itemDiscounts[i.key] || 0) / i.qty
-    return sum + (baseFinal - comboDisc) * i.qty
+    const bxgyDisc = (buyXGetYResult.itemDiscounts[i.key] || 0) / i.qty
+    return sum + (baseFinal - comboDisc - bxgyDisc) * i.qty
   }, 0)
 
   const promotions = useMemo(() => {
     const map = {}
-    items.forEach((i) => {
+    for (const i of items) {
+      if (i.promotion?.type === 'buy_x_get_y') continue
       if (i.promotion) {
         const key = i.promotion.id || i.promotion.type + i.unitPrice
         if (!map[key]) {
@@ -72,8 +80,23 @@ export function CartProvider({ children }) {
         }
         map[key].discount += calcDiscount(i.unitPrice, i.promotion, i.qty)
       }
-    })
-    return Object.values(map)
+    }
+    const bxgyMap = {}
+    for (const i of items) {
+      if (i.promotion?.type !== 'buy_x_get_y') continue
+      const pid = i.promotion.id || i.promotion.type + i.unitPrice
+      if (!bxgyMap[pid]) {
+        bxgyMap[pid] = { ...i.promotion, discount: 0, unitPrice: i.unitPrice }
+      }
+    }
+    for (const [key, disc] of Object.entries(buyXGetYResult.itemDiscounts)) {
+      const item = items.find(i => i.key === key)
+      if (item) {
+        const pid = item.promotion.id || item.promotion.type + item.unitPrice
+        if (bxgyMap[pid]) bxgyMap[pid].discount += disc
+      }
+    }
+    return [...Object.values(map), ...Object.values(bxgyMap)]
   }, [items])
 
   return (

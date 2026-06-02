@@ -154,6 +154,13 @@ export default function Invoice({ order, customer }) {
           })}
         </div>
 
+        {/* SUBTOTAL */}
+        <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] px-10 py-1" style={{ borderTop: '1px solid #ccc' }}>
+          <span />
+          <span className="text-right col-span-3 text-gray-500">Subtotal</span>
+          <span className="text-right text-gray-500">${(Number(order.total ?? 0) + Number(order.discount ?? 0)).toFixed(2)}</span>
+        </div>
+
         {/* PROMOTION DISCOUNT */}
         {Number(order.discount ?? 0) > 0 && items.filter(i => i.promotion).length > 0 && (
           <>
@@ -162,12 +169,14 @@ export default function Invoice({ order, customer }) {
               const price = item.unit_price ? Number(item.unit_price) : Number(item.subtotal ?? 0) / (item.qty ?? 1)
               const d = calcDiscount(price, prom, item.qty ?? 1)
               if (d <= 0) return null
-              const freeQty = Math.round(d / price)
+              const displayQty = prom?.type === 'buy_x_get_y' ? Math.round(d / price) : (item.qty ?? 1)
               const name = item.product?.name ?? item.name ?? 'Item'
+              const sizeName = item.size?.name ?? ''
+              const label = name + (sizeName ? ` (${sizeName})` : '')
               return (
                 <div key={idx} className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[9px] px-10 py-0.5">
                   <span />
-                  <span className="text-right col-span-3 text-green-600 font-medium">{getPromotionLabel(prom)} &mdash; {name} x{freeQty}</span>
+                  <span className="text-right col-span-3 text-green-600 font-medium">{getPromotionLabel(prom)} &mdash; {label} x{displayQty}</span>
                   <span className="text-right text-green-600 font-medium">-${d.toFixed(2)}</span>
                 </div>
               )

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\LoginHistory;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -48,6 +49,16 @@ class AuthController extends Controller
 
         $token = $user->createToken('api-token')->plainTextToken;
 
+        $user->update(['last_login_at' => now(), 'logout_at' => null]);
+
+        LoginHistory::create([
+            'user_id' => $user->id,
+            'login_at' => now(),
+            'ip_address' => $request->ip(),
+            'device' => $request->userAgent(),
+            'status' => 'active',
+        ]);
+
         return response()->json([
             'user' => $user->load('role.permissions'),
             'token' => $token,
@@ -85,9 +96,17 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
 
-        $request->user()->update(['logout_at' => now()]);
+        $user->update(['logout_at' => now()]);
+
+        LoginHistory::where('user_id', $user->id)
+            ->whereNull('logout_at')
+            ->latest('login_at')
+            ->first()
+            ?->update(['logout_at' => now(), 'status' => 'logged_out']);
+
+        $user->currentAccessToken()->delete();
 
         return response()->json(['message' => 'Logged out successfully.']);
     }

@@ -3,7 +3,7 @@ import TableSelector from './TableSelector.jsx'
 import CartItem from './CartItem.jsx'
 import PaymentSelector from './PaymentSelector.jsx'
 
-import { calcDiscount, getPromotionLabel } from '../../../../utils/promotion.js'
+import { calcFinalPrice, getPromotionLabel } from '../../../../utils/promotion.js'
 
 export default function CartSidebar({
   cart,
@@ -27,6 +27,7 @@ export default function CartSidebar({
   paymentMethod,
   onPaymentChange,
   comboResult,
+  buyXGetYResult,
 }) {
   return (
     <div className="w-80 shrink-0 flex flex-col">
@@ -63,16 +64,16 @@ export default function CartSidebar({
               {discountTotal > 0 && (
                 <div className="mb-2">
                   <p className="text-xs text-gray-500 font-medium mb-1">Promotions</p>
+                  {/* Regular non-buy_x_get_y promotions */}
                   {cart.map(c => {
                     const cur = products?.find(p => p.id === c.id)
                     const rows = []
-                    if (cur?.promotion && cur.promotion.type !== 'combo_discount' && cur.promotion.type !== 'combo') {
-                      const d = calcDiscount(c.unitPrice, cur.promotion, c.qty)
+                    if (cur?.promotion && cur.promotion.type !== 'buy_x_get_y' && cur.promotion.type !== 'combo_discount' && cur.promotion.type !== 'combo') {
+                      const d = c.unitPrice * c.qty - calcFinalPrice(c.unitPrice, cur.promotion, c.qty) * c.qty
                       if (d > 0) {
-                        const freeQty = Math.round(d / c.unitPrice)
                         rows.push(
                           <div key={c.key + '-reg'} className="flex items-center justify-between text-xs text-green-600 mb-0.5">
-                            <span>{getPromotionLabel(cur.promotion)} &mdash; {c.name} x{freeQty}</span>
+                            <span>{getPromotionLabel(cur.promotion)} &mdash; {c.name}</span>
                             <span>-${d.toFixed(2)}</span>
                           </div>
                         )
@@ -80,6 +81,18 @@ export default function CartSidebar({
                     }
                     return rows
                   })}
+                  {/* Grouped Buy X Get Y promotions */}
+                  {buyXGetYResult?.totalDiscount > 0 && (() => {
+                    const items = cart.filter(c => buyXGetYResult.itemDiscounts[c.key])
+                    if (items.length === 0) return null
+                    const prom = items[0]?.promotion
+                    return (
+                      <div key="bxgy-total" className="flex items-center justify-between text-xs text-green-600 mb-0.5">
+                        <span>{getPromotionLabel(prom)}</span>
+                        <span>-${buyXGetYResult.totalDiscount.toFixed(2)}</span>
+                      </div>
+                    )
+                  })()}
                   {comboResult?.totalDiscount > 0 && (() => {
                     const comboKeys = Object.keys(comboResult.itemDiscounts)
                     const comboItems = cart.filter(c => comboKeys.includes(c.key))

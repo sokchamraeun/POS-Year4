@@ -15,6 +15,7 @@ const userLinks = [
   { to: '/staff/users', label: 'Users', perm: 'manage-staff' },
   { to: '/staff/customers', label: 'Customers', perm: 'manage-customers' },
   { to: '/staff/permissions', label: 'Permissions', perm: 'manage-permissions' },
+  { to: '/staff/login-history', label: 'Login History', perm: 'manage-staff' },
   { to: '/staff/user-test', label: 'User Test', perm: 'manage-staff' },
 ].filter(l => hasPerm(l.perm))
 
@@ -247,7 +248,7 @@ export default function Sidebar() {
 
   if (collapsed) {
     return (
-      <div className="w-20 bg-zinc-950 text-zinc-100 flex flex-col shrink-0 border-r border-zinc-800/80 transition-all duration-300 shadow-2xl relative z-20">
+      <div className="w-20 h-screen bg-zinc-950 text-zinc-100 flex flex-col shrink-0 border-r border-zinc-800/80 transition-all duration-300 shadow-2xl relative z-20">
         <button
           onClick={() => setCollapsedPersist(false)}
           className="flex items-center justify-center h-20 text-zinc-400 hover:text-white transition-colors border-b border-zinc-800/80 hover:bg-zinc-900/50"
@@ -275,7 +276,7 @@ export default function Sidebar() {
             </NavLink>
           ))}
           <button
-            onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' }}
+            onClick={async () => { try { await fetch('/api/logout', { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' } }) } catch {} finally { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' } }}
             className="flex items-center justify-center w-12 h-12 rounded-2xl text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 mt-auto hover:scale-105"
             title="Logout"
           >
@@ -289,7 +290,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-72 bg-zinc-950 text-zinc-100 flex flex-col shrink-0 border-r border-zinc-800/80 transition-all duration-300 shadow-2xl relative z-20">
+    <aside className="w-72 h-screen bg-zinc-950 text-zinc-100 flex flex-col shrink-0 border-r border-zinc-800/80 transition-all duration-300 shadow-2xl relative z-20">
       <div className="flex items-center gap-4 px-6 h-20 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
         <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 transform -rotate-2">
           <span className="text-white font-extrabold text-xl">{user?.username?.[0]?.toUpperCase() || 'V'}</span>
@@ -448,7 +449,7 @@ export default function Sidebar() {
       
       <div className="p-4 border-t border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
         <button
-          onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' }}
+          onClick={async () => { try { await fetch('/api/logout', { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' } }) } catch {} finally { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' } }}
           className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-semibold text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

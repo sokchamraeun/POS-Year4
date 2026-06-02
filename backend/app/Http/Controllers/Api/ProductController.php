@@ -121,28 +121,19 @@ class ProductController extends Controller
             'status' => $request->boolean('status'),
         ]);
 
-        $product->sugarLevels()->detach();
-        if (! empty($data['sugar_levels'])) {
-            $product->sugarLevels()->attach($data['sugar_levels']);
-        }
+        $product->sugarLevels()->sync($data['sugar_levels'] ?? []);
+        $product->iceLevels()->sync($data['ice_levels'] ?? []);
 
-        $product->iceLevels()->detach();
-        if (! empty($data['ice_levels'])) {
-            $product->iceLevels()->attach($data['ice_levels']);
-        }
-
-        $product->sizes()->detach();
         if (! empty($data['sizes'])) {
             $sizeData = [];
             foreach ($data['sizes'] as $size) {
                 $sizeData[$size['id']] = ['price' => $size['price'] ?? 0];
             }
-            $product->sizes()->attach($sizeData);
+            $product->sizes()->sync($sizeData);
+        } else {
+            $product->sizes()->sync([]);
         }
-        $product->addons()->detach();
-        if (! empty($data['addons'])) {
-            $product->addons()->attach($data['addons']);
-        }
+        $product->addons()->sync($data['addons'] ?? []);
 
         Cache::flush();
         $product->load(['category', 'sizes', 'addons.sizePrices', 'sugarLevels', 'iceLevels', 'promotions']);

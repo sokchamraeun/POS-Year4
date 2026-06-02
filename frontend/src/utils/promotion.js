@@ -67,6 +67,49 @@ export function formatPrice(amount) {
   return `$${Number(amount).toFixed(2)}`
 }
 
+// Group items by (product id + size) and calculate Buy X Get Y across the group
+// so sugar/ice differences don't break the promotion count
+export function calcBuyXGetYGrouped(cartItems) {
+  const groups = {}
+
+  for (const item of cartItems) {
+    if (item.promotion?.type !== 'buy_x_get_y') continue
+    const groupKey = `${item.id}-${item.size}`
+    if (!groups[groupKey]) {
+      groups[groupKey] = { items: [], promotion: item.promotion }
+    }
+    groups[groupKey].items.push(item)
+  }
+
+  const result = { totalDiscount: 0, itemDiscounts: {} }
+
+  for (const { items, promotion } of Object.values(groups)) {
+    const totalQty = items.reduce((sum, i) => sum + i.qty, 0)
+    const buy = Number(promotion.buy_qty) || 1
+    const free = Number(promotion.free_qty) || 0
+    const bundleSize = buy + free
+    const fullBundles = Math.floor(totalQty / bundleSize)
+    const freeItems = fullBundles * free
+
+    if (freeItems === 0) continue
+
+    // discount cheapest items first
+    const sorted = [...items].sort((a, b) => a.unitPrice - b.unitPrice)
+    let remaining = freeItems
+    for (const item of sorted) {
+      if (remaining <= 0) break
+      const take = Math.min(remaining, item.qty)
+      const disc = take * item.unitPrice
+      result.itemDiscounts[item.key] = (result.itemDiscounts[item.key] || 0) + disc
+      remaining -= take
+    }
+
+    result.totalDiscount += freeItems * sorted[0].unitPrice
+  }
+
+  return result
+}
+
 function itemMatchesGroup(item, group) {
   if (group.products?.includes(item.id)) return true
   if (group.categories?.includes(item.category_id)) return true

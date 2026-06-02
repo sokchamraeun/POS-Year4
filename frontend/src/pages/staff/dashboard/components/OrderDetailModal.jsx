@@ -73,12 +73,16 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
                   const unitPrice = Number(item.unit_price ?? item.price ?? 0)
                   const d = calcDiscount(unitPrice, prom, item.qty ?? 1)
                   if (d <= 0) return
-                  const freeQty = Math.round(d / unitPrice)
+                  const displayQty = prom?.type === 'buy_x_get_y' ? Math.round(d / unitPrice) : (item.qty ?? 1)
                   const name = item.product?.name ?? item.name ?? 'Item'
-                  html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">${getPromotionLabel(prom)} &mdash; ${name} x${freeQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">-${d.toFixed(2)}</td></tr>`
+                  const sizeName = item.size?.name ?? ''
+                  const label = name + (sizeName ? ` (${sizeName})` : '')
+                  html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">${getPromotionLabel(prom)} &mdash; ${label} x${displayQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">-${d.toFixed(2)}</td></tr>`
                 })
                 if (html) {
+                  const subtotal = Number(order.total ?? 0) + Number(order.discount ?? 0)
                   const pNames = [...new Set(items.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', ')
+                  html = `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#666">Subtotal</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#666">$${subtotal.toFixed(2)}</td></tr>` + html
                   html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">Total Discount${pNames ? ' ('+pNames+')' : ''}</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">-${Number(order.discount).toFixed(2)}</td></tr>`
                 } else if (Number(order.discount ?? 0) > 0) {
                   html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">Promotion</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">-${Number(order.discount).toFixed(2)}</td></tr>`
@@ -196,18 +200,24 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
               })}
             </tbody>
             <tfoot>
+              <tr>
+                <td colSpan={7} className="pt-3 text-right text-sm text-gray-500">Subtotal</td>
+                <td className="pt-3 text-right text-sm text-gray-500">${(Number(order.total ?? 0) + Number(order.discount ?? 0)).toFixed(2)}</td>
+              </tr>
               {Number(order.discount ?? 0) > 0 && (order.items ?? []).filter(i => i.promotion).length > 0 && (
                 (order.items ?? []).filter(i => i.promotion).map((item, idx) => {
                   const prom = item.promotion
                   const unitPrice = Number(item.unit_price ?? item.price ?? 0)
                   const d = calcDiscount(unitPrice, prom, item.qty ?? 1)
                   if (d <= 0) return null
-                  const freeQty = Math.round(d / unitPrice)
+                  const displayQty = prom?.type === 'buy_x_get_y' ? Math.round(d / unitPrice) : (item.qty ?? 1)
                   const name = item.product?.name ?? item.name ?? 'Item'
+                  const sizeName = item.size?.name ?? ''
+                  const label = name + (sizeName ? ` (${sizeName})` : '')
                   return (
                     <tr key={idx}>
                       <td colSpan={7} className="pt-1 text-right text-[11px] text-green-600 font-medium">
-                        {getPromotionLabel(prom)} &mdash; {name} x{freeQty}
+                        {getPromotionLabel(prom)} &mdash; {label} x{displayQty}
                       </td>
                       <td className="pt-1 text-right text-[11px] text-green-600 font-medium">-${d.toFixed(2)}</td>
                     </tr>
