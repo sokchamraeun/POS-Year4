@@ -2,6 +2,7 @@ import CustomerSearch from './CustomerSearch.jsx'
 import TableSelector from './TableSelector.jsx'
 import CartItem from './CartItem.jsx'
 import PaymentSelector from './PaymentSelector.jsx'
+import { Trash2 } from 'lucide-react'
 
 import { calcFinalPrice, getPromotionLabel } from '../../../../utils/promotion.js'
 
@@ -29,6 +30,10 @@ export default function CartSidebar({
   comboResult,
   buyXGetYResult,
 }) {
+  const handleDeleteItem = (key) => {
+    onUpdateQty(key, 0)
+  }
+
   return (
     <div className="w-96 shrink-0 flex flex-col">
       <div className="bg-white rounded-xl shadow-sm flex flex-col flex-1 overflow-hidden">
@@ -56,10 +61,91 @@ export default function CartSidebar({
         ) : (
           <>
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-              {cart.map((c) => (
-                <CartItem key={c.key} item={c} products={products} onUpdateQty={onUpdateQty} />
-              ))}
+              {cart.map((c) => {
+                const cur = products?.find(p => p.id === c.id)
+                const isBogo = cur?.promotion?.type === 'buy_x_get_y'
+                
+                return (
+                  <div key={c.key} className="border border-gray-200 rounded-lg p-3 bg-white hover:shadow-sm transition-shadow">
+                    {/* Product Name and Promotion */}
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="text-sm font-semibold text-gray-800">{c.name}</p>
+                          {isBogo && cur?.promotion && (
+                            <span className="text-[10px] font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                              Buy {cur.promotion.buy_qty} Get {cur.promotion.free_qty} Free
+                            </span>
+                          )}
+                        </div>
+                        
+                        {/* Options (Size, Sugar, Ice, Add-ons) */}
+                        <div className="flex flex-wrap gap-1.5 mt-1.5">
+                          {c.size && (
+                            <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
+                              {c.size}
+                            </span>
+                          )}
+                          {c.sugar && (
+                            <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
+                              {c.sugar}
+                            </span>
+                          )}
+                          {c.ice && (
+                            <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
+                              {c.ice}
+                            </span>
+                          )}
+                          {c.addOn && (
+                            <span className="text-[10px] text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">
+                              +{c.addOn}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Price */}
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-gray-800">${(c.unitPrice * c.qty).toFixed(2)}</p>
+                        {c.unitPrice !== c.finalPrice && (
+                          <p className="text-[10px] text-gray-400 line-through">${(c.unitPrice).toFixed(2)}</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Quantity Controls and Delete Button */}
+                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
+                      <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg p-1">
+                        <button 
+                          onClick={() => onUpdateQty(c.key, Math.max(1, c.qty - 1))} 
+                          className="w-7 h-7 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors"
+                        >
+                          -
+                        </button>
+                        <span className="w-8 text-center text-sm font-medium text-gray-800">{c.qty}</span>
+                        <button 
+                          onClick={() => onUpdateQty(c.key, c.qty + 1)} 
+                          className="w-7 h-7 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors"
+                        >
+                          +
+                        </button>
+                      </div>
+                      
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => handleDeleteItem(c.key)}
+                        className="flex items-center gap-1.5 px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg transition-all duration-200 text-xs font-medium"
+                        title="Remove item"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Remove</span>
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
+            
             <div className="border-t border-gray-200 px-4 py-4 shrink-0">
               {discountTotal > 0 && (
                 <div className="mb-2">
