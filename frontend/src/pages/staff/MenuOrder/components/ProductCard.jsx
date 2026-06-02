@@ -44,18 +44,25 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
   const totalPrice = finalPrice * paidItems
 
   const handleAddToCart = () => {
+    // First update all options in parent state
     onSetOpt(product.id, 'size', selectedSize)
     onSetOpt(product.id, 'ice', selectedIce)
     onSetOpt(product.id, 'sugar', selectedSugar)
     onSetOpt(product.id, 'addOn', selectedAddOn)
     
-    const productWithQuantity = {
+    // Create a new product object with the CURRENT selections
+    const productWithOptions = {
       ...product,
       quantity: quantity,
-      freeItems: freeItems
+      freeItems: freeItems,
+      // Explicitly set the selected options
+      selectedSize: selectedSize,
+      selectedIce: selectedIce,
+      selectedSugar: selectedSugar,
+      selectedAddOn: selectedAddOn
     }
     
-    onAddToCart(productWithQuantity)
+    onAddToCart(productWithOptions)
     setShowModal(false)
     setQuantity(1)
   }

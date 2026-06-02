@@ -99,8 +99,25 @@ export default function MenuOrder() {
   }
 
   function addToCart(product) {
-    const opt = { ...getDefaultOpt(product), ...getOpt(product.id) }
-    const { size, sugar, ice, addOn } = opt
+    // Check if product has custom options from modal (selectedSize, selectedIce, etc.)
+    const hasCustomOptions = product.selectedSize !== undefined
+    
+    let size, sugar, ice, addOn
+    
+    if (hasCustomOptions) {
+      // Use the values directly from the product object (passed from modal)
+      size = product.selectedSize
+      sugar = product.selectedSugar
+      ice = product.selectedIce
+      addOn = product.selectedAddOn
+    } else {
+      // Use stored options or defaults
+      const opt = { ...getDefaultOpt(product), ...getOpt(product.id) }
+      size = opt.size
+      sugar = opt.sugar
+      ice = opt.ice
+      addOn = opt.addOn
+    }
 
     const sizeObj = product.sizes?.find((s) => s.name === size)
     const sizeId = sizeObj?.id
@@ -200,7 +217,6 @@ export default function MenuOrder() {
 
       const createdOrder = await orderRes.json()
       const dbOrderId = createdOrder.id ?? null
-      const orderTotal = total
 
       const localOrder = {
         id: `#${Date.now().toString().slice(-6)}`,
