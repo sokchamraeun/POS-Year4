@@ -80,14 +80,14 @@ const recipes = {
 const tabs = ['All', 'Completed', 'Processing', 'New', 'Cancelled']
 
 const statusColors = {
-  Completed: 'text-green-600 bg-green-100',
+  Completed: 'text-teal-700 bg-teal-100',
   Processing: 'text-blue-600 bg-blue-100',
-  New: 'text-yellow-600 bg-yellow-100',
+  New: 'text-amber-600 bg-amber-100',
   Cancelled: 'text-red-600 bg-red-100',
 }
 
 const paymentColors = {
-  Paid: 'text-green-600 bg-green-100',
+  Paid: 'text-teal-700 bg-teal-100',
   Unpaid: 'text-red-600 bg-red-100',
   Refunded: 'text-gray-600 bg-gray-100',
 }
@@ -217,19 +217,13 @@ export default function Orders() {
           <Topbar />
           <main className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              {/* Animated Container */}
               <div className="relative w-24 h-24 mx-auto mb-6">
-                {/* Outer ring pulse animation */}
                 <div className="absolute inset-0 rounded-full animate-ping-slow">
                   <div className="w-full h-full rounded-full bg-teal-200 opacity-30"></div>
                 </div>
-                
-                {/* Main spinner */}
                 <div className="relative w-24 h-24">
                   <div className="w-full h-full rounded-full border-4 border-teal-100 animate-spin"></div>
                   <div className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-t-teal-600 border-r-teal-600 border-b-transparent border-l-transparent animate-spin"></div>
-                  
-                  {/* Inner clipboard/order icon */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -237,19 +231,13 @@ export default function Orders() {
                   </div>
                 </div>
               </div>
-              
-              {/* Loading text */}
               <h2 className="text-xl font-semibold text-slate-700 mb-2">Loading Orders</h2>
               <p className="text-slate-400 text-sm mb-6">Please wait while we fetch your orders...</p>
-              
-              {/* Progress Bar */}
               <div className="w-64 mx-auto">
                 <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-teal-500 to-teal-600 rounded-full animate-loading-bar"></div>
                 </div>
               </div>
-              
-              {/* Loading dots */}
               <div className="flex justify-center gap-2 mt-4">
                 <div className="w-2 h-2 bg-teal-400 rounded-full animate-loading-dot-1"></div>
                 <div className="w-2 h-2 bg-teal-500 rounded-full animate-loading-dot-2"></div>
@@ -258,8 +246,6 @@ export default function Orders() {
             </div>
           </main>
         </div>
-        
-        {/* Custom CSS for animations */}
         <style jsx>{`
           @keyframes ping-slow {
             0%, 100% { opacity: 0.2; transform: scale(1); }
@@ -282,21 +268,11 @@ export default function Orders() {
             0%, 100% { opacity: 0.3; transform: scale(1); }
             50% { opacity: 1; transform: scale(1.2); }
           }
-          .animate-ping-slow {
-            animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-          }
-          .animate-loading-bar {
-            animation: loading-bar 2s ease-in-out infinite;
-          }
-          .animate-loading-dot-1 {
-            animation: loading-dot-1 1.2s ease-in-out infinite;
-          }
-          .animate-loading-dot-2 {
-            animation: loading-dot-2 1.2s ease-in-out 0.3s infinite;
-          }
-          .animate-loading-dot-3 {
-            animation: loading-dot-3 1.2s ease-in-out 0.6s infinite;
-          }
+          .animate-ping-slow { animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite; }
+          .animate-loading-bar { animation: loading-bar 2s ease-in-out infinite; }
+          .animate-loading-dot-1 { animation: loading-dot-1 1.2s ease-in-out infinite; }
+          .animate-loading-dot-2 { animation: loading-dot-2 1.2s ease-in-out 0.3s infinite; }
+          .animate-loading-dot-3 { animation: loading-dot-3 1.2s ease-in-out 0.6s infinite; }
         `}</style>
       </div>
     )
@@ -332,8 +308,8 @@ export default function Orders() {
             </div>
           )}
 
-          <div className="bg-white rounded-2xl shadow-lg shadow-teal-100/50 border border-teal-100 overflow-hidden">
-            <div className="px-6 py-4 border-b border-teal-100 flex items-center gap-4 overflow-x-auto bg-gradient-to-r from-white to-teal-50/30">
+          <div className="bg-white rounded-2xl shadow-lg shadow-teal-100/50 border border-teal-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-teal-200 flex items-center gap-4 overflow-x-auto bg-gradient-to-r from-white to-teal-50/30">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -352,7 +328,7 @@ export default function Orders() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-100">
+                  <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-200">
                     <th className="px-6 py-4">Order</th>
                     <th className="px-6 py-4">Customer</th>
                     <th className="px-6 py-4">Phone</th>
@@ -417,7 +393,7 @@ export default function Orders() {
             </div>
 
             {lastPage > 1 && !loading && (
-              <div className="px-6 py-4 border-t border-teal-100 bg-teal-50/20 flex items-center justify-between">
+              <div className="px-6 py-4 border-t border-teal-200 bg-teal-50/20 flex items-center justify-between">
                 <span className="text-xs text-slate-500">Page {page} of {lastPage} ({total} orders)</span>
                 <div className="flex items-center gap-1">
                   <button
@@ -462,7 +438,7 @@ export default function Orders() {
           {selectedOrder && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col border border-teal-200">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-teal-100 bg-gradient-to-r from-teal-50 to-white">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-teal-200 bg-gradient-to-r from-teal-50 to-white">
                   <h2 className="text-lg font-bold text-teal-600">{selectedOrder.id}</h2>
                   <button onClick={() => setSelectedOrder(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -480,7 +456,7 @@ export default function Orders() {
                     </div>
                     <span className="text-slate-400">{selectedOrder.datetime}</span>
                   </div>
-                  <div className="mb-4 pb-4 border-b border-teal-100 space-y-2">
+                  <div className="mb-4 pb-4 border-b border-teal-200 space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-slate-500 w-20">Method:</span>
                       <span className="text-sm text-slate-700 font-medium capitalize">{selectedOrder.paymentMethod}</span>
@@ -562,9 +538,9 @@ export default function Orders() {
                             <tr key={idx}>
                               <td colSpan={7} className="pt-1 text-right text-[11px] text-green-600 font-medium">
                                 {getPromotionLabel(item.promotion)} &mdash; {item.name}{item.size ? ` (${item.size})` : ''} x{displayQty}
-                               </td>
+                              </td>
                               <td className="pt-1 text-right text-[11px] text-green-600 font-medium">-${d.toFixed(2)}</td>
-                             </tr>
+                            </tr>
                           )
                         })
                       )}
@@ -572,18 +548,18 @@ export default function Orders() {
                         <tr>
                           <td colSpan={7} className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">
                             {selectedOrder.detail.some(i => i.promotion) ? (() => { const pNames = [...new Set(selectedOrder.detail.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', '); return `Total Discount${pNames ? ' ('+pNames+')' : ''}` })() : 'Promotion'}
-                           </td>
+                          </td>
                           <td className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">-${selectedOrder.discount.toFixed(2)}</td>
-                         </tr>
+                        </tr>
                       )}
                       <tr>
                         <td colSpan={7} className="pt-3 text-right font-semibold text-slate-800">Total</td>
                         <td className="pt-3 text-right font-semibold text-teal-600">${selectedOrder.total.toFixed(2)}</td>
-                       </tr>
+                      </tr>
                     </tfoot>
                   </table>
                 </div>
-                <div className="px-6 py-4 border-t border-teal-100 bg-teal-50/30 flex justify-between items-center gap-2">
+                <div className="px-6 py-4 border-t border-teal-200 bg-teal-50/30 flex justify-between items-center gap-2">
                   <button
                     onClick={() => {
                       const numericId = selectedOrder.id.startsWith('#') ? selectedOrder.id.slice(1) : selectedOrder.id
@@ -619,7 +595,7 @@ export default function Orders() {
                         </div>
                         <hr>
                         <table>
-                          <thead><tr><th style="text-align:center">No.</th><th>Item</th><th style="text-align:center">Qty</th><th class="right">Price</th><th class="right">Subtotal</th></td></thead>
+                          <thead><tr><th style="text-align:center">No.</th><th>Item</th><th style="text-align:center">Qty</th><th class="right">Price</th><th class="right">Subtotal</th></tr></thead>
                           <tbody>${itemsHtml}</tbody>
                           <tfoot>${(() => {
                             const promoItems = o.detail.filter(i => i.promotion)
