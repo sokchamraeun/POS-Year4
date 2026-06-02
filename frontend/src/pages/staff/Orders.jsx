@@ -209,17 +209,115 @@ export default function Orders() {
     })
   }
 
+  if (loading) {
+    return (
+      <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+        <Sidebar />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Topbar />
+          <main className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              {/* Animated Container */}
+              <div className="relative w-24 h-24 mx-auto mb-6">
+                {/* Outer ring pulse animation */}
+                <div className="absolute inset-0 rounded-full animate-ping-slow">
+                  <div className="w-full h-full rounded-full bg-teal-200 opacity-30"></div>
+                </div>
+                
+                {/* Main spinner */}
+                <div className="relative w-24 h-24">
+                  <div className="w-full h-full rounded-full border-4 border-teal-100 animate-spin"></div>
+                  <div className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-t-teal-600 border-r-teal-600 border-b-transparent border-l-transparent animate-spin"></div>
+                  
+                  {/* Inner clipboard/order icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Loading text */}
+              <h2 className="text-xl font-semibold text-slate-700 mb-2">Loading Orders</h2>
+              <p className="text-slate-400 text-sm mb-6">Please wait while we fetch your orders...</p>
+              
+              {/* Progress Bar */}
+              <div className="w-64 mx-auto">
+                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-teal-500 to-teal-600 rounded-full animate-loading-bar"></div>
+                </div>
+              </div>
+              
+              {/* Loading dots */}
+              <div className="flex justify-center gap-2 mt-4">
+                <div className="w-2 h-2 bg-teal-400 rounded-full animate-loading-dot-1"></div>
+                <div className="w-2 h-2 bg-teal-500 rounded-full animate-loading-dot-2"></div>
+                <div className="w-2 h-2 bg-teal-600 rounded-full animate-loading-dot-3"></div>
+              </div>
+            </div>
+          </main>
+        </div>
+        
+        {/* Custom CSS for animations */}
+        <style jsx>{`
+          @keyframes ping-slow {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.1; transform: scale(1.1); }
+          }
+          @keyframes loading-bar {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+          }
+          @keyframes loading-dot-1 {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          @keyframes loading-dot-2 {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          @keyframes loading-dot-3 {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          .animate-ping-slow {
+            animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+          }
+          .animate-loading-bar {
+            animation: loading-bar 2s ease-in-out infinite;
+          }
+          .animate-loading-dot-1 {
+            animation: loading-dot-1 1.2s ease-in-out infinite;
+          }
+          .animate-loading-dot-2 {
+            animation: loading-dot-2 1.2s ease-in-out 0.3s infinite;
+          }
+          .animate-loading-dot-3 {
+            animation: loading-dot-3 1.2s ease-in-out 0.6s infinite;
+          }
+        `}</style>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Orders</h1>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-500 bg-clip-text text-transparent">
+                Orders
+              </h1>
+              <p className="text-sm text-slate-500 mt-1">Manage and track customer orders</p>
+            </div>
             <button
               onClick={clearLocal}
-              className="text-sm text-red-600 hover:text-red-800 font-medium transition-colors"
+              className="text-sm text-red-600 hover:text-red-700 font-medium transition-colors"
             >
               Clear Local
             </button>
@@ -234,16 +332,16 @@ export default function Orders() {
             </div>
           )}
 
-          <div className="bg-white rounded-xl shadow-sm">
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center gap-4 overflow-x-auto">
+          <div className="bg-white rounded-2xl shadow-lg shadow-teal-100/50 border border-teal-100 overflow-hidden">
+            <div className="px-6 py-4 border-b border-teal-100 flex items-center gap-4 overflow-x-auto bg-gradient-to-r from-white to-teal-50/30">
               {tabs.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`text-sm font-medium whitespace-nowrap transition-colors ${
+                  className={`text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                     activeTab === tab
-                      ? 'text-blue-600 border-b-2 border-blue-600 pb-1'
-                      : 'text-gray-500 hover:text-gray-700'
+                      ? 'text-teal-600 border-b-2 border-teal-600 pb-1'
+                      : 'text-slate-500 hover:text-teal-600'
                   }`}
                 >
                   {tab}
@@ -251,85 +349,81 @@ export default function Orders() {
               ))}
             </div>
 
-            {loading ? (
-              <div className="p-6 text-center text-gray-500">Loading orders...</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-gray-500 font-medium">
-                      <th className="px-6 py-3">Order</th>
-                      <th className="px-6 py-3">Customer</th>
-                      <th className="px-6 py-3">Phone</th>
-                      <th className="px-6 py-3">Table</th>
-                      <th className="px-6 py-3">Items</th>
-                      <th className="px-6 py-3">Total</th>
-                      <th className="px-6 py-3">Date</th>
-                      <th className="px-6 py-3">Status</th>
-                      <th className="px-6 py-3">Payment</th>
-                      <th className="px-6 py-3">Method</th>
-                      <th className="px-6 py-3">Actions</th>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-100">
+                    <th className="px-6 py-4">Order</th>
+                    <th className="px-6 py-4">Customer</th>
+                    <th className="px-6 py-4">Phone</th>
+                    <th className="px-6 py-4">Table</th>
+                    <th className="px-6 py-4">Items</th>
+                    <th className="px-6 py-4">Total</th>
+                    <th className="px-6 py-4">Date</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4">Payment</th>
+                    <th className="px-6 py-4">Method</th>
+                    <th className="px-6 py-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((order) => (
+                    <tr key={order.id} className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200">
+                      <td className="px-6 py-4 font-semibold text-teal-600">{order.id}</td>
+                      <td className="px-6 py-4 text-slate-700">{order.customer}</td>
+                      <td className="px-6 py-4 text-slate-500">{order.phone}</td>
+                      <td className="px-6 py-4 text-slate-500">{order.table || '-'}</td>
+                      <td className="px-6 py-4 text-slate-700 font-medium">{order.items}</td>
+                      <td className="px-6 py-4 font-bold text-teal-600">${order.total.toFixed(2)}</td>
+                      <td className="px-6 py-4 text-slate-500">{order.date}</td>
+                      <td className="px-6 py-4">
+                        <select
+                          value={order.status}
+                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusColors[order.status]}`}
+                          style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
+                        >
+                          <option value="New">New</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Completed">Completed</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                      <td className="px-6 py-4">
+                        <select
+                          value={order.payment}
+                          onChange={(e) => handlePaymentChange(order.id, e.target.value)}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${paymentColors[order.payment]}`}
+                          style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
+                        >
+                          <option value="Paid">Paid</option>
+                          <option value="Unpaid">Unpaid</option>
+                          <option value="Refunded">Refunded</option>
+                        </select>
+                      </td>
+                      <td className="px-6 py-4 text-slate-600 capitalize">{order.paymentMethod}</td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => setSelectedOrder(order)}
+                          className="text-teal-600 hover:text-teal-700 text-xs font-medium transition-colors"
+                        >
+                          View Detail
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((order) => (
-                      <tr key={order.id} className="border-t border-gray-100 hover:bg-gray-50">
-                        <td className="px-6 py-4 font-medium text-gray-800">{order.id}</td>
-                        <td className="px-6 py-4 text-gray-600">{order.customer}</td>
-                        <td className="px-6 py-4 text-gray-500">{order.phone}</td>
-                        <td className="px-6 py-4 text-gray-500">{order.table || '-'}</td>
-                        <td className="px-6 py-4 text-gray-600">{order.items}</td>
-                        <td className="px-6 py-4 text-gray-800">${order.total.toFixed(2)}</td>
-                        <td className="px-6 py-4 text-gray-500">{order.date}</td>
-                        <td className="px-6 py-4">
-                          <select
-                            value={order.status}
-                            onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                            className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusColors[order.status]}`}
-                            style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
-                          >
-                            <option value="New">New</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Cancelled">Cancelled</option>
-                          </select>
-                        </td>
-                        <td className="px-6 py-4">
-                          <select
-                            value={order.payment}
-                            onChange={(e) => handlePaymentChange(order.id, e.target.value)}
-                            className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${paymentColors[order.payment]}`}
-                            style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
-                          >
-                            <option value="Paid">Paid</option>
-                            <option value="Unpaid">Unpaid</option>
-                            <option value="Refunded">Refunded</option>
-                          </select>
-                        </td>
-                        <td className="px-6 py-4 text-gray-600 capitalize">{order.paymentMethod}</td>
-                        <td className="px-6 py-4">
-                          <button
-                            onClick={() => setSelectedOrder(order)}
-                            className="text-blue-600 hover:text-blue-800 text-xs font-medium transition-colors"
-                          >
-                            View Detail
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
             {lastPage > 1 && !loading && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                <span className="text-xs text-gray-500">Page {page} of {lastPage} ({total} orders)</span>
+              <div className="px-6 py-4 border-t border-teal-100 bg-teal-50/20 flex items-center justify-between">
+                <span className="text-xs text-slate-500">Page {page} of {lastPage} ({total} orders)</span>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page <= 1}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page <= 1 ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page <= 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-teal-100'}`}
                   >
                     Prev
                   </button>
@@ -342,12 +436,12 @@ export default function Orders() {
                     }, [])
                     .map((item, i) =>
                       item === '...' ? (
-                        <span key={`e${i}`} className="px-2 py-1.5 text-xs text-gray-400">...</span>
+                        <span key={`e${i}`} className="px-2 py-1.5 text-xs text-slate-400">...</span>
                       ) : (
                         <button
                           key={item}
                           onClick={() => setPage(item)}
-                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${item === page ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${item === page ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:bg-teal-100'}`}
                         >
                           {item}
                         </button>
@@ -356,7 +450,7 @@ export default function Orders() {
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page >= lastPage}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page >= lastPage ? 'text-gray-300 cursor-not-allowed' : 'text-gray-600 hover:bg-gray-100'}`}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page >= lastPage ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-teal-100'}`}
                   >
                     Next
                   </button>
@@ -366,37 +460,37 @@ export default function Orders() {
           </div>
 
           {selectedOrder && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-800">{selectedOrder.id}</h2>
-                  <button onClick={() => setSelectedOrder(null)} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col border border-teal-200">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-teal-100 bg-gradient-to-r from-teal-50 to-white">
+                  <h2 className="text-lg font-bold text-teal-600">{selectedOrder.id}</h2>
+                  <button onClick={() => setSelectedOrder(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
                 <div className="px-6 py-4 overflow-y-auto">
-                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <div className="flex items-center justify-between text-sm text-slate-500 mb-4">
                     <div className="flex items-center gap-4">
-                      <span><span className="text-gray-400">Customer:</span> <span className="text-gray-800 font-medium">{selectedOrder.customer}</span></span>
-                      <span className="text-gray-300">|</span>
+                      <span><span className="text-slate-400">Customer:</span> <span className="text-slate-800 font-medium">{selectedOrder.customer}</span></span>
+                      <span className="text-teal-300">|</span>
                       <span>{selectedOrder.phone}</span>
-                      {selectedOrder.table && selectedOrder.table !== '-' ? <><span className="text-gray-300">|</span><span>Table: <span className="text-gray-800 font-medium">{selectedOrder.table}</span></span></> : null}
+                      {selectedOrder.table && selectedOrder.table !== '-' ? <><span className="text-teal-300">|</span><span>Table: <span className="text-teal-600 font-medium">{selectedOrder.table}</span></span></> : null}
                     </div>
-                    <span className="text-gray-400">{selectedOrder.datetime}</span>
+                    <span className="text-slate-400">{selectedOrder.datetime}</span>
                   </div>
-                  <div className="mb-4 pb-4 border-b border-gray-100 space-y-2">
+                  <div className="mb-4 pb-4 border-b border-teal-100 space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-500 w-20">Method:</span>
-                      <span className="text-sm text-gray-700 font-medium capitalize">{selectedOrder.paymentMethod}</span>
+                      <span className="text-sm text-slate-500 w-20">Method:</span>
+                      <span className="text-sm text-slate-700 font-medium capitalize">{selectedOrder.paymentMethod}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-500 w-20">Status:</span>
+                      <span className="text-sm text-slate-500 w-20">Status:</span>
                       <select
                         value={selectedOrder.status}
                         onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
-                        className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${statusColors[selectedOrder.status]?.split(' ')[0] || 'text-gray-600'}`}
+                        className={`text-sm border border-teal-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${statusColors[selectedOrder.status]?.split(' ')[0] || 'text-slate-600'}`}
                       >
                         <option value="New">New</option>
                         <option value="Processing">Processing</option>
@@ -405,11 +499,11 @@ export default function Orders() {
                       </select>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-500 w-20">Payment:</span>
+                      <span className="text-sm text-slate-500 w-20">Payment:</span>
                       <select
                         value={selectedOrder.payment}
                         onChange={(e) => handlePaymentChange(selectedOrder.id, e.target.value)}
-                        className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${paymentColors[selectedOrder.payment]?.split(' ')[0] || 'text-gray-600'}`}
+                        className={`text-sm border border-teal-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${paymentColors[selectedOrder.payment]?.split(' ')[0] || 'text-slate-600'}`}
                       >
                         <option value="Paid">Paid</option>
                         <option value="Unpaid">Unpaid</option>
@@ -419,7 +513,7 @@ export default function Orders() {
                   </div>
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-left text-gray-500 font-medium border-b border-gray-200">
+                      <tr className="text-left text-teal-600 font-semibold border-b border-teal-200">
                         <th className="pb-2">Item</th>
                         <th className="pb-2">Size</th>
                         <th className="pb-2">Sugar</th>
@@ -434,8 +528,8 @@ export default function Orders() {
                       {selectedOrder.detail.map((item, i) => {
                         const recipe = recipes[item.name]
                         return (
-                          <tr key={i} className="border-b border-gray-50">
-                            <td className="py-2.5 text-gray-800 font-medium">
+                          <tr key={i} className="border-b border-teal-50">
+                            <td className="py-2.5 text-slate-800 font-medium">
                               {item.name}
                               {item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' && (
                                 <span className="ml-1.5 text-[10px] text-green-600 font-medium">
@@ -443,21 +537,21 @@ export default function Orders() {
                                 </span>
                               )}
                             </td>
-                            <td className="py-2.5 text-gray-600">{item.size || '-'}</td>
-                            <td className="py-2.5 text-gray-600">{item.sugar || '-'}</td>
-                            <td className="py-2.5 text-gray-600">{item.ice || '-'}</td>
-                            <td className="py-2.5 text-gray-600">{item.addOn || '-'}</td>
-                            <td className="py-2.5 text-gray-600">{item.qty}</td>
-                            <td className="py-2.5 text-gray-600 text-right">${item.price.toFixed(2)}</td>
-                            <td className="py-2.5 text-gray-800 text-right font-medium">${(item.qty * item.price).toFixed(2)}</td>
+                            <td className="py-2.5 text-slate-600">{item.size || '-'}</td>
+                            <td className="py-2.5 text-slate-600">{item.sugar || '-'}</td>
+                            <td className="py-2.5 text-slate-600">{item.ice || '-'}</td>
+                            <td className="py-2.5 text-slate-600">{item.addOn || '-'}</td>
+                            <td className="py-2.5 text-slate-600">{item.qty}</td>
+                            <td className="py-2.5 text-slate-600 text-right">${item.price.toFixed(2)}</td>
+                            <td className="py-2.5 text-slate-800 text-right font-medium">${(item.qty * item.price).toFixed(2)}</td>
                           </tr>
                         )
                       })}
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colSpan={7} className="pt-3 text-right text-sm text-gray-500">Subtotal</td>
-                        <td className="pt-3 text-right text-sm text-gray-500">${(selectedOrder.total + selectedOrder.discount).toFixed(2)}</td>
+                        <td colSpan={7} className="pt-3 text-right text-sm text-slate-500">Subtotal</td>
+                        <td className="pt-3 text-right text-sm text-slate-500">${(selectedOrder.total + selectedOrder.discount).toFixed(2)}</td>
                       </tr>
                       {selectedOrder.discount > 0 && selectedOrder.detail.filter(i => i.promotion).length > 0 && (
                         selectedOrder.detail.filter(i => i.promotion).map((item, idx) => {
@@ -468,9 +562,9 @@ export default function Orders() {
                             <tr key={idx}>
                               <td colSpan={7} className="pt-1 text-right text-[11px] text-green-600 font-medium">
                                 {getPromotionLabel(item.promotion)} &mdash; {item.name}{item.size ? ` (${item.size})` : ''} x{displayQty}
-                              </td>
+                               </td>
                               <td className="pt-1 text-right text-[11px] text-green-600 font-medium">-${d.toFixed(2)}</td>
-                            </tr>
+                             </tr>
                           )
                         })
                       )}
@@ -478,20 +572,18 @@ export default function Orders() {
                         <tr>
                           <td colSpan={7} className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">
                             {selectedOrder.detail.some(i => i.promotion) ? (() => { const pNames = [...new Set(selectedOrder.detail.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', '); return `Total Discount${pNames ? ' ('+pNames+')' : ''}` })() : 'Promotion'}
-                          </td>
+                           </td>
                           <td className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">-${selectedOrder.discount.toFixed(2)}</td>
-                        </tr>
+                         </tr>
                       )}
                       <tr>
-                        <td colSpan={7} className="pt-3 text-right font-semibold text-gray-800">Total</td>
-                        <td className="pt-3 text-right font-semibold text-gray-800">${selectedOrder.total.toFixed(2)}</td>
-                      </tr>
+                        <td colSpan={7} className="pt-3 text-right font-semibold text-slate-800">Total</td>
+                        <td className="pt-3 text-right font-semibold text-teal-600">${selectedOrder.total.toFixed(2)}</td>
+                       </tr>
                     </tfoot>
                   </table>
-
-
                 </div>
-                <div className="px-6 py-4 border-t border-gray-200 flex justify-between items-center gap-2">
+                <div className="px-6 py-4 border-t border-teal-100 bg-teal-50/30 flex justify-between items-center gap-2">
                   <button
                     onClick={() => {
                       const numericId = selectedOrder.id.startsWith('#') ? selectedOrder.id.slice(1) : selectedOrder.id
@@ -500,14 +592,14 @@ export default function Orders() {
                       const o = selectedOrder
                       const itemsHtml = o.detail.map((item, idx) => {
                         const vars = [item.size, item.sugar, item.ice, item.addOn].filter(Boolean).join('|')
-                        const promLabel = item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' ? `<br><span style="color:#16a34a;font-size:8px">${getPromotionLabel(item.promotion)}</span>` : ''
+                        const promLabel = item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' ? `<br><span style="color:#14b8a6;font-size:8px">${getPromotionLabel(item.promotion)}</span>` : ''
                         return `<tr><td style="padding:4px 4px;text-align:center;font-size:10px">${idx + 1}</td><td style="padding:4px 4px;font-size:10px">${item.name}${vars ? '<br><span style="color:#666;font-size:8px">'+vars+'</span>' : ''}${promLabel}</td><td style="padding:4px 4px;text-align:center;font-size:10px">${item.qty}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${item.price.toFixed(2)}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${(item.qty * item.price).toFixed(2)}</td></tr>`
                       }).join('')
                       w.document.write(`
                         <html><head><title>Receipt ${o.id}</title>
                         <style>
                           body { font-family: 'Courier New', monospace; font-size: 11px; margin: 0; padding: 8px; width: 58mm; font-weight: bold; }
-                          h1 { font-size: 14px; text-align: center; margin-bottom: 4px; }
+                          h1 { font-size: 14px; text-align: center; margin-bottom: 4px; color: #0d9488; }
                           .info { text-align: center; color: #555; margin-bottom: 12px; font-size: 10px; }
                           table { width: 100%; border-collapse: collapse; }
                           th { border-bottom: 1px solid #333; padding: 4px 4px; text-align: left; font-size: 10px; }
@@ -527,7 +619,7 @@ export default function Orders() {
                         </div>
                         <hr>
                         <table>
-                          <thead><tr><th style="text-align:center">No.</th><th>Item</th><th style="text-align:center">Qty</th><th class="right">Price</th><th class="right">Subtotal</th></tr></thead>
+                          <thead><tr><th style="text-align:center">No.</th><th>Item</th><th style="text-align:center">Qty</th><th class="right">Price</th><th class="right">Subtotal</th></td></thead>
                           <tbody>${itemsHtml}</tbody>
                           <tfoot>${(() => {
                             const promoItems = o.detail.filter(i => i.promotion)
@@ -536,13 +628,13 @@ export default function Orders() {
                               const d = calcDiscount(item.price, item.promotion, item.qty)
                               if (d <= 0) return
                               const displayQty = item.promotion?.type === 'buy_x_get_y' ? Math.round(d / item.price) : item.qty
-                              html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">${getPromotionLabel(item.promotion)} &mdash; ${item.name}${item.size ? ' ('+item.size+')' : ''} x${displayQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#16a34a">-${d.toFixed(2)}</td></tr>`
+                              html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#14b8a6">${getPromotionLabel(item.promotion)} &mdash; ${item.name}${item.size ? ' ('+item.size+')' : ''} x${displayQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#14b8a6">-${d.toFixed(2)}</td></tr>`
                             })
                             if (html) {
                               const pNames = [...new Set(o.detail.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', ')
-                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">Total Discount${pNames ? ' ('+pNames+')' : ''}</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a;border-top:1px dashed #ccc">-${o.discount.toFixed(2)}</td></tr>`
+                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#14b8a6;border-top:1px dashed #ccc">Total Discount${pNames ? ' ('+pNames+')' : ''}</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#14b8a6;border-top:1px dashed #ccc">-${o.discount.toFixed(2)}</td></tr>`
                             } else if (o.discount > 0) {
-                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">Promotion</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#16a34a">-${o.discount.toFixed(2)}</td></tr>`
+                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#14b8a6">Promotion</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#14b8a6">-${o.discount.toFixed(2)}</td></tr>`
                             }
                             if (html) {
                               const subtotal = o.total + o.discount
@@ -558,13 +650,13 @@ export default function Orders() {
                       `)
                       w.document.close()
                     }}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                    className="bg-gradient-to-r from-teal-600 to-teal-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-teal-700 hover:to-teal-600 transition-all duration-200 shadow-md"
                   >
                     Print Receipt
                   </button>
                   <button
                     onClick={() => setSelectedOrder(null)}
-                    className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                    className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors"
                   >
                     Close
                   </button>

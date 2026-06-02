@@ -196,22 +196,141 @@ export default function Recipe() {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
         <Sidebar />
-        <div className="flex-1 flex flex-col"><Topbar /><main className="flex-1 flex items-center justify-center text-gray-500">Loading...</main></div>
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <Topbar />
+          <main className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              {/* Animated Container */}
+              <div className="relative w-24 h-24 mx-auto mb-6">
+                {/* Outer ring pulse animation */}
+                <div className="absolute inset-0 rounded-full animate-ping-slow">
+                  <div className="w-full h-full rounded-full bg-teal-200 opacity-30"></div>
+                </div>
+                
+                {/* Main spinner */}
+                <div className="relative w-24 h-24">
+                  <div className="w-full h-full rounded-full border-4 border-teal-100 animate-spin"></div>
+                  <div className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-t-teal-600 border-r-teal-600 border-b-transparent border-l-transparent animate-spin"></div>
+                  
+                  {/* Inner recipe/book icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                </div>
+                
+                {/* Steam animation */}
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                  <div className="flex gap-1">
+                    <div className="w-1 h-3 bg-teal-300 rounded-full animate-steam-1"></div>
+                    <div className="w-1 h-4 bg-teal-300 rounded-full animate-steam-2"></div>
+                    <div className="w-1 h-2 bg-teal-300 rounded-full animate-steam-3"></div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Loading text */}
+              <h2 className="text-xl font-semibold text-slate-700 mb-2">Loading Recipes</h2>
+              <p className="text-slate-400 text-sm mb-6">Please wait while we prepare your recipes...</p>
+              
+              {/* Progress Bar */}
+              <div className="w-64 mx-auto">
+                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-teal-500 to-teal-600 rounded-full animate-loading-bar"></div>
+                </div>
+              </div>
+              
+              {/* Loading dots */}
+              <div className="flex justify-center gap-2 mt-4">
+                <div className="w-2 h-2 bg-teal-400 rounded-full animate-loading-dot-1"></div>
+                <div className="w-2 h-2 bg-teal-500 rounded-full animate-loading-dot-2"></div>
+                <div className="w-2 h-2 bg-teal-600 rounded-full animate-loading-dot-3"></div>
+              </div>
+            </div>
+          </main>
+        </div>
+        
+        {/* Custom CSS for animations */}
+        <style jsx>{`
+          @keyframes ping-slow {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.1; transform: scale(1.1); }
+          }
+          @keyframes steam-1 {
+            0% { transform: translateY(0) translateX(0); opacity: 0.6; }
+            100% { transform: translateY(-20px) translateX(-5px); opacity: 0; }
+          }
+          @keyframes steam-2 {
+            0% { transform: translateY(0) translateX(0); opacity: 0.6; }
+            100% { transform: translateY(-25px) translateX(0); opacity: 0; }
+          }
+          @keyframes steam-3 {
+            0% { transform: translateY(0) translateX(0); opacity: 0.6; }
+            100% { transform: translateY(-18px) translateX(5px); opacity: 0; }
+          }
+          @keyframes loading-bar {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+          }
+          @keyframes loading-dot-1 {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          @keyframes loading-dot-2 {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          @keyframes loading-dot-3 {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+          }
+          .animate-ping-slow {
+            animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+          }
+          .animate-steam-1 {
+            animation: steam-1 2s ease-out infinite;
+          }
+          .animate-steam-2 {
+            animation: steam-2 2.5s ease-out infinite;
+          }
+          .animate-steam-3 {
+            animation: steam-3 1.8s ease-out infinite;
+          }
+          .animate-loading-bar {
+            animation: loading-bar 2s ease-in-out infinite;
+          }
+          .animate-loading-dot-1 {
+            animation: loading-dot-1 1.2s ease-in-out infinite;
+          }
+          .animate-loading-dot-2 {
+            animation: loading-dot-2 1.2s ease-in-out 0.3s infinite;
+          }
+          .animate-loading-dot-3 {
+            animation: loading-dot-3 1.2s ease-in-out 0.6s infinite;
+          }
+        `}</style>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Recipes</h1>
-            <button onClick={() => openCreate(null, null)} className="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal-800 transition-colors">Add New Recipe</button>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-700 to-teal-600 bg-clip-text text-transparent">
+                Recipes
+              </h1>
+              <p className="text-sm text-slate-500 mt-1">Manage product recipes and ingredient quantities</p>
+            </div>
+            <button onClick={() => openCreate(null, null)} className="bg-gradient-to-r from-teal-700 to-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-800 hover:to-teal-700 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl">Add New Recipe</button>
           </div>
 
           {error && <div className="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-6">{error}</div>}
@@ -242,71 +361,72 @@ export default function Recipe() {
                   const numSizes = Object.keys(prod.sizes).length
                   const minH = numSizes >= 4 ? '24rem' : numSizes >= 3 ? '18rem' : numSizes >= 2 ? '12rem' : '8rem'
                   return (
-                  <div key={pid} className="bg-white rounded-xl shadow-sm overflow-hidden border border-teal-300 flex flex-col"
-                    style={{ minHeight: minH }}>
-                    <div className="px-6 py-4 bg-teal-100 border-b border-teal-200 flex items-center gap-3 shrink-0">
-                      {prod.product?.image && (
-                        <img src={prod.product.image} alt={prod.product.name} className="w-16 h-16 rounded-lg object-cover border border-teal-200" />
-                      )}
-                      <h3 className="font-semibold text-teal-800 bg-white rounded-lg px-3 py-1.5 border border-teal-200 shadow-sm flex-1">{prod.product?.name ?? `Product #${pid}`}</h3>
-                      <button onClick={() => openCreate(pid, null)} className="text-teal-700 hover:underline text-xs font-medium">+ Add Ingredient</button>
-                    </div>
-                    <div className="p-4 space-y-4 flex-1">
-                      {Object.entries(prod.sizes).map(([sid, sz]) => (
-                        <div key={sid} className="border border-teal-300 rounded-lg shadow-sm overflow-hidden">
-                          <div className="px-6 py-3 bg-teal-100 border-b border-teal-200 flex justify-between items-center text-sm font-medium text-teal-800">
-                            <span className="bg-white rounded-md px-3 py-1 border border-teal-200 shadow-sm">{sz.size?.name ?? `Size #${sid}`}</span>
-                            <div className="flex gap-3">
-                              <button onClick={() => openBatchEdit(pid, sid)} className="text-amber-600 hover:underline text-xs">Edit All</button>
-                              <button onClick={() => openCreate(pid, sid)} className="text-teal-700 hover:underline text-xs">+ Add Ingredient</button>
+                    <div key={pid} className="bg-white rounded-xl shadow-sm overflow-hidden border border-teal-300 flex flex-col" style={{ minHeight: minH }}>
+                      <div className="px-6 py-4 bg-teal-100 border-b border-teal-200 flex items-center gap-3 shrink-0">
+                        {prod.product?.image && (
+                          <img src={prod.product.image} alt={prod.product.name} className="w-16 h-16 rounded-lg object-cover border border-teal-200" />
+                        )}
+                        <h3 className="font-semibold text-teal-800 bg-white rounded-lg px-3 py-1.5 border border-teal-200 shadow-sm flex-1">{prod.product?.name ?? `Product #${pid}`}</h3>
+                        <button onClick={() => openCreate(pid, null)} className="text-teal-700 hover:underline text-xs font-medium">+ Add Ingredient</button>
+                      </div>
+                      <div className="p-4 space-y-4 flex-1">
+                        {Object.entries(prod.sizes).map(([sid, sz]) => (
+                          <div key={sid} className="border border-teal-300 rounded-lg shadow-sm overflow-hidden">
+                            <div className="px-6 py-3 bg-teal-100 border-b border-teal-200 flex justify-between items-center text-sm font-medium text-teal-800">
+                              <span className="bg-white rounded-md px-3 py-1 border border-teal-200 shadow-sm">{sz.size?.name ?? `Size #${sid}`}</span>
+                              <div className="flex gap-3">
+                                <button onClick={() => openBatchEdit(pid, sid)} className="text-amber-600 hover:underline text-xs">Edit All</button>
+                                <button onClick={() => openCreate(pid, sid)} className="text-teal-700 hover:underline text-xs">+ Add Ingredient</button>
+                              </div>
+                            </div>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="text-left text-gray-500 font-medium border-b border-gray-100">
+                                    <th className="px-6 py-3">Ingredient</th>
+                                    <th className="px-6 py-3">Quantity</th>
+                                    <th className="px-6 py-3 text-right">$/Unit</th>
+                                    <th className="px-6 py-3 text-right">Line Cost</th>
+                                    <th className="px-6 py-3 text-right">Actions</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {sz.ingredients.map((r) => {
+                                    const unitCost = Number(r.ingredient?.cost_per_unit || 0)
+                                    const lineCost = unitCost * Number(r.quantity)
+                                    return (
+                                      <tr key={r.id} className="border-t border-gray-100 hover:bg-teal-50/30 transition-colors">
+                                        <td className="px-6 py-4 text-gray-800">{r.ingredient?.name}</td>
+                                        <td className="px-6 py-4 text-gray-800">{Number(r.quantity).toFixed(2)} {r.ingredient?.unit}</td>
+                                        <td className="px-6 py-4 text-gray-800 text-right">{unitCost > 0 ? '$' + unitCost.toFixed(2) : '—'}</td>
+                                        <td className="px-6 py-4 text-gray-800 text-right font-medium">{lineCost > 0 ? '$' + lineCost.toFixed(2) : '—'}</td>
+                                        <td className="px-6 py-4 text-right">
+                                          <div className="flex items-center justify-end gap-1">
+                                            <button onClick={() => openEdit(r)} className="px-3 py-1.5 text-xs font-medium text-amber-600 hover:bg-amber-50 rounded-md transition-colors">Edit</button>
+                                            <button onClick={() => handleDelete(r.id)} className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors">Remove</button>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )
+                                  })}
+                                </tbody>
+                                <tfoot>
+                                  <tr className="border-t border-gray-200 bg-gray-50">
+                                    <td className="px-6 py-3 font-semibold text-gray-800" colSpan={3}>Total Cost</td>
+                                    <td className="px-6 py-3 text-right font-bold text-teal-700">
+                                      ${sz.ingredients.reduce((sum, r) => sum + (Number(r.ingredient?.cost_per_unit || 0) * Number(r.quantity)), 0).toFixed(2)}
+                                    </td>
+                                    <td></td>
+                                  </tr>
+                                </tfoot>
+                              </table>
                             </div>
                           </div>
-                          <div className="overflow-x-auto">
-                            <table className="w-full text-sm">
-                              <thead>
-                                <tr className="text-left text-gray-500 font-medium border-b border-gray-100">
-                                  <th className="px-6 py-3">Ingredient</th>
-                                  <th className="px-6 py-3">Quantity</th>
-                                  <th className="px-6 py-3 text-right">$/Unit</th>
-                                  <th className="px-6 py-3 text-right">Line Cost</th>
-                                  <th className="px-6 py-3 text-right">Actions</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {sz.ingredients.map((r) => {
-                                  const unitCost = Number(r.ingredient?.cost_per_unit || 0)
-                                  const lineCost = unitCost * Number(r.quantity)
-                                  return (
-                                  <tr key={r.id} className="border-t border-gray-100 hover:bg-teal-50/30 transition-colors">
-                                    <td className="px-6 py-4 text-gray-800">{r.ingredient?.name}</td>
-                                    <td className="px-6 py-4 text-gray-800">{Number(r.quantity).toFixed(2)} {r.ingredient?.unit}</td>
-                                    <td className="px-6 py-4 text-gray-800 text-right">{unitCost > 0 ? '$' + unitCost.toFixed(2) : '—'}</td>
-                                    <td className="px-6 py-4 text-gray-800 text-right font-medium">{lineCost > 0 ? '$' + lineCost.toFixed(2) : '—'}</td>
-                                    <td className="px-6 py-4 text-right">
-                                      <div className="flex items-center justify-end gap-1">
-                                        <button onClick={() => openEdit(r)} className="px-3 py-1.5 text-xs font-medium text-amber-600 hover:bg-amber-50 rounded-md transition-colors">Edit</button>
-                                        <button onClick={() => handleDelete(r.id)} className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors">Remove</button>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )})}
-                              </tbody>
-                              <tfoot>
-                                <tr className="border-t border-gray-200 bg-gray-50">
-                                  <td className="px-6 py-3 font-semibold text-gray-800" colSpan={3}>Total Cost</td>
-                                  <td className="px-6 py-3 text-right font-bold text-teal-700">
-                                    ${sz.ingredients.reduce((sum, r) => sum + (Number(r.ingredient?.cost_per_unit || 0) * Number(r.quantity)), 0).toFixed(2)}
-                                   </td>
-                                  <td></td>
-                                 </tr>
-                              </tfoot>
-                             </table>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )})}
+                  )
+                })}
               </React.Fragment>
             ))}
           </div>
@@ -327,7 +447,7 @@ export default function Recipe() {
                     <th className="px-2 py-2">Ingredient</th>
                     <th className="px-2 py-2">Quantity</th>
                     <th className="px-2 py-2 w-16">Remove</th>
-                   </tr>
+                  </tr>
                 </thead>
                 <tbody>
                   {batchRows.map((row) => (
@@ -340,19 +460,19 @@ export default function Recipe() {
                           <option value="">Select ingredient</option>
                           {ingredients.map(i => <option key={i.id} value={i.id}>{i.name} ({i.unit})</option>)}
                         </select>
-                       </td>
+                      </td>
                       <td className="px-2 py-2">
                         <input type="number" value={row.quantity} onChange={e => {
                           const val = e.target.value
                           setBatchRows(prev => prev.map(r => r.key === row.key ? { ...r, quantity: val } : r))
                         }} step="0.01" min="0.01" disabled={row._remove} required className="w-full border rounded px-2 py-1 text-sm" />
-                       </td>
+                      </td>
                       <td className="px-2 py-2 text-center">
                         <input type="checkbox" checked={row._remove} onChange={() =>
                           setBatchRows(prev => prev.map(r => r.key === row.key ? { ...r, _remove: !r._remove } : r))
                         } />
-                       </td>
-                     </tr>
+                      </td>
+                    </tr>
                   ))}
                 </tbody>
               </table>
@@ -399,7 +519,7 @@ export default function Recipe() {
                         <th className="px-2 py-2">Ingredient</th>
                         <th className="px-2 py-2 w-32">Quantity</th>
                         <th className="px-2 py-2 w-12">Remove</th>
-                       </tr>
+                      </tr>
                     </thead>
                     <tbody>
                       {modalRows.map((row) => (
