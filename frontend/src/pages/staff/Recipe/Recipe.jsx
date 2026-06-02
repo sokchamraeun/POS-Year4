@@ -211,21 +211,21 @@ export default function Recipe() {
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-800">Recipes</h1>
-            <button onClick={() => openCreate(null, null)} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">Add New Recipe</button>
+            <button onClick={() => openCreate(null, null)} className="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal-800 transition-colors">Add New Recipe</button>
           </div>
 
           {error && <div className="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-6">{error}</div>}
 
           <div className="flex items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-2 overflow-x-auto pb-1">
-              <button onClick={() => setSelectedCategory('All')} className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === 'All' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>All</button>
+              <button onClick={() => setSelectedCategory('All')} className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === 'All' ? 'bg-teal-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>All</button>
               {Object.values(categories).map((cat) => (
-                <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === cat.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{cat.name}</button>
+                <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${selectedCategory === cat.id ? 'bg-teal-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{cat.name}</button>
               ))}
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search recipes..." className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48" />
-              <button onClick={() => setSearchQuery(searchQuery)} className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">Search</button>
+              <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search recipes..." className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600 w-48" />
+              <button onClick={() => setSearchQuery(searchQuery)} className="bg-teal-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-teal-800 transition-colors">Search</button>
             </div>
           </div>
 
@@ -235,30 +235,30 @@ export default function Recipe() {
             )}
             {Object.entries(grouped).map(([catId, catGroup]) => (
               <React.Fragment key={catId}>
-                <h2 className="col-span-full text-xl font-bold text-gray-700 mb-2 px-1 border-l-4 border-blue-500 pl-3">
+                <h2 className="col-span-full text-xl font-bold text-gray-700 mb-2 px-1 border-l-4 border-teal-700 pl-3">
                   {catGroup.category?.name ?? 'Uncategorized'}
                 </h2>
                 {Object.entries(catGroup.products).map(([pid, prod]) => {
                   const numSizes = Object.keys(prod.sizes).length
                   const minH = numSizes >= 4 ? '24rem' : numSizes >= 3 ? '18rem' : numSizes >= 2 ? '12rem' : '8rem'
                   return (
-                  <div key={pid} className="bg-white rounded-xl shadow-sm overflow-hidden border border-blue-100 flex flex-col"
+                  <div key={pid} className="bg-white rounded-xl shadow-sm overflow-hidden border border-teal-300 flex flex-col"
                     style={{ minHeight: minH }}>
-                    <div className="px-6 py-4 bg-blue-50 border-b border-blue-200 flex items-center gap-3 shrink-0">
+                    <div className="px-6 py-4 bg-teal-100 border-b border-teal-200 flex items-center gap-3 shrink-0">
                       {prod.product?.image && (
-                        <img src={prod.product.image} alt={prod.product.name} className="w-16 h-16 rounded-lg object-cover border border-blue-200" />
+                        <img src={prod.product.image} alt={prod.product.name} className="w-16 h-16 rounded-lg object-cover border border-teal-200" />
                       )}
-                      <h3 className="font-semibold text-blue-700 bg-white rounded-lg px-3 py-1.5 border border-blue-200 shadow-sm flex-1">{prod.product?.name ?? `Product #${pid}`}</h3>
-                      <button onClick={() => openCreate(pid, null)} className="text-blue-600 hover:underline text-xs font-medium">+ Add Ingredient</button>
+                      <h3 className="font-semibold text-teal-800 bg-white rounded-lg px-3 py-1.5 border border-teal-200 shadow-sm flex-1">{prod.product?.name ?? `Product #${pid}`}</h3>
+                      <button onClick={() => openCreate(pid, null)} className="text-teal-700 hover:underline text-xs font-medium">+ Add Ingredient</button>
                     </div>
                     <div className="p-4 space-y-4 flex-1">
                       {Object.entries(prod.sizes).map(([sid, sz]) => (
-                        <div key={sid} className="border border-indigo-200 rounded-lg shadow-sm overflow-hidden">
-                          <div className="px-6 py-3 bg-indigo-50 border-b border-indigo-200 flex justify-between items-center text-sm font-medium text-indigo-600">
-                            <span className="bg-white rounded-md px-3 py-1 border border-indigo-200 shadow-sm">{sz.size?.name ?? `Size #${sid}`}</span>
+                        <div key={sid} className="border border-teal-300 rounded-lg shadow-sm overflow-hidden">
+                          <div className="px-6 py-3 bg-teal-100 border-b border-teal-200 flex justify-between items-center text-sm font-medium text-teal-800">
+                            <span className="bg-white rounded-md px-3 py-1 border border-teal-200 shadow-sm">{sz.size?.name ?? `Size #${sid}`}</span>
                             <div className="flex gap-3">
-                              <button onClick={() => openBatchEdit(pid, sid)} className="text-yellow-600 hover:underline text-xs">Edit All</button>
-                              <button onClick={() => openCreate(pid, sid)} className="text-blue-600 hover:underline text-xs">+ Add Ingredient</button>
+                              <button onClick={() => openBatchEdit(pid, sid)} className="text-amber-600 hover:underline text-xs">Edit All</button>
+                              <button onClick={() => openCreate(pid, sid)} className="text-teal-700 hover:underline text-xs">+ Add Ingredient</button>
                             </div>
                           </div>
                           <div className="overflow-x-auto">
@@ -277,14 +277,14 @@ export default function Recipe() {
                                   const unitCost = Number(r.ingredient?.cost_per_unit || 0)
                                   const lineCost = unitCost * Number(r.quantity)
                                   return (
-                                  <tr key={r.id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+                                  <tr key={r.id} className="border-t border-gray-100 hover:bg-teal-50/30 transition-colors">
                                     <td className="px-6 py-4 text-gray-800">{r.ingredient?.name}</td>
                                     <td className="px-6 py-4 text-gray-800">{Number(r.quantity).toFixed(2)} {r.ingredient?.unit}</td>
                                     <td className="px-6 py-4 text-gray-800 text-right">{unitCost > 0 ? '$' + unitCost.toFixed(2) : '—'}</td>
                                     <td className="px-6 py-4 text-gray-800 text-right font-medium">{lineCost > 0 ? '$' + lineCost.toFixed(2) : '—'}</td>
                                     <td className="px-6 py-4 text-right">
                                       <div className="flex items-center justify-end gap-1">
-                                        <button onClick={() => openEdit(r)} className="px-3 py-1.5 text-xs font-medium text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors">Edit</button>
+                                        <button onClick={() => openEdit(r)} className="px-3 py-1.5 text-xs font-medium text-amber-600 hover:bg-amber-50 rounded-md transition-colors">Edit</button>
                                         <button onClick={() => handleDelete(r.id)} className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors">Remove</button>
                                       </div>
                                     </td>
@@ -294,13 +294,13 @@ export default function Recipe() {
                               <tfoot>
                                 <tr className="border-t border-gray-200 bg-gray-50">
                                   <td className="px-6 py-3 font-semibold text-gray-800" colSpan={3}>Total Cost</td>
-                                  <td className="px-6 py-3 text-right font-bold text-gray-800">
+                                  <td className="px-6 py-3 text-right font-bold text-teal-700">
                                     ${sz.ingredients.reduce((sum, r) => sum + (Number(r.ingredient?.cost_per_unit || 0) * Number(r.quantity)), 0).toFixed(2)}
-                                  </td>
+                                   </td>
                                   <td></td>
-                                </tr>
+                                 </tr>
                               </tfoot>
-                            </table>
+                             </table>
                           </div>
                         </div>
                       ))}
@@ -327,7 +327,7 @@ export default function Recipe() {
                     <th className="px-2 py-2">Ingredient</th>
                     <th className="px-2 py-2">Quantity</th>
                     <th className="px-2 py-2 w-16">Remove</th>
-                  </tr>
+                   </tr>
                 </thead>
                 <tbody>
                   {batchRows.map((row) => (
@@ -340,27 +340,27 @@ export default function Recipe() {
                           <option value="">Select ingredient</option>
                           {ingredients.map(i => <option key={i.id} value={i.id}>{i.name} ({i.unit})</option>)}
                         </select>
-                      </td>
+                       </td>
                       <td className="px-2 py-2">
                         <input type="number" value={row.quantity} onChange={e => {
                           const val = e.target.value
                           setBatchRows(prev => prev.map(r => r.key === row.key ? { ...r, quantity: val } : r))
                         }} step="0.01" min="0.01" disabled={row._remove} required className="w-full border rounded px-2 py-1 text-sm" />
-                      </td>
+                       </td>
                       <td className="px-2 py-2 text-center">
                         <input type="checkbox" checked={row._remove} onChange={() =>
                           setBatchRows(prev => prev.map(r => r.key === row.key ? { ...r, _remove: !r._remove } : r))
                         } />
-                      </td>
-                    </tr>
+                       </td>
+                     </tr>
                   ))}
                 </tbody>
               </table>
               <button type="button" onClick={() => setBatchRows([...batchRows, { key: Date.now(), ingredient_id: '', quantity: '', _remove: false }])}
-                className="text-blue-600 hover:underline text-sm mb-4">+ Add Ingredient</button>
+                className="text-teal-700 hover:underline text-sm mb-4">+ Add Ingredient</button>
               <div className="flex gap-2 justify-end mt-4">
                 <button type="button" onClick={() => setBatchEdit(null)} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">Cancel</button>
-                <button type="submit" disabled={batchSaving} className="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition-colors disabled:opacity-50">
+                <button type="submit" disabled={batchSaving} className="bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-600 transition-colors disabled:opacity-50">
                   {batchSaving ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
@@ -379,14 +379,14 @@ export default function Recipe() {
                   <div className="flex gap-4 mb-4">
                     <div className="flex-1">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
-                      <select value={form.product_id} onChange={e => setForm({ ...form, product_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <select value={form.product_id} onChange={e => setForm({ ...form, product_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600">
                         <option value="">Select product</option>
                         {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                       </select>
                     </div>
                     <div className="flex-1">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Size</label>
-                      <select value={form.size_id} onChange={e => setForm({ ...form, size_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      <select value={form.size_id} onChange={e => setForm({ ...form, size_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600">
                         <option value="">Select size</option>
                         {Object.values(sizes).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                       </select>
@@ -397,9 +397,9 @@ export default function Recipe() {
                     <thead>
                       <tr className="text-left text-xs text-gray-500 border-b">
                         <th className="px-2 py-2">Ingredient</th>
-                    <th className="px-2 py-2 w-32">Quantity</th>
-                    <th className="px-2 py-2 w-12">Remove</th>
-                      </tr>
+                        <th className="px-2 py-2 w-32">Quantity</th>
+                        <th className="px-2 py-2 w-12">Remove</th>
+                       </tr>
                     </thead>
                     <tbody>
                       {modalRows.map((row) => (
@@ -409,18 +409,18 @@ export default function Recipe() {
                               <option value="">Select ingredient</option>
                               {ingredients.map(i => <option key={i.id} value={i.id}>{i.name} ({i.unit})</option>)}
                             </select>
-                          </td>
+                           </td>
                           <td className="px-2 py-2">
                             <input type="number" value={row.quantity} onChange={e => updateModalRow(row.key, 'quantity', e.target.value)} step="0.01" min="0.01" disabled={row._remove} required className="w-full border rounded px-2 py-1 text-sm" />
-                          </td>
+                           </td>
                           <td className="px-2 py-2 text-center">
                             <input type="checkbox" checked={row._remove} onChange={() => toggleModalRowRemove(row.key)} />
-                          </td>
-                        </tr>
+                           </td>
+                         </tr>
                       ))}
                     </tbody>
                   </table>
-                  <button type="button" onClick={addModalRow} className="text-blue-600 hover:underline text-sm mb-4">+ Add Row</button>
+                  <button type="button" onClick={addModalRow} className="text-teal-700 hover:underline text-sm mb-4">+ Add Row</button>
                 </>
               )}
 
@@ -428,21 +428,21 @@ export default function Recipe() {
                 <>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Ingredient</label>
-                    <select value={form.ingredient_id} onChange={e => setForm({ ...form, ingredient_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select value={form.ingredient_id} onChange={e => setForm({ ...form, ingredient_id: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600">
                       <option value="">Select ingredient</option>
                       {ingredients.map(i => <option key={i.id} value={i.id}>{i.name} ({i.unit})</option>)}
                     </select>
                   </div>
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
-                    <input type="number" value={form.quantity} onChange={e => setForm({ ...form, quantity: e.target.value })} step="0.01" min="0.01" required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    <input type="number" value={form.quantity} onChange={e => setForm({ ...form, quantity: e.target.value })} step="0.01" min="0.01" required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-600" />
                   </div>
                 </>
               )}
 
               <div className="flex gap-2 justify-end">
                 <button type="button" onClick={() => { setShowModal(false); setEditing(null) }} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">Cancel</button>
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">{editing ? 'Update' : 'Create'}</button>
+                <button type="submit" className="bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal-800 transition-colors">{editing ? 'Update' : 'Create'}</button>
               </div>
             </form>
           </div>

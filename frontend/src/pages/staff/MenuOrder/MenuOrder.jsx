@@ -111,16 +111,20 @@ export default function MenuOrder() {
 
     const key = `${product.id}-${sizeId}-${sugar}-${ice}-${addOn}`
     const unitPrice = getBasePrice(product, size) + addOnPrice(product, addOn, size)
+    
+    // Get quantity from product if it exists, otherwise default to 1
+    const quantity = product.quantity || 1
+    
     setCart((prev) => {
       const existing = prev.find((c) => c.key === key)
       if (existing) {
         return prev.map((c) =>
-          c.key === key ? { ...c, qty: c.qty + 1 } : c
+          c.key === key ? { ...c, qty: c.qty + quantity } : c
         )
       }
       return [
         ...prev,
-        { ...product, key, size, sugar, ice, addOn, unitPrice, qty: 1 },
+        { ...product, key, size, sugar, ice, addOn, unitPrice, qty: quantity },
       ]
     })
   }

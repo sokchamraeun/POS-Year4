@@ -80,6 +80,21 @@ export default function Products() {
       (p.category?.name ?? '').toLowerCase().includes(search.toLowerCase()))
   )
 
+  // Function to fetch full product details when viewing
+  const fetchProductDetails = async (product) => {
+    try {
+      const res = await fetch(`${API_URL}/${product.id}`, { headers: getHeaders() })
+      if (res.ok) {
+        const fullProduct = await res.json()
+        setViewProduct(fullProduct.data || fullProduct)
+      } else {
+        setViewProduct(product)
+      }
+    } catch {
+      setViewProduct(product)
+    }
+  }
+
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
@@ -313,7 +328,7 @@ export default function Products() {
                           <td className="px-6 py-4 whitespace-nowrap text-right">
                             <div className="flex items-center justify-end gap-2">
                               <button
-                                onClick={() => setViewProduct(product)}
+                                onClick={() => fetchProductDetails(product)}
                                 className="px-3 py-1.5 text-xs font-semibold text-teal-600 bg-teal-50 hover:bg-teal-100 rounded-xl transition-all duration-200 border border-teal-200"
                               >
                                 View
@@ -425,7 +440,7 @@ export default function Products() {
                           {product.status ? 'Active' : 'Inactive'}
                         </span>
                         <div className="flex gap-2">
-                          <button onClick={() => setViewProduct(product)} className="px-3 py-1.5 text-xs font-semibold text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 transition-all border border-teal-200">View</button>
+                          <button onClick={() => fetchProductDetails(product)} className="px-3 py-1.5 text-xs font-semibold text-teal-600 bg-teal-50 rounded-lg hover:bg-teal-100 transition-all border border-teal-200">View</button>
                           <button onClick={() => setEditProduct(product)} className="px-3 py-1.5 text-xs font-semibold text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-all border border-amber-200">Edit</button>
                           <button onClick={() => handleDelete(product.id, product.name)} className="px-3 py-1.5 text-xs font-semibold text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-all border border-red-200">Delete</button>
                         </div>
@@ -552,10 +567,26 @@ export default function Products() {
                 </div>
               </div>
 
-              {viewProduct.description && (
-                <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2.5">Description</div>
+              {/* Description Section - Now with proper display */}
+              {viewProduct.description && viewProduct.description.trim() !== '' ? (
+                <div className="bg-gradient-to-r from-teal-50 to-emerald-50 rounded-xl p-5 border border-teal-200">
+                  <div className="text-[10px] font-bold text-teal-600 uppercase tracking-wider mb-2.5 flex items-center gap-2">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                    Description
+                  </div>
                   <p className="text-slate-700 leading-relaxed font-medium text-sm">{viewProduct.description}</p>
+                </div>
+              ) : (
+                <div className="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                  <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2.5 flex items-center gap-2">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                    Description
+                  </div>
+                  <p className="text-slate-400 italic text-sm">No description available for this product.</p>
                 </div>
               )}
 
