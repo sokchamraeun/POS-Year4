@@ -199,7 +199,7 @@ export default function PromotionSlider({ products: propProducts }) {
                       
                       {/* Product Image */}
                       <img
-                        src={`${p.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${p.image}`}
+                        src={p.image ? (p.image.startsWith('http') ? p.image : `${import.meta.env.VITE_STORAGE_URL}/${p.image}`) : 'https://placehold.co/400x400?text=No+Image'}
                         className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                         alt={p.name}
                       />
@@ -265,7 +265,7 @@ export default function PromotionSlider({ products: propProducts }) {
                       
                       {/* Product Image */}
                       <img
-                        src={`${p.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${p.image}`}
+                        src={p.image ? (p.image.startsWith('http') ? p.image : `${import.meta.env.VITE_STORAGE_URL}/${p.image}`) : 'https://via.placeholder.com/400'}
                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                         alt={p.name}
                       />
