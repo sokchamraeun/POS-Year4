@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 
+const API_BASE = import.meta.env.VITE_API_URL
+
 function safeParseUser() {
   try {
     const raw = localStorage.getItem('user')
@@ -276,7 +278,7 @@ export default function Sidebar() {
             </NavLink>
           ))}
           <button
-            onClick={async () => { try { await fetch('/api/logout', { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' } }) } catch {} finally { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' } }}
+            onClick={async () => { try { await fetch(`${API_BASE}/logout`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' } }) } catch (e) { console.error('Logout failed:', e) } finally { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' } }}
             className="flex items-center justify-center w-12 h-12 rounded-2xl text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200 mt-auto hover:scale-105"
             title="Logout"
           >
@@ -449,7 +451,7 @@ export default function Sidebar() {
       
       <div className="p-4 border-t border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
         <button
-          onClick={async () => { try { await fetch('/api/logout', { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' } }) } catch {} finally { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' } }}
+          onClick={async () => { try { await fetch(`${API_BASE}/logout`, { method: 'POST', headers: { Authorization: `Bearer ${localStorage.getItem('token')}`, Accept: 'application/json' } }) } catch (e) { console.error('Logout failed:', e) } finally { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/' } }}
           className="flex items-center justify-center gap-3 w-full px-4 py-3 rounded-xl text-sm font-semibold text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
