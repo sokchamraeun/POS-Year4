@@ -41,7 +41,7 @@ export default function RevenueChart({
   }
 
   return (
-    <div className="flex flex-1 flex-col rounded-3xl border-2 border-cyan-200 bg-white p-6 shadow-lg shadow-cyan-100/50">
+    <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
       <div className="mb-6 flex flex-col justify-between gap-4 xl:flex-row xl:items-start">
         <div>
           <h2 className="text-xl font-bold text-slate-900">
@@ -105,8 +105,8 @@ export default function RevenueChart({
       </div> */}
 
       <div className="mb-4 flex items-center gap-5 text-xs">
-        <LegendDot className="bg-sky-700" label="Revenue" />
-        <LegendDot className="bg-cyan-500" label="Orders" />
+        <LegendDot className="bg-red-700" label="Revenue" />
+        <LegendDot className="bg-yellow-500" label="Orders" />
       </div>
 
       <div className="overflow-x-auto rounded-2xl border border-cyan-100 bg-gradient-to-br from-cyan-50/40 to-white p-3">
@@ -117,7 +117,7 @@ export default function RevenueChart({
         >
           <defs>
             <linearGradient id="revenueArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#0891b2" stopOpacity="0.35" />
+              <stop offset="0%" stopColor="#8f989b" stopOpacity="0.35" />
               <stop offset="100%" stopColor="#0891b2" stopOpacity="0.03" />
             </linearGradient>
 
@@ -242,7 +242,7 @@ function ChartLines({
       <path
         d={revenueLine}
         fill="none"
-        stroke="#0891b2"
+        stroke="#ff0000"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -251,7 +251,7 @@ function ChartLines({
       <path
         d={ordersLine}
         fill="none"
-        stroke="#06b6d4"
+        stroke="#eeff00"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"

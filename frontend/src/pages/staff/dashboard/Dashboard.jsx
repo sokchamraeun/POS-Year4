@@ -241,7 +241,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
 
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -259,7 +259,7 @@ export default function Dashboard() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm">
+            <div className="flex items-center gap-3 rounded-2xl bg-white px-5 py-3 shadow-xl shadow-teal-900/10 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50">
                 <Clock className="h-5 w-5 text-teal-600" />
               </div>
@@ -286,8 +286,8 @@ export default function Dashboard() {
           </div>
 
           {newOrderAlert && (
-            <div className="mb-6 rounded-2xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-semibold text-teal-700">
-              New order received
+            <div className="mb-6 rounded-2xl border border-teal-800/20 bg-teal-50/50 px-4 py-3 text-sm font-semibold text-teal-700 backdrop-blur-sm">
+              🔔 New order received
             </div>
           )}
 

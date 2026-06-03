@@ -19,7 +19,7 @@ class UserController extends Controller
             })->orWhereNull('role_id');
         }
 
-        $users = $query->orderBy('id')->paginate(10);
+        $users = $query->orderBy('id')->paginate(1000);
 
         return response()->json($users);
     }

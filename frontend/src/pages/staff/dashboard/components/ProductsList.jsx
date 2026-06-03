@@ -18,7 +18,7 @@ export default function ProductsList({ products = [] }) {
   }).length
 
   return (
-    <div className="flex flex-1 flex-col rounded-3xl border-2 border-cyan-200 bg-white p-6 shadow-sm">
+    <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900">
