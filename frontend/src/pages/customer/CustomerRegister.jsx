@@ -104,7 +104,7 @@ export default function CustomerRegister() {
       <div className="relative min-h-screen overflow-hidden flex items-center justify-center px-4 py-8 bg-stone-950">
         <div className="absolute inset-0">
           <img
-            src="https://images2.alphacoders.com/134/thumb-1920-1340586.png"
+            src="https://images3.alphacoders.com/941/thumb-1920-94135.jpg"
             alt="Coffee shop"
             className="h-full w-full object-cover scale-105"
           />

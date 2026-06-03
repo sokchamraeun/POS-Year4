@@ -51,32 +51,34 @@ export default function Home() {
       <div className="flex-1">
         <PromotionSlider products={promoProducts} />
 
-        <div className="sticky top-16 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 overflow-x-auto shadow-sm">
-          <div className="flex gap-2.5 px-4 py-3.5 max-w-7xl mx-auto">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
-                  selectedCategory === cat
-                    ? 'bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-100 scale-[1.02]'
-                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-100 active:scale-95'
-                }`}
-              >
-                {cat}
-                {cat !== 'All' && cat !== 'Promotion' && categoriesWithPromo.has(cat) && (
-                  <span className="ml-1.5 text-[8px] bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Promo</span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
         <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-2">
-            <span>Our Menu</span>
-            <span className="w-1.5 h-6 bg-linear-to-b from-blue-600 to-cyan-600 rounded-full"></span>
-          </h2>
+          <div className="flex flex-col gap-4 mb-6">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-800 flex items-center gap-2">
+              <span>Our Menu</span>
+              <span className="w-1.5 h-6 bg-linear-to-b from-blue-600 to-cyan-600 rounded-full"></span>
+            </h2>
+            
+            <div className="overflow-x-auto hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 pb-1">
+              <div className="flex gap-2.5">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                      selectedCategory === cat
+                        ? 'bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-100 scale-[1.02]'
+                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-100 active:scale-95'
+                    }`}
+                  >
+                    {cat}
+                    {cat !== 'All' && cat !== 'Promotion' && categoriesWithPromo.has(cat) && (
+                      <span className="ml-1.5 text-[8px] bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Promo</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
           {loading ? <Loader page={false} text="Loading menu..." /> : filtered.length === 0 ? (
             <p className="text-center text-slate-400 py-10">No products in this category.</p>
           ) : (
