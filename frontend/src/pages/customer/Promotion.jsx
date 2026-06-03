@@ -5,6 +5,7 @@ import PromotionSlider from '../../components/customer/PromotionSlider.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
 import { useCart } from '../../context/CartContext.jsx'
+import Loader from '../../components/shared/Loader.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -59,9 +60,7 @@ export default function Promotion() {
           ))}
         </div>
 
-        {loading ? (
-          <p className="text-gray-400 text-center py-8">Loading promotions...</p>
-        ) : filtered.length === 0 ? (
+        {loading ? <Loader page={false} text="Loading promotions..." /> : filtered.length === 0 ? (
           <p className="text-gray-400 text-center py-8">No promotions available right now.</p>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">

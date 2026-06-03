@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useCart } from '../../context/CartContext.jsx'
+import Loader from '../shared/Loader.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 const colors = ['orange', 'red', 'green']
@@ -44,18 +45,12 @@ export default function PromotionSlider({ products: propProducts }) {
     return () => clearInterval(timer)
   }, [next, total])
 
-  // Loading state
   if (loading) {
     return (
       <section className="relative w-full max-w-7xl mx-auto mt-6 sm:mt-10 px-4">
         <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden">
-          <div className="animate-pulse">
-            <div className="h-[400px] sm:h-[500px] md:h-[600px] bg-slate-100 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-slate-500 font-medium">Loading promotions...</p>
-              </div>
-            </div>
+          <div className="h-[400px] sm:h-[500px] md:h-[600px] flex items-center justify-center">
+            <Loader page={false} text="Loading promotions..." />
           </div>
         </div>
       </section>

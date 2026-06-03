@@ -5,6 +5,7 @@ import PromotionSlider from '../../components/customer/PromotionSlider.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
 import { useCart } from '../../context/CartContext.jsx'
+import Loader from '../../components/shared/Loader.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -85,9 +86,7 @@ export default function Products() {
           <span>Products</span>
           <span className="w-1.5 h-6 bg-linear-to-b from-blue-600 to-cyan-600 rounded-full"></span>
         </h1>
-        {loading ? (
-          <p className="text-center text-slate-500 py-10 font-medium">Loading...</p>
-        ) : filtered.length === 0 ? (
+        {loading ? <Loader page={false} text="Loading..." /> : filtered.length === 0 ? (
           <p className="text-center text-slate-400 py-10">No products in this category.</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
