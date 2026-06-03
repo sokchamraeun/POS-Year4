@@ -13,7 +13,7 @@ APP_FAKER_LOCALE=en_US
 APP_MAINTENANCE_DRIVER=file
 
 BCRYPT_ROUNDS=12
-
+vvvv
 # ---------------- FRONTEND ----------------
 FRONTEND_URL=https://pos-year4.vercel.app
 
