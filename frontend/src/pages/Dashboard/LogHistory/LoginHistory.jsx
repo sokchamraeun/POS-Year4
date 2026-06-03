@@ -139,7 +139,6 @@ export default function LoginHistory() {
                   <th className="px-6 py-4">User</th>
                   <th className="px-6 py-4">Login Time</th>
                   <th className="px-6 py-4">Logout Time</th>
-                  <th className="px-6 py-4">IP Address</th>
                   <th className="px-6 py-4">Device</th>
                   <th className="px-6 py-4">Status</th>
                 </tr>
@@ -156,7 +155,6 @@ export default function LoginHistory() {
                       <td className="px-6 py-4 font-semibold text-gray-800">{h.user?.name || '—'}</td>
                       <td className="px-6 py-4 text-gray-600 text-xs">{fmt(h.login_at)}</td>
                       <td className="px-6 py-4 text-gray-600 text-xs">{fmt(h.logout_at)}</td>
-                      <td className="px-6 py-4 text-gray-500 font-mono text-xs">{h.ip_address || '—'}</td>
                       <td className="px-6 py-4 text-gray-500 text-xs max-w-[160px] truncate" title={h.device || ''}>{h.device || '—'}</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${
