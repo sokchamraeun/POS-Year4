@@ -27,14 +27,16 @@ export default function Ingredients() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [stats, setStats] = useState([
-    { label: 'Total Ingredients', value: '0', change: '-', color: 'from-teal-600 to-teal-700', border: '#0d9488' },
-    { label: 'Total Stock Value', value: '$0.00', change: '-', color: 'from-emerald-600 to-emerald-700', border: '#059669' },
-    { label: 'Low Stock Items', value: '0', change: '-', color: 'from-amber-500 to-amber-600', border: '#d97706' },
-    { label: 'Out of Stock', value: '0', change: '-', color: 'from-red-500 to-red-600', border: '#dc2626' },
+    { label: 'Total Ingredients', value: '0', change: '-' },
+    { label: 'Total Stock Value', value: '$0.00', change: '-' },
+    { label: 'Low Stock Items', value: '0', change: '-' },
+    { label: 'Out of Stock', value: '0', change: '-' },
   ])
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState({ name: '', unit: '', stock_quantity: '', reorder_level: '', cost_per_unit: '' })
+  const [search, setSearch] = useState('')
+  const filteredIngredients = ingredients.filter(i => i.name.toLowerCase().includes(search.toLowerCase()))
   const [showStockModal, setShowStockModal] = useState(false)
   const [stockIngredient, setStockIngredient] = useState(null)
   const [stockForm, setStockForm] = useState({ quantity: '', note: '' })
@@ -51,10 +53,10 @@ export default function Ingredients() {
         const low = data.filter((i) => Number(i.stock_quantity) > 0 && Number(i.stock_quantity) <= Number(i.reorder_level)).length
         const out = data.filter((i) => Number(i.stock_quantity) <= 0).length
         setStats([
-          { label: 'Total Ingredients', value: String(total), change: `${data.filter((i) => Number(i.stock_quantity) > Number(i.reorder_level)).length} well stocked`, color: 'from-teal-600 to-teal-700', border: '#0d9488' },
-          { label: 'Total Stock Value', value: `$${value.toFixed(2)}`, change: `$${(value / (total || 1)).toFixed(2)} avg`, color: 'from-emerald-600 to-emerald-700', border: '#059669' },
-          { label: 'Low Stock Items', value: String(low), change: `${((low / (total || 1)) * 100).toFixed(0)}% of total`, color: 'from-amber-500 to-amber-600', border: '#d97706' },
-          { label: 'Out of Stock', value: String(out), change: out > 0 ? 'Needs restock' : 'All good', color: 'from-red-500 to-red-600', border: '#dc2626' },
+          { label: 'Total Ingredients', value: String(total), change: `${data.filter((i) => Number(i.stock_quantity) > Number(i.reorder_level)).length} well stocked` },
+          { label: 'Total Stock Value', value: `$${value.toFixed(2)}`, change: `$${(value / (total || 1)).toFixed(2)} avg` },
+          { label: 'Low Stock Items', value: String(low), change: `${((low / (total || 1)) * 100).toFixed(0)}% of total` },
+          { label: 'Out of Stock', value: String(out), change: out > 0 ? 'Needs restock' : 'All good' },
         ])
         setLoading(false)
       })
@@ -150,7 +152,7 @@ export default function Ingredients() {
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
             {stats.map((stat, idx) => (
-              <div key={stat.label} className="bg-white rounded-2xl shadow-sm p-5 border-l-4 hover:shadow-md transition-all duration-200" style={{ borderColor: stat.border }}>
+              <div key={stat.label} className="bg-white rounded-2xl p-5 shadow-md border-b-4 border-slate-200 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">{stat.label}</p>
@@ -160,6 +162,30 @@ export default function Ingredients() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Search */}
+          <div className="relative mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search ingredients..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-12 pr-12 py-3 rounded-2xl text-sm font-medium bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-400/20 transition-all duration-200 shadow-sm"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
 
           {/* Table Section */}
@@ -186,7 +212,7 @@ export default function Ingredients() {
                     </tr>
                   </thead>
                   <tbody>
-                    {ingredients.map((i) => (
+                    {filteredIngredients.map((i) => (
                       <tr key={i.id} className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200">
                         <td className="px-6 py-4 font-semibold text-teal-600">{i.id}</td>
                         <td className="px-6 py-4 font-medium text-slate-800">{i.name}</td>
@@ -223,7 +249,7 @@ export default function Ingredients() {
                         </td>
                       </tr>
                     ))}
-                    {ingredients.length === 0 && (
+                    {filteredIngredients.length === 0 && (
                       <tr>
                         <td colSpan={8} className="px-6 py-12 text-center">
                           <div className="text-slate-400">

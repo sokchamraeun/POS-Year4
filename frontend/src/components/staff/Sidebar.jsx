@@ -292,6 +292,8 @@ export default function Sidebar() {
   }
 
   return (
+    <>
+      <style>{`.custom-scrollbar::-webkit-scrollbar { display: none; } .custom-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }`}</style>
     <aside className="w-72 h-screen bg-zinc-950 text-zinc-100 flex flex-col shrink-0 border-r border-zinc-800/80 transition-all duration-300 shadow-2xl relative z-20">
       <div className="flex items-center gap-4 px-6 h-20 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
         <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 transform -rotate-2">
@@ -461,6 +463,7 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   )
 }
 

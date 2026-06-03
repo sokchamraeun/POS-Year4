@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import Sidebar from '../../../components/staff/Sidebar.jsx'
-import Topbar from '../../../components/staff/Topbar.jsx'
-import Loader from '../../../components/shared/Loader.jsx'
+import Sidebar from '../../../../components/staff/Sidebar.jsx'
+import Topbar from '../../../../components/staff/Topbar.jsx'
+import Loader from '../../../../components/shared/Loader.jsx'
 
 const API = import.meta.env.VITE_API_URL
 

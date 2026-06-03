@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Cropper from 'react-easy-crop'
-import getCroppedImg from '../../../utils/cropImage.js'
+import getCroppedImg from '../../../../utils/cropImage.js'
 
 const API_URL = import.meta.env.VITE_API_URL
 const token = localStorage.getItem('token')
@@ -58,14 +58,8 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
       setAllAddons(ads.data ?? ads)
       setAllSugarLevels(sugars.data ?? sugars)
       setAllIceLevels(ices.data ?? ices)
-      setCrop({ x: 0, y: 0 })
-      setZoom(1)
-      setCroppedAreaPixels(null)
-      setOutputWidth('')
-      setOutputHeight('')
-      setCropImage(null)
-      setCropOpen(false)
-    })
+      resetCropState()
+      })
   }, [product])
 
   if (!product) return null
@@ -122,24 +116,23 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
       } catch (error) {
         console.error('Error creating cropped image:', error)
       }
-      setCropOpen(false)
-      setCropImage(null)
-      setCrop({ x: 0, y: 0 })
-      setZoom(1)
-      setOutputWidth('')
-      setOutputHeight('')
-      if (fileInputRef.current) fileInputRef.current.value = ''
+      resetCropState()
     }
   }
 
-  function handleCropCancel() {
+  function resetCropState() {
     setCropOpen(false)
     setCropImage(null)
     setCrop({ x: 0, y: 0 })
     setZoom(1)
+    setCroppedAreaPixels(null)
     setOutputWidth('')
     setOutputHeight('')
     if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  function handleCropCancel() {
+    resetCropState()
   }
 
   async function handleSubmit(e) {

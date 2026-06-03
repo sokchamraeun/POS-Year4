@@ -1,17 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import Sidebar from '../../../components/staff/Sidebar.jsx'
-import Loader from '../../../components/shared/Loader.jsx'
-import Topbar from '../../../components/staff/Topbar.jsx'
+import { useNavigate } from 'react-router-dom'
+import Sidebar from '../../../../components/staff/Sidebar.jsx'
+import Topbar from '../../../../components/staff/Topbar.jsx'
 import Cropper from 'react-easy-crop'
-import getCroppedImg from '../../../utils/cropImage.js'
+import getCroppedImg from '../../../../utils/cropImage.js'
+import Loader from '../../../../components/shared/Loader.jsx'
 
 const API = import.meta.env.VITE_API_URL
 const token = localStorage.getItem('token')
 const authHeaders = { Authorization: `Bearer ${token}` }
 
-export default function EditProduct() {
-  const { id } = useParams()
+export default function CreateProduct() {
   const navigate = useNavigate()
   const [categories, setCategories] = useState([])
   const [sizes, setSizes] = useState([])
@@ -19,10 +18,8 @@ export default function EditProduct() {
   const [sugarLevels, setSugarLevels] = useState([])
   const [iceLevels, setIceLevels] = useState([])
   const [loading, setLoading] = useState(true)
-  const [fetchError, setFetchError] = useState(null)
   const [saving, setSaving] = useState(false)
-
-  // Crop states
+  const fileInputRef = useRef(null)
   const [cropOpen, setCropOpen] = useState(false)
   const [cropImage, setCropImage] = useState(null)
   const [crop, setCrop] = useState({ x: 0, y: 0 })
@@ -30,7 +27,6 @@ export default function EditProduct() {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
   const [outputWidth, setOutputWidth] = useState('')
   const [outputHeight, setOutputHeight] = useState('')
-  const fileInputRef = useRef(null)
 
   const [form, setForm] = useState({
     name: '',
@@ -38,7 +34,6 @@ export default function EditProduct() {
     description: '',
     status: true,
     image: null,
-    imagePreview: '',
     sizes: [],
     prices: {},
     addons: [],
@@ -48,27 +43,13 @@ export default function EditProduct() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API}/products/${id}`, { headers: authHeaders }).then((r) => r.json()),
       fetch(`${API}/categories`, { headers: authHeaders }).then((r) => r.json()),
       fetch(`${API}/sizes`, { headers: authHeaders }).then((r) => r.json()),
       fetch(`${API}/addons`, { headers: authHeaders }).then((r) => r.json()),
       fetch(`${API}/sugar-levels`, { headers: authHeaders }).then((r) => r.json()),
       fetch(`${API}/ice-levels`, { headers: authHeaders }).then((r) => r.json()),
     ])
-      .then(([product, cats, szs, ads, sugars, ices]) => {
-        setForm({
-          name: product.name,
-          category_id: product.category_id,
-          description: product.description ?? '',
-          status: product.status,
-          image: null,
-          imagePreview: product.image ? `${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}` : '',
-          sizes: product.sizes?.map((s) => s.id) ?? [],
-          prices: Object.fromEntries((product.sizes ?? []).map((s) => [s.id, s.pivot?.price ?? 0])),
-          addons: product.addons?.map((a) => a.id) ?? [],
-          sugar_levels: product.sugar_levels?.map((s) => s.id) ?? [],
-          ice_levels: product.ice_levels?.map((s) => s.id) ?? [],
-        })
+      .then(([cats, szs, ads, sugars, ices]) => {
         setCategories(cats.data ?? cats)
         setSizes(szs.data ?? szs)
         setAddons(ads.data ?? ads)
@@ -76,54 +57,43 @@ export default function EditProduct() {
         setIceLevels(ices.data ?? ices)
         setLoading(false)
       })
-      .catch((err) => {
-        setFetchError(err.message || 'Failed to load product data')
-        setLoading(false)
-      })
-  }, [id])
+      .catch(() => setLoading(false))
+  }, [])
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleSizeToggle = (sizeId) => {
-    setForm((prev) => {
-      const exists = prev.sizes.includes(sizeId)
-      return {
-        ...prev,
-        sizes: exists ? prev.sizes.filter((s) => s !== sizeId) : [...prev.sizes, sizeId],
-      }
-    })
-  }
-
-  const handlePriceChange = (sizeId, value) => {
-    setForm((prev) => ({ ...prev, prices: { ...prev.prices, [sizeId]: value } }))
-  }
-
-  const handleArrayToggle = (field, valueId) => {
-    setForm((prev) => {
-      const exists = prev[field].includes(valueId)
-      return {
-        ...prev,
-        [field]: exists ? prev[field].filter((v) => v !== valueId) : [...prev[field], valueId],
-      }
-    })
-  }
-
-  const onFileChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => {
-        setCropImage(reader.result)
-        setCropOpen(true)
-      }
+    const { name, value, type, checked } = e.target
+    if (type === 'checkbox' && name === 'status') {
+      setForm((prev) => ({ ...prev, status: checked }))
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }))
     }
   }
 
-  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+  const handleSizeToggle = (id) => {
+    setForm((prev) => {
+      const exists = prev.sizes.includes(id)
+      return {
+        ...prev,
+        sizes: exists ? prev.sizes.filter((s) => s !== id) : [...prev.sizes, id],
+      }
+    })
+  }
+
+  const handlePriceChange = (id, value) => {
+    setForm((prev) => ({ ...prev, prices: { ...prev.prices, [id]: value } }))
+  }
+
+  const handleArrayToggle = (field, id) => {
+    setForm((prev) => {
+      const exists = prev[field].includes(id)
+      return {
+        ...prev,
+        [field]: exists ? prev[field].filter((v) => v !== id) : [...prev[field], id],
+      }
+    })
+  }
+
+  function onCropComplete(croppedArea, croppedAreaPixels) {
     setCroppedAreaPixels(croppedAreaPixels)
     if (!outputWidth && !outputHeight) {
       setOutputWidth(String(Math.round(croppedAreaPixels.width)))
@@ -131,19 +101,14 @@ export default function EditProduct() {
     }
   }
 
-  const handleCropSave = async () => {
+  async function handleCropSave() {
     if (croppedAreaPixels) {
       try {
         const w = parseInt(outputWidth) || croppedAreaPixels.width
         const h = parseInt(outputHeight) || croppedAreaPixels.height
         const blob = await getCroppedImg(cropImage, croppedAreaPixels, { zoom, outputWidth: w, outputHeight: h })
         const file = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' })
-        const previewUrl = URL.createObjectURL(file)
-        setForm((prev) => ({
-          ...prev,
-          image: file,
-          imagePreview: previewUrl,
-        }))
+        setForm(prev => ({ ...prev, image: file }))
       } catch (error) {
         console.error('Error creating cropped image:', error)
       }
@@ -153,22 +118,18 @@ export default function EditProduct() {
       setZoom(1)
       setOutputWidth('')
       setOutputHeight('')
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
+      if (fileInputRef.current) fileInputRef.current.value = ''
     }
   }
 
-  const handleCropCancel = () => {
+  function handleCropCancel() {
     setCropOpen(false)
     setCropImage(null)
     setCrop({ x: 0, y: 0 })
     setZoom(1)
     setOutputWidth('')
     setOutputHeight('')
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   const handleSubmit = async (e) => {
@@ -182,25 +143,25 @@ export default function EditProduct() {
     fd.append('description', form.description || '')
     fd.append('status', form.status ? '1' : '0')
     if (form.image) fd.append('image', form.image)
-    form.sizes.forEach((sizeId, i) => {
-      fd.append(`sizes[${i}][id]`, sizeId)
-      fd.append(`sizes[${i}][price]`, form.prices[sizeId] ?? 0)
+    form.sizes.forEach((id, i) => {
+      fd.append(`sizes[${i}][id]`, id)
+      fd.append(`sizes[${i}][price]`, form.prices[id] ?? 0)
     })
-    form.addons.forEach((aid) => fd.append('addons[]', aid))
-    form.sugar_levels.forEach((sid) => fd.append('sugar_levels[]', sid))
-    form.ice_levels.forEach((iid) => fd.append('ice_levels[]', iid))
+    form.addons.forEach((id) => fd.append('addons[]', id))
+    form.sugar_levels.forEach((id) => fd.append('sugar_levels[]', id))
+    form.ice_levels.forEach((id) => fd.append('ice_levels[]', id))
 
     try {
-      const res = await fetch(`${API}/products/${id}`, {
-        method: 'PUT',
+      const res = await fetch(`${API}/products`, {
+        method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
         body: fd,
       })
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}))
-        throw new Error(errData.message || JSON.stringify(errData.errors ?? errData) || 'Failed to update product')
+        throw new Error(errData.message || JSON.stringify(errData.errors ?? errData) || 'Failed to create product')
       }
-      navigate('/staff/products?updated=' + id)
+      navigate('/staff/products?created=' + Date.now())
     } catch (err) {
       alert(err.message)
       setSaving(false)
@@ -208,15 +169,6 @@ export default function EditProduct() {
   }
 
   if (loading) return <Loader text="Loading..." />
-
-  if (fetchError) {
-    return (
-      <div className="flex h-screen bg-gray-100">
-        <Sidebar />
-        <div className="flex-1 flex flex-col"><Topbar /><main className="flex-1 p-6 flex items-center justify-center text-red-500">{fetchError}</main></div>
-      </div>
-    )
-  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -229,14 +181,9 @@ export default function EditProduct() {
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-6 max-w-2xl">
-            <h1 className="text-xl font-bold text-gray-800 mb-6">Edit Product</h1>
+            <h1 className="text-xl font-bold text-gray-800 mb-6">Add New Product</h1>
 
             <form onSubmit={handleSubmit} encType="multipart/form-data">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" name="name" value={form.name} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
-              </div>
-
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                 <select name="category_id" value={form.category_id} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -248,24 +195,28 @@ export default function EditProduct() {
               </div>
 
               <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input type="text" name="name" value={form.name} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+
+              <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea name="description" value={form.description} onChange={handleChange} rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
               </div>
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
-                {form.imagePreview && (
-                  <div className="mb-2">
-                    <img src={form.imagePreview} alt="Preview" className="w-20 h-20 rounded-lg object-cover" />
-                  </div>
+                {form.image && (
+                  <div className="mb-2"><img src={URL.createObjectURL(form.image)} alt="Preview" className="w-20 h-20 rounded-lg object-cover" /></div>
                 )}
-                <input 
-                  ref={fileInputRef}
-                  type="file" 
-                  accept="image/*" 
-                  onChange={onFileChange} 
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" 
-                />
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={(e) => {
+                  const file = e.target.files[0]
+                  if (file) {
+                    const reader = new FileReader()
+                    reader.readAsDataURL(file)
+                    reader.onload = () => { setCropImage(reader.result); setCropOpen(true) }
+                  }
+                }} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
               </div>
 
               <div className="mb-4">
@@ -326,90 +277,43 @@ export default function EditProduct() {
                 </div>
               </div>
 
-              <button type="submit" disabled={saving} className="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition-colors disabled:opacity-50">
-                {saving ? 'Saving...' : 'Update Product'}
+              <button type="submit" disabled={saving} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50">
+                {saving ? 'Saving...' : 'Save Product'}
               </button>
+
+              {cropOpen && cropImage && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-75">
+                  <div className="bg-white rounded-lg w-full max-w-2xl m-4">
+                    <div className="p-4 border-b"><h3 className="text-lg font-semibold">Crop Image</h3></div>
+                    <div className="relative h-96">
+                      <Cropper image={cropImage} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />
+                    </div>
+                    <div className="p-4 border-t">
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Zoom</label>
+                        <input type="range" min={1} max={3} step={0.01} value={zoom} onChange={(e) => setZoom(parseFloat(e.target.value))} className="w-full" />
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Output Size</label>
+                        <div className="flex items-center gap-2">
+                          <input type="number" min={1} value={outputWidth} onChange={(e) => setOutputWidth(e.target.value)} placeholder="Width" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                          <span className="text-gray-500">×</span>
+                          <input type="number" min={1} value={outputHeight} onChange={(e) => setOutputHeight(e.target.value)} placeholder="Height" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                          <span className="text-xs text-gray-400">px</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-3">
+                        <button onClick={handleCropCancel} className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+                        <button onClick={handleCropSave} className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Apply</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </form>
           </div>
         </main>
       </div>
-
-      {/* Crop Modal */}
-      {cropOpen && cropImage && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="bg-white rounded-lg w-full max-w-2xl m-4">
-            <div className="p-4 border-b">
-              <h3 className="text-lg font-semibold">Crop Image</h3>
-            </div>
-            
-            <div className="relative h-96">
-              <Cropper
-                image={cropImage}
-                crop={crop}
-                zoom={zoom}
-                aspect={1}
-                onCropChange={setCrop}
-                onZoomChange={setZoom}
-                onCropComplete={onCropComplete}
-              />
-            </div>
-
-            <div className="p-4 border-t">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Zoom</label>
-                <input
-                  type="range"
-                  min={1}
-                  max={3}
-                  step={0.01}
-                  value={zoom}
-                  onChange={(e) => setZoom(parseFloat(e.target.value))}
-                  className="w-full"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Output Size</label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min={1}
-                    value={outputWidth}
-                    onChange={(e) => setOutputWidth(e.target.value)}
-                    placeholder="Width"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <span className="text-gray-500">×</span>
-                  <input
-                    type="number"
-                    min={1}
-                    value={outputHeight}
-                    onChange={(e) => setOutputHeight(e.target.value)}
-                    placeholder="Height"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <span className="text-xs text-gray-400">px</span>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={handleCropCancel}
-                  className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCropSave}
-                  className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

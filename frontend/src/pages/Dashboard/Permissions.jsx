@@ -9,6 +9,7 @@ const moduleStyle = { bg: 'bg-teal-50', header: 'bg-teal-100', text: 'text-teal-
 
 export default function Permissions() {
   const [permissions, setPermissions] = useState([])
+  const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
   const [formData, setFormData] = useState({ name: '', slug: '', module: '' })
@@ -50,16 +51,22 @@ export default function Permissions() {
     }
   }
 
+  const filteredPermissions = useMemo(() => {
+    if (!search) return permissions
+    const q = search.toLowerCase()
+    return permissions.filter(p => p.name.toLowerCase().includes(q) || p.slug.toLowerCase().includes(q))
+  }, [permissions, search])
+
   const grouped = useMemo(() => {
     const map = {}
-    for (const p of permissions) {
+    for (const p of filteredPermissions) {
       const mod = p.module || 'Uncategorized'
       if (!map[mod]) map[mod] = []
       map[mod].push(p)
     }
     const order = [...hardcodedModules.filter(Boolean), 'Uncategorized']
     return Object.entries(map).sort(([a], [b]) => order.indexOf(a) - order.indexOf(b))
-  }, [permissions])
+  }, [filteredPermissions])
 
   function resetForm() {
     setFormData({ name: '', slug: '', module: '' })
@@ -133,6 +140,29 @@ export default function Permissions() {
               <button onClick={() => setError(null)} className="font-bold text-gray-400 hover:text-gray-600">&times;</button>
             </div>
           )}
+
+          <div className="relative mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search permissions by name or slug..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-12 pr-12 py-3 rounded-2xl text-sm font-medium bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-400/20 transition-all duration-200 shadow-sm"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
 
           <div className="space-y-4">
             {(() => { let idx = 0; return grouped.map(([module, perms]) => {
