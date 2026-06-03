@@ -141,6 +141,18 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
+    public function updateCategory(Request $request, Product $product): JsonResponse
+    {
+        $data = $request->validate([
+            'category_id' => 'nullable|exists:categories,id',
+        ]);
+
+        $product->update(['category_id' => $data['category_id']]);
+        $product->load('category');
+
+        return response()->json($product);
+    }
+
     public function destroy(Product $product, CloudinaryService $cloudinary): JsonResponse
     {
         if ($product->image) {

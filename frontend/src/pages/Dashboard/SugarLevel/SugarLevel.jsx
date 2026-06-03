@@ -51,9 +51,13 @@ export default function SugarLevel() {
     if (!confirm('Delete this sugar level?')) return
     const token = localStorage.getItem('token')
     try {
-      await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+      const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.message || 'Failed to delete')
+      }
       fetchItems()
-    } catch {}
+    } catch (err) { alert(err.message) }
   }
 
   return (

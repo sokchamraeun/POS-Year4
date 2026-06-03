@@ -4,3 +4,10 @@
 @theme {
   --font-sans: 'Noto Sans Khmer', sans-serif;
 }
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  scrollbar-width: none;
+}

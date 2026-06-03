@@ -20,6 +20,7 @@ class CategoryController extends Controller
     public function show(Category $category): JsonResponse
     {
         $category->loadCount('products');
+        $category->load(['products' => fn ($q) => $q->with('category')->orderBy('name')]);
 
         return response()->json($category);
     }

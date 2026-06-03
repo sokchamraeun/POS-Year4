@@ -1,5 +1,5 @@
 import { useCart } from '../../context/CartContext.jsx'
-import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
+import { calcDiscount, calcFinalPrice, getPromotionLabel } from '../../utils/promotion.js'
 
 export default function CartItem({ item }) {
   const { updateQty, removeItem } = useCart()
@@ -35,7 +35,20 @@ export default function CartItem({ item }) {
             {item.addOn ? `, +${item.addOn}` : ''}
           </p>
 
-          <p className="text-sm mt-1 text-gray-500">${item.unitPrice.toFixed(2)}</p>
+          {item.promotion ? (
+          <>
+            <p className="text-sm mt-1 text-gray-500 line-through text-gray-400">
+              ${ (item.unitPrice * item.qty).toFixed(2) }
+            </p>
+            <p className="text-sm mt-1 text-gray-500 font-semibold text-green-600">
+              ${ (calcFinalPrice(item.unitPrice, item.promotion, item.qty) * item.qty).toFixed(2) }
+            </p>
+          </>
+        ) : (
+          <p className="text-sm mt-1 text-gray-500">
+            ${item.unitPrice.toFixed(2)}
+          </p>
+        )}
         </div>
       </div>
       <div className="flex flex-col items-end gap-2 shrink-0">
@@ -66,7 +79,7 @@ export default function CartItem({ item }) {
             </svg>
           </button>
         </div>
-        <span className="text-xs font-bold text-gray-800">${(item.unitPrice * item.qty).toFixed(2)}</span>
+          <span className="text-xs font-bold text-gray-800">${ (item.promotion ? calcFinalPrice(item.unitPrice, item.promotion, item.qty) * item.qty : item.unitPrice * item.qty).toFixed(2) }</span>
       </div>
     </div>
   )

@@ -36,23 +36,10 @@ export default function CartSidebar({
 
   return (
     <div className="w-96 shrink-0 flex flex-col">
-      <div className="bg-white rounded-xl shadow-sm flex flex-col flex-1 overflow-hidden">
+      <div className="bg-white border-l-2 border-teal-100 shadow-sm rounded-tl-2xl mt-3 mr-3 mb-3 rounded-br-2xl rounded-bl-2xl rounded-tr-2xl flex flex-col flex-1 overflow-hidden">
         <h2 className="text-base font-semibold text-gray-800 px-4 pt-4 pb-3 shrink-0 border-b border-gray-100">
           Current Order
         </h2>
-
-        <div className="px-4 pt-3 pb-2 space-y-2 shrink-0 border-b border-gray-100">
-          <CustomerSearch
-            customerSearch={customerSearch}
-            showDropdown={showCustomerDropdown}
-            filteredCustomers={filteredCustomers}
-            onSearchChange={onCustomerSearchChange}
-            onSelect={onCustomerSelect}
-            phone={phone}
-            onPhoneChange={onPhoneChange}
-          />
-          <TableSelector tableId={tableId} onChange={onTableChange} tables={tables} />
-        </div>
 
         {cart.length === 0 ? (
           <div className="flex-1 flex items-center justify-center">
@@ -67,85 +54,68 @@ export default function CartSidebar({
                 
                 return (
                   <div key={c.key} className="border border-gray-200 rounded-lg p-3 bg-white hover:shadow-sm transition-shadow">
-                    {/* Product Name and Promotion */}
+                    {/* Product Name + Total Price */}
                     <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="text-sm font-semibold text-gray-800">{c.name}</p>
-                          {isBogo && cur?.promotion && (
-                            <span className="text-[10px] font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
-                              Buy {cur.promotion.buy_qty} Get {cur.promotion.free_qty} Free
-                            </span>
-                          )}
-                        </div>
-                        
-                        {/* Options (Size, Sugar, Ice, Add-ons) */}
-                        <div className="flex flex-wrap gap-1.5 mt-1.5">
-                          {c.size && (
-                            <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
-                              {c.size}
-                            </span>
-                          )}
-                          {c.sugar && (
-                            <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
-                              {c.sugar}
-                            </span>
-                          )}
-                          {c.ice && (
-                            <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
-                              {c.ice}
-                            </span>
-                          )}
-                          {c.addOn && (
-                            <span className="text-[10px] text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">
-                              +{c.addOn}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      
-                      {/* Price */}
-                      <div className="text-right">
-                        <p className="text-sm font-bold text-gray-800">${(c.unitPrice * c.qty).toFixed(2)}</p>
-                        {c.unitPrice !== c.finalPrice && (
-                          <p className="text-[10px] text-gray-400 line-through">${(c.unitPrice).toFixed(2)}</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-semibold text-gray-800">{c.name}</p>
+                        {isBogo && cur?.promotion && (
+                          <span className="text-[10px] font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                            Buy {cur.promotion.buy_qty} Get {cur.promotion.free_qty} Free
+                          </span>
                         )}
                       </div>
+                      <p className="text-sm font-bold text-gray-800">${(c.unitPrice * c.qty).toFixed(2)}</p>
                     </div>
-                    
-                    {/* Quantity Controls and Delete Button */}
-                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-gray-100">
-                      <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg p-1">
-                        <button 
-                          onClick={() => onUpdateQty(c.key, Math.max(1, c.qty - 1))} 
-                          className="w-7 h-7 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors"
-                        >
-                          -
-                        </button>
-                        <span className="w-8 text-center text-sm font-medium text-gray-800">{c.qty}</span>
-                        <button 
-                          onClick={() => onUpdateQty(c.key, c.qty + 1)} 
-                          className="w-7 h-7 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors"
-                        >
-                          +
+
+                    {/* Options */}
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {c.size && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.size}</span>}
+                      {c.sugar && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.sugar}</span>}
+                      {c.ice && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.ice}</span>}
+                      {c.addOn && <span className="text-[10px] text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">+{c.addOn}</span>}
+                    </div>
+
+                    {/* Unit Price + Qty + Delete */}
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center gap-1">
+                        {(() => {
+                          const hasPromo = cur?.promotion && !['combo', 'combo_discount'].includes(cur.promotion.type)
+                          const discPrice = hasPromo ? calcFinalPrice(c.unitPrice, cur.promotion, 1) : c.unitPrice
+                          if (hasPromo && discPrice !== c.unitPrice) {
+                            return <><span className="text-[10px] text-gray-400 line-through">${c.unitPrice.toFixed(2)}</span><span className="text-sm font-semibold text-teal-600 ml-1">${discPrice.toFixed(2)}</span></>
+                          }
+                          return <span className="text-sm font-semibold text-teal-600">${c.unitPrice.toFixed(2)}</span>
+                        })()}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg p-0.5">
+                          <button onClick={() => onUpdateQty(c.key, Math.max(1, c.qty - 1))} className="w-6 h-6 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors">-</button>
+                          <span className="w-6 text-center text-sm font-medium text-gray-800">{c.qty}</span>
+                          <button onClick={() => onUpdateQty(c.key, c.qty + 1)} className="w-6 h-6 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors">+</button>
+                        </div>
+                        <button onClick={() => handleDeleteItem(c.key)} className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Remove">
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
-                      
-                      {/* Delete Button */}
-                      <button
-                        onClick={() => handleDeleteItem(c.key)}
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg transition-all duration-200 text-xs font-medium"
-                        title="Remove item"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        <span>Remove</span>
-                      </button>
                     </div>
                   </div>
                 )
               })}
             </div>
             
+            <div className="px-4 pt-3 pb-2 space-y-2 shrink-0 border-t border-gray-100">
+              <CustomerSearch
+                customerSearch={customerSearch}
+                showDropdown={showCustomerDropdown}
+                filteredCustomers={filteredCustomers}
+                onSearchChange={onCustomerSearchChange}
+                onSelect={onCustomerSelect}
+                phone={phone}
+                onPhoneChange={onPhoneChange}
+              />
+              <TableSelector tableId={tableId} onChange={onTableChange} tables={tables} />
+            </div>
+
             <div className="border-t border-gray-200 px-4 py-4 shrink-0">
               {discountTotal > 0 && (
                 <div className="mb-2">

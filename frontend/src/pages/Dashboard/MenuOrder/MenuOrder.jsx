@@ -322,24 +322,24 @@ if (loading) return <Loader text="Loading menu" />
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
-        <main className="flex-1 flex flex-col overflow-hidden">
-          <CategoryFilter
-            categories={categories}
-            category={category}
-            onSelect={setCategory}
-            search={productSearch}
-            onSearchChange={setProductSearch}
-            onSearchClear={() => setProductSearch('')}
-          />
+        <div className="flex-1 flex overflow-hidden">
+          <main className="flex-1 flex flex-col overflow-hidden">
+            <CategoryFilter
+              categories={categories}
+              category={category}
+              onSelect={setCategory}
+              search={productSearch}
+              onSearchChange={setProductSearch}
+              onSearchClear={() => setProductSearch('')}
+            />
 
-          {success && (
-            <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg text-sm font-medium">
-              {success}
-            </div>
-          )}
+            {success && (
+              <div className="fixed top-4 right-4 z-50 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg text-sm font-medium">
+                {success}
+              </div>
+            )}
 
-          <div className="flex gap-6 px-6 pb-6 pt-4 flex-1 overflow-hidden">
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto hide-scrollbar px-6 pb-6 pt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                 {filtered.map((product) => {
                   const opt = { ...getDefaultOpt(product), ...getOpt(product.id) }
@@ -360,33 +360,33 @@ if (loading) return <Loader text="Loading menu" />
                 )}
               </div>
             </div>
+          </main>
 
-            <CartSidebar
-              cart={cart}
-              products={products}
-              fullTotal={fullTotal}
-              total={total}
-              discountTotal={discountTotal}
-              placing={placing}
-              onUpdateQty={updateQty}
-              onPlaceOrder={placeOrder}
-              comboResult={comboResult}
-              buyXGetYResult={buyXGetYResult}
-              customerSearch={customerSearch}
-              showCustomerDropdown={showCustomerDropdown}
-              filteredCustomers={filteredCustomers}
-              onCustomerSearchChange={handleCustomerSearchChange}
-              onCustomerSelect={handleCustomerSelect}
-              phone={phone}
-              onPhoneChange={setPhone}
-              tableId={tableId}
-              onTableChange={setTableId}
-              tables={tables}
-              paymentMethod={paymentMethod}
-              onPaymentChange={setPaymentMethod}
-            />
-          </div>
-        </main>
+          <CartSidebar
+            cart={cart}
+            products={products}
+            fullTotal={fullTotal}
+            total={total}
+            discountTotal={discountTotal}
+            placing={placing}
+            onUpdateQty={updateQty}
+            onPlaceOrder={placeOrder}
+            comboResult={comboResult}
+            buyXGetYResult={buyXGetYResult}
+            customerSearch={customerSearch}
+            showCustomerDropdown={showCustomerDropdown}
+            filteredCustomers={filteredCustomers}
+            onCustomerSearchChange={handleCustomerSearchChange}
+            onCustomerSelect={handleCustomerSelect}
+            phone={phone}
+            onPhoneChange={setPhone}
+            tableId={tableId}
+            onTableChange={setTableId}
+            tables={tables}
+            paymentMethod={paymentMethod}
+            onPaymentChange={setPaymentMethod}
+          />
+        </div>
       </div>
     </div>
   )

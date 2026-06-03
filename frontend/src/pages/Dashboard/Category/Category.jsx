@@ -1,30 +1,38 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Plus, Edit2, X, Eye } from 'lucide-react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import Loader from '../../../components/shared/Loader.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL + '/categories'
+const PRODUCTS_API = import.meta.env.VITE_API_URL + '/products'
 const token = localStorage.getItem('token')
 const authHeaders = { Authorization: `Bearer ${token}` }
 
 export default function Category() {
   const [categories, setCategories] = useState([])
+  const [allCategories, setAllCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState({ name: '' })
+  const [submitting, setSubmitting] = useState(false)
+  const [viewCategory, setViewCategory] = useState(null)
+  const [showViewModal, setShowViewModal] = useState(false)
+  const [viewLoading, setViewLoading] = useState(false)
+  const [savingId, setSavingId] = useState(null)
 
   const fetchCategories = () => {
     setLoading(true)
-    fetch(API_URL, { headers: authHeaders })
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch')
-        return res.json()
-      })
-      .then(json => {
-        setCategories(json.data ?? json)
+    Promise.all([
+      fetch(API_URL, { headers: authHeaders }).then(r => r.json()),
+      fetch(API_URL, { headers: authHeaders }).then(r => r.json()),
+    ])
+      .then(([cats]) => {
+        setCategories(cats.data ?? cats)
+        setAllCategories(cats.data ?? cats)
         setLoading(false)
       })
       .catch(err => {
@@ -51,214 +59,373 @@ export default function Category() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
     const token = localStorage.getItem('token')
     const url = editing ? `${API_URL}/${editing.id}` : API_URL
     const method = editing ? 'PUT' : 'POST'
 
+    setSubmitting(true)
     try {
       const res = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(form),
       })
-
       if (!res.ok) throw new Error('Failed to save')
-
       setShowModal(false)
+      fetchCategories()
+    } catch (err) {
+      alert(err.message)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleDelete = async (id) => {
+    if (!confirm('Delete this category?')) return
+    const token = localStorage.getItem('token')
+    try {
+      const res = await fetch(`${API_URL}/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body.message || 'Category have product and cannot be deleted')
+      }
       fetchCategories()
     } catch (err) {
       alert(err.message)
     }
   }
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this category?')) return
-
-    const token = localStorage.getItem('token')
-
-    try {
-      await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
+  const openView = (c) => {
+    setViewCategory(null)
+    setShowViewModal(true)
+    setViewLoading(true)
+    fetch(`${API_URL}/${c.id}`, { headers: authHeaders })
+      .then(r => r.json())
+      .then(cat => {
+        setViewCategory(cat.data ?? cat)
+        setViewLoading(false)
       })
-
-      fetchCategories()
-    } catch {}
+      .catch(() => setViewLoading(false))
   }
 
+  const handleChangeCategory = async (productId, categoryId) => {
+    setSavingId(productId)
+    try {
+      const res = await fetch(`${PRODUCTS_API}/${productId}/category`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify({ category_id: categoryId || null }),
+      })
+      if (!res.ok) throw new Error('Failed to update')
+
+      const cat = await fetch(`${API_URL}/${viewCategory.id}`, { headers: authHeaders }).then(r => r.json())
+      setViewCategory(cat.data ?? cat)
+      fetchCategories()
+    } catch (err) {
+      alert(err.message)
+    } finally {
+      setSavingId(null)
+    }
+  }
+
+  const products = viewCategory?.products ?? []
+
   return (
-    <div className="flex h-screen bg-gray-50">
-
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
-
       <div className="flex-1 flex flex-col overflow-hidden">
-
         <Topbar />
-
         <main className="flex-1 overflow-y-auto p-6">
-
-          {/* HEADER */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-500 bg-clip-text text-transparent">
                 Categories
               </h1>
-              <p className="text-sm text-gray-500">
-                Manage your product categories
-              </p>
+              <p className="text-sm text-slate-500 mt-1">Manage your product categories</p>
             </div>
-
             <button
               onClick={openCreate}
-              className="bg-teal-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow hover:bg-teal-700 transition"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-700 hover:to-teal-600 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl"
             >
-              + Add Category
+              <Plus className="w-4 h-4" />
+              Add Category
             </button>
           </div>
 
-          {/* TABLE CARD */}
-          <div className="bg-white border border-teal-200 rounded-2xl shadow-sm overflow-hidden">
-
+          <div className="bg-white rounded-2xl shadow-sm border border-teal-100 overflow-hidden">
             {loading ? <Loader page={false} text="Loading categories..." /> : error ? (
-              <div className="p-10 text-center text-red-500">
-                {error}
+              <div className="p-12 text-center">
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 max-w-md mx-auto">
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
               </div>
             ) : (
-              <table className="w-full text-sm">
-
-                <thead className="bg-teal-50 border-b border-teal-200">
-                  <tr className="text-left text-teal-700 text-xs uppercase tracking-wider">
-                    <th className="px-6 py-4">ID</th>
-                    <th className="px-6 py-4">Name</th>
-                    <th className="px-6 py-4">Products</th>
-                    <th className="px-6 py-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {categories.map((c) => (
-                    <tr
-                      key={c.id}
-                      className="border-b border-teal-100 hover:bg-teal-50 transition"
-                    >
-                      <td className="px-6 py-4">
-                        <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded-lg text-xs font-semibold">
-                          #{c.id}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-4 font-medium text-gray-800">
-                        {c.name}
-                      </td>
-
-                      <td className="px-6 py-4 text-gray-700 font-semibold">
-                        {c.products_count ?? 0}
-                      </td>
-
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
-
-                          <Link
-                            to={`/staff/categories/${c.id}`}
-                            className="px-3 py-1.5 text-xs font-semibold text-teal-600 border border-teal-200 bg-white rounded-lg hover:bg-teal-50 transition"
-                          >
-                            View
-                          </Link>
-
-                          <button
-                            onClick={() => openEdit(c)}
-                            className="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-200 bg-white rounded-lg hover:bg-blue-50 transition"
-                          >
-                            Edit
-                          </button>
-
-                          <button
-                            onClick={() => handleDelete(c.id)}
-                            className="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-200 bg-white rounded-lg hover:bg-red-50 transition"
-                          >
-                            Delete
-                          </button>
-
-                        </div>
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-100">
+                      <th className="px-6 py-4">#ID</th>
+                      <th className="px-6 py-4">Name</th>
+                      <th className="px-6 py-4">Products</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
                     </tr>
-                  ))}
-
-                  {categories.length === 0 && (
-                    <tr>
-                      <td colSpan={4} className="px-6 py-10 text-center text-gray-500">
-                        No categories found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-
-              </table>
+                  </thead>
+                  <tbody>
+                    {categories.map((c, index) => (
+                      <motion.tr
+                        key={c.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200 group"
+                      >
+                        <td className="px-6 py-4">
+                          <div className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
+                            {String(index + 1).padStart(2, '0')}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 font-medium text-slate-800">{c.name}</td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center gap-1 bg-teal-100 text-teal-700 px-2.5 py-1 rounded-lg text-xs font-semibold">
+                            {c.products_count ?? 0}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => openView(c)}
+                              className="p-2 text-teal-600 hover:bg-teal-50 rounded-xl transition-all duration-200 group-hover:scale-105"
+                              title="View"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => openEdit(c)}
+                              className="p-2 text-amber-600 hover:bg-amber-50 rounded-xl transition-all duration-200 group-hover:scale-105"
+                              title="Edit"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(c.id)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 group-hover:scale-105"
+                              title="Delete"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                    {categories.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="px-6 py-16 text-center">
+                          <div className="text-slate-400">
+                            <svg className="w-16 h-16 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p className="font-medium">No categories found</p>
+                            <p className="text-sm mt-1">Click "Add Category" to create one</p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             )}
-
           </div>
-
         </main>
       </div>
 
-      {/* MODAL */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+      {/* CREATE / EDIT MODAL */}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', duration: 0.3, bounce: 0.2 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-teal-200"
+            >
+              <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-4">
+                <h2 className="text-white text-lg font-semibold flex items-center gap-2">
+                  {editing ? <Edit2 className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                  {editing ? 'Edit Category' : 'Add New Category'}
+                </h2>
+                <p className="text-teal-100 text-xs mt-1">
+                  {editing ? 'Update category details' : 'Create a new product category'}
+                </p>
+              </div>
+              <form onSubmit={handleSubmit} className="p-6">
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Category Name</label>
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="e.g., Coffee, Pastry, Smoothie"
+                    required
+                    className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                    autoFocus
+                  />
+                  <p className="text-xs text-slate-400 mt-1">Enter a unique category name</p>
+                </div>
+                <div className="flex gap-3 justify-end pt-2 border-t border-slate-200">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 text-white rounded-xl text-sm font-medium hover:from-teal-700 hover:to-teal-600 transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {submitting && (
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                      </svg>
+                    )}
+                    {submitting ? (editing ? 'Updating...' : 'Creating...') : (editing ? 'Update' : 'Create')}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          <div className="bg-white border border-teal-200 rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
-
-            <h2 className="text-lg font-bold text-gray-900 mb-4">
-              {editing ? 'Edit Category' : 'Add New Category'}
-            </h2>
-
-            <form onSubmit={handleSubmit}>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
-                </label>
-
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={(e) =>
-                    setForm({ ...form, name: e.target.value })
-                  }
-                  className="w-full border border-teal-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="Enter category name"
-                  required
-                />
+      {/* VIEW MODAL */}
+      <AnimatePresence>
+        {showViewModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', duration: 0.3, bounce: 0.2 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden border border-teal-200"
+            >
+              <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-4 flex justify-between items-center">
+                <div>
+                  <h2 className="text-white text-lg font-semibold flex items-center gap-2">
+                    <Eye className="w-5 h-5" />
+                    {viewLoading ? '...' : viewCategory?.name}
+                  </h2>
+                  <p className="text-teal-100 text-xs mt-1">
+                    {viewLoading ? '' : `${products.length} product(s) in this category`}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowViewModal(false)}
+                  className="text-white/80 hover:text-white transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
-              <div className="flex justify-end gap-2">
-
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-100 transition"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition"
-                >
-                  {editing ? 'Update' : 'Create'}
-                </button>
-
+              <div className="p-6 max-h-[65vh] overflow-y-auto">
+                {viewLoading ? (
+                  <Loader page={false} text="Loading products..." />
+                ) : products.length === 0 ? (
+                  <div className="text-center py-10 text-slate-400">
+                    <svg className="w-16 h-16 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                    </svg>
+                    <p className="font-medium">No products in this category</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-100">
+                          <th className="px-4 py-3">Product</th>
+                          <th className="px-4 py-3">Current</th>
+                          <th className="px-4 py-3">Change Category</th>
+                          <th className="px-4 py-3 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {products.map((product) => (
+                          <motion.tr
+                            key={product.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors"
+                          >
+                            <td className="px-4 py-3 font-medium text-slate-800">{product.name}</td>
+                            <td className="px-4 py-3">
+                              <span className="inline-block bg-teal-100 text-teal-700 px-2.5 py-1 rounded-lg text-xs font-semibold">
+                                {product.category?.name ?? 'Uncategorized'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <select
+                                value={product.category_id ?? ''}
+                                onChange={e => handleChangeCategory(product.id, e.target.value)}
+                                disabled={savingId === product.id}
+                                className="border border-teal-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 w-full"
+                              >
+                                <option value="">Uncategorized</option>
+                                {allCategories
+                                  .filter(c => c.id !== viewCategory?.id)
+                                  .map(c => (
+                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                  ))}
+                              </select>
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                {product.category_id && (
+                                  <button
+                                    onClick={() => handleChangeCategory(product.id, '')}
+                                    disabled={savingId === product.id}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-amber-600 border border-amber-200 bg-white rounded-lg hover:bg-amber-50 transition disabled:opacity-50"
+                                  >
+                                    <X className="w-3 h-3" />
+                                    Unlink
+                                  </button>
+                                )}
+                                {savingId === product.id && (
+                                  <svg className="animate-spin h-4 w-4 text-teal-600" viewBox="0 0 24 24" fill="none">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                  </svg>
+                                )}
+                              </div>
+                            </td>
+                          </motion.tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-
-            </form>
-
-          </div>
-        </div>
-      )}
-
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
