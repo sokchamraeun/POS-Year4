@@ -32,10 +32,21 @@ export default function ProductCard({ product, onAddToCart }) {
     return addon ? Number(addon.price) : 0
   }
 
-  const price =
-    getBasePrice(selectedSize) + getAddOnPrice(selectedAddOn)
-  const finalPrice = product.promotion?.type === 'buy_x_get_y' ? price : calcFinalPrice(price, product.promotion)
+  const price = getBasePrice(selectedSize) + getAddOnPrice(selectedAddOn)
+  const finalPrice =
+    product.promotion?.type === 'buy_x_get_y'
+      ? price
+      : calcFinalPrice(price, product.promotion)
   const hasDiscount = finalPrice < price
+
+  function promotionLabel(promo) {
+    if (!promo) return null
+    if (promo.type === 'percentage') return `${parseFloat(promo.value)}% OFF`
+    if (promo.type === 'fixed_amount') return `$${promo.value} OFF`
+    if (promo.type === 'buy_x_get_y') return `Buy ${promo.buy_qty} Get ${promo.free_qty}`
+    if (promo.type === 'combo') return 'COMBO'
+    return null
+  }
 
   async function handleAddToCart(quantity = 1) {
     setStockMsg('')
@@ -46,39 +57,21 @@ export default function ProductCard({ product, onAddToCart }) {
     try {
       const res = await fetch(`${API_URL}/orders/check-stock`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
-          items: [
-            {
-              product_id: product.id,
-              size_id: size?.id || null,
-              qty: quantity,
-              addon_id: addon?.id || null,
-            },
-          ],
+          items: [{ product_id: product.id, size_id: size?.id || null, qty: quantity, addon_id: addon?.id || null }],
         }),
       })
 
       const data = await res.json()
-
-      if (!res.ok) {
-        setStockMsg(data?.message || 'Stock error')
-        return
-      }
-
-      if (!data.available) {
-        setStockMsg('Out of stock')
-        return
-      }
+      if (!res.ok) { setStockMsg(data?.message || 'Stock error'); return }
+      if (!data.available) { setStockMsg('Out of stock'); return }
     } catch (err) {
       setStockMsg(err.message)
       return
     }
 
-    const item = {
+    onAddToCart?.({
       ...product,
       promotion: product.promotion,
       size: selectedSize,
@@ -87,100 +80,82 @@ export default function ProductCard({ product, onAddToCart }) {
       addOn: selectedAddOn,
       unitPrice: price,
       qty: quantity,
-    }
-
-    onAddToCart?.(item)
+    })
 
     setIsAdded(true)
-
-    setTimeout(() => {
-      setIsAdded(false)
-    }, 1200)
+    setTimeout(() => setIsAdded(false), 1200)
   }
+
+  const promoLabel = promotionLabel(product.promotion)
 
   return (
     <>
-      <div className="group bg-white rounded-3xl border border-slate-100/80 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col w-full overflow-hidden">
-        
+      <div className="group relative bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-[0_8px_30px_rgba(59,130,246,0.15)] hover:-translate-y-1 transition-all duration-300 flex flex-col w-full overflow-hidden">
+
+        {/* Top gradient accent */}
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
         {/* IMAGE */}
-        <div className="relative p-2.5 sm:p-3 pb-1">
-          {product.image ? (
-            <div 
-              className="relative overflow-hidden rounded-2xl bg-slate-50 cursor-pointer aspect-square" 
-              onClick={() => setShowModal(true)}
-            >
-              {!imageLoaded && (
-                <div className="absolute inset-0 bg-slate-100 animate-pulse"></div>
-              )}
+        <div className="relative p-2.5 pb-1.5">
+          <div
+            className="relative overflow-hidden rounded-xl bg-slate-50 aspect-square cursor-pointer"
+            onClick={() => setShowModal(true)}
+          >
+            {/* Skeleton */}
+            {!imageLoaded && product.image && (
+              <div className="absolute inset-0 bg-slate-100 animate-pulse" />
+            )}
 
-              {product.promotion && (
-                <div className="absolute top-2.5 left-2.5 z-10 flex flex-col gap-1">
-                  <span className="bg-rose-500/90 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1 select-none tracking-wider uppercase">
-                    <span className="animate-pulse">🔥</span>
-                    {product.promotion.type === 'percentage' && `${parseFloat(product.promotion.value)}% OFF`}
-                    {product.promotion.type === 'fixed_amount' && `$${product.promotion.value} OFF`}
-                    {product.promotion.type === 'buy_x_get_y' && `Buy ${product.promotion.buy_qty} Get ${product.promotion.free_qty}`}
-                    {product.promotion.type === 'combo' && 'COMBO'}
-                  </span>
-                </div>
-              )}
+            {/* Promo badge */}
+            {promoLabel && (
+              <div className="absolute top-2 left-2 z-10">
+                <span className="bg-gradient-to-r from-rose-500 to-orange-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-md flex items-center gap-1 tracking-wider uppercase">
+                  🔥 {promoLabel}
+                </span>
+              </div>
+            )}
 
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-end justify-center pb-3">
+              <span className="text-white text-[10px] font-semibold tracking-widest uppercase bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full border border-white/30">
+                View Details
+              </span>
+            </div>
+
+            {product.image ? (
               <img
                 onLoad={() => setImageLoaded(true)}
-                src={`${
-                  product.image.startsWith('http')
-                    ? ''
-                    : import.meta.env.VITE_STORAGE_URL + '/'
-                }${product.image}`}
+                src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`}
                 alt={product.name}
-                className={`w-full h-full object-cover transition-transform duration-500 ease-out ${
-                  imageLoaded ? 'opacity-100' : 'opacity-0'
-                } group-hover:scale-105`}
+                className={`w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
               />
-            </div>
-          ) : (
-            <div 
-              className="relative w-full aspect-square bg-slate-100 rounded-2xl cursor-pointer flex items-center justify-center" 
-              onClick={() => setShowModal(true)}
-            >
-              {product.promotion && (
-                <div className="absolute top-2.5 left-2.5 z-10">
-                  <span className="bg-rose-500/90 backdrop-blur-md text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1 select-none tracking-wider uppercase">
-                    <span className="animate-pulse">🔥</span>
-                    {product.promotion.type === 'percentage' && `${parseFloat(product.promotion.value)}% OFF`}
-                    {product.promotion.type === 'fixed_amount' && `$${product.promotion.value} OFF`}
-                    {product.promotion.type === 'buy_x_get_y' && `Buy ${product.promotion.buy_qty} Get ${product.promotion.free_qty}`}
-                    {product.promotion.type === 'combo' && 'COMBO'}
-                  </span>
-                </div>
-              )}
-              <div className="text-slate-300 flex flex-col items-center justify-center gap-1.5 select-none">
-                <svg className="w-8 h-8 sm:w-10 sm:h-10 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-slate-300 select-none">
+                <svg className="w-9 h-9 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span className="text-[10px] font-medium tracking-wide uppercase">No Photo</span>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* CONTENT */}
-        <div className="px-3 pb-3 pt-1.5 flex flex-col flex-1">
+        <div className="px-3 pb-3 pt-1 flex flex-col flex-1">
 
-          {/* NAME & DESCRIPTION */}
+          {/* Name & description */}
           <div className="mb-2 flex-1 cursor-pointer" onClick={() => setShowModal(true)}>
-            <h3 className="font-bold text-sm sm:text-base text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors duration-200">
+            <h3 className="font-bold text-sm sm:text-[15px] text-slate-800 line-clamp-1 group-hover:text-blue-600 transition-colors duration-200">
               {product.name}
             </h3>
-
-            <p className="text-[11px] sm:text-xs text-slate-400 mt-0.5 line-clamp-2 leading-relaxed min-h-8 sm:min-h-10">
+            <p className="text-[11px] text-slate-400 mt-0.5 line-clamp-2 leading-relaxed min-h-8">
               {product.description || 'Delicately crafted beverage made from selected premium ingredients.'}
             </p>
           </div>
 
-          {/* STOCK ERROR DISPLAY */}
+          {/* Stock error */}
           {stockMsg && (
-            <div className="bg-red-50 text-red-600 text-[10px] sm:text-xs rounded-xl p-2 mb-2 flex items-center gap-1 border border-red-100">
+            <div className="bg-red-50 text-red-500 text-[10px] rounded-lg px-2.5 py-1.5 mb-2 flex items-center gap-1.5 border border-red-100">
               <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -188,33 +163,33 @@ export default function ProductCard({ product, onAddToCart }) {
             </div>
           )}
 
-          {/* PRICING & ACTION */}
-          <div className="flex items-center justify-between pt-2 border-t border-slate-100/80 mt-auto">
-            <div className="flex flex-col">
+          {/* Price & action */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-auto">
+            <div className="flex flex-col leading-none">
               {hasDiscount && (
-                <span className="text-[10px] sm:text-xs text-slate-400 line-through leading-none mb-0.5">
+                <span className="text-[10px] text-slate-400 line-through mb-0.5">
                   ${price.toFixed(2)}
                 </span>
               )}
-              <span className="text-sm sm:text-lg font-extrabold bg-linear-to-r from-blue-700 to-cyan-600 bg-clip-text text-transparent leading-none">
+              <span className="text-base font-extrabold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
                 ${finalPrice.toFixed(2)}
               </span>
             </div>
 
             <button
               onClick={() => setShowModal(true)}
-              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all duration-300 active:scale-95 shadow-md ${
+              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all duration-300 active:scale-90 shadow-md ${
                 isAdded
-                  ? 'bg-emerald-500 text-white scale-105 shadow-emerald-100'
-                  : 'bg-linear-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-blue-100 hover:shadow-lg'
+                  ? 'bg-emerald-500 text-white shadow-emerald-200'
+                  : 'bg-gradient-to-br from-blue-600 to-cyan-500 text-white shadow-blue-200 hover:shadow-[0_4px_16px_rgba(59,130,246,0.45)] hover:scale-110'
               }`}
             >
               {isAdded ? (
-                <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               ) : (
-                <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                 </svg>
               )}
