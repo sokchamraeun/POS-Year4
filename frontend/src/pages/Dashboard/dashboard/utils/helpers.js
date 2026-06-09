@@ -95,18 +95,21 @@ export const getTopProducts = (orders, allProducts) => {
     (o.items ?? []).map(i => ({ ...i, date: o.created_at }))
   )
   
-  const prodCounts = {}
+  const prodData = {}
   for (const i of orderItems) {
     const name = i.product?.name ?? i.name ?? 'Unknown'
-    prodCounts[name] = (prodCounts[name] || 0) + Number(i.qty ?? 1)
+    if (!prodData[name]) {
+      prodData[name] = { qty: 0, image: i.product?.image ?? '' }
+    }
+    prodData[name].qty += Number(i.qty ?? 1)
   }
   
-  const sorted = Object.entries(prodCounts)
-    .sort((a, b) => b[1] - a[1])
+  const sorted = Object.entries(prodData)
+    .sort((a, b) => b[1].qty - a[1].qty)
     .slice(0, 5)
-    .map(([name, qty]) => ({ name, qty }))
+    .map(([name, data]) => ({ name, qty: data.qty, image: data.image }))
   
-  return sorted.length > 0 ? sorted : allProducts.slice(0, 5).map(p => ({ name: p.name, qty: 0 }))
+  return sorted.length > 0 ? sorted : allProducts.slice(0, 5).map(p => ({ name: p.name, qty: 0, image: p.image ?? '' }))
 }
 
 export const calculateCustomDateRange = (orders, fromDate, toDate) => {

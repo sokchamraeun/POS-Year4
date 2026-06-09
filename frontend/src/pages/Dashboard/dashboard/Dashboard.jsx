@@ -7,7 +7,7 @@ import StatCard from './components/StatCard'
 import RevenueChart from './components/RevenueChart'
 import RecentOrdersTable from './components/RecentOrdersTable'
 import TopProducts from './components/TopProducts'
-import ProductsList from './components/ProductsList'
+import ProductManagement from './components/ProductManagement'
 import OrderDetailModal from './components/OrderDetailModal'
 import { useDashboardData } from './hooks/useDashboardData'
 import { useOrderPolling } from './hooks/useOrderPolling'
@@ -259,7 +259,7 @@ export default function Dashboard() {
 
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <TopProducts topProducts={topProducts} />
-            <ProductsList products={products} />
+            <ProductManagement products={products} />
           </div>
 
           {selectedOrder && (

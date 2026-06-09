@@ -38,6 +38,7 @@ function mapOrder(o) {
       addOn: i.addons?.map((a) => a.addon?.name).filter(Boolean).join(', ') ?? '',
       promotion: i.promotion ?? null,
     })),
+    printedBy: o.printed_by?.name ?? null,
   }
 }
 
@@ -443,7 +444,10 @@ export default function Orders() {
                       <span>{selectedOrder.phone}</span>
                       {selectedOrder.table && selectedOrder.table !== '-' ? <><span className="text-teal-300">|</span><span>Table: <span className="text-teal-600 font-medium">{selectedOrder.table}</span></span></> : null}
                     </div>
-                    <span className="text-slate-400">{selectedOrder.datetime}</span>
+                    <div className="flex items-center gap-4">
+                      {selectedOrder.printedBy && <span><span className="text-slate-400">Staff:</span> <span className="text-slate-800 font-medium">{selectedOrder.printedBy}</span></span>}
+                      <span className="text-slate-400 ml-auto">{selectedOrder.datetime}</span>
+                    </div>
                   </div>
                   <div className="mb-4 pb-4 border-b border-teal-200 space-y-2">
                     <div className="flex items-center gap-2">
@@ -580,7 +584,8 @@ export default function Orders() {
                           ${o.id}<br>
                           ${o.customer}${o.phone !== '-' ? ' &mdash; '+o.phone : ''}${o.table !== '-' ? ' | Table: '+o.table : ''}<br>
                           ${o.datetime}<br>
-                          Status: ${o.status} | Payment: ${o.payment}<br>Free WIFI<br>Username: Visal<br>Password: 12345678
+                          Status: ${o.status} | Payment: ${o.payment}<br>
+                          ${o.printedBy ? 'Staff: '+o.printedBy+'<br>' : ''}Free WIFI<br>Username: Visal<br>Password: 12345678
                         </div>
                         <hr>
                         <table>

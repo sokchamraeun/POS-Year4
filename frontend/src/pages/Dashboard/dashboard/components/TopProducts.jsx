@@ -1,5 +1,7 @@
 // src/pages/staff/dashboard/components/TopProducts.jsx
 
+const STORAGE_URL = import.meta.env.VITE_STORAGE_URL ?? ''
+
 export default function TopProducts({ topProducts = [] }) {
   const total = topProducts.reduce((sum, product) => {
     return sum + Number(product.qty ?? 0)
@@ -45,40 +47,49 @@ export default function TopProducts({ topProducts = [] }) {
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-5 gap-3">
         {topProducts.map((product, index) => {
           const qty = Number(product.qty ?? 0)
           const percent = total > 0 ? Math.round((qty / total) * 100) : 0
 
+          const imgSrc = product.image?.startsWith('http')
+            ? product.image
+            : STORAGE_URL + '/' + (product.image ?? '')
+
           return (
             <div
               key={product.id ?? product.name ?? index}
-              className="group rounded-2xl border border-cyan-100 bg-white p-4 shadow-sm transition-all duration-300 hover:border-cyan-400 hover:shadow-md"
+              className="flex flex-col items-center rounded-2xl border border-cyan-100 bg-white p-3 shadow-sm transition-all duration-300 hover:border-cyan-400 hover:shadow-md"
             >
-              <div className="mb-3 flex items-center justify-between gap-4">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-800 text-sm font-bold text-white shadow-sm">
+              <div className="relative mb-2">
+                {product.image ? (
+                  <img
+                    src={imgSrc}
+                    alt={product.name}
+                    className="h-14 w-14 rounded-xl object-contain shadow-sm ring-1 ring-slate-200 bg-white"
+                  />
+                ) : (
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-cyan-50 text-lg font-bold text-cyan-800 ring-1 ring-slate-200">
                     {index + 1}
                   </div>
-
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold text-slate-800">
-                      {product.name}
-                    </p>
-
-                    <p className="text-xs text-slate-500">
-                      {percent}% of total sales
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-xl font-bold text-slate-900">{qty}</p>
-                  <p className="text-xs font-medium text-slate-500">sold</p>
+                )}
+                <div className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-800 text-[10px] font-bold text-white shadow-sm">
+                  {index + 1}
                 </div>
               </div>
 
-              <div className="h-2.5 overflow-hidden rounded-full bg-cyan-50">
+              <p className="w-full truncate text-center text-sm font-semibold text-slate-800 mb-1">
+                {product.name}
+              </p>
+
+              <p className="text-xs text-slate-500 mb-2">
+                {percent}% of total sales
+              </p>
+
+              <p className="text-lg font-bold text-slate-900">{qty}</p>
+              <p className="text-xs font-medium text-slate-500 mb-2">sold</p>
+
+              <div className="h-2 w-full overflow-hidden rounded-full bg-cyan-50">
                 <div
                   className="h-full rounded-full bg-cyan-800 transition-all duration-700"
                   style={{ width: `${percent}%` }}

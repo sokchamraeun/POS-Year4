@@ -95,6 +95,12 @@ export default function Invoice({ order, customer }) {
             Status: {order.status || 'New'} | Payment: {order.payment_status || 'Unpaid'}
           </div>
 
+          {order.printed_by?.name && (
+            <div className="text-[10px] mt-1 text-gray-600">
+              Staff: {order.printed_by.name}
+            </div>
+          )}
+
           <div className="text-[10px] mt-2 text-gray-500">Free WIFI</div>
           <div className="text-[10px] text-gray-500">Username: Visal</div>
           <div className="text-[10px] text-gray-500">Password: 12345678</div>

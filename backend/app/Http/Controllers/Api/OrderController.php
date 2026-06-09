@@ -40,7 +40,7 @@ class OrderController extends Controller
         if (! $customer) {
             return response()->json(['data' => [], 'message' => 'No orders found']);
         }
-        $orders = Order::with(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon'])
+        $orders = Order::with(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy'])
             ->where('customer_id', $customer->id)
             ->orderByDesc('id')
             ->paginate(10);

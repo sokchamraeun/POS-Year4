@@ -49,7 +49,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
             ${order.customer?.name ?? 'Guest'}${order.customer?.phone ? ' &mdash; '+order.customer.phone : ''}${order.table ? ' | Table: '+(order.table?.name??order.table) : ''}<br>
             ${formatKhmerTime(order.created_at)}<br>
             Status: ${order.status ?? 'New'} | Payment: ${order.payment_status ?? 'Unpaid'}<br>
-            Free WIFI<br>Username: Visal<br>Password: 12345678
+            ${order.printed_by?.name ? 'Staff: '+order.printed_by.name+'<br>' : ''}Free WIFI<br>Username: Visal<br>Password: 12345678
           </div>
           <hr>
           <table>
@@ -117,14 +117,15 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
         </div>
         
         <div className="px-6 py-4 overflow-y-auto">
-          <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-            <div className="flex items-center gap-4">
-              <span><span className="text-gray-400">Customer:</span> <span className="text-gray-800 font-medium">{order.customer?.name ?? 'Guest'}</span></span>
-              {order.customer?.phone && <><span className="text-gray-300">|</span><span>{order.customer.phone}</span></>}
-              {order.table && <><span className="text-gray-300">|</span><span>Table: <span className="text-gray-800 font-medium">{order.table?.name ?? order.table}</span></span></>}
+            <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+              <div className="flex items-center gap-4">
+                <span><span className="text-gray-400">Customer:</span> <span className="text-gray-800 font-medium">{order.customer?.name ?? 'Guest'}</span></span>
+                {order.customer?.phone && <><span className="text-gray-300">|</span><span>{order.customer.phone}</span></>}
+                {order.table && <><span className="text-gray-300">|</span><span>Table: <span className="text-gray-800 font-medium">{order.table?.name ?? order.table}</span></span></>}
+                {order.printed_by?.name && <><span className="text-gray-300">|</span><span>Staff: <span className="text-gray-800 font-medium">{order.printed_by.name}</span></span></>}
+              </div>
+              <span className="text-gray-400">{formatKhmerTime(order.created_at)}</span>
             </div>
-            <span className="text-gray-400">{formatKhmerTime(order.created_at)}</span>
-          </div>
           
           <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
             <div className="flex items-center gap-2">

@@ -1,4 +1,3 @@
-// src/pages/staff/dashboard/components/RevenueChart.jsx
 import { useState } from 'react'
 import {
   periods,
@@ -8,6 +7,9 @@ import {
   plotW,
   plotH,
 } from '../utils/constants'
+
+const REVENUE_COLOR = '#0d9488'
+const ORDERS_COLOR = '#f59e0b'
 
 export default function RevenueChart({
   period,
@@ -47,22 +49,21 @@ export default function RevenueChart({
           <h2 className="text-xl font-bold text-slate-900">
             Revenue & Orders
           </h2>
-
           <p className="mt-1 text-sm text-slate-500">
             Performance overview over time.
           </p>
         </div>
 
         <div className="flex flex-col items-start gap-3 xl:items-end">
-          <div className="flex rounded-2xl border border-cyan-200 bg-cyan-50/70 p-1">
+          <div className="flex rounded-2xl border border-teal-200 bg-teal-50/70 p-1">
             {periods.map((p) => (
               <button
                 key={p.key}
                 onClick={() => setPeriod(p.key)}
                 className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
                   period === p.key
-                    ? 'bg-cyan-800 text-white shadow-sm'
-                    : 'text-slate-500 hover:bg-white hover:text-cyan-800'
+                    ? 'bg-teal-700 text-white shadow-sm'
+                    : 'text-slate-500 hover:bg-white hover:text-teal-700'
                 }`}
               >
                 {p.label}
@@ -76,40 +77,31 @@ export default function RevenueChart({
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="rounded-xl border border-cyan-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none focus:border-cyan-700"
+                className="rounded-xl border border-teal-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none focus:border-teal-600"
               />
-
               <span className="text-xs font-semibold text-slate-400">to</span>
-
               <input
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="rounded-xl border border-cyan-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none focus:border-cyan-700"
+                className="rounded-xl border border-teal-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none focus:border-teal-600"
               />
             </div>
           )}
         </div>
       </div>
 
-      {/* <div className="mb-5 grid grid-cols-2 gap-3">
-        <SummaryBox
-          label="Revenue"
-          value={formatCurrency(totalRevenue)}
-        />
-
-        <SummaryBox
-          label="Orders"
-          value={totalOrders}
-        />
-      </div> */}
-
-      <div className="mb-4 flex items-center gap-5 text-xs">
-        <LegendDot className="bg-red-700" label="Revenue" />
-        <LegendDot className="bg-yellow-500" label="Orders" />
+      <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <SummaryBox label="Total Revenue" value={formatCurrency(totalRevenue)} color={REVENUE_COLOR} />
+        <SummaryBox label="Total Orders" value={totalOrders} color={ORDERS_COLOR} />
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-cyan-100 bg-gradient-to-br from-cyan-50/40 to-white p-3">
+      <div className="mb-4 flex items-center gap-5 text-xs">
+        <LegendDot color={REVENUE_COLOR} label="Revenue" />
+        <LegendDot color={ORDERS_COLOR} label="Orders" />
+      </div>
+
+      <div className="overflow-x-auto rounded-2xl border border-teal-100 bg-white p-3">
         <svg
           viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
           className="w-full min-w-[600px]"
@@ -117,13 +109,12 @@ export default function RevenueChart({
         >
           <defs>
             <linearGradient id="revenueArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#8f989b" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#0891b2" stopOpacity="0.03" />
+              <stop offset="0%" stopColor={REVENUE_COLOR} stopOpacity="0.25" />
+              <stop offset="100%" stopColor={REVENUE_COLOR} stopOpacity="0.02" />
             </linearGradient>
-
             <linearGradient id="ordersArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#67e8f9" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#67e8f9" stopOpacity="0.03" />
+              <stop offset="0%" stopColor={ORDERS_COLOR} stopOpacity="0.25" />
+              <stop offset="100%" stopColor={ORDERS_COLOR} stopOpacity="0.02" />
             </linearGradient>
           </defs>
 
@@ -132,7 +123,7 @@ export default function RevenueChart({
             y={PAD.top}
             width={plotW}
             height={plotH}
-            fill="#ffffff"
+            fill="#fafaf9"
             rx="12"
           />
 
@@ -143,16 +134,15 @@ export default function RevenueChart({
                 y1={PAD.top + plotH * (1 - frac)}
                 x2={SVG_WIDTH - PAD.right}
                 y2={PAD.top + plotH * (1 - frac)}
-                stroke="#bae6fd"
+                stroke="#e2e8f0"
                 strokeWidth="1"
                 strokeDasharray="4,4"
               />
-
               <text
                 x={PAD.left - 10}
                 y={PAD.top + plotH * (1 - frac) + 4}
                 textAnchor="end"
-                fill="#0891b2"
+                fill="#94a3b8"
                 fontSize="10"
                 fontWeight="600"
               >
@@ -166,7 +156,7 @@ export default function RevenueChart({
             y1={PAD.top + plotH}
             x2={SVG_WIDTH - PAD.right}
             y2={PAD.top + plotH}
-            stroke="#7dd3fc"
+            stroke="#cbd5e1"
             strokeWidth="1.5"
             strokeLinecap="round"
           />
@@ -185,7 +175,7 @@ export default function RevenueChart({
               x={SVG_WIDTH / 2}
               y={SVG_HEIGHT / 2}
               textAnchor="middle"
-              fill="#0891b2"
+              fill="#94a3b8"
               fontSize="13"
               fontWeight="600"
             >
@@ -242,7 +232,7 @@ function ChartLines({
       <path
         d={revenueLine}
         fill="none"
-        stroke="#ff0000"
+        stroke={REVENUE_COLOR}
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -251,7 +241,7 @@ function ChartLines({
       <path
         d={ordersLine}
         fill="none"
-        stroke="#eeff00"
+        stroke={ORDERS_COLOR}
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -269,7 +259,6 @@ function ChartLines({
           const mx = ((e.clientX - rect.left) / rect.width) * SVG_WIDTH
           const idx = Math.round(((mx - PAD.left) / plotW) * (data.length - 1))
           const clamped = Math.max(0, Math.min(data.length - 1, idx))
-
           setHoveredPoint({
             ...data[clamped],
             x: xCenter(clamped),
@@ -284,8 +273,8 @@ function ChartLines({
           cx={point.x}
           cy={point.y}
           r={hoverIdx === index ? 5 : 3.5}
-          fill={hoverIdx === index ? '#0891b2' : '#ffffff'}
-          stroke="#0891b2"
+          fill={hoverIdx === index ? REVENUE_COLOR : '#ffffff'}
+          stroke={REVENUE_COLOR}
           strokeWidth="2"
         />
       ))}
@@ -296,8 +285,8 @@ function ChartLines({
           cx={point.x}
           cy={point.y}
           r={hoverIdx === index ? 5 : 3.5}
-          fill={hoverIdx === index ? '#06b6d4' : '#ffffff'}
-          stroke="#06b6d4"
+          fill={hoverIdx === index ? ORDERS_COLOR : '#ffffff'}
+          stroke={ORDERS_COLOR}
           strokeWidth="2"
         />
       ))}
@@ -308,7 +297,7 @@ function ChartLines({
           x={xCenter(i)}
           y={SVG_HEIGHT - 8}
           textAnchor="middle"
-          fill={hoverIdx === i ? '#155e75' : '#0891b2'}
+          fill={hoverIdx === i ? '#1e293b' : '#64748b'}
           fontSize="11"
           fontWeight={hoverIdx === i ? 700 : 500}
         >
@@ -323,7 +312,7 @@ function ChartLines({
             y1={PAD.top}
             x2={hoveredPoint.x}
             y2={PAD.top + plotH}
-            stroke="#0891b2"
+            stroke="#cbd5e1"
             strokeWidth="1.5"
             strokeDasharray="4,4"
           />
@@ -334,15 +323,15 @@ function ChartLines({
             width="140"
             height="58"
             rx="12"
-            fill="#0e7490"
-            opacity="0.96"
+            fill="#1e293b"
+            opacity="0.92"
           />
 
           <text
             x={hoveredPoint.x}
             y={PAD.top + 23}
             textAnchor="middle"
-            fill="#ecfeff"
+            fill="#f8fafc"
             fontSize="11"
             fontWeight="700"
           >
@@ -353,7 +342,7 @@ function ChartLines({
             x={hoveredPoint.x}
             y={PAD.top + 40}
             textAnchor="middle"
-            fill="#ffffff"
+            fill="#f8fafc"
             fontSize="10"
             fontWeight="600"
           >
@@ -364,7 +353,7 @@ function ChartLines({
             x={hoveredPoint.x}
             y={PAD.top + 53}
             textAnchor="middle"
-            fill="#cffafe"
+            fill="#f8fafc"
             fontSize="10"
             fontWeight="600"
           >
@@ -376,28 +365,20 @@ function ChartLines({
   )
 }
 
-// function SummaryBox({ label, value }) {
-//   return (
-//     <div className="rounded-2xl border border-cyan-200 bg-cyan-50 px-4 py-3 shadow-sm">
-//       <p className="text-xs font-semibold text-cyan-800">
-//         {label}
-//       </p>
+function SummaryBox({ label, value, color }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <p className="text-xs font-semibold text-slate-500">{label}</p>
+      <p className="mt-1 text-xl font-bold" style={{ color }}>{value}</p>
+    </div>
+  )
+}
 
-//       <p className="mt-1 text-xl font-bold text-cyan-900">
-//         {value}
-//       </p>
-//     </div>
-//   )
-// }
-
-function LegendDot({ className, label }) {
+function LegendDot({ color, label }) {
   return (
     <div className="flex items-center gap-2">
-      <span className={`h-3 w-3 rounded-full ${className}`} />
-
-      <span className="font-semibold text-cyan-800">
-        {label}
-      </span>
+      <span className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />
+      <span className="font-semibold text-slate-600">{label}</span>
     </div>
   )
 }
