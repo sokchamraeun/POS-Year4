@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { getImageUrl } from '../../utils/image.js'
 
 function safeParseUser() {
   try {
@@ -14,7 +15,10 @@ export default function Topbar() {
   const [user, setUser] = useState(safeParseUser)
 
   useEffect(() => {
-    setUser(safeParseUser())
+    function refresh() { setUser(safeParseUser()) }
+    refresh()
+    window.addEventListener('focus', refresh)
+    return () => window.removeEventListener('focus', refresh)
   }, [])
 
   const initial = user?.name?.[0]?.toUpperCase() || 'S'
@@ -34,9 +38,13 @@ export default function Topbar() {
           </svg>
         </Link>
         <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-          <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
-            {initial}
-          </div>
+          {user?.avatar ? (
+            <img src={getImageUrl(user.avatar)} alt={user?.name || 'User'} className="w-9 h-9 rounded-full object-cover" />
+          ) : (
+            <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+              {initial}
+            </div>
+          )}
           <div className="text-sm">
             <p className="font-medium text-gray-800">{user?.name || 'Staff User'}</p>
             <p className="text-gray-500 text-xs">{user?.role?.name || 'Staff'}</p>

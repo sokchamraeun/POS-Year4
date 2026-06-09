@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\CloudinaryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -31,7 +32,7 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request, CloudinaryService $cloudinary): JsonResponse
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -39,16 +40,21 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
             'phone' => 'nullable|string|max:30',
             'role_id' => 'nullable|exists:roles,id',
+            'avatar' => 'nullable|image|max:2048',
         ]);
 
         $data['password'] = bcrypt($data['password']);
+
+        if ($request->hasFile('avatar')) {
+            $data['avatar'] = $cloudinary->upload($request->file('avatar'), 'avatars');
+        }
 
         $user = User::create($data);
 
         return response()->json($user, 201);
     }
 
-    public function update(Request $request, User $user): JsonResponse
+    public function update(Request $request, User $user, CloudinaryService $cloudinary): JsonResponse
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -59,6 +65,7 @@ class UserController extends Controller
             'status' => 'boolean',
             'last_login_at' => 'nullable|date',
             'logout_at' => 'nullable|date',
+            'avatar' => 'nullable|image|max:2048',
         ]);
 
         if (array_key_exists('last_login_at', $data) && is_null($data['last_login_at'])) {
@@ -78,13 +85,24 @@ class UserController extends Controller
             unset($data['password']);
         }
 
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                $cloudinary->delete($user->avatar);
+            }
+            $data['avatar'] = $cloudinary->upload($request->file('avatar'), 'avatars');
+        }
+
         $user->update($data);
 
         return response()->json($user);
     }
 
-    public function destroy(User $user): JsonResponse
+    public function destroy(User $user, CloudinaryService $cloudinary): JsonResponse
     {
+        if ($user->avatar) {
+            $cloudinary->delete($user->avatar);
+        }
+
         $user->delete();
 
         return response()->json(['message' => 'User deleted successfully.']);

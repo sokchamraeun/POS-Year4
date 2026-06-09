@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Plus,
   Edit2,
@@ -10,11 +10,15 @@ import {
   CheckCircle,
   XCircle,
   Loader2,
+  Camera,
 } from "lucide-react";
+import Cropper from "react-easy-crop";
 
 import Sidebar from "../../components/staff/Sidebar.jsx";
 import Loader from "../../components/shared/Loader.jsx";
 import Topbar from "../../components/staff/Topbar.jsx";
+import getCroppedImg from "../../utils/cropImage.js";
+import { getImageUrl } from "../../utils/image.js";
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
@@ -36,6 +40,7 @@ const emptyForm = {
   role_id: "",
   phone: "",
   status: true,
+  avatar: null,
 };
 
 export default function Users() {
@@ -50,6 +55,15 @@ export default function Users() {
   const [detailUser, setDetailUser] = useState(null);
   const [editing, setEditing] = useState(null);
   const [formData, setFormData] = useState(emptyForm);
+
+  const fileInputRef = useRef(null);
+  const [cropOpen, setCropOpen] = useState(false);
+  const [cropImage, setCropImage] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [outputWidth, setOutputWidth] = useState("");
+  const [outputHeight, setOutputHeight] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -112,6 +126,7 @@ export default function Users() {
       role_id: user.role_id || user.role?.id || "",
       phone: user.phone ?? "",
       status: user.status ?? true,
+      avatar: user.avatar ?? null,
     });
     setShowModal(true);
   }
@@ -132,27 +147,55 @@ export default function Users() {
       setSaving(true);
       setError("");
 
-      const body = { ...formData };
+      const hasAvatarFile = formData.avatar instanceof File;
+      const url = editing
+        ? `${API_BASE}/users/${editing.id}`
+        : `${API_BASE}/users`;
 
-      if (editing && !body.password) delete body.password;
-      if (!body.role_id) body.role_id = null;
+      let body, method;
 
-      const res = await fetch(
-        editing ? `${API_BASE}/users/${editing.id}` : `${API_BASE}/users`,
-        {
-          method: editing ? "PUT" : "POST",
-          headers: {
-            ...authHeaders,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        }
-      );
+      if (hasAvatarFile) {
+        const fd = new FormData();
+        fd.append("name", formData.name);
+        fd.append("email", formData.email);
+        fd.append("phone", formData.phone || "");
+        fd.append("role_id", formData.role_id || "");
+        fd.append("status", formData.status ? "1" : "0");
+        fd.append("avatar", formData.avatar);
+        fd.append("password", formData.password || "");
+        if (editing) fd.append("_method", "PUT");
+        body = fd;
+        method = "POST";
+      } else {
+        const payload = { ...formData };
+        delete payload.avatar;
+        if (editing && !payload.password) delete payload.password;
+        if (!payload.role_id) payload.role_id = null;
+        body = JSON.stringify(payload);
+        method = editing ? "PUT" : "POST";
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: hasAvatarFile
+          ? authHeaders
+          : { ...authHeaders, "Content-Type": "application/json" },
+        body,
+      });
+
+      const result = await res.json().catch(() => null);
 
       if (!res.ok) {
-        const errData = await res.json().catch(() => null);
-        throw new Error(errData?.message || `HTTP ${res.status}`);
+        throw new Error(result?.message || `HTTP ${res.status}`);
       }
+
+      const savedUser = result?.user ?? result;
+      try {
+        const cur = JSON.parse(localStorage.getItem('user') || '{}');
+        if (cur.id && editing && cur.id === editing.id) {
+          localStorage.setItem('user', JSON.stringify({ ...cur, ...savedUser }));
+        }
+      } catch { /* ignore */ }
 
       closeModal();
       fetchData();
@@ -179,6 +222,61 @@ export default function Users() {
       fetchData();
     } catch (err) {
       setError(err.message || "Delete failed.");
+    }
+  }
+
+  function onCropComplete(croppedArea, croppedAreaPixels) {
+    setCroppedAreaPixels(croppedAreaPixels);
+    if (!outputWidth && !outputHeight) {
+      setOutputWidth(String(Math.round(croppedAreaPixels.width)));
+      setOutputHeight(String(Math.round(croppedAreaPixels.height)));
+    }
+  }
+
+  async function handleCropSave() {
+    if (croppedAreaPixels) {
+      try {
+        const w = parseInt(outputWidth) || croppedAreaPixels.width;
+        const h = parseInt(outputHeight) || croppedAreaPixels.height;
+        const blob = await getCroppedImg(cropImage, croppedAreaPixels, {
+          zoom,
+          outputWidth: w,
+          outputHeight: h,
+        });
+        const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
+        setFormData((prev) => ({ ...prev, avatar: file }));
+      } catch (err) {
+        console.error("Crop error:", err);
+      }
+      setCropOpen(false);
+      setCropImage(null);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+      setOutputWidth("");
+      setOutputHeight("");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
+  function handleCropCancel() {
+    setCropOpen(false);
+    setCropImage(null);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setOutputWidth("");
+    setOutputHeight("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        setCropImage(reader.result);
+        setCropOpen(true);
+      };
     }
   }
 
@@ -252,6 +350,7 @@ export default function Users() {
               <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-5 py-4">#</th>
+                  <th className="px-5 py-4">Avatar</th>
                   <th className="px-5 py-4">User</th>
                   <th className="px-5 py-4">Phone</th>
                   <th className="px-5 py-4">Role</th>
@@ -264,7 +363,7 @@ export default function Users() {
               <tbody className="divide-y divide-slate-100">
                 {users.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="px-5 py-14 text-center">
+                    <td colSpan="8" className="px-5 py-14 text-center">
                       <User className="mx-auto mb-3 h-12 w-12 text-slate-300" />
                       <p className="font-semibold text-slate-600">
                         No users found
@@ -284,6 +383,15 @@ export default function Users() {
                         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 text-xs font-bold text-teal-700">
                           {String(index + 1).padStart(2, "0")}
                         </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        {user.avatar ? (
+                          <img
+                            src={getImageUrl(user.avatar)}
+                            alt={user.name}
+                            className="h-10 w-10 rounded object-cover"
+                          />
+                        ) : <span className="text-slate-300">—</span>}
                       </td>
 
                       <td className="px-5 py-4">
@@ -372,7 +480,64 @@ export default function Users() {
           saving={saving}
           onClose={closeModal}
           onSave={handleSave}
+          fileInputRef={fileInputRef}
+          onFileSelect={handleFileSelect}
         />
+      )}
+
+      {cropOpen && cropImage && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/75">
+          <div className="mx-4 w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+            <div className="border-b px-6 py-4">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Crop Avatar
+              </h3>
+            </div>
+            <div className="relative h-80">
+              <Cropper
+                image={cropImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                cropShape="round"
+                showGrid={false}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
+            <div className="space-y-4 p-6">
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">
+                  Zoom
+                </label>
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.01}
+                  value={zoom}
+                  onChange={(e) => setZoom(parseFloat(e.target.value))}
+                  className="w-full"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCropCancel}
+                  className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCropSave}
+                  className="flex-1 rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </PageLayout>
   );
@@ -460,9 +625,24 @@ function UserDetailModal({ user, onClose, onEdit }) {
   return (
     <Modal title="User Details" icon={<User className="h-5 w-5" />} onClose={onClose}>
       <div className="space-y-6">
+        <div className="flex flex-col items-center gap-4 sm:flex-row">
+          {user.avatar ? (
+            <img
+              src={getImageUrl(user.avatar)}
+              alt={user.name}
+              className="h-20 w-20 rounded-full object-cover shadow-sm"
+            />
+          ) : (
+            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-teal-50 text-2xl font-bold text-teal-700">
+              {user.name?.charAt(0)?.toUpperCase() || "?"}
+            </span>
+          )}
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">{user.name}</h3>
+            <p className="text-sm text-slate-500">{user.email}</p>
+          </div>
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
-          <DetailBox label="Name" value={user.name} />
-          <DetailBox label="Email" value={user.email} />
           <DetailBox label="Phone" value={user.phone || "—"} />
           <DetailBox label="Role" value={user.role?.name ?? "No Role"} />
           <DetailBox
@@ -556,7 +736,16 @@ function UserFormModal({
   saving,
   onClose,
   onSave,
+  fileInputRef,
+  onFileSelect,
 }) {
+  const avatarPreview =
+    formData.avatar instanceof File
+      ? URL.createObjectURL(formData.avatar)
+      : formData.avatar
+        ? getImageUrl(formData.avatar)
+        : null;
+
   return (
     <Modal
       title={editing ? "Edit User" : "Add New User"}
@@ -564,6 +753,32 @@ function UserFormModal({
       onClose={onClose}
     >
       <div className="space-y-4">
+        <div>
+          <label className="mb-1.5 block text-sm font-semibold text-slate-700">
+            Avatar
+          </label>
+          <div className="flex items-center gap-4">
+            {avatarPreview ? (
+              <img
+                src={avatarPreview}
+                alt="Avatar preview"
+                className="h-16 w-16 rounded-full object-cover"
+              />
+            ) : (
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                <Camera className="h-6 w-6" />
+              </span>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={onFileSelect}
+              className="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-teal-700 hover:file:bg-teal-100"
+            />
+          </div>
+        </div>
+
         <Input
           label="Full Name"
           value={formData.name}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
+import { getImageUrl } from '../../utils/image.js'
 
 const API_BASE = import.meta.env.VITE_API_URL
 
@@ -216,7 +217,10 @@ export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(() => sessionStorage.getItem('sidebarCollapsed') === 'true')
 
   useEffect(() => {
-    setUser(safeParseUser())
+    function refresh() { setUser(safeParseUser()) }
+    refresh()
+    window.addEventListener('focus', refresh)
+    return () => window.removeEventListener('focus', refresh)
   }, [])
 
   function setCollapsedPersist(val) {
@@ -296,9 +300,13 @@ export default function Sidebar() {
       <style>{`.custom-scrollbar::-webkit-scrollbar { display: none; } .custom-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }`}</style>
     <aside className="w-72 h-screen bg-zinc-950 text-zinc-100 flex flex-col shrink-0 border-r border-zinc-800/80 transition-all duration-300 shadow-2xl relative z-20">
       <div className="flex items-center gap-4 px-6 h-20 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
-        <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 transform -rotate-2">
-          <span className="text-white font-extrabold text-xl">{user?.username?.[0]?.toUpperCase() || 'V'}</span>
-        </div>
+        {user?.avatar ? (
+          <img src={getImageUrl(user.avatar)} alt={user?.username || 'User'} className="w-11 h-11 rounded-xl object-cover shadow-lg" />
+        ) : (
+          <div className="w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 transform -rotate-2">
+            <span className="text-white font-extrabold text-xl">{user?.username?.[0]?.toUpperCase() || 'V'}</span>
+          </div>
+        )}
         <div className="flex flex-col">
           <span className="text-base font-bold tracking-wide text-zinc-100">{user?.username || 'Visal'}</span>
           <span className="text-xs font-semibold text-blue-400 uppercase tracking-widest">{user?.role?.name || 'Staff'}</span>
