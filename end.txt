@@ -20,7 +20,7 @@ FRONTEND_URL=https://pos-year4.vercel.app
 # ---------------- LOG ----------------
 LOG_CHANNEL=stack
 LOG_LEVEL=error
-
+vvvvvvvvvv
 # ---------------- DATABASE (RAILWAY POSTGRES) ----------------
 DB_CONNECTION=pgsql
 DB_HOST=interchange.proxy.rlwy.net
