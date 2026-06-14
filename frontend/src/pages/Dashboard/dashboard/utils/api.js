@@ -1,19 +1,28 @@
 const API_URL = import.meta.env.VITE_API_URL
 
 export const getAuthHeaders = () => ({
-  Authorization: `Bearer ${localStorage.getItem('token')}`
+  Authorization: `Bearer ${localStorage.getItem('token')}`,
+  Accept: 'application/json',
 })
 
-async function fetchAll(endpoint) {
-  try {
-    const headers = getAuthHeaders()
-    const res = await fetch(`${API_URL}${endpoint}`, { headers })
-    if (!res.ok) return []
-    const json = await res.json()
-    return Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : [])
-  } catch {
-    return []
+async function fetchAll(endpoint, retries = 2) {
+  for (let i = 0; i <= retries; i++) {
+    try {
+      const headers = getAuthHeaders()
+      const res = await fetch(`${API_URL}${endpoint}`, { headers })
+      if (res.status === 401) return []
+      if (!res.ok) {
+        if (i < retries) await new Promise(r => setTimeout(r, 500 * (i + 1)))
+        continue
+      }
+      const json = await res.json()
+      return Array.isArray(json) ? json : (Array.isArray(json.data) ? json.data : [])
+    } catch {
+      if (i >= retries) return []
+      await new Promise(r => setTimeout(r, 500 * (i + 1)))
+    }
   }
+  return []
 }
 
 export async function updateOrder(orderId, data) {

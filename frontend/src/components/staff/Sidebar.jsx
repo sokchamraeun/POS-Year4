@@ -20,7 +20,7 @@ const userLinks = [
   { to: '/staff/permissions', label: 'Permissions', perm: 'manage-permissions' },
   { to: '/staff/login-history', label: 'Login History', perm: 'manage-staff' },
   { to: '/staff/user-test', label: 'User Test', perm: 'manage-staff' },
-].filter(l => hasPerm(l.perm))
+]
 
 const itemProductLinks = [
   {
@@ -200,17 +200,17 @@ const links = [
   },
 ]
 
-const filteredLinks = links.filter(l => !l.perm || hasPerm(l.perm))
-const filteredItemProductLinks = itemProductLinks.filter(l => !l.perm || hasPerm(l.perm))
-const filteredSettingsLinks = settingsLinks.filter(l => !l.perm || hasPerm(l.perm))
-
-function hasPerm(slug) {
-  const u = safeParseUser()
+function hasPerm(slug, u) {
   return u?.role?.permissions?.some(p => p.slug === slug) ?? false
 }
 
 export default function Sidebar() {
   const [user, setUser] = useState(safeParseUser)
+
+  const filteredLinks = links.filter(l => !l.perm || hasPerm(l.perm, user))
+  const filteredUserLinks = userLinks.filter(l => hasPerm(l.perm, user))
+  const filteredItemProductLinks = itemProductLinks.filter(l => !l.perm || hasPerm(l.perm, user))
+  const filteredSettingsLinks = settingsLinks.filter(l => !l.perm || hasPerm(l.perm, user))
   const [open, setOpen] = useState(() => sessionStorage.getItem('umOpen') === 'true')
   const [ipOpen, setIpOpen] = useState(() => sessionStorage.getItem('ipOpen') === 'true')
   const [settingsOpen, setSettingsOpen] = useState(() => sessionStorage.getItem('settingsOpen') === 'true')
@@ -359,7 +359,7 @@ export default function Sidebar() {
           </button>
           <div className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
             <div className="bg-zinc-900/40 rounded-xl border border-zinc-800/50 py-2 mx-2">
-              {userLinks.map((l) => (
+              {filteredUserLinks.map((l) => (
                 <NavLink
                   key={l.to}
                   to={l.to}

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { fetchOrders, fetchProducts, fetchCustomers } from '../utils/api'
 import { calculateStats, processChartData, getTopProducts } from '../utils/helpers'
 
@@ -10,6 +10,7 @@ export function useDashboardData() {
   const [products, setProducts] = useState([])
   const [recentOrders, setRecentOrders] = useState([])
   const [allOrders, setAllOrders] = useState([])
+  const fetching = useRef(false)
 
   function isVisibleOrder(o) {
     return !(o.payment_method === 'KHQR' && o.payment_status !== 'Paid')
@@ -44,6 +45,8 @@ export function useDashboardData() {
   }
 
   useEffect(() => {
+    if (fetching.current) return
+    fetching.current = true
     loadData()
   }, [])
 
