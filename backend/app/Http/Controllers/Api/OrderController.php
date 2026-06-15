@@ -14,6 +14,9 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use KHQR\BakongKHQR;
+use KHQR\Helpers\KHQRData;
+use KHQR\Models\IndividualInfo;
 
 class OrderController extends Controller
 {
@@ -265,6 +268,51 @@ class OrderController extends Controller
         $order->delete();
 
         return response()->json(['message' => 'Order deleted successfully.']);
+    }
+
+    public function generateKhqrQr(Order $order): JsonResponse
+    {
+        if ($order->payment_method !== 'KHQR') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Order payment method is not KHQR',
+            ], 422);
+        }
+
+        $total = (float) $order->total;
+
+        $individualInfo = new IndividualInfo(
+            'sok_chamraeun@bkrt',
+            'CHAMRAEUN SOK',
+            'PHNOM PENH',
+            null,
+            null,
+            KHQRData::CURRENCY_USD,
+            $total,
+            (string) $order->id,
+            'POS Store',
+        );
+
+        $khqrResponse = BakongKHQR::generateIndividual($individualInfo);
+        $qrString = null;
+
+        if ($khqrResponse->status['code'] === 0) {
+            $qrString = $khqrResponse->data['qr'];
+        }
+
+        if (! $order->payment_reference) {
+            $order->update([
+                'payment_reference' => 'ORD_'.$order->id.'_'.time(),
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'ok',
+            'qr' => $qrString,
+            'order_id' => $order->id,
+            'total' => $total,
+            'md5' => $khqrResponse->data['md5'] ?? null,
+        ]);
     }
 
     public function markPrinted(Order $order): JsonResponse

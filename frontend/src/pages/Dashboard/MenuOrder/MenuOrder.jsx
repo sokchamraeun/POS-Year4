@@ -4,6 +4,8 @@ import Topbar from '../../../components/staff/Topbar.jsx'
 import CategoryFilter from './components/CategoryFilter.jsx'
 import ProductCard from './components/ProductCard.jsx'
 import CartSidebar from './components/CartSidebar.jsx'
+import KhqrIframeModal from './components/KhqrIframeModal.jsx'
+import ReceiptOverlay from './components/ReceiptOverlay.jsx'
 import { calcFinalPrice, calcComboCart, calcBuyXGetYGrouped } from '../../../utils/promotion.js'
 import Loader from '../../../components/shared/Loader.jsx'
 
@@ -30,6 +32,8 @@ export default function MenuOrder() {
   const [productSearch, setProductSearch] = useState('')
   const [placing, setPlacing] = useState(false)
   const [success, setSuccess] = useState('')
+  const [khqrOrderId, setKhqrOrderId] = useState(null)
+  const [receiptOrder, setReceiptOrder] = useState(null)
 
 
   const filteredCustomers = customers.filter((c) =>
@@ -247,42 +251,32 @@ export default function MenuOrder() {
       const existing = JSON.parse(localStorage.getItem('newOrders') || '[]')
       localStorage.setItem('newOrders', JSON.stringify([localOrder, ...existing]))
 
-      setCart([])
-      setOptions({})
-      setCategory('All')
-      setCustomerName('')
-      setPhone('')
-      setCustomerId('')
-      setCustomerSearch('')
-      setTableId('')
       setPlacing(false)
 
       if (paymentMethod === 'KHQR' && dbOrderId) {
-        try {
-          const initRes = await fetch(`${API_URL}/orders/payment/initiate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...headers() },
-            body: JSON.stringify({
-              order_id: dbOrderId,
-              return_url: window.location.origin + '/staff/menu-order',
-            }),
-          })
-          const initData = await initRes.json()
-          if (initData.checkout_url) {
-            window.location.href = initData.checkout_url
-          }
-        } catch {
-          // fallback silently
-        }
+        setKhqrOrderId(dbOrderId)
+        return
       }
 
-      setSuccess(`Order placed successfully!`)
-      setTimeout(() => setSuccess(''), 3000)
+      resetCart()
     } catch {
       setPlacing(false)
       setSuccess('Failed to place order. Check connection.')
       setTimeout(() => setSuccess(''), 4000)
     }
+  }
+
+  function resetCart() {
+    setCart([])
+    setOptions({})
+    setCategory('All')
+    setCustomerName('')
+    setPhone('')
+    setCustomerId('')
+    setCustomerSearch('')
+    setTableId('')
+    setSuccess('Order placed successfully!')
+    setTimeout(() => setSuccess(''), 3000)
   }
 
   const fullTotal = cart.reduce((sum, c) => sum + c.unitPrice * c.qty, 0)
@@ -388,6 +382,23 @@ if (loading) return <Loader text="Loading menu" />
           />
         </div>
       </div>
+
+      {khqrOrderId && (
+        <KhqrIframeModal
+          orderId={khqrOrderId}
+          total={total}
+          onClose={() => setKhqrOrderId(null)}
+          onPaid={(order) => {
+            setKhqrOrderId(null)
+            setReceiptOrder(order ?? khqrOrderId)
+            resetCart()
+          }}
+        />
+      )}
+
+      {receiptOrder && (
+        <ReceiptOverlay order={receiptOrder} onClose={() => setReceiptOrder(null)} />
+      )}
     </div>
   )
 }
