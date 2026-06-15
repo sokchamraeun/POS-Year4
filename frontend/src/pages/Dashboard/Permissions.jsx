@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 
 const API = import.meta.env.VITE_API_URL || '/api'
 const hardcodedModules = ['', 'Dashboard', 'Products', 'Categories', 'Sizes', 'Sugar Levels', 'Ice Levels', 'Addons', 'Tables', 'Orders', 'Inventory', 'Ingredients', 'Recipe', 'Reports', 'Promotions', 'Hero Sliders', 'Permissions', 'Roles', 'Staff', 'Customers']
 
-const moduleStyle = { bg: 'bg-teal-50', header: 'bg-teal-100', text: 'text-teal-800', dot: 'bg-teal-500' }
+const moduleStyle = { bg: 'bg-amber-50', header: 'bg-amber-100', text: 'text-amber-800', dot: 'bg-amber-500' }
 
 export default function Permissions() {
   const [permissions, setPermissions] = useState([])
@@ -248,7 +248,7 @@ export default function Permissions() {
                       type="text" value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Permission name"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                   <div>
@@ -257,7 +257,7 @@ export default function Permissions() {
                       type="text" value={formData.slug}
                       onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                       placeholder="permission-slug"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                   <div>
@@ -265,7 +265,7 @@ export default function Permissions() {
                     <select
                       value={formData.module}
                       onChange={(e) => setFormData({ ...formData, module: e.target.value })}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       {moduleOptions.map((m) => (
                         <option key={m} value={m}>{m || '(none)'}</option>

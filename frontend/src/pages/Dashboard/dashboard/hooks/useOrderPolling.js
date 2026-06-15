@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { calculateStats, processChartData } from '../utils/helpers'
-import { fetchOrders } from '../utils/api'
+import { fetchOrders, fetchProfitToday } from '../utils/api'
 import { useSocket, useSocketConnect } from '../../../../hooks/useSocket'
 
 export function useOrderPolling(
@@ -9,7 +9,8 @@ export function useOrderPolling(
   setStats,
   setChartData,
   setProducts,
-  setRecentOrders
+  setRecentOrders,
+  profitDataRef
 ) {
   const [newOrderAlert, setNewOrderAlert] = useState(false)
   const lastOrderIdRef = useRef(0)
@@ -31,17 +32,18 @@ export function useOrderPolling(
 
   useSocketConnect()
 
-  const recalc = useCallback((orders) => {
+  const recalc = useCallback((orders, freshProfitData) => {
     const visible = orders.filter(isVisibleOrder)
+    const profit = freshProfitData !== undefined ? freshProfitData : (profitDataRef?.current ?? null)
     setAllOrders(visible)
     setRecentOrders(visible.slice(0, 5))
-    setStats(calculateStats(visible, [], []))
+    setStats(calculateStats(visible, [], [], 0, profit))
     setChartData({
       daily: processChartData(visible, 'daily'),
       monthly: processChartData(visible, 'monthly'),
       yearly: processChartData(visible, 'yearly'),
     })
-  }, [setAllOrders, setRecentOrders, setStats, setChartData])
+  }, [setAllOrders, setRecentOrders, setStats, setChartData, profitDataRef])
 
   useSocket('order:created', useCallback((order) => {
     if (!isVisibleOrder(order)) return
@@ -71,13 +73,14 @@ export function useOrderPolling(
     let alertTimeout
     const interval = setInterval(async () => {
       try {
-        const orders = await fetchOrders()
+        const [orders, freshProfit] = await Promise.all([fetchOrders(), fetchProfitToday()])
         if (orders.length === 0) return
+        if (profitDataRef) profitDataRef.current = freshProfit
         const prevMax = lastOrderIdRef.current
         const newMax = Math.max(...orders.map(o => o.id))
         if (newMax > prevMax) {
           lastOrderIdRef.current = newMax
-          recalc(orders)
+          recalc(orders, freshProfit)
           if (orders.some(o => o.id > prevMax && isVisibleOrder(o))) {
             setNewOrderAlert(true)
             clearTimeout(alertTimeout)
@@ -85,14 +88,14 @@ export function useOrderPolling(
           }
         }
       } catch {
-            // Silently ignore polling errors
-          }
+        // Silently ignore polling errors
+      }
     }, 8000)
     return () => {
       clearInterval(interval)
       clearTimeout(alertTimeout)
     }
-  }, [recalc])
+  }, [recalc, profitDataRef])
 
   return { newOrderAlert, setNewOrderAlert }
 }

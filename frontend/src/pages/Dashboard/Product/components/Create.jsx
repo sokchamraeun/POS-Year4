@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from '../../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../../components/staff/Topbar.jsx'
@@ -186,7 +186,7 @@ export default function CreateProduct() {
             <form onSubmit={handleSubmit} encType="multipart/form-data">
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                <select name="category_id" value={form.category_id} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select name="category_id" value={form.category_id} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
                   <option value="">Select Category</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -196,12 +196,12 @@ export default function CreateProduct() {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" name="name" value={form.name} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input type="text" name="name" value={form.name} onChange={handleChange} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
 
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea name="description" value={form.description} onChange={handleChange} rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <textarea name="description" value={form.description} onChange={handleChange} rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
 
               <div className="mb-4">
@@ -235,7 +235,7 @@ export default function CreateProduct() {
                         <input type="checkbox" checked={form.sizes.includes(size.id)} onChange={() => handleSizeToggle(size.id)} className="rounded" />
                         <span className="text-sm">{size.name}</span>
                       </label>
-                      <input type="number" placeholder="Price" step="0.01" min="0" value={form.prices[size.id] ?? ''} onChange={(e) => handlePriceChange(size.id, e.target.value)} className="w-32 border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      <input type="number" placeholder="Price" step="0.01" min="0" value={form.prices[size.id] ?? ''} onChange={(e) => handlePriceChange(size.id, e.target.value)} className="w-32 border border-gray-300 rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
                     </div>
                   ))}
                 </div>
@@ -296,14 +296,14 @@ export default function CreateProduct() {
                       <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Output Size</label>
                         <div className="flex items-center gap-2">
-                          <input type="number" min={1} value={outputWidth} onChange={(e) => setOutputWidth(e.target.value)} placeholder="Width" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                          <input type="number" min={1} value={outputWidth} onChange={(e) => setOutputWidth(e.target.value)} placeholder="Width" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
                           <span className="text-gray-500">×</span>
-                          <input type="number" min={1} value={outputHeight} onChange={(e) => setOutputHeight(e.target.value)} placeholder="Height" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                          <input type="number" min={1} value={outputHeight} onChange={(e) => setOutputHeight(e.target.value)} placeholder="Height" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
                           <span className="text-xs text-gray-400">px</span>
                         </div>
                       </div>
                       <div className="flex gap-3">
-                        <button onClick={handleCropCancel} className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+                        <button onClick={handleCropCancel} className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-orange-50">Cancel</button>
                         <button onClick={handleCropSave} className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Apply</button>
                       </div>
                     </div>

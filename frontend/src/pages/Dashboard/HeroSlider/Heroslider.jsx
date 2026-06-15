@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
@@ -128,7 +128,7 @@ export default function Heroslider() {
                 </thead>
                 <tbody>
                   {sliders.map((s) => (
-                    <tr key={s.id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+                    <tr key={s.id} className="border-t border-gray-100 hover:bg-orange-50 transition-colors">
                       <td className="px-6 py-4 font-medium text-gray-800">{s.order}</td>
                       <td className="px-6 py-4">
                         {s.image ? (
@@ -184,15 +184,15 @@ export default function Heroslider() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Highlight</label>
-                <input type="text" value={form.highlight} onChange={e => setForm({ ...form, highlight: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input type="text" value={form.highlight} onChange={e => setForm({ ...form, highlight: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
-                <textarea value={form.text} onChange={e => setForm({ ...form, text: e.target.value })} required rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <textarea value={form.text} onChange={e => setForm({ ...form, text: e.target.value })} required rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -203,7 +203,7 @@ export default function Heroslider() {
                   type="file"
                   accept="image/jpeg,image/png,image/jpg,image/webp"
                   onChange={handleFileChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
                 {imagePreview && (
                   <img src={imagePreview} alt="preview" className="mt-2 h-24 object-cover rounded border" />
@@ -211,16 +211,16 @@ export default function Heroslider() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Badge</label>
-                <input type="text" value={form.badge} onChange={e => setForm({ ...form, badge: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <input type="text" value={form.badge} onChange={e => setForm({ ...form, badge: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
-                  <input type="number" value={form.order} onChange={e => setForm({ ...form, order: e.target.value })} min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <input type="number" value={form.order} onChange={e => setForm({ ...form, order: e.target.value })} min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
                 </div>
                 <div className="flex-1 flex items-end pb-2">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={form.is_active} onChange={e => setForm({ ...form, is_active: e.target.checked })} className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                    <input type="checkbox" checked={form.is_active} onChange={e => setForm({ ...form, is_active: e.target.checked })} className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-teal-500" />
                     <span className="text-sm font-medium text-gray-700">Active</span>
                   </label>
                 </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { X, Printer, CheckCircle2 } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -42,7 +42,7 @@ export default function ReceiptOverlay({ order: initialOrder, onClose }) {
       <div className="w-full max-w-sm overflow-hidden rounded-3xl bg-white shadow-2xl">
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-teal-600" />
+            <CheckCircle2 className="h-5 w-5 text-amber-600" />
             <h3 className="text-base font-bold text-slate-800">Payment Receipt</h3>
           </div>
           <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">
@@ -97,7 +97,7 @@ export default function ReceiptOverlay({ order: initialOrder, onClose }) {
                     <span>-${Number(order.discount).toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm font-bold text-teal-700 pt-1 border-t border-slate-200">
+                <div className="flex justify-between text-sm font-bold text-amber-700 pt-1 border-t border-slate-200">
                   <span>Total</span>
                   <span>${Number(order?.total ?? 0).toFixed(2)}</span>
                 </div>
@@ -119,7 +119,7 @@ export default function ReceiptOverlay({ order: initialOrder, onClose }) {
               </button>
               <button
                 onClick={onClose}
-                className="flex-1 rounded-2xl bg-teal-600 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-teal-700"
+                className="flex-1 rounded-2xl bg-amber-600 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-amber-700"
               >
                 Close
               </button>

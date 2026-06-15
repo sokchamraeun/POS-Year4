@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+﻿import { useEffect } from 'react'
 
 const STORAGE_URL = import.meta.env.VITE_API_URL
 
@@ -122,7 +122,7 @@ export default function ProductModal({
                 </div>
               </div>
             ) : (
-              <div className="bg-gradient-to-r from-teal-600 to-teal-500 text-white font-bold text-xl px-5 py-2.5 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1">
+              <div className="bg-gradient-to-r from-amber-900 to-amber-800 text-white font-bold text-xl px-5 py-2.5 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1">
                 <span className="text-sm">$</span>
                 <span>{finalPrice.toFixed(2)}</span>
               </div>
@@ -145,10 +145,10 @@ export default function ProductModal({
             </div>
             
             {/* Quantity Selector */}
-            <div className="flex items-center gap-1 bg-teal-50 border border-teal-200 rounded-2xl p-1 shadow-inner shrink-0">
+            <div className="flex items-center gap-1 bg-amber-50 border border-amber-200 rounded-2xl p-1 shadow-inner shrink-0">
               <button 
                 onClick={() => onQtyChange(Math.max(1, qty - 1))} 
-                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-lg font-semibold text-teal-600 hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 active:scale-95"
+                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-lg font-semibold text-amber-600 hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 active:scale-95"
               >
                 -
               </button>
@@ -164,7 +164,7 @@ export default function ProductModal({
               />
               <button 
                 onClick={() => onQtyChange(qty + 1)} 
-                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-lg font-semibold text-teal-600 hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 active:scale-95"
+                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-lg font-semibold text-amber-600 hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 active:scale-95"
               >
                 +
               </button>
@@ -187,12 +187,12 @@ export default function ProductModal({
           )}
 
           {/* Options Section - ALL IN ONE BOX */}
-          <div className="border-2 border-teal-200 rounded-xl p-4 bg-teal-50/30">
+          <div className="border-2 border-amber-200 rounded-xl p-4 bg-amber-50/30">
             {/* Size Selection */}
             {product.sizes?.length > 0 && (
               <div className="mb-5">
-                <p className="text-sm font-semibold text-teal-700 mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                <p className="text-sm font-semibold text-amber-700 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
                   Select Size
                 </p>
                 <div className="grid grid-cols-3 gap-2">
@@ -202,12 +202,12 @@ export default function ProductModal({
                       onClick={() => onSizeChange(s.name)}
                       className={`rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
                         selectedSize === s.name 
-                          ? 'bg-teal-600 text-white shadow-md' 
-                          : 'bg-white text-slate-700 hover:bg-teal-100 border border-teal-200'
+                          ? 'bg-amber-600 text-white shadow-md' 
+                          : 'bg-white text-slate-700 hover:bg-amber-100 border border-amber-200'
                       }`}
                     >
                       {s.name}
-                      <span className={`block text-[10px] mt-0.5 ${selectedSize === s.name ? 'text-teal-100' : 'text-teal-600'}`}>
+                      <span className={`block text-[10px] mt-0.5 ${selectedSize === s.name ? 'text-amber-100' : 'text-amber-600'}`}>
                         +${Number(s.pivot?.price ?? 0).toFixed(2)}
                       </span>
                     </button>
@@ -217,15 +217,15 @@ export default function ProductModal({
             )}
 
             {/* Divider */}
-            <div className="border-t border-teal-200 my-4"></div>
+            <div className="border-t border-amber-200 my-4"></div>
 
             {/* Ice Level & Sugar Level Side by Side */}
             <div className="grid grid-cols-2 gap-4 mb-5">
               {/* Ice Level */}
               {product.ice_levels?.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-teal-700 mb-2 flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
+                  <p className="text-xs font-semibold text-amber-700 mb-2 flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
                     Ice Level
                   </p>
                   <div className="flex flex-col gap-2">
@@ -235,8 +235,8 @@ export default function ProductModal({
                         onClick={() => onIceChange(i.name)}
                         className={`rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200 ${
                           selectedIce === i.name 
-                            ? 'bg-teal-600 text-white shadow-sm' 
-                            : 'bg-white text-slate-700 hover:bg-teal-100 border border-teal-200'
+                            ? 'bg-amber-600 text-white shadow-sm' 
+                            : 'bg-white text-slate-700 hover:bg-amber-100 border border-amber-200'
                         }`}
                       >
                         {i.name}
@@ -249,8 +249,8 @@ export default function ProductModal({
               {/* Sugar Level */}
               {product.sugar_levels?.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-teal-700 mb-2 flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
+                  <p className="text-xs font-semibold text-amber-700 mb-2 flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
                     Sugar Level
                   </p>
                   <div className="flex flex-col gap-2">
@@ -260,8 +260,8 @@ export default function ProductModal({
                         onClick={() => onSugarChange(s.name)}
                         className={`rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200 ${
                           selectedSugar === s.name 
-                            ? 'bg-teal-600 text-white shadow-sm' 
-                            : 'bg-white text-slate-700 hover:bg-teal-100 border border-teal-200'
+                            ? 'bg-amber-600 text-white shadow-sm' 
+                            : 'bg-white text-slate-700 hover:bg-amber-100 border border-amber-200'
                         }`}
                       >
                         {s.name}
@@ -273,13 +273,13 @@ export default function ProductModal({
             </div>
 
             {/* Divider */}
-            <div className="border-t border-teal-200 my-4"></div>
+            <div className="border-t border-amber-200 my-4"></div>
 
             {/* Add-ons */}
             {product.addons?.length > 0 && (
               <div>
-                <p className="text-sm font-semibold text-teal-700 mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                <p className="text-sm font-semibold text-amber-700 mb-3 flex items-center gap-2">
+                  <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
                   Add-ons
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -287,8 +287,8 @@ export default function ProductModal({
                     onClick={() => onAddOnChange('')}
                     className={`rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200 ${
                       selectedAddOn === '' 
-                        ? 'bg-teal-600 text-white shadow-sm' 
-                        : 'bg-white text-slate-700 hover:bg-teal-100 border border-teal-200'
+                        ? 'bg-amber-600 text-white shadow-sm' 
+                        : 'bg-white text-slate-700 hover:bg-amber-100 border border-amber-200'
                     }`}
                   >
                     No Add-on
@@ -303,8 +303,8 @@ export default function ProductModal({
                         onClick={() => onAddOnChange(a.name)}
                         className={`rounded-lg px-4 py-2 text-xs font-medium transition-all duration-200 ${
                           selectedAddOn === a.name 
-                            ? 'bg-teal-600 text-white shadow-sm' 
-                            : 'bg-white text-slate-700 hover:bg-teal-100 border border-teal-200'
+                            ? 'bg-amber-600 text-white shadow-sm' 
+                            : 'bg-white text-slate-700 hover:bg-amber-100 border border-amber-200'
                         }`}
                       >
                         {a.name} (+${ap.toFixed(2)})
@@ -329,7 +329,7 @@ export default function ProductModal({
           {/* Add to Cart Button */}
           <button 
             onClick={onAddToCart} 
-            className="w-full mt-5 relative overflow-hidden group bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 text-white rounded-xl py-3.5 text-sm font-bold shadow-lg shadow-teal-200 transition-all duration-200 hover:shadow-xl active:scale-95"
+            className="w-full mt-5 relative overflow-hidden group bg-gradient-to-r from-amber-900 to-amber-800 hover:from-amber-950 hover:to-amber-900 text-white rounded-xl py-3.5 text-sm font-bold shadow-lg shadow-amber-200 transition-all duration-200 hover:shadow-xl active:scale-95"
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -362,7 +362,7 @@ export default function ProductModal({
 
         {/* Drag Handle for Mobile */}
         <div className="sm:hidden flex justify-center py-2">
-          <div className="w-12 h-1 bg-teal-200 rounded-full"></div>
+          <div className="w-12 h-1 bg-amber-200 rounded-full"></div>
         </div>
       </div>
     </div>

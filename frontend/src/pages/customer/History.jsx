@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
@@ -71,7 +71,7 @@ export default function History() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 pb-24 sm:pb-0">
+    <div className="min-h-screen flex flex-col bg-orange-50 pb-24 sm:pb-0">
       <Navbar />
 
       <div className="flex-1 max-w-4xl mx-auto w-full px-4 py-8 mt-8">

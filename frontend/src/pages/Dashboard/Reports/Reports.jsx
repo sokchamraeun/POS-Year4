@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Loader from '../../../components/shared/Loader.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
@@ -89,7 +89,7 @@ export default function Reports() {
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    activeTab === tab.key ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                    activeTab === tab.key ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-orange-50 border border-gray-200'
                   }`}
                 >
                   {tab.label}
@@ -100,16 +100,16 @@ export default function Reports() {
               <div className="flex items-center gap-2 flex-wrap">
                 {presets.map((p) => (
                   <button key={p.label} onClick={() => applyPreset(p.days)}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      activePreset === p.days ? 'bg-blue-600 text-white border-blue-600' : 'text-gray-600 bg-white border-gray-200 hover:bg-gray-50'
+                    className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                      activePreset === p.days ? 'bg-blue-600 text-white border-amber-600' : 'text-gray-600 bg-white border-gray-200 hover:bg-orange-50'
                     }`}
                   >{p.label}</button>
                 ))}
                 <input type="date" value={startDate} onChange={e => { setActivePreset(null); setStartDate(e.target.value) }}
-                  className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
                 <span className="text-xs text-gray-400">to</span>
                 <input type="date" value={endDate} onChange={e => { setActivePreset(null); setEndDate(e.target.value) }}
-                  className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                  className="border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500" />
               </div>
             )}
           </div>
@@ -269,7 +269,7 @@ function ProductsReport({ data, currency }) {
         </thead>
         <tbody>
           {data.map((item, i) => (
-            <tr key={i} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+            <tr key={i} className="border-t border-gray-100 hover:bg-orange-50 transition-colors">
               <td className="px-6 py-4 font-medium text-gray-800">{item.product?.name || 'Unknown'}</td>
               <td className="px-6 py-4 text-gray-600">{item.size?.name || '—'}</td>
               <td className="px-6 py-4 text-gray-800 text-right">{item.total_qty}</td>
@@ -325,7 +325,7 @@ function InventoryReport({ data }) {
           </thead>
           <tbody>
             {ingredients?.map((ing) => (
-              <tr key={ing.id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+              <tr key={ing.id} className="border-t border-gray-100 hover:bg-orange-50 transition-colors">
                 <td className="px-6 py-4 font-medium text-gray-800">{ing.name}</td>
                 <td className="px-6 py-4 text-gray-600">{ing.unit}</td>
                 <td className="px-6 py-4 text-gray-800 text-right">{Number(ing.stock_quantity).toFixed(2)}</td>
@@ -369,7 +369,7 @@ function PurchasesReport({ data, currency, formatDate }) {
           </thead>
           <tbody>
             {transactions?.map((tx) => (
-              <tr key={tx.id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+              <tr key={tx.id} className="border-t border-gray-100 hover:bg-orange-50 transition-colors">
                 <td className="px-6 py-4 text-gray-600 text-xs">{formatDate(tx.created_at)}</td>
                 <td className="px-6 py-4 font-medium text-gray-800">{tx.ingredient?.name || '—'}</td>
                 <td className="px-6 py-4 text-green-600 text-right font-medium">+{Number(tx.quantity).toFixed(2)}</td>
@@ -415,7 +415,7 @@ function ProfitReport({ data, currency }) {
             </thead>
             <tbody>
               {monthly.map((m) => (
-                <tr key={m.month} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+                <tr key={m.month} className="border-t border-gray-100 hover:bg-orange-50 transition-colors">
                   <td className="px-6 py-4 font-medium text-gray-800">{m.month}</td>
                   <td className="px-6 py-4 text-gray-800 text-right font-medium">{currency(m.revenue)}</td>
                 </tr>
@@ -466,7 +466,7 @@ function CustomersReport({ data, currency, formatDate }) {
           </thead>
           <tbody>
             {customers?.map((c) => (
-              <tr key={c.id} className="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+              <tr key={c.id} className="border-t border-gray-100 hover:bg-orange-50 transition-colors">
                 <td className="px-6 py-4 font-medium text-gray-800">{c.name || 'Guest'}</td>
                 <td className="px-6 py-4 text-gray-600">{c.phone || '—'}</td>
                 <td className="px-6 py-4 text-gray-800 text-right">{c.orders_count}</td>
@@ -523,7 +523,7 @@ function PaymentsReport({ data, currency }) {
                   <span className="text-gray-800 font-medium">{st.count} orders</span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2">
-                  <div className={`h-2 rounded-full ${st.payment_status === 'Paid' ? 'bg-green-500' : st.payment_status === 'Unpaid' ? 'bg-yellow-500' : st.payment_status === 'Refunded' ? 'bg-red-500' : 'bg-gray-500'}`}
+                  <div className={`h-2 rounded-full ${st.payment_status === 'Paid' ? 'bg-green-500' : st.payment_status === 'Unpaid' ? 'bg-yellow-500' : st.payment_status === 'Refunded' ? 'bg-red-500' : 'bg-orange-500'}`}
                     style={{ width: totalOrders > 0 ? (st.count / totalOrders * 100) + '%' : '0%' }} />
                 </div>
                 <p className="text-xs text-gray-400 mt-0.5">{totalOrders > 0 ? ((st.count / totalOrders) * 100).toFixed(1) : 0}%</p>

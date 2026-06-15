@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Plus, Edit2, Trash2, X } from 'lucide-react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Loader from '../../../components/shared/Loader.jsx'
@@ -69,14 +69,14 @@ export default function SugarLevel() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-500 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-amber-900 to-amber-800 bg-clip-text text-transparent">
                 Sugar Levels
               </h1>
               <p className="text-sm text-slate-500 mt-1">Manage sugar level options for products</p>
             </div>
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-600 to-teal-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-700 hover:to-teal-600 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-900 to-amber-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-amber-950 hover:to-amber-900 transition-all duration-200 shadow-lg shadow-amber-200 hover:shadow-xl"
             >
               <Plus className="w-4 h-4" />
               Add Sugar Level
@@ -84,7 +84,7 @@ export default function SugarLevel() {
           </div>
 
           {/* Table Section */}
-          <div className="bg-white rounded-2xl shadow-sm border border-teal-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-amber-100 overflow-hidden">
             {loading ? <Loader page={false} text="Loading sugar levels..." /> : error ? (
               <div className="p-12 text-center">
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 max-w-md mx-auto">
@@ -95,7 +95,7 @@ export default function SugarLevel() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-100">
+                    <tr className="text-left text-amber-600 font-semibold bg-amber-50/50 border-b border-amber-100">
                       <th className="px-6 py-4">#ID</th>
                       <th className="px-6 py-4">Name</th>
                       <th className="px-6 py-4 text-right">Actions</th>
@@ -106,7 +106,7 @@ export default function SugarLevel() {
                       <tr key={item.id} className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200 group">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
+                            <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">
                               {String(index + 1).padStart(2, '0')}
                             </div>
                           </div>
@@ -118,7 +118,7 @@ export default function SugarLevel() {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => openEdit(item)}
-                              className="p-2 text-amber-600 hover:bg-amber-50 rounded-xl transition-all duration-200 group-hover:scale-105"
+                              className="p-2 text-amber-600 hover:bg-teal-50 rounded-xl transition-all duration-200 group-hover:scale-105"
                               title="Edit"
                             >
                               <Edit2 className="w-4 h-4" />
@@ -158,12 +158,12 @@ export default function SugarLevel() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-teal-200">
-            <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-6 py-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-amber-200">
+            <div className="bg-gradient-to-r from-amber-900 to-amber-800 px-6 py-4">
               <h2 className="text-white text-lg font-semibold flex items-center gap-2">
                 {editing ? 'Edit Sugar Level' : 'Add New Sugar Level'}
               </h2>
-              <p className="text-teal-100 text-xs mt-1">
+              <p className="text-amber-100 text-xs mt-1">
                 {editing ? 'Update sugar level details' : 'Create a new sugar level option'}
               </p>
             </div>
@@ -193,7 +193,7 @@ export default function SugarLevel() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 text-white rounded-xl text-sm font-medium hover:from-teal-700 hover:to-teal-600 transition-all shadow-md"
+                  className="px-5 py-2.5 bg-gradient-to-r from-amber-900 to-amber-800 text-white rounded-xl text-sm font-medium hover:from-amber-950 hover:to-amber-900 transition-all shadow-md"
                 >
                   {editing ? 'Update Sugar Level' : 'Create Sugar Level'}
                 </button>

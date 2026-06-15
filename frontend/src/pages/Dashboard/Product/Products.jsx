@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
@@ -89,14 +89,14 @@ export default function Products() {
           {/* Header Section */}
           <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-500 bg-clip-text text-transparent tracking-tight">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-900 to-amber-800 bg-clip-text text-transparent tracking-tight">
                 Products
               </h1>
               <p className="text-sm text-slate-500 mt-1 font-medium">Manage your product inventory</p>
             </div>
             <Link
               to="/staff/products/add"
-              className="group bg-gradient-to-r from-teal-600 to-teal-500 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-teal-600/30 hover:shadow-teal-600/40 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2"
+              className="group bg-gradient-to-r from-amber-900 to-amber-800 text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-amber-600/30 hover:shadow-amber-600/40 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />

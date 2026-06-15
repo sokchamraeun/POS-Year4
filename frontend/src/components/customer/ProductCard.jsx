@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { calcFinalPrice } from '../../utils/promotion.js'
 import ProductModal from './ProductModal.jsx'
 
@@ -98,7 +98,7 @@ export default function ProductCard({ product, onAddToCart }) {
         {/* IMAGE */}
         <div className="relative p-2.5 pb-1.5">
           <div
-            className="relative overflow-hidden rounded-xl bg-slate-50 aspect-square cursor-pointer"
+            className="relative overflow-hidden rounded-xl bg-orange-50 aspect-square cursor-pointer"
             onClick={() => setShowModal(true)}
           >
             {/* Skeleton */}

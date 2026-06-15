@@ -1,33 +1,32 @@
-// src/pages/staff/dashboard/components/StatCard.jsx
+﻿const config = {
+  revenue:   { accent: 'bg-emerald-500', text: 'text-emerald-500' },
+  paid:      { accent: 'bg-green-500',   text: 'text-green-500' },
+  unpaid:    { accent: 'bg-orange-400',  text: 'text-orange-400' },
+  orders:    { accent: 'bg-blue-500',    text: 'text-blue-500' },
+  pending:   { accent: 'bg-amber-400',   text: 'text-amber-500' },
+  completed: { accent: 'bg-amber-500',    text: 'text-amber-500' },
+  products:  { accent: 'bg-indigo-500',  text: 'text-indigo-500' },
+  stock:     { accent: 'bg-rose-500',    text: 'text-rose-500' },
+  customers: { accent: 'bg-pink-500',    text: 'text-pink-500' },
+  profit:    { accent: 'bg-violet-500',  text: 'text-violet-500' },
+}
 
 export default function StatCard({ stat }) {
+  const c = config[stat.type] ?? config.orders
+
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-teal-100 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-      
-      {/* Top Accent Line */}
-      <div className="absolute top-0 left-0 h-1 w-full bg-teal-500" />
+    <div className="relative bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 overflow-hidden">
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 truncate">
+        {stat.label}
+      </p>
 
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            {stat.label}
-          </p>
+      <p className="mt-3 text-3xl font-bold text-slate-800 leading-none">
+        {stat.value}
+      </p>
 
-          <h3 className="mt-3 text-3xl font-bold text-slate-900">
-            {stat.value}
-          </h3>
-        </div>
-
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50">
-          <div className="h-3 w-3 rounded-full bg-teal-500" />
-        </div>
-      </div>
-
-      <div className="mt-5 border-t border-slate-100 pt-4">
-        <span className="inline-flex items-center rounded-full bg-teal-50 px-3 py-1 text-xs font-medium text-teal-700">
-          {stat.change}
-        </span>
-      </div>
+      <p className={`mt-3 text-xs font-medium ${c.text} border-t border-slate-100 pt-3`}>
+        {stat.change}
+      </p>
     </div>
   )
 }

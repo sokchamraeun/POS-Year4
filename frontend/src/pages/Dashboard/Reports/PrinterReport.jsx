@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import Loader from '../../../components/shared/Loader.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -72,7 +72,7 @@ export default function PrinterReport() {
           {periods.map((p) => (
             <button key={p.key} onClick={() => changePeriod(p.key)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                period === p.key ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                period === p.key ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-orange-50 border border-gray-200'
               }`}
             >{p.label}</button>
           ))}
@@ -91,19 +91,19 @@ export default function PrinterReport() {
 
           <Section title="Sales Summary">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Total Sales</p>
                 <p className="text-lg font-bold text-gray-900">{currency(sales?.total_sales)}</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Orders</p>
                 <p className="text-lg font-bold text-gray-900">{sales?.total_orders ?? 0}</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Avg Order</p>
                 <p className="text-lg font-bold text-gray-900">{currency(sales?.avg_order_value)}</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Paid</p>
                 <p className="text-lg font-bold text-gray-900">{sales?.paid_orders ?? 0}</p>
               </div>
@@ -157,15 +157,15 @@ export default function PrinterReport() {
 
           <Section title="Inventory Status">
             <div className="grid grid-cols-3 gap-4 mb-4">
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Total Ingredients</p>
                 <p className="text-lg font-bold text-gray-900">{inventory?.total_ingredients ?? 0}</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Low Stock</p>
                 <p className="text-lg font-bold text-red-600">{inventory?.low_stock_count ?? 0}</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">In Stock</p>
                 <p className="text-lg font-bold text-green-600">{(inventory?.total_ingredients ?? 0) - (inventory?.low_stock_count ?? 0)}</p>
               </div>
@@ -204,11 +204,11 @@ export default function PrinterReport() {
 
           <Section title="Purchase History">
             <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Total Purchases</p>
                 <p className="text-lg font-bold text-gray-900">{purchases?.summary?.total_transactions ?? 0}</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Total Quantity</p>
                 <p className="text-lg font-bold text-gray-900">{Number(purchases?.summary?.total_quantity || 0).toFixed(2)}</p>
               </div>
@@ -237,15 +237,15 @@ export default function PrinterReport() {
 
           <Section title="Profit Overview">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Revenue</p>
                 <p className="text-lg font-bold text-green-700">{currency(profit?.revenue)}</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Cost of Ingredients</p>
                 <p className="text-lg font-bold text-gray-400">N/A</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Net Profit</p>
                 <p className="text-lg font-bold text-gray-400">N/A</p>
               </div>
@@ -275,11 +275,11 @@ export default function PrinterReport() {
 
           <Section title="Customer Summary">
             <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">Total Customers</p>
                 <p className="text-lg font-bold text-gray-900">{customers?.total_customers ?? 0}</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 text-center">
+              <div className="bg-orange-50 rounded-lg p-4 text-center">
                 <p className="text-xs text-gray-500">New (period)</p>
                 <p className="text-lg font-bold text-gray-900">{customers?.new_customers ?? 0}</p>
               </div>

@@ -9,9 +9,10 @@ use Illuminate\Http\Request;
 
 class IngredientController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $ingredients = Ingredient::withCount('inventoryTransactions')->orderBy('id')->paginate(10);
+        $perPage = (int) $request->get('per_page', 10);
+        $ingredients = Ingredient::withCount('inventoryTransactions')->orderBy('id')->paginate($perPage);
 
         return response()->json($ingredients);
     }

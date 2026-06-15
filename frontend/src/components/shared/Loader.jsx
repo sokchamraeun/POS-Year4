@@ -1,22 +1,22 @@
-import Sidebar from '../staff/Sidebar.jsx'
+﻿import Sidebar from '../staff/Sidebar.jsx'
 import Topbar from '../staff/Topbar.jsx'
 
 export default function Loader({ text = 'Loading...', page = true }) {
   const content = (
     <div className="text-center">
       <div className="relative w-16 h-16 mx-auto mb-4">
-        <div className="absolute inset-0 rounded-full border-4 border-teal-100"></div>
-        <div className="absolute inset-0 rounded-full border-4 border-t-teal-600 border-r-teal-600 border-b-transparent border-l-transparent animate-spin"></div>
+        <div className="absolute inset-0 rounded-full border-4 border-amber-100"></div>
+        <div className="absolute inset-0 rounded-full border-4 border-t-amber-600 border-r-amber-600 border-b-transparent border-l-transparent animate-spin"></div>
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-2 h-2 bg-teal-600 rounded-full animate-pulse"></div>
+          <div className="w-2 h-2 bg-amber-600 rounded-full animate-pulse"></div>
         </div>
       </div>
       <div className="flex items-center justify-center gap-2">
         <p className="text-gray-600 font-medium">{text}</p>
         <div className="flex gap-1">
-          <span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-bounce-dot-1"></span>
-          <span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-bounce-dot-2"></span>
-          <span className="w-1.5 h-1.5 bg-teal-500 rounded-full animate-bounce-dot-3"></span>
+          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce-dot-1"></span>
+          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce-dot-2"></span>
+          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-bounce-dot-3"></span>
         </div>
       </div>
       <style>{`

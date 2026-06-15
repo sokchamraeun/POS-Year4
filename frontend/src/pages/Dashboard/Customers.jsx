@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 import Loader from '../../components/shared/Loader.jsx'
@@ -119,7 +119,7 @@ export default function Customers() {
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-500 font-medium bg-gray-50 border-b border-gray-200">
+                <tr className="text-left text-gray-500 font-medium bg-orange-50 border-b border-gray-200">
                   <th className="px-6 py-4">ID</th>
                   <th className="px-6 py-4">Name</th>
                   <th className="px-6 py-4">Email</th>
@@ -135,7 +135,7 @@ export default function Customers() {
                   </tr>
                 ) : (
                   customers.map((c) => (
-                    <tr key={c.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <tr key={c.id} className="border-b border-gray-100 hover:bg-orange-50">
                       <td className="px-6 py-4 text-gray-800 font-medium">{c.id}</td>
                       <td className="px-6 py-4 text-gray-800">{c.name}</td>
                       <td className="px-6 py-4 text-gray-600">{c.email}</td>
@@ -195,7 +195,7 @@ export default function Customers() {
                       type="text" value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Full name"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                   <div>
@@ -204,7 +204,7 @@ export default function Customers() {
                       type="email" value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       placeholder="customer@email.com"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                   <div>
@@ -213,7 +213,7 @@ export default function Customers() {
                       type="text" value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       placeholder="Optional"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                   <div>
@@ -222,7 +222,7 @@ export default function Customers() {
                       type="password" value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       placeholder={editing ? 'Leave blank to keep current' : 'Min 8 characters'}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                   <div>
@@ -230,7 +230,7 @@ export default function Customers() {
                     <select
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value === 'true' })}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       <option value="true">Active</option>
                       <option value="false">Inactive</option>

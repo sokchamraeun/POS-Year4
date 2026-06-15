@@ -1,4 +1,4 @@
-import { jsPDF } from 'jspdf'
+﻿import { jsPDF } from 'jspdf'
 import html2canvas from 'html2canvas'
 import { useRef, useState } from 'react'
 import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
@@ -32,7 +32,7 @@ export default function Invoice({ order, customer }) {
             .text-blue-800 { color: #1e40af !important; }
             .bg-blue-600 { background-color: #2563eb !important; }
             .bg-blue-700 { background-color: #1d4ed8 !important; }
-            .bg-gray-50 { background-color: #fafaf9 !important; }
+            .bg-orange-50 { background-color: #fafaf9 !important; }
             .bg-white { background-color: #ffffff !important; }
             .border-gray-100 { border-color: #f3f4f6 !important; }
             .border-gray-200 { border-color: #e5e7eb !important; }

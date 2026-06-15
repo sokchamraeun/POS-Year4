@@ -11,7 +11,7 @@ export const getTodayDate = () => {
   return new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10)
 }
 
-export const calculateStats = (orders, products, customers) => {
+export const calculateStats = (orders, products, customers, lowStockCount = 0, profitData = null) => {
   const today = getTodayDate()
   const ordersToday = orders.filter(o => {
     const d = new Date(o.created_at ?? '')
@@ -19,35 +19,35 @@ export const calculateStats = (orders, products, customers) => {
     const kh = new Date(d.getTime() + 7 * 60 * 60 * 1000)
     return kh.toISOString().slice(0, 10) === today
   })
-  
-  const paidToday = ordersToday.filter(o => o.payment_status === 'Paid')
-  const revenueToday = paidToday.reduce((s, o) => s + Number(o.total ?? 0), 0)
+
+  const paidToday      = ordersToday.filter(o => o.payment_status === 'Paid')
+  const unpaidToday    = ordersToday.filter(o => o.payment_status !== 'Paid' && o.payment_status !== 'Refunded')
+  const pendingToday   = ordersToday.filter(o => o.status === 'New' || o.status === 'Processing')
+  const completedToday = ordersToday.filter(o => o.status === 'Completed')
+
+  const totalRevenue  = ordersToday.reduce((s, o) => s + Number(o.total ?? 0), 0)
+  const paidRevenue   = paidToday.reduce((s, o) => s + Number(o.total ?? 0), 0)
+  const unpaidAmount  = unpaidToday.reduce((s, o) => s + Number(o.total ?? 0), 0)
 
   return [
-    { 
-      label: 'Total Revenue Today', 
-      value: `$${revenueToday.toFixed(2)}`, 
-      change: ordersToday.length > 0 ? `${ordersToday.length} orders` : '-', 
-      color: 'bg-green-500' 
-    },
-    { 
-      label: 'Orders Today', 
-      value: String(ordersToday.length), 
-      change: `$${revenueToday.toFixed(2)}`, 
-      color: 'bg-blue-500' 
-    },
-    { 
-      label: 'Products', 
-      value: String(products.length), 
-      change: `${products.filter(p => p.status).length} active`, 
-      color: 'bg-yellow-500' 
-    },
-    { 
-      label: 'Customers', 
-      value: String(customers.length), 
-      change: '-', 
-      color: 'bg-purple-500' 
-    },
+    { label: 'Total Revenue Today', value: `$${totalRevenue.toFixed(2)}`,  change: `${ordersToday.length} orders today`,      type: 'revenue' },
+    { label: 'Paid Revenue',        value: `$${paidRevenue.toFixed(2)}`,   change: `${paidToday.length} paid orders`,         type: 'paid' },
+    { label: 'Unpaid Amount',       value: `$${unpaidAmount.toFixed(2)}`,  change: `${unpaidToday.length} unpaid orders`,     type: 'unpaid' },
+    { label: 'Orders Today',        value: String(ordersToday.length),     change: `$${totalRevenue.toFixed(2)} total`,       type: 'orders' },
+    { label: 'Pending Orders',      value: String(pendingToday.length),    change: 'New + Processing',                        type: 'pending' },
+    { label: 'Completed Orders',    value: String(completedToday.length),  change: 'Completed today',                         type: 'completed' },
+    { label: 'Products',            value: String(products.length),        change: `${products.filter(p => p.status).length} active`, type: 'products' },
+    { label: 'Low Stock Items',     value: String(lowStockCount),          change: lowStockCount > 0 ? 'Check inventory' : 'All stocked', type: 'stock' },
+    { label: 'Customers',           value: String(customers.length),       change: 'Total registered',                        type: 'customers' },
+    { label: 'Profit Today',
+      value:  profitData !== null ? `$${Number(profitData.profit).toFixed(2)}` : `$${paidRevenue.toFixed(2)}`,
+      change: (() => {
+        if (!profitData) return `${paidToday.length} paid`
+        const rev = Number(profitData.revenue)
+        const margin = rev > 0 ? ((Number(profitData.profit) / rev) * 100).toFixed(1) : '0.0'
+        return `Margin ${margin}% · COGS $${Number(profitData.cogs).toFixed(2)}`
+      })(),
+      type: 'profit' },
   ]
 }
 

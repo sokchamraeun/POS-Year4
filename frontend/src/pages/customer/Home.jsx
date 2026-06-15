@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
 import PromotionSlider from '../../components/customer/PromotionSlider.jsx'
@@ -45,7 +45,7 @@ export default function Home() {
       : products.filter((p) => p.category?.name === selectedCategory)
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col pb-24 sm:pb-0">
+    <div className="min-h-screen bg-orange-50 flex flex-col pb-24 sm:pb-0">
       <Navbar />
 
       <div className="flex-1">
@@ -67,7 +67,7 @@ export default function Home() {
                     className={`whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
                       selectedCategory === cat
                         ? 'bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-100 scale-[1.02]'
-                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-100 active:scale-95'
+                        : 'bg-orange-50 text-slate-600 hover:bg-slate-100 border border-slate-100 active:scale-95'
                     }`}
                   >
                     {cat}

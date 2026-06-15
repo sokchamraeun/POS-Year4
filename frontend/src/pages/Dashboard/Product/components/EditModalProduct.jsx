@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import Cropper from 'react-easy-crop'
 import getCroppedImg from '../../../../utils/cropImage.js'
 
@@ -174,14 +174,14 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
       {/* Overlay */}
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={onClose}>
         <div
-          className="bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden border border-teal-200/60"
+          className="bg-white rounded-2xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden border border-amber-200/60"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="sticky top-0 z-10 bg-white border-b border-teal-100 px-6 py-4 flex items-center justify-between">
+          <div className="sticky top-0 z-10 bg-white border-b border-amber-100 px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-teal-50 flex items-center justify-center">
-                <svg className="w-4.5 h-4.5 text-teal-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <div className="w-9 h-9 rounded-lg bg-amber-50 flex items-center justify-center">
+                <svg className="w-4.5 h-4.5 text-amber-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                 </svg>
               </div>
@@ -205,17 +205,17 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
                 <div className="flex items-center gap-4">
-                  <div className="w-20 h-20 rounded-xl bg-gray-50 border border-teal-200 flex items-center justify-center overflow-hidden shrink-0">
+                  <div className="w-20 h-20 rounded-xl bg-orange-50 border border-amber-200 flex items-center justify-center overflow-hidden shrink-0">
                     {form.imagePreview ? (
                       <img src={form.imagePreview} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <svg className="w-7 h-7 text-teal-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                      <svg className="w-7 h-7 text-amber-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
                       </svg>
                     )}
                   </div>
                   <div>
-                    <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-teal-200 hover:border-teal-300 hover:bg-teal-50 transition-colors text-sm font-medium text-teal-600">
+                    <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-amber-200 hover:border-amber-300 hover:bg-teal-50 transition-colors text-sm font-medium text-amber-600">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                       </svg>
@@ -233,7 +233,7 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Product Name</label>
                   <input
                     type="text" name="name" value={form.name} onChange={handleChange} required
-                    className="w-full border border-teal-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors placeholder:text-gray-300"
+                    className="w-full border border-amber-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors placeholder:text-gray-300"
                     placeholder="Enter product name"
                   />
                 </div>
@@ -241,7 +241,7 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
                   <select
                     name="category_id" value={form.category_id} onChange={handleChange} required
-                    className="w-full border border-teal-200 rounded-lg px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors"
+                    className="w-full border border-amber-200 rounded-lg px-3.5 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors"
                   >
                     <option value="">Select Category</option>
                     {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
@@ -251,14 +251,14 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
                   <textarea
                     name="description" value={form.description} onChange={handleChange} rows={3}
-                    className="w-full border border-teal-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors resize-none placeholder:text-gray-300"
+                    className="w-full border border-amber-200 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors resize-none placeholder:text-gray-300"
                     placeholder="Describe this product"
                   />
                 </div>
               </div>
 
               {/* Status Toggle */}
-              <div className="flex items-center justify-between bg-teal-50/50 rounded-xl px-4 py-3 border border-teal-100">
+              <div className="flex items-center justify-between bg-amber-50/50 rounded-xl px-4 py-3 border border-amber-100">
                 <div>
                   <span className="text-sm font-medium text-gray-700">Active Status</span>
                   <p className="text-xs text-gray-400 mt-0.5">{form.status ? 'Visible to customers' : 'Hidden from customers'}</p>
@@ -266,14 +266,14 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                 <button
                   type="button"
                   onClick={() => setForm(prev => ({ ...prev, status: !prev.status }))}
-                  className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500/30 ${form.status ? 'bg-teal-500' : 'bg-gray-300'}`}
+                  className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500/30 ${form.status ? 'bg-amber-500' : 'bg-gray-300'}`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${form.status ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
               </div>
 
               {/* Divider */}
-              <hr className="border-teal-100" />
+              <hr className="border-amber-100" />
 
               {/* Sizes & Prices */}
               <div>
@@ -282,11 +282,11 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                   {allSizes.map(size => {
                     const isActive = form.sizes.includes(size.id)
                     return (
-                      <div key={size.id} className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg border transition-colors ${isActive ? 'border-teal-300 bg-teal-50/40' : 'border-teal-100 bg-white'}`}>
+                      <div key={size.id} className={`flex items-center gap-3 px-3.5 py-2.5 rounded-lg border transition-colors ${isActive ? 'border-amber-300 bg-amber-50/40' : 'border-amber-100 bg-white'}`}>
                         <button
                           type="button"
                           onClick={() => handleSizeToggle(size.id)}
-                          className={`w-[18px] h-[18px] rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors ${isActive ? 'bg-teal-500 border-teal-500' : 'border-teal-300 bg-white'}`}
+                          className={`w-[18px] h-[18px] rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors ${isActive ? 'bg-amber-500 border-amber-500' : 'border-amber-300 bg-white'}`}
                         >
                           {isActive && (
                             <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
@@ -298,7 +298,7 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                         <input
                           type="number" placeholder="0.00" step="0.01" min="0"
                           value={form.prices[size.id] ?? ''} onChange={(e) => handlePriceChange(size.id, e.target.value)}
-                          className="w-28 border border-teal-200 rounded-lg px-3 py-1.5 text-sm text-right focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors"
+                          className="w-28 border border-amber-200 rounded-lg px-3 py-1.5 text-sm text-right focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors"
                         />
                       </div>
                     )
@@ -307,7 +307,7 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
               </div>
 
               {/* Addons */}
-              <div className="rounded-xl border border-teal-200 bg-teal-50/30 p-4">
+              <div className="rounded-xl border border-amber-200 bg-amber-50/30 p-4">
                 <label className="block text-sm font-medium text-gray-700 mb-3">Available Add-ons</label>
                 <div className="flex flex-wrap gap-2">
                   {allAddons.map(addon => {
@@ -318,11 +318,11 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                         type="button"
                         onClick={() => handleArrayToggle('addons', addon.id)}
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm border transition-colors ${isActive
-                          ? 'bg-teal-500 text-white border-teal-500'
-                          : 'bg-white text-gray-600 border-teal-200 hover:border-teal-300'}`}
+                          ? 'bg-amber-500 text-white border-amber-500'
+                          : 'bg-white text-gray-600 border-amber-200 hover:border-amber-300'}`}
                       >
                         {addon.name}
-                        <span className={`text-xs ${isActive ? 'text-teal-100' : 'text-gray-400'}`}>${Number(addon.price).toFixed(2)}</span>
+                        <span className={`text-xs ${isActive ? 'text-amber-100' : 'text-gray-400'}`}>${Number(addon.price).toFixed(2)}</span>
                       </button>
                     )
                   })}
@@ -332,7 +332,7 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
               {/* Sugar & Ice Levels */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Sugar */}
-                <div className="rounded-xl border border-teal-200 bg-teal-50/30 p-4">
+                <div className="rounded-xl border border-amber-200 bg-amber-50/30 p-4">
                   <label className="block text-sm font-medium text-gray-700 mb-3">Sugar Levels</label>
                   <div className="flex flex-wrap gap-2">
                     {allSugarLevels.map(level => {
@@ -343,8 +343,8 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                           type="button"
                           onClick={() => handleArrayToggle('sugar_levels', level.id)}
                           className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${isActive
-                            ? 'bg-teal-500 text-white border-teal-500'
-                            : 'bg-white text-gray-600 border-teal-200 hover:border-teal-300'}`}
+                            ? 'bg-amber-500 text-white border-amber-500'
+                            : 'bg-white text-gray-600 border-amber-200 hover:border-amber-300'}`}
                         >
                           {level.name}
                         </button>
@@ -353,7 +353,7 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                   </div>
                 </div>
                 {/* Ice */}
-                <div className="rounded-xl border border-teal-200 bg-teal-50/30 p-4">
+                <div className="rounded-xl border border-amber-200 bg-amber-50/30 p-4">
                   <label className="block text-sm font-medium text-gray-700 mb-3">Ice Levels</label>
                   <div className="flex flex-wrap gap-2">
                     {allIceLevels.map(level => {
@@ -364,8 +364,8 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                           type="button"
                           onClick={() => handleArrayToggle('ice_levels', level.id)}
                           className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${isActive
-                            ? 'bg-teal-500 text-white border-teal-500'
-                            : 'bg-white text-gray-600 border-teal-200 hover:border-teal-300'}`}
+                            ? 'bg-amber-500 text-white border-amber-500'
+                            : 'bg-white text-gray-600 border-amber-200 hover:border-amber-300'}`}
                         >
                           {level.name}
                         </button>
@@ -376,14 +376,14 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
               </div>
 
               {/* Divider */}
-              <hr className="border-teal-100" />
+              <hr className="border-amber-100" />
 
               {/* Action Buttons */}
               <div className="flex gap-3">
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? (
                     <>
@@ -395,7 +395,7 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 border border-teal-200 hover:bg-teal-50 transition-colors"
+                  className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-600 border border-amber-200 hover:bg-teal-50 transition-colors"
                 >
                   Cancel
                 </button>
@@ -409,8 +409,8 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
       {/* Crop Modal */}
       {cropOpen && cropImage && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl m-4 overflow-hidden border border-teal-200/60">
-            <div className="px-5 py-4 border-b border-teal-100 flex items-center justify-between">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl m-4 overflow-hidden border border-amber-200/60">
+            <div className="px-5 py-4 border-b border-amber-100 flex items-center justify-between">
               <h3 className="text-base font-semibold text-gray-900">Crop Image</h3>
             </div>
             <div className="relative h-96 bg-gray-100">
@@ -425,21 +425,21 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                 <input
                   type="range" min={1} max={3} step={0.01} value={zoom}
                   onChange={(e) => setZoom(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-teal-500"
+                  className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-amber-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Output Size</label>
                 <div className="flex items-center gap-2">
-                  <input type="number" min={1} value={outputWidth} onChange={(e) => setOutputWidth(e.target.value)} placeholder="Width" className="w-full border border-teal-200 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors" />
+                  <input type="number" min={1} value={outputWidth} onChange={(e) => setOutputWidth(e.target.value)} placeholder="Width" className="w-full border border-amber-200 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors" />
                   <span className="text-gray-400 text-sm">×</span>
-                  <input type="number" min={1} value={outputHeight} onChange={(e) => setOutputHeight(e.target.value)} placeholder="Height" className="w-full border border-teal-200 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors" />
+                  <input type="number" min={1} value={outputHeight} onChange={(e) => setOutputHeight(e.target.value)} placeholder="Height" className="w-full border border-amber-200 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/30 focus:border-teal-400 transition-colors" />
                   <span className="text-xs text-gray-400">px</span>
                 </div>
               </div>
               <div className="flex gap-3 pt-1">
-                <button onClick={handleCropCancel} className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 border border-teal-200 hover:bg-teal-50 transition-colors">Cancel</button>
-                <button onClick={handleCropSave} className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium bg-teal-500 text-white hover:bg-teal-600 transition-colors">Apply Crop</button>
+                <button onClick={handleCropCancel} className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-600 border border-amber-200 hover:bg-teal-50 transition-colors">Cancel</button>
+                <button onClick={handleCropSave} className="flex-1 px-4 py-2.5 rounded-lg text-sm font-medium bg-amber-500 text-white hover:bg-amber-600 transition-colors">Apply Crop</button>
               </div>
             </div>
           </div>

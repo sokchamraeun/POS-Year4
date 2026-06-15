@@ -53,3 +53,13 @@ export async function fetchProducts() {
 export async function fetchCustomers() {
   return fetchAll('/customers?per_page=200')
 }
+
+export async function fetchProfitToday() {
+  try {
+    const res = await fetch(`${API_URL}/dashboard/profit-today`, { headers: getAuthHeaders() })
+    if (!res.ok) return null
+    return await res.json()
+  } catch {
+    return null
+  }
+}

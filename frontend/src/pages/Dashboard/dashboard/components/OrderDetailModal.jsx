@@ -1,4 +1,4 @@
-// src/pages/staff/dashboard/components/OrderDetailModal.jsx
+﻿// src/pages/staff/dashboard/components/OrderDetailModal.jsx
 import { statusColors, paymentColors } from '../utils/constants'
 import { formatKhmerTime } from '../utils/helpers'
 import { markOrderPrinted } from '../utils/api'
@@ -133,7 +133,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
               <select
                 value={order.status ?? 'New'}
                 onChange={(e) => onStatusChange(order.id, e.target.value)}
-                className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${statusColors[order.status ?? 'New']?.split(' ')[0] || 'text-gray-600'}`}
+                className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${statusColors[order.status ?? 'New']?.split(' ')[0] || 'text-gray-600'}`}
               >
                 <option value="New">New</option>
                 <option value="Processing">Processing</option>
@@ -146,7 +146,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
               <select
                 value={order.payment_status ?? 'Unpaid'}
                 onChange={(e) => onPaymentChange(order.id, e.target.value)}
-                className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${paymentColors[order.payment_status ?? 'Unpaid']?.split(' ')[0] || 'text-gray-600'}`}
+                className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${paymentColors[order.payment_status ?? 'Unpaid']?.split(' ')[0] || 'text-gray-600'}`}
               >
                 <option value="Paid">Paid</option>
                 <option value="Unpaid">Unpaid</option>

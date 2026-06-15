@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import Loader from '../../../components/shared/Loader.jsx'
@@ -130,7 +130,7 @@ export default function Inventory() {
           <div className="mb-6 rounded-2xl bg-white border border-gray-200 shadow-sm p-5">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
-                <p className="text-sm font-semibold text-teal-600">Stock Management</p>
+                <p className="text-sm font-semibold text-amber-600">Stock Management</p>
                 <h1 className="text-2xl font-bold text-gray-900 mt-1">Inventory</h1>
                 <p className="text-sm text-gray-500 mt-1">
                   Manage ingredient stock, purchases, deductions and adjustments.
@@ -139,16 +139,16 @@ export default function Inventory() {
 
               <button
                 onClick={() => setShowHistory(!showHistory)}
-                className="bg-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-teal-700 transition-colors shadow-sm"
+                className="bg-amber-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-amber-700 transition-colors shadow-sm"
               >
                 {showHistory ? 'Adjust Stock' : 'Transaction History'}
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
-              <div className="rounded-xl bg-teal-50 border border-teal-100 p-4">
-                <p className="text-xs text-teal-600 font-semibold">Ingredients</p>
-                <p className="text-2xl font-bold text-teal-900 mt-1">{ingredients.length}</p>
+              <div className="rounded-xl bg-amber-50 border border-amber-100 p-4">
+                <p className="text-xs text-amber-600 font-semibold">Ingredients</p>
+                <p className="text-2xl font-bold text-amber-900 mt-1">{ingredients.length}</p>
               </div>
 
               <div className="rounded-xl bg-rose-50 border border-rose-100 p-4">
@@ -183,7 +183,7 @@ export default function Inventory() {
                     >
                       <div className="flex items-start justify-between gap-3 mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold">
+                          <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
                             {ing.name?.charAt(0)?.toUpperCase() || 'I'}
                           </div>
 
@@ -264,7 +264,7 @@ export default function Inventory() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-gray-500 font-semibold bg-gray-50 border-b border-gray-200">
+                    <tr className="text-left text-gray-500 font-semibold bg-orange-50 border-b border-gray-200">
                       <th className="px-6 py-4">Date</th>
                       <th className="px-6 py-4">Ingredient</th>
                       <th className="px-6 py-4">Type</th>
@@ -348,7 +348,7 @@ export default function Inventory() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-100">
             <div className="mb-5">
-              <div className="w-12 h-12 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold mb-3">
+              <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold mb-3">
                 {selectedIngredient.name?.charAt(0)?.toUpperCase() || 'I'}
               </div>
 

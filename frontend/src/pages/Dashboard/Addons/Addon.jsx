@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
@@ -90,7 +90,7 @@ export default function Addon() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-orange-50">
 
       <Sidebar />
 
@@ -113,14 +113,14 @@ export default function Addon() {
 
             <button
               onClick={openCreate}
-              className="bg-teal-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow hover:bg-teal-700 transition"
+              className="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow hover:bg-amber-700 transition"
             >
               + Add Addon
             </button>
           </div>
 
           {/* TABLE */}
-          <div className="bg-white border border-teal-200 rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-white border border-amber-200 rounded-2xl shadow-sm overflow-hidden">
 
             {loading ? <Loader page={false} text="Loading addons..." /> : error ? (
               <div className="p-10 text-center text-red-500">
@@ -129,8 +129,8 @@ export default function Addon() {
             ) : (
               <table className="w-full text-sm">
 
-                <thead className="bg-teal-50 border-b border-teal-200">
-                  <tr className="text-left text-teal-700 text-xs uppercase tracking-wider">
+                <thead className="bg-amber-50 border-b border-amber-200">
+                  <tr className="text-left text-amber-700 text-xs uppercase tracking-wider">
                     <th className="px-6 py-4">ID</th>
                     <th className="px-6 py-4">Name</th>
                     <th className="px-6 py-4">Price</th>
@@ -144,11 +144,11 @@ export default function Addon() {
                   {addons.map((a) => (
                     <tr
                       key={a.id}
-                      className="border-b border-teal-100 hover:bg-teal-50 transition"
+                      className="border-b border-amber-100 hover:bg-teal-50 transition"
                     >
 
                       <td className="px-6 py-4">
-                        <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded-lg text-xs font-semibold">
+                        <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-lg text-xs font-semibold">
                           #{a.id}
                         </span>
                       </td>
@@ -172,7 +172,7 @@ export default function Addon() {
 
                           <Link
                             to={`/staff/addons/${a.id}`}
-                            className="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition"
+                            className="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-amber-200 rounded-lg hover:bg-blue-50 transition"
                           >
                             View
                           </Link>
@@ -219,7 +219,7 @@ export default function Addon() {
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
 
-          <div className="bg-white border border-teal-200 rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+          <div className="bg-white border border-amber-200 rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
 
             <h2 className="text-lg font-bold text-gray-900 mb-4">
               {editing ? 'Edit Addon' : 'Add Addon'}
@@ -239,7 +239,7 @@ export default function Addon() {
                   onChange={(e) =>
                     setForm({ ...form, name: e.target.value })
                   }
-                  className="w-full border border-teal-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-amber-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500"
                   required
                 />
               </div>
@@ -257,7 +257,7 @@ export default function Addon() {
                   onChange={(e) =>
                     setForm({ ...form, price: e.target.value })
                   }
-                  className="w-full border border-teal-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-amber-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500"
                   required
                 />
               </div>
@@ -275,7 +275,7 @@ export default function Addon() {
 
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+                  className="px-4 py-2 text-sm bg-amber-600 text-white rounded-lg hover:bg-amber-700"
                 >
                   {editing ? 'Update' : 'Create'}
                 </button>

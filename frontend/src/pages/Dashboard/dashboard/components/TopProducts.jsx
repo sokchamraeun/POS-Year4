@@ -1,4 +1,4 @@
-// src/pages/staff/dashboard/components/TopProducts.jsx
+﻿// src/pages/staff/dashboard/components/TopProducts.jsx
 
 const STORAGE_URL = import.meta.env.VITE_STORAGE_URL ?? ''
 
@@ -9,7 +9,7 @@ export default function TopProducts({ topProducts = [] }) {
 
   if (topProducts.length === 0) {
     return (
-      <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
+      <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-amber-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/20">
         <div>
           <h2 className="text-lg font-bold text-slate-900">Top Products</h2>
           <p className="mt-1 text-sm text-slate-500">
@@ -17,8 +17,8 @@ export default function TopProducts({ topProducts = [] }) {
           </p>
         </div>
 
-        <div className="mt-6 flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-cyan-200 bg-cyan-50/30 py-12 text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-cyan-200 bg-white shadow-sm">
+        <div className="mt-6 flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-amber-200 bg-cyan-50/30 py-12 text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-amber-200 bg-white shadow-sm">
             <span className="text-xl">☕</span>
           </div>
 
@@ -32,7 +32,7 @@ export default function TopProducts({ topProducts = [] }) {
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
+    <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-amber-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/20">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-bold text-slate-900">Top Products</h2>
@@ -59,7 +59,7 @@ export default function TopProducts({ topProducts = [] }) {
           return (
             <div
               key={product.id ?? product.name ?? index}
-              className="flex flex-col items-center rounded-2xl border border-cyan-100 bg-white p-3 shadow-sm transition-all duration-300 hover:border-cyan-400 hover:shadow-md"
+              className="flex flex-col items-center rounded-2xl border border-amber-100 bg-white p-3 shadow-sm transition-all duration-300 hover:border-teal-500 hover:shadow-md"
             >
               <div className="relative mb-2">
                 {product.image ? (

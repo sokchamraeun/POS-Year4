@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import { useCart } from '../../context/CartContext.jsx'
 import Loader from '../shared/Loader.jsx'
 
@@ -96,13 +96,13 @@ export default function PromotionSlider({ products: propProducts }) {
   const badgeColors = { 
     orange: 'bg-linear-to-r from-orange-500 to-amber-600', 
     red: 'bg-linear-to-r from-rose-500 to-red-600', 
-    green: 'bg-linear-to-r from-emerald-500 to-teal-600' 
+    green: 'bg-linear-to-r from-emerald-500 to-amber-600' 
   }
   
   const btnColors = { 
     orange: 'bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 active:scale-95 shadow-md shadow-orange-500/10', 
     red: 'bg-linear-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 active:scale-95 shadow-md shadow-rose-500/10', 
-    green: 'bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 active:scale-95 shadow-md shadow-emerald-500/10' 
+    green: 'bg-linear-to-r from-emerald-500 to-amber-500 hover:from-emerald-600 hover:to-amber-600 active:scale-95 shadow-md shadow-emerald-500/10' 
   }
   
   const priceColors = { 
@@ -178,7 +178,7 @@ export default function PromotionSlider({ products: propProducts }) {
                   {/* Right Side - Product Card Overlay */}
                   {/* Mobile version (simplified) */}
                   <div className="block lg:hidden w-full max-w-[260px] bg-white/95 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl p-3">
-                    <div className="relative overflow-hidden rounded-xl bg-slate-50 aspect-4/3 mb-2.5">
+                    <div className="relative overflow-hidden rounded-xl bg-orange-50 aspect-4/3 mb-2.5">
                       {/* Promotion Badge */}
                       {p.promotion && (
                         <div className="absolute top-2 left-2 z-10">
@@ -240,7 +240,7 @@ export default function PromotionSlider({ products: propProducts }) {
 
                   {/* Desktop/Tablet version (full details) */}
                   <div className="hidden lg:block bg-white/10 border border-white/20 backdrop-blur-md rounded-3xl p-5 sm:p-6 w-full sm:w-auto max-w-[280px] sm:max-w-[320px] transition-all hover:bg-white/15 duration-300 shadow-2xl">
-                    <div className="relative overflow-hidden rounded-2xl bg-slate-50 aspect-4/3 mb-4 shadow-inner">
+                    <div className="relative overflow-hidden rounded-2xl bg-orange-50 aspect-4/3 mb-4 shadow-inner">
                       {/* Promotion Badge */}
                       {p.promotion && (
                         <div className="absolute top-3 left-3 z-10">

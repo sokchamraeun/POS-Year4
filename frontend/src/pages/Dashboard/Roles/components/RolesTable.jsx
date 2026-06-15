@@ -1,9 +1,9 @@
-export default function RolesTable({ roles, onView, onEdit, onDelete }) {
+﻿export default function RolesTable({ roles, onView, onEdit, onDelete }) {
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-teal-200">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-amber-200">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-gray-600 font-semibold bg-gradient-to-r from-teal-50 to-teal-100 border-b-2 border-teal-300">
+          <tr className="text-left text-gray-600 font-semibold bg-gradient-to-r from-amber-50 to-amber-100 border-b-2 border-amber-300">
             <th className="px-6 py-4 w-16">ID</th>
             <th className="px-6 py-4">Role Name</th>
             <th className="px-6 py-4">Slug</th>
@@ -13,16 +13,16 @@ export default function RolesTable({ roles, onView, onEdit, onDelete }) {
         </thead>
         <tbody>
           {roles.map((role) => (
-            <tr key={role.id} className="border-b border-teal-100 hover:bg-teal-50/50 transition-all duration-150">
-              <td className="px-6 py-4 text-teal-500 text-xs font-mono font-semibold">#{String(role.id).padStart(2, '0')}</td>
+            <tr key={role.id} className="border-b border-amber-100 hover:bg-teal-50/50 transition-all duration-150">
+              <td className="px-6 py-4 text-amber-500 text-xs font-mono font-semibold">#{String(role.id).padStart(2, '0')}</td>
               <td className="px-6 py-4">
                 <span className="font-semibold text-gray-800">{role.name}</span>
               </td>
               <td className="px-6 py-4">
-                <code className="text-teal-700 text-xs font-mono bg-teal-100 px-2 py-1 rounded-md">{role.slug}</code>
+                <code className="text-amber-700 text-xs font-mono bg-amber-100 px-2 py-1 rounded-md">{role.slug}</code>
               </td>
               <td className="px-6 py-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-teal-100 text-teal-800 border border-teal-200">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
@@ -31,7 +31,7 @@ export default function RolesTable({ roles, onView, onEdit, onDelete }) {
               </td>
               <td className="px-6 py-4">
                 <div className="flex items-center gap-2">
-                  <button onClick={() => onView(role)} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-teal-700 bg-teal-100 hover:bg-teal-200 transition-all duration-200">
+                  <button onClick={() => onView(role)} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 transition-all duration-200">
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                     View
                   </button>

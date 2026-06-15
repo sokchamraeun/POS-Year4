@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { calcFinalPrice } from '../../../../utils/promotion.js'
 import { X, Plus, Minus, Gift } from 'lucide-react'
 
@@ -81,7 +81,7 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
 
   return (
     <>
-      <div className="rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 flex flex-col bg-cover bg-center border border-teal-200 hover:border-teal-400 hover:shadow-teal-100" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=60')" }}>
+      <div className="rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 flex flex-col bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=60')" }}>
         <div className="bg-white/90 backdrop-blur-sm flex flex-col flex-1">
           <div className="p-3 pb-0 relative cursor-pointer" onClick={() => setShowModal(true)}>
             {product.promotion && (
@@ -103,7 +103,7 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                 className="w-full aspect-square object-contain rounded-lg transition-transform duration-300 hover:scale-105"
               />
             ) : (
-              <div className="w-full aspect-square rounded-lg bg-gradient-to-br from-teal-50 to-teal-100 flex items-center justify-center text-teal-400 md:text-xs text-[10px]">
+              <div className="w-full aspect-square rounded-lg bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center text-amber-400 md:text-xs text-[10px]">
                 No Image
               </div>
             )}
@@ -113,12 +113,12 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
               <h3 className="md:text-base text-sm font-semibold text-gray-800">{product.name}</h3>
               <div className="text-right">
                 {hasDiscount && <span className="md:text-base text-sm line-through text-red-400 mr-1">${price.toFixed(2)}</span>}
-                <span className="md:text-base text-sm font-bold text-teal-600">${finalPrice.toFixed(2)}</span>
+                <span className="md:text-base text-sm font-bold text-amber-600">${finalPrice.toFixed(2)}</span>
               </div>
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="mt-auto w-8 h-8 rounded-full bg-gradient-to-r from-teal-600 to-teal-500 text-white flex items-center justify-center hover:from-teal-700 hover:to-teal-600 transition-all duration-300 shadow-md hover:shadow-lg mx-auto"
+              className="mt-auto w-8 h-8 rounded-full bg-gradient-to-r from-amber-900 to-amber-800 text-white flex items-center justify-center hover:from-amber-950 hover:to-amber-900 transition-all duration-300 shadow-md hover:shadow-lg mx-auto"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -129,9 +129,9 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
       {/* Customization Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl shadow-teal-500/20 w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col border border-teal-200" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl shadow-2xl shadow-amber-500/20 w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col border border-amber-200" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-teal-600 to-teal-500 px-5 py-4 flex items-center justify-between sticky top-0 z-10">
+            <div className="bg-gradient-to-r from-amber-900 to-amber-800 px-5 py-4 flex items-center justify-between sticky top-0 z-10">
               <div className="flex items-center gap-3">
                 {product.image ? (
                   <img
@@ -162,11 +162,11 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
 
             {/* Modal Body - ALL OPTIONS IN ONE BOX */}
             <div className="p-5 overflow-y-auto flex-1">
-              <div className="border-2 border-teal-200 rounded-xl p-4 bg-teal-50/30">
+              <div className="border-2 border-amber-200 rounded-xl p-4 bg-amber-50/30">
                 {/* Size Selection */}
                 <div className="mb-5">
-                  <label className="block text-sm font-semibold text-teal-700 mb-2 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                  <label className="block text-sm font-semibold text-amber-700 mb-2 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
                     Select Size
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -176,8 +176,8 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                         onClick={() => setSelectedSize(s.name)}
                         className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 ${
                           selectedSize === s.name
-                            ? 'bg-teal-600 text-white border-teal-600 shadow-md'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-teal-400 hover:bg-teal-50'
+                            ? 'bg-amber-600 text-white border-amber-600 shadow-md'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
                         }`}
                       >
                         {s.name}
@@ -190,14 +190,14 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                 </div>
 
                 {/* Divider */}
-                <div className="border-t border-teal-200 my-4"></div>
+                <div className="border-t border-amber-200 my-4"></div>
 
                 {/* Ice Level & Sugar Level */}
                 <div className="grid grid-cols-2 gap-4 mb-5">
                   {/* Ice Level */}
                   <div>
-                    <label className="block text-xs font-semibold text-teal-700 mb-2 flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
+                    <label className="block text-xs font-semibold text-amber-700 mb-2 flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
                       Ice Level
                     </label>
                     <div className="flex flex-col gap-1.5">
@@ -207,8 +207,8 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                           onClick={() => setSelectedIce(l.name)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                             selectedIce === l.name
-                              ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
-                              : 'bg-white text-gray-700 border-gray-300 hover:border-teal-400 hover:bg-teal-50'
+                              ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
                           }`}
                         >
                           {l.name}
@@ -219,8 +219,8 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
 
                   {/* Sugar Level */}
                   <div>
-                    <label className="block text-xs font-semibold text-teal-700 mb-2 flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 bg-teal-500 rounded-full"></div>
+                    <label className="block text-xs font-semibold text-amber-700 mb-2 flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
                       Sugar Level
                     </label>
                     <div className="flex flex-col gap-1.5">
@@ -230,8 +230,8 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                           onClick={() => setSelectedSugar(s.name)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                             selectedSugar === s.name
-                              ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
-                              : 'bg-white text-gray-700 border-gray-300 hover:border-teal-400 hover:bg-teal-50'
+                              ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
                           }`}
                         >
                           {s.name}
@@ -242,13 +242,13 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                 </div>
 
                 {/* Divider */}
-                <div className="border-t border-teal-200 my-4"></div>
+                <div className="border-t border-amber-200 my-4"></div>
 
                 {/* Add-ons */}
                 {product.addons?.length > 0 && (
                   <div className="mb-5">
-                    <label className="block text-sm font-semibold text-teal-700 mb-2 flex items-center gap-2">
-                      <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                    <label className="block text-sm font-semibold text-amber-700 mb-2 flex items-center gap-2">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
                       Add-ons
                     </label>
                     <div className="flex flex-wrap gap-2">
@@ -256,8 +256,8 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                         onClick={() => setSelectedAddOn('')}
                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                           selectedAddOn === ''
-                            ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-teal-400 hover:bg-teal-50'
+                            ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
+                            : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
                         }`}
                       >
                         No Add On
@@ -271,8 +271,8 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                             onClick={() => setSelectedAddOn(a.name)}
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
                               selectedAddOn === a.name
-                                ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
-                                : 'bg-white text-gray-700 border-gray-300 hover:border-teal-400 hover:bg-teal-50'
+                                ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
+                                : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
                             }`}
                           >
                             {a.name} (+${ap.toFixed(2)})
@@ -287,13 +287,13 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
               {/* Quantity Selector - Number Input */}
               <div className="mt-5 pt-2">
                 <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
                   Quantity
                 </label>
                 <div className="flex items-center justify-center gap-4">
                   <button
                     onClick={decrementQty}
-                    className="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-teal-100 hover:text-teal-600 transition-all border border-gray-300"
+                    className="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-amber-100 hover:text-teal-700 transition-all border border-gray-300"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
@@ -306,7 +306,7 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                   />
                   <button
                     onClick={incrementQty}
-                    className="w-10 h-10 rounded-lg bg-teal-600 text-white flex items-center justify-center hover:bg-teal-700 transition-all shadow-md"
+                    className="w-10 h-10 rounded-lg bg-amber-600 text-white flex items-center justify-center hover:bg-amber-700 transition-all shadow-md"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -325,14 +325,14 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-5 border-t border-teal-100 bg-teal-50/20">
+            <div className="p-5 border-t border-amber-100 bg-amber-50/20">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-gray-600">Unit Price</span>
                 <div className="text-right">
                   {hasDiscount && (
                     <span className="text-sm line-through text-gray-400 mr-2">${price.toFixed(2)}</span>
                   )}
-                  <span className="text-lg font-bold text-teal-600">${finalPrice.toFixed(2)}</span>
+                  <span className="text-lg font-bold text-amber-600">${finalPrice.toFixed(2)}</span>
                 </div>
               </div>
               
@@ -350,16 +350,16 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                 </div>
               )}
               
-              <div className="flex items-center justify-between mb-4 pt-2 border-t border-teal-200">
+              <div className="flex items-center justify-between mb-4 pt-2 border-t border-amber-200">
                 <span className="text-gray-800 font-semibold text-lg">Total Amount</span>
                 <div className="text-right">
-                  <span className="text-2xl font-bold text-teal-600">${totalPrice.toFixed(2)}</span>
+                  <span className="text-2xl font-bold text-amber-600">${totalPrice.toFixed(2)}</span>
                 </div>
               </div>
               
               <button
                 onClick={handleAddToCart}
-                className="w-full bg-gradient-to-r from-teal-600 to-teal-500 text-white py-3 rounded-xl font-semibold hover:from-teal-700 hover:to-teal-600 transition-all duration-300 shadow-md flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-amber-900 to-amber-800 text-white py-3 rounded-xl font-semibold hover:from-amber-950 hover:to-amber-900 transition-all duration-300 shadow-md flex items-center justify-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Add to Order ({quantity} item{quantity !== 1 ? 's' : ''})

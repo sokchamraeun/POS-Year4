@@ -1,4 +1,4 @@
-export default function CategoryFilter({ categories, category, onSelect, search, onSearchChange, onSearchClear }) {
+﻿export default function CategoryFilter({ categories, category, onSelect, search, onSearchChange, onSearchClear }) {
   return (
     <div className="bg-gray-100 px-6 pt-6 pb-3 border-b border-gray-200">
       <div className="flex items-center gap-2">
@@ -11,7 +11,7 @@ export default function CategoryFilter({ categories, category, onSelect, search,
             value={search}
             onChange={e => onSearchChange(e.target.value)}
             placeholder="Search products..."
-            className="w-full pl-9 pr-8 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-400 focus:border-blue-400"
+            className="w-full pl-9 pr-8 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 focus:border-teal-400"
           />
           {search && (
             <button
@@ -32,7 +32,7 @@ export default function CategoryFilter({ categories, category, onSelect, search,
               className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
                 category === cat
                   ? 'bg-blue-600 text-white'
-                  : 'bg-white text-gray-600 hover:bg-gray-50'
+                  : 'bg-white text-gray-600 hover:bg-orange-50'
               }`}
             >
               {cat}

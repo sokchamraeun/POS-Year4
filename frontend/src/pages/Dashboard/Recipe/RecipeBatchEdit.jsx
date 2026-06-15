@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
@@ -107,7 +107,7 @@ export default function RecipeBatchEdit() {
                 </thead>
                 <tbody>
                   {rows.map((row) => (
-                    <tr key={row.key} className={`border-b ${row._remove ? 'opacity-50 bg-gray-50' : ''}`}>
+                    <tr key={row.key} className={`border-b ${row._remove ? 'opacity-50 bg-orange-50' : ''}`}>
                       <td className="px-2 py-2">
                         <select
                           value={row.ingredient_id}

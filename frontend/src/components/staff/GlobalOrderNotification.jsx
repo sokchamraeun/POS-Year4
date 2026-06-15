@@ -116,6 +116,12 @@ export default function GlobalOrderNotification() {
 
   useSocket('order:updated', () => {})
 
+  function publishNewCount(orders) {
+    const count = orders.filter(o => o.status === 'New').length
+    localStorage.setItem('newOrdersCount', count)
+    window.dispatchEvent(new CustomEvent('newOrdersCountChanged', { detail: count }))
+  }
+
   useEffect(() => {
     if (!token) return
     let interval
@@ -133,10 +139,13 @@ export default function GlobalOrderNotification() {
     initMaxId()
     async function poll() {
       try {
-        const res = await fetch(`${API_URL}/orders?per_page=20`, { headers: headers() })
+        const res = await fetch(`${API_URL}/orders?per_page=50`, { headers: headers() })
         const json = await res.json()
         const orders = json.data ?? []
         if (!mounted || orders.length === 0) return
+
+        publishNewCount(orders)
+
         const prevMax = lastOrderIdRef.current
         const newMax = Math.max(...orders.map(o => o.id))
         if (newMax > prevMax) {
@@ -155,6 +164,7 @@ export default function GlobalOrderNotification() {
         }
       } catch {}
     }
+    poll()
     interval = setInterval(poll, 8000)
     return () => {
       mounted = false
@@ -165,32 +175,74 @@ export default function GlobalOrderNotification() {
 
   if (!token) return null
 
+  if (!newOrderAlert) return null
+
   return (
     <>
-      {newOrderAlert && (
-        <div className="fixed top-4 right-4 z-[9999] cursor-pointer" onClick={() => { setNewOrderAlert(false); navigate('/staff/orders') }} style={{ animation: 'slideDownGlobal .4s ease-out' }}>
-          <style>{`@keyframes slideDownGlobal{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
-          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 min-w-[300px]">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center shrink-0">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+      <style>{`
+        @keyframes dropBanner {
+          from { transform: translateY(-120%) translateX(-50%); opacity: 0; }
+          to   { transform: translateY(0%)    translateX(-50%); opacity: 1; }
+        }
+        @keyframes ping-once {
+          0%   { transform: scale(1);   opacity: 1; }
+          60%  { transform: scale(1.8); opacity: 0; }
+          100% { transform: scale(1.8); opacity: 0; }
+        }
+      `}</style>
+
+      <div
+        className="fixed top-4 left-1/2 z-[9999]"
+        style={{ animation: 'dropBanner .5s cubic-bezier(.22,1,.36,1)', transform: 'translateX(-50%)' }}
+      >
+        <div className="relative bg-white rounded-2xl shadow-2xl border border-green-100 flex items-center gap-4 px-5 py-4 min-w-[340px] max-w-sm overflow-hidden">
+
+          {/* Left accent bar */}
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-green-400 to-emerald-600 rounded-l-2xl" />
+
+          {/* Ping icon */}
+          <div className="relative shrink-0 ml-1">
+            <div className="w-11 h-11 rounded-full bg-green-100 flex items-center justify-center">
+              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
               </svg>
             </div>
-            <div className="flex-1">
-              <p className="font-bold text-sm">{latestOrder?.id ? `Order #${latestOrder.id}` : 'New Order Received!'}</p>
-              <p className="text-white/80 text-xs mt-0.5">Check orders page</p>
-            </div>
+            <span className="absolute top-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" style={{ animation: 'ping-once 1s ease-out .2s' }} />
+            <span className="absolute top-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
+          </div>
+
+          {/* Text */}
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-green-600 leading-none mb-1">New Order</p>
+            <p className="text-sm font-bold text-slate-800 leading-none">
+              {latestOrder?.id ? `Order #${latestOrder.id}` : 'New Order Received!'}
+            </p>
+            {(latestOrder?.table?.name || latestOrder?.total_price) && (
+              <p className="text-xs text-slate-400 mt-1 truncate">
+                {latestOrder?.table?.name ? `Table ${latestOrder.table.name}` : ''}
+                {latestOrder?.table?.name && latestOrder?.total_price ? ' · ' : ''}
+                {latestOrder?.total_price ? `$${Number(latestOrder.total_price).toFixed(2)}` : ''}
+              </p>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex flex-col gap-1.5 shrink-0">
+            <button
+              onClick={() => { setNewOrderAlert(false); navigate('/staff/orders') }}
+              className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-xs font-bold rounded-lg transition-colors"
+            >
+              View
+            </button>
             <button
               onClick={() => setNewOrderAlert(false)}
-              className="w-7 h-7 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors shrink-0"
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs font-semibold rounded-lg transition-colors"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Dismiss
             </button>
           </div>
         </div>
-      )}
+      </div>
     </>
   )
 }

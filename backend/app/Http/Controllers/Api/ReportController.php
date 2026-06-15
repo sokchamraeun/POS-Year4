@@ -8,6 +8,7 @@ use App\Models\Ingredient;
 use App\Models\InventoryTransaction;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Recipe;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -247,6 +248,53 @@ class ReportController extends Controller
             'customers' => $customers,
             'total_customers' => $totalCustomers,
             'new_customers' => $newCustomers,
+        ]);
+    }
+
+    public function profitToday(): JsonResponse
+    {
+        $tz       = 'Asia/Phnom_Penh';
+        $dayStart = now()->timezone($tz)->startOfDay()->utc()->toDateTimeString();
+        $dayEnd   = now()->timezone($tz)->endOfDay()->utc()->toDateTimeString();
+
+        // Revenue and order count from paid orders today
+        $paidOrderIds = Order::whereBetween('created_at', [$dayStart, $dayEnd])
+            ->where('payment_status', 'Paid')
+            ->pluck('id');
+
+        $revenue = (float) Order::whereIn('id', $paidOrderIds)->sum('total');
+        $count   = $paidOrderIds->count();
+
+        // Get all items from paid orders today
+        $items = OrderItem::whereIn('order_id', $paidOrderIds)
+            ->get(['product_id', 'size_id', 'qty']);
+
+        // Load all relevant recipes with ingredient costs
+        $productIds = $items->pluck('product_id')->unique()->all();
+        $recipes = Recipe::whereIn('product_id', $productIds)
+            ->with('ingredient:id,cost_per_unit')
+            ->get()
+            ->groupBy(fn ($r) => $r->product_id . '-' . ($r->size_id ?? 0));
+
+        // Calculate COGS: recipe_qty × ingredient_cost × item_qty
+        $cogs = 0.0;
+        foreach ($items as $item) {
+            $key  = $item->product_id . '-' . ($item->size_id ?? 0);
+            $keyB = $item->product_id . '-0';
+            $rows = $recipes->get($key) ?? $recipes->get($keyB) ?? collect();
+
+            foreach ($rows as $r) {
+                if ($r->ingredient && $r->ingredient->cost_per_unit > 0) {
+                    $cogs += (float) $r->quantity * (float) $r->ingredient->cost_per_unit * (float) $item->qty;
+                }
+            }
+        }
+
+        return response()->json([
+            'revenue'      => round($revenue, 2),
+            'cogs'         => round($cogs, 2),
+            'profit'       => round($revenue - $cogs, 2),
+            'orders_count' => $count,
         ]);
     }
 

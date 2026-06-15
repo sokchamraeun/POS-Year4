@@ -1,4 +1,4 @@
-// src/pages/staff/dashboard/Dashboard.jsx
+﻿// src/pages/staff/dashboard/Dashboard.jsx
 import { useState, useEffect } from 'react'
 import { Clock } from 'lucide-react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
@@ -32,6 +32,7 @@ export default function Dashboard() {
     products,
     recentOrders,
     allOrders,
+    profitDataRef,
     setStats,
     setRecentOrders,
     setAllOrders,
@@ -44,7 +45,8 @@ export default function Dashboard() {
     setStats,
     setChartData,
     () => {},
-    setRecentOrders
+    setRecentOrders,
+    profitDataRef
   )
 
   useEffect(() => {
@@ -186,7 +188,7 @@ export default function Dashboard() {
         <main className="flex-1 overflow-y-auto p-6">
           <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-500 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-900 to-amber-800 bg-clip-text text-transparent">
                 Dashboard
               </h1>
 
@@ -195,9 +197,9 @@ export default function Dashboard() {
               </p>
             </div>
 
-            <div className="flex items-center gap-3 rounded-2xl bg-white px-5 py-3 shadow-xl shadow-teal-900/10 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50">
-                <Clock className="h-5 w-5 text-teal-600" />
+            <div className="flex items-center gap-3 rounded-2xl bg-white px-5 py-3 shadow-xl shadow-amber-900/10 border border-amber-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/20">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50">
+                <Clock className="h-5 w-5 text-amber-600" />
               </div>
 
               <div className="text-right">
@@ -222,14 +224,14 @@ export default function Dashboard() {
           </div>
 
           {newOrderAlert && (
-            <div className="mb-6 rounded-2xl border border-teal-800/20 bg-teal-50/50 px-4 py-3 text-sm font-semibold text-teal-700 backdrop-blur-sm">
+            <div className="mb-6 rounded-2xl border border-amber-800/20 bg-amber-50/50 px-4 py-3 text-sm font-semibold text-amber-700 backdrop-blur-sm">
               🔔 New order received
             </div>
           )}
 
-          <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat, idx) => (
-              <StatCard key={stat.label} stat={stat} index={idx} />
+          <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {stats.map((stat) => (
+              <StatCard key={stat.label} stat={stat} />
             ))}
           </div>
 

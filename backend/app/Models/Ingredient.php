@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'unit', 'stock_quantity', 'reorder_level', 'cost_per_unit'])]
+#[Fillable(['name', 'unit', 'stock_quantity', 'reorder_level', 'cost_per_unit', 'status'])]
 class Ingredient extends Model
 {
     use HasFactory;
@@ -39,5 +39,15 @@ class Ingredient extends Model
     {
         return $this->belongsToMany(Addon::class, 'addon_ingredients')
             ->withPivot(['id', 'quantity']);
+    }
+
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    public function purchaseOrderItems(): HasMany
+    {
+        return $this->hasMany(PurchaseOrderItem::class);
     }
 }

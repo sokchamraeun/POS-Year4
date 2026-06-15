@@ -1,4 +1,4 @@
-// src/pages/staff/dashboard/components/ProductManagement.jsx
+﻿// src/pages/staff/dashboard/components/ProductManagement.jsx
 import { useState } from 'react'
 
 const STORAGE_URL = import.meta.env.VITE_STORAGE_URL ?? ''
@@ -38,7 +38,7 @@ export default function ProductManagement({ products = [] }) {
 
   return (
     <>
-      <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
+      <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-amber-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/20">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-slate-900">
@@ -66,7 +66,7 @@ export default function ProductManagement({ products = [] }) {
             label="Active"
             value={activeCount}
             bg="bg-cyan-50"
-            border="border-cyan-300"
+            border="border-amber-300"
             text="text-cyan-800"
             onClick={() => setModalFilter('active')}
           />
@@ -74,7 +74,7 @@ export default function ProductManagement({ products = [] }) {
           <SummaryBox
             label="Inactive"
             value={inactiveCount}
-            bg="bg-slate-50"
+            bg="bg-orange-50"
             border="border-slate-300"
             text="text-slate-700"
             onClick={() => setModalFilter('inactive')}
@@ -130,7 +130,7 @@ export default function ProductManagement({ products = [] }) {
                     return (
                       <div
                         key={product.id ?? product.name ?? index}
-                        className="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition-all duration-200 hover:border-cyan-200 hover:shadow-md"
+                        className="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition-all duration-200 hover:border-amber-200 hover:shadow-md"
                       >
                         <div className="flex items-center gap-3">
                           {product.image ? (

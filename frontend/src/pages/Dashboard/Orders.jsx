@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 import { useSocket, useSocketConnect } from '../../hooks/useSocket'
@@ -82,14 +82,14 @@ const recipes = {
 const tabs = ['All', 'Completed', 'Processing', 'New', 'Cancelled']
 
 const statusColors = {
-  Completed: 'text-teal-700 bg-teal-100',
+  Completed: 'text-amber-700 bg-amber-100',
   Processing: 'text-blue-600 bg-blue-100',
   New: 'text-amber-600 bg-amber-100',
   Cancelled: 'text-red-600 bg-red-100',
 }
 
 const paymentColors = {
-  Paid: 'text-teal-700 bg-teal-100',
+  Paid: 'text-amber-700 bg-amber-100',
   Unpaid: 'text-red-600 bg-red-100',
   Refunded: 'text-gray-600 bg-gray-100',
 }
@@ -228,7 +228,7 @@ export default function Orders() {
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-600 to-teal-500 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-amber-900 to-amber-800 bg-clip-text text-transparent">
                 Orders
               </h1>
               <p className="text-sm text-slate-500 mt-1">Manage and track customer orders</p>
@@ -250,8 +250,8 @@ export default function Orders() {
             </div>
           )}
 
-          <div className="bg-white rounded-2xl shadow-lg shadow-teal-100/50 border border-teal-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-teal-200 flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-gradient-to-r from-white to-teal-50/30">
+          <div className="bg-white rounded-2xl shadow-lg shadow-amber-100/50 border border-amber-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-amber-200 flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-gradient-to-r from-white to-amber-50/30">
               <div className="relative flex-1 w-full">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -278,8 +278,8 @@ export default function Orders() {
                 onClick={() => setTodayOnly(!todayOnly)}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                   todayOnly
-                    ? 'bg-teal-600 text-white shadow-md shadow-teal-200'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                    ? 'bg-amber-600 text-white shadow-md shadow-amber-200'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-orange-50'
                 }`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -299,15 +299,15 @@ export default function Orders() {
                 </button>
               )}
             </div>
-            <div className="px-6 py-4 border-b border-teal-200 flex items-center gap-4 overflow-x-auto bg-gradient-to-r from-white to-teal-50/30">
+            <div className="px-6 py-4 border-b border-amber-200 flex items-center gap-4 overflow-x-auto bg-gradient-to-r from-white to-amber-50/30">
               {tabs.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                     activeTab === tab
-                      ? 'text-teal-600 border-b-2 border-teal-600 pb-1'
-                      : 'text-slate-500 hover:text-teal-600'
+                      ? 'text-amber-600 border-b-2 border-amber-600 pb-1'
+                      : 'text-slate-500 hover:text-teal-700'
                   }`}
                 >
                   {tab}
@@ -318,7 +318,7 @@ export default function Orders() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-200">
+                  <tr className="text-left text-amber-600 font-semibold bg-amber-50/50 border-b border-amber-200">
                     <th className="px-6 py-4">Order</th>
                     <th className="px-6 py-4">Customer</th>
                     <th className="px-6 py-4">Phone</th>
@@ -335,12 +335,12 @@ export default function Orders() {
                 <tbody>
                   {filtered.map((order) => (
                     <tr key={order.id} className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200">
-                      <td className="px-6 py-4 font-semibold text-teal-600">{order.id}</td>
+                      <td className="px-6 py-4 font-semibold text-amber-600">{order.id}</td>
                       <td className="px-6 py-4 text-slate-700">{order.customer}</td>
                       <td className="px-6 py-4 text-slate-500">{order.phone}</td>
                       <td className="px-6 py-4 text-slate-500">{order.table || '-'}</td>
                       <td className="px-6 py-4 text-slate-700 font-medium">{order.items}</td>
-                      <td className="px-6 py-4 font-bold text-teal-600">${order.total.toFixed(2)}</td>
+                      <td className="px-6 py-4 font-bold text-amber-600">${order.total.toFixed(2)}</td>
                       <td className="px-6 py-4 text-slate-500">{order.date}</td>
                       <td className="px-6 py-4">
                         <select
@@ -371,7 +371,7 @@ export default function Orders() {
                       <td className="px-6 py-4">
                         <button
                           onClick={() => setSelectedOrder(order)}
-                          className="text-teal-600 hover:text-teal-700 text-xs font-medium transition-colors"
+                          className="text-amber-600 hover:text-amber-700 text-xs font-medium transition-colors"
                         >
                           View Detail
                         </button>
@@ -383,13 +383,13 @@ export default function Orders() {
             </div>
 
             {lastPage > 1 && !loading && (
-              <div className="px-6 py-4 border-t border-teal-200 bg-teal-50/20 flex items-center justify-between">
+              <div className="px-6 py-4 border-t border-amber-200 bg-amber-50/20 flex items-center justify-between">
                 <span className="text-xs text-slate-500">Page {page} of {lastPage} ({total} orders)</span>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page <= 1}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page <= 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-teal-100'}`}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page <= 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-amber-100'}`}
                   >
                     Prev
                   </button>
@@ -407,7 +407,7 @@ export default function Orders() {
                         <button
                           key={item}
                           onClick={() => setPage(item)}
-                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${item === page ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:bg-teal-100'}`}
+                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${item === page ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 hover:bg-amber-100'}`}
                         >
                           {item}
                         </button>
@@ -416,7 +416,7 @@ export default function Orders() {
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page >= lastPage}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page >= lastPage ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-teal-100'}`}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page >= lastPage ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-amber-100'}`}
                   >
                     Next
                   </button>
@@ -427,9 +427,9 @@ export default function Orders() {
 
           {selectedOrder && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col border border-teal-200">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-teal-200 bg-gradient-to-r from-teal-50 to-white">
-                  <h2 className="text-lg font-bold text-teal-600">{selectedOrder.id}</h2>
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col border border-amber-200">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-amber-200 bg-gradient-to-r from-amber-50 to-white">
+                  <h2 className="text-lg font-bold text-amber-600">{selectedOrder.id}</h2>
                   <button onClick={() => setSelectedOrder(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -440,16 +440,16 @@ export default function Orders() {
                   <div className="flex items-center justify-between text-sm text-slate-500 mb-4">
                     <div className="flex items-center gap-4">
                       <span><span className="text-slate-400">Customer:</span> <span className="text-slate-800 font-medium">{selectedOrder.customer}</span></span>
-                      <span className="text-teal-300">|</span>
+                      <span className="text-amber-300">|</span>
                       <span>{selectedOrder.phone}</span>
-                      {selectedOrder.table && selectedOrder.table !== '-' ? <><span className="text-teal-300">|</span><span>Table: <span className="text-teal-600 font-medium">{selectedOrder.table}</span></span></> : null}
+                      {selectedOrder.table && selectedOrder.table !== '-' ? <><span className="text-amber-300">|</span><span>Table: <span className="text-amber-600 font-medium">{selectedOrder.table}</span></span></> : null}
                     </div>
                     <div className="flex items-center gap-4">
                       {selectedOrder.printedBy && <span><span className="text-slate-400">Staff:</span> <span className="text-slate-800 font-medium">{selectedOrder.printedBy}</span></span>}
                       <span className="text-slate-400 ml-auto">{selectedOrder.datetime}</span>
                     </div>
                   </div>
-                  <div className="mb-4 pb-4 border-b border-teal-200 space-y-2">
+                  <div className="mb-4 pb-4 border-b border-amber-200 space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-slate-500 w-20">Method:</span>
                       <span className="text-sm text-slate-700 font-medium capitalize">{selectedOrder.paymentMethod}</span>
@@ -459,7 +459,7 @@ export default function Orders() {
                       <select
                         value={selectedOrder.status}
                         onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
-                        className={`text-sm border border-teal-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${statusColors[selectedOrder.status]?.split(' ')[0] || 'text-slate-600'}`}
+                        className={`text-sm border border-amber-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${statusColors[selectedOrder.status]?.split(' ')[0] || 'text-slate-600'}`}
                       >
                         <option value="New">New</option>
                         <option value="Processing">Processing</option>
@@ -472,7 +472,7 @@ export default function Orders() {
                       <select
                         value={selectedOrder.payment}
                         onChange={(e) => handlePaymentChange(selectedOrder.id, e.target.value)}
-                        className={`text-sm border border-teal-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${paymentColors[selectedOrder.payment]?.split(' ')[0] || 'text-slate-600'}`}
+                        className={`text-sm border border-amber-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${paymentColors[selectedOrder.payment]?.split(' ')[0] || 'text-slate-600'}`}
                       >
                         <option value="Paid">Paid</option>
                         <option value="Unpaid">Unpaid</option>
@@ -482,7 +482,7 @@ export default function Orders() {
                   </div>
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-left text-teal-600 font-semibold border-b border-teal-200">
+                      <tr className="text-left text-amber-600 font-semibold border-b border-amber-200">
                         <th className="pb-2">Item</th>
                         <th className="pb-2">Size</th>
                         <th className="pb-2">Sugar</th>
@@ -497,7 +497,7 @@ export default function Orders() {
                       {selectedOrder.detail.map((item, i) => {
                         const recipe = recipes[item.name]
                         return (
-                          <tr key={i} className="border-b border-teal-50">
+                          <tr key={i} className="border-b border-amber-50">
                             <td className="py-2.5 text-slate-800 font-medium">
                               {item.name}
                               {item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' && (
@@ -547,12 +547,12 @@ export default function Orders() {
                       )}
                       <tr>
                         <td colSpan={7} className="pt-3 text-right font-semibold text-slate-800">Total</td>
-                        <td className="pt-3 text-right font-semibold text-teal-600">${selectedOrder.total.toFixed(2)}</td>
+                        <td className="pt-3 text-right font-semibold text-amber-600">${selectedOrder.total.toFixed(2)}</td>
                       </tr>
                     </tfoot>
                   </table>
                 </div>
-                <div className="px-6 py-4 border-t border-teal-200 bg-teal-50/30 flex justify-between items-center gap-2">
+                <div className="px-6 py-4 border-t border-amber-200 bg-amber-50/30 flex justify-between items-center gap-2">
                   <button
                     onClick={() => {
                       const numericId = selectedOrder.id.startsWith('#') ? selectedOrder.id.slice(1) : selectedOrder.id
@@ -620,7 +620,7 @@ export default function Orders() {
                       `)
                       w.document.close()
                     }}
-                    className="bg-gradient-to-r from-teal-600 to-teal-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-teal-700 hover:to-teal-600 transition-all duration-200 shadow-md"
+                    className="bg-gradient-to-r from-amber-900 to-amber-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-amber-950 hover:to-amber-900 transition-all duration-200 shadow-md"
                   >
                     Print Receipt
                   </button>

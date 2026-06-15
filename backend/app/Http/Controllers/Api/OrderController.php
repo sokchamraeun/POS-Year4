@@ -249,6 +249,10 @@ class OrderController extends Controller
 
         $newStatus = $data['status'] ?? $order->status;
 
+        if ($oldStatus !== 'Completed' && $newStatus === 'Completed') {
+            $this->deductStock($order);
+        }
+
         if ($oldStatus !== 'Cancelled' && $newStatus === 'Cancelled') {
             $this->restoreStock($order);
         }
@@ -406,6 +410,70 @@ class OrderController extends Controller
             'available' => empty($insufficient),
             'errors' => $insufficient,
         ]);
+    }
+
+    private function deductStock(Order $order): void
+    {
+        $order->load('items.addons.addon', 'items.product', 'items.size');
+
+        $productSizePairs = $order->items->map(fn ($i) => ['product_id' => $i->product_id, 'size_id' => $i->size_id])->unique();
+        $allRecipes = Recipe::with('ingredient')
+            ->whereIn('product_id', $productSizePairs->pluck('product_id'))
+            ->whereIn('size_id', $productSizePairs->pluck('size_id'))
+            ->get()
+            ->groupBy(fn ($r) => $r->product_id.'-'.$r->size_id);
+
+        $addonIds = $order->items->flatMap(fn ($i) => $i->addons->pluck('addon_id'))->unique()->filter();
+        $allAddonIngredients = collect();
+        if ($addonIds->isNotEmpty()) {
+            $allAddonIngredients = AddonIngredient::with('ingredient')
+                ->whereIn('addon_id', $addonIds)
+                ->get()
+                ->groupBy('addon_id');
+        }
+
+        $transactions = [];
+
+        foreach ($order->items as $item) {
+            $qty = $item->qty ?? 1;
+            $key = $item->product_id.'-'.$item->size_id;
+
+            $recipes = $allRecipes->get($key, collect());
+            foreach ($recipes as $recipe) {
+                if (! $recipe->ingredient) {
+                    continue;
+                }
+                $deductQty = $recipe->quantity * $qty;
+                $recipe->ingredient->decrement('stock_quantity', $deductQty);
+                $transactions[] = [
+                    'ingredient_id' => $recipe->ingredient_id,
+                    'type'          => 'deduct',
+                    'quantity'      => $deductQty,
+                    'note'          => "Deducted for completed Order #{$order->id}",
+                ];
+            }
+
+            foreach ($item->addons as $orderAddon) {
+                $addonIngredients = $allAddonIngredients->get($orderAddon->addon_id, collect());
+                foreach ($addonIngredients as $ai) {
+                    if (! $ai->ingredient) {
+                        continue;
+                    }
+                    $deductQty = $ai->quantity * $qty;
+                    $ai->ingredient->decrement('stock_quantity', $deductQty);
+                    $transactions[] = [
+                        'ingredient_id' => $ai->ingredient_id,
+                        'type'          => 'deduct',
+                        'quantity'      => $deductQty,
+                        'note'          => "Deducted for completed Order #{$order->id} (addon)",
+                    ];
+                }
+            }
+        }
+
+        if (! empty($transactions)) {
+            InventoryTransaction::insert($transactions);
+        }
     }
 
     private function restoreStock(Order $order): void

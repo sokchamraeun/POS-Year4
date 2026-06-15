@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import CartItem from './CartItem.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
@@ -202,7 +202,7 @@ export default function CartSidebar({ open, onClose }) {
         {items.length > 0 && !done && (
           <div className="border-t border-gray-200 px-5 py-4 space-y-3">
             {isLoggedIn ? (
-              <div className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 bg-gray-50 text-gray-700">
+              <div className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 bg-orange-50 text-gray-700">
                 {customer?.name} ({customer?.phone})
               </div>
             ) : (

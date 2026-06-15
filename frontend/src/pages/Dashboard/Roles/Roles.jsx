@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import { fetchRoles as fetchRolesApi, fetchPermissions as fetchPermissionsApi, saveRole, deleteRole as deleteRoleApi } from './api/roleApi.js'
@@ -94,7 +94,7 @@ export default function Roles() {
             </div>
             <button
               onClick={openAddModal}
-              className="bg-gradient-to-r from-teal-600 to-teal-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:from-teal-700 hover:to-teal-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              className="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:from-amber-700 hover:to-amber-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
               + Add New Role
             </button>

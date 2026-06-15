@@ -36,6 +36,9 @@ import Promotions from './pages/Dashboard/Promotion/Promotion.jsx'
 import HeroSliderPage from './pages/Dashboard/HeroSlider/Heroslider.jsx'
 import UserTest from './pages/Dashboard/UserTest.jsx'
 import LoginHistory from './pages/Dashboard/LogHistory/LoginHistory.jsx'
+import Employees from './pages/Dashboard/Employees.jsx'
+import Suppliers from './pages/Dashboard/Suppliers.jsx'
+import StockIn from './pages/Dashboard/StockIn.jsx'
 import GlobalOrderNotification from './components/staff/GlobalOrderNotification.jsx'
 import Login from './pages/auth/Login.jsx'
 import ChangePassword from './pages/auth/ChangePassword.jsx'
@@ -81,6 +84,9 @@ export default function App() {
         <Route path="/staff/promotions" element={<PrivateRoute><Promotions /></PrivateRoute>} />
         <Route path="/staff/hero-sliders" element={<PrivateRoute><HeroSliderPage /></PrivateRoute>} />
         <Route path="/staff/login-history" element={<PrivateRoute><LoginHistory /></PrivateRoute>} />
+        <Route path="/staff/employees" element={<PrivateRoute><Employees /></PrivateRoute>} />
+        <Route path="/staff/suppliers" element={<PrivateRoute><Suppliers /></PrivateRoute>} />
+        <Route path="/staff/stock-in" element={<PrivateRoute><StockIn /></PrivateRoute>} />
         <Route path="/staff/user-test" element={<PrivateRoute><UserTest /></PrivateRoute>} />
         <Route path="/staff/login" element={<Login />} />
         <Route path="/staff/register" element={<Register />} />

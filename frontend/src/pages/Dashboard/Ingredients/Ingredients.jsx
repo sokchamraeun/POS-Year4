@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
@@ -17,7 +17,7 @@ function getStatus(ingredient) {
 }
 
 const statusStyles = {
-  'In Stock': 'text-teal-700 bg-teal-100 border border-teal-200',
+  'In Stock': 'text-amber-700 bg-amber-100 border border-amber-200',
   'Low Stock': 'text-amber-700 bg-amber-100 border border-amber-200',
   'Out of Stock': 'text-red-700 bg-red-100 border border-red-200',
 }
@@ -133,14 +133,14 @@ export default function Ingredients() {
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-700 to-teal-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-amber-900 to-amber-800 bg-clip-text text-transparent">
                 Ingredients
               </h1>
               <p className="text-sm text-slate-500 mt-1">Manage your inventory and stock levels</p>
             </div>
             <button 
               onClick={openCreate} 
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-700 to-teal-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-800 hover:to-teal-700 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-900 to-amber-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-amber-800 hover:to-amber-700 transition-all duration-200 shadow-lg shadow-amber-200 hover:shadow-xl"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -200,7 +200,7 @@ export default function Ingredients() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-100">
+                    <tr className="text-left text-amber-600 font-semibold bg-amber-50/50 border-b border-amber-100">
                       <th className="px-6 py-4">ID</th>
                       <th className="px-6 py-4">Name</th>
                       <th className="px-6 py-4">Unit</th>
@@ -214,7 +214,7 @@ export default function Ingredients() {
                   <tbody>
                     {filteredIngredients.map((i) => (
                       <tr key={i.id} className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200">
-                        <td className="px-6 py-4 font-semibold text-teal-600">{i.id}</td>
+                        <td className="px-6 py-4 font-semibold text-amber-600">{i.id}</td>
                         <td className="px-6 py-4 font-medium text-slate-800">{i.name}</td>
                         <td className="px-6 py-4 text-slate-600">{i.unit}</td>
                         <td className="px-6 py-4 font-medium text-slate-700">{Number(i.stock_quantity).toFixed(2)}</td>
@@ -273,10 +273,10 @@ export default function Ingredients() {
       {/* Add/Edit Modal - Improved UI */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-teal-200" onClick={(e) => e.stopPropagation()}>
-            <div className="bg-gradient-to-r from-teal-700 to-teal-600 px-6 py-4 rounded-t-2xl">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-amber-200" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-gradient-to-r from-amber-900 to-amber-800 px-6 py-4 rounded-t-2xl">
               <h2 className="text-white font-semibold text-lg">{editing ? 'Edit Ingredient' : 'Add New Ingredient'}</h2>
-              <p className="text-teal-100 text-xs mt-1">{editing ? 'Update ingredient details' : 'Create a new ingredient'}</p>
+              <p className="text-amber-100 text-xs mt-1">{editing ? 'Update ingredient details' : 'Create a new ingredient'}</p>
             </div>
             <form onSubmit={handleSubmit} className="p-6">
               <div className="space-y-4">
@@ -354,7 +354,7 @@ export default function Ingredients() {
                 </button>
                 <button 
                   type="submit" 
-                  className="px-4 py-2 bg-gradient-to-r from-teal-700 to-teal-600 text-white rounded-xl text-sm font-medium hover:from-teal-800 hover:to-teal-700 transition-all shadow-md flex items-center gap-2"
+                  className="px-4 py-2 bg-gradient-to-r from-amber-900 to-amber-800 text-white rounded-xl text-sm font-medium hover:from-amber-800 hover:to-amber-700 transition-all shadow-md flex items-center gap-2"
                 >
                   {editing ? (
                     <>
