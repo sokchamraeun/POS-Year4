@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useCart } from '../../context/CartContext.jsx'
 
 const STORAGE_URL = import.meta.env.VITE_STORAGE_URL ?? ''
@@ -20,11 +20,31 @@ export default function BestSellers({ products = [] }) {
   const { addItem } = useCart()
   const [addedId, setAddedId] = useState(null)
   const scrollRef = useRef(null)
+  const pausedRef = useRef(false)
 
   // Show products marked as "Best Seller" in the dashboard. If none are
   // flagged yet, fall back to the first products so the section isn't empty.
   const flagged = products.filter((p) => p.is_featured)
   const featured = (flagged.length > 0 ? flagged : products).slice(0, 10)
+
+  // Auto-scroll the carousel; pauses while hovered (see handlers below).
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el || featured.length <= 1) return
+
+    const timer = setInterval(() => {
+      if (pausedRef.current) return
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4
+      if (atEnd) {
+        el.scrollTo({ left: 0, behavior: 'smooth' })
+      } else {
+        const amount = Math.min(el.clientWidth * 0.9, 340)
+        el.scrollBy({ left: amount, behavior: 'smooth' })
+      }
+    }, 3000)
+
+    return () => clearInterval(timer)
+  }, [featured.length])
 
   if (featured.length === 0) return null
 
@@ -90,6 +110,9 @@ export default function BestSellers({ products = [] }) {
       {/* Horizontal scroller */}
       <div
         ref={scrollRef}
+        onMouseEnter={() => { pausedRef.current = true }}
+        onMouseLeave={() => { pausedRef.current = false }}
+        onTouchStart={() => { pausedRef.current = true }}
         className="flex gap-5 sm:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0 pb-2"
       >
         {featured.map((p, i) => {
