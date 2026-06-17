@@ -64,6 +64,7 @@ class PaymentCheckoutController extends Controller
             'checkout_url' => $checkoutUrl,
             'transaction_id' => $transactionId,
             'amount' => (float) $amount,
+            'expires_in' => (int) config('services.khqr.expiry', 300),
         ]);
     }
 

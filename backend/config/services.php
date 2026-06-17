@@ -45,6 +45,7 @@ return [
         'gateway_url' => env('KHQR_GATEWAY_URL'),
         'profile_id' => env('KHQR_PROFILE_ID'),
         'secret_key' => env('KHQR_SECRET_KEY'),
+        'expiry' => (int) env('KHQR_EXPIRY_SECONDS', 300),
     ],
 
 ];
