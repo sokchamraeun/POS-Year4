@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   X,
   CheckCircle2,
@@ -6,8 +6,6 @@ import {
   Loader2,
   RefreshCcw,
   AlertCircle,
-  Smartphone,
-  ExternalLink,
 } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -17,25 +15,15 @@ const headers = () => ({
   Accept: 'application/json',
 })
 
-function openCenteredPopup(url, w, h) {
-  const left = Math.max(0, Math.round((screen.width - w) / 2))
-  const top = Math.max(0, Math.round((screen.height - h) / 2))
-  const opts = `width=${w},height=${h},left=${left},top=${top},scrollbars=yes,resizable=yes`
-  return window.open(url, 'khqr-payment', opts)
-}
-
 export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [paid, setPaid] = useState(false)
   const [markingPaid, setMarkingPaid] = useState(false)
-  const [popupClosed, setPopupClosed] = useState(false)
+  const [iframeUrl, setIframeUrl] = useState(null)
 
-  const popupRef = useRef(null)
   const intervalRef = useRef(null)
-  const popupCheckRef = useRef(null)
   const initiatedRef = useRef(false)
-  const checkoutUrlRef = useRef(null)
 
   const clearPolling = useCallback(() => {
     if (intervalRef.current) {
@@ -53,8 +41,7 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
     } catch {
       if (onPaid) onPaid(orderId)
     }
-    if (onClose) onClose()
-  }, [orderId, onPaid, onClose])
+  }, [orderId, onPaid])
 
   const startPolling = useCallback(() => {
     clearPolling()
@@ -67,7 +54,6 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
         if (String(order.payment_status).toLowerCase() === 'paid') {
           setPaid(true)
           clearPolling()
-          if (popupRef.current && !popupRef.current.closed) popupRef.current.close()
         }
       } catch {
         // retry silently
@@ -81,7 +67,6 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
 
     setLoading(true)
     setError(null)
-    setPopupClosed(false)
 
     try {
       const res = await fetch(`${API_URL}/orders/payment/initiate`, {
@@ -100,23 +85,11 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
         return
       }
 
-      checkoutUrlRef.current = data.checkout_url
-      const popup = openCenteredPopup(data.checkout_url, 420, 700)
-      if (!popup || popup.closed) {
-        setError('សូមអនុញ្ញាតិឱ្យ Popup ដំណើរការ ហើយព្យាយាមម្តងទៀត')
-        return
-      }
-
-      popupRef.current = popup
+      // khqr.cc / checkout.khqr.cc don't send X-Frame-Options, so the
+      // checkout page can be embedded directly. The iframe follows the
+      // gateway's 302 redirect to the hosted checkout SPA.
+      setIframeUrl(data.checkout_url)
       startPolling()
-
-      popupCheckRef.current = setInterval(() => {
-        if (popupRef.current && popupRef.current.closed) {
-          setPopupClosed(true)
-          clearInterval(popupCheckRef.current)
-          popupCheckRef.current = null
-        }
-      }, 500)
     } catch {
       setError('បញ្ហាបណ្ដាញ! មិនអាចភ្ជាប់ទៅ KHQR បានទេ')
     } finally {
@@ -124,21 +97,37 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
     }
   }, [orderId, startPolling])
 
+  // Allow the embedded khqr.cc / success page to notify us via postMessage.
   useEffect(() => {
-    initiatePayment()
-
-    return () => {
-      clearPolling()
-      if (popupCheckRef.current) clearInterval(popupCheckRef.current)
-      if (popupRef.current && !popupRef.current.closed) popupRef.current.close()
+    function onMessage(e) {
+      const msg = typeof e.data === 'string' ? e.data : e.data?.type
+      if (msg && /paid|success|completed/i.test(String(msg))) {
+        setPaid(true)
+        clearPolling()
+      }
     }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [clearPolling])
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time payment kickoff on mount
+    initiatePayment()
+    return () => clearPolling()
   }, [initiatePayment, clearPolling])
 
+  // Redirect to the receipt shortly after the order is marked paid.
   useEffect(() => {
     if (!paid) return
     const timer = setTimeout(fetchOrderAndFinish, 1500)
     return () => clearTimeout(timer)
   }, [paid, fetchOrderAndFinish])
+
+  function retry() {
+    initiatedRef.current = false
+    setIframeUrl(null)
+    initiatePayment()
+  }
 
   async function markAsPaid() {
     setMarkingPaid(true)
@@ -165,32 +154,13 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
 
   function handleClose() {
     clearPolling()
-    if (popupCheckRef.current) clearInterval(popupCheckRef.current)
-    if (popupRef.current && !popupRef.current.closed) popupRef.current.close()
     if (paid) fetchOrderAndFinish()
     else if (onClose) onClose()
   }
 
-  function reopenPopup() {
-    const url = checkoutUrlRef.current
-    if (!url) return
-    const popup = openCenteredPopup(url, 420, 700)
-    if (popup && !popup.closed) {
-      popupRef.current = popup
-      setPopupClosed(false)
-      popupCheckRef.current = setInterval(() => {
-        if (popupRef.current && popupRef.current.closed) {
-          setPopupClosed(true)
-          clearInterval(popupCheckRef.current)
-          popupCheckRef.current = null
-        }
-      }, 500)
-    }
-  }
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 px-3 py-4 backdrop-blur-sm">
-      <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-white/20">
+      <div className="flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-white/20">
         {/* Header */}
         <div className="relative overflow-hidden bg-gradient-to-br from-amber-600 via-cyan-600 to-emerald-600 px-4 py-4 text-white">
           <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/10" />
@@ -234,9 +204,9 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
         </div>
 
         {/* Body */}
-        <div className="bg-orange-50">
+        <div className="flex flex-1 flex-col overflow-hidden bg-orange-50">
           {loading && (
-            <div className="flex min-h-[330px] flex-col items-center justify-center px-5 py-8 text-center">
+            <div className="flex min-h-[360px] flex-col items-center justify-center px-5 py-8 text-center">
               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-white shadow-sm ring-1 ring-slate-200">
                 <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
               </div>
@@ -265,7 +235,7 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
                     <p className="mt-1 text-xs text-red-600">{error}</p>
 
                     <button
-                      onClick={initiatePayment}
+                      onClick={retry}
                       className="mt-3 inline-flex items-center gap-2 rounded-xl bg-red-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-red-700"
                     >
                       <RefreshCcw className="h-4 w-4" />
@@ -277,37 +247,23 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
             </div>
           )}
 
-          {!paid && !loading && !error && (
-            <div className="flex flex-col items-center px-5 py-8 text-center">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-50">
-                <Smartphone className="h-8 w-8 text-amber-600" />
-              </div>
-              <h4 className="text-sm font-semibold text-slate-800">
-                ស្កេន QR តាម App ធនាគារ
-              </h4>
-              <p className="mt-1 text-xs text-slate-500 max-w-[240px]">
-                បង់ប្រាក់តាមបង្អួច Popup ដែលបានបើក
-              </p>
-
-              {popupClosed && (
-                <button
-                  onClick={reopenPopup}
-                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-800 underline transition-colors"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  បាត់បង់ Popup? ចុចដើម្បីបើកម្តងទៀត
-                </button>
-              )}
-
-              <div className="mt-4 flex items-center gap-1.5 text-[10px] text-slate-400">
-                <Loader2 className="h-3 w-3 animate-spin" />
-                <span>ពិនិត្យស្ថានភាពរៀងរាល់ 3 វិនាទី</span>
+          {!paid && !loading && !error && iframeUrl && (
+            <>
+              <div className="relative flex-1 bg-white">
+                <iframe
+                  src={iframeUrl}
+                  title="KHQR Payment"
+                  className="h-full min-h-[420px] w-full border-0"
+                  allow="payment *; clipboard-write"
+                />
               </div>
 
-              <div className="mt-6 w-full pt-5 border-t border-slate-200">
-                <p className="mb-3 text-[11px] text-slate-500 text-left">
-                  បើអតិថិជនបានបង់រួច តែស្ថានភាពមិនទាន់ផ្លាស់ប្តូរ៖
-                </p>
+              <div className="border-t border-slate-200 bg-orange-50 px-4 py-3">
+                <div className="mb-2.5 flex items-center justify-center gap-1.5 text-[10px] text-slate-400">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  <span>ពិនិត្យស្ថានភាពរៀងរាល់ 3 វិនាទី</span>
+                </div>
+
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={markAsPaid}
@@ -329,11 +285,11 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
                   </button>
                 </div>
               </div>
-            </div>
+            </>
           )}
 
           {paid && (
-            <div className="flex min-h-[330px] flex-col items-center justify-center px-5 py-8 text-center">
+            <div className="flex min-h-[360px] flex-col items-center justify-center px-5 py-8 text-center">
               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-amber-100">
                 <CheckCircle2 className="h-10 w-10 text-amber-600" />
               </div>
@@ -345,6 +301,11 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
               <p className="mt-1 text-xs text-slate-500">
                 ការបញ្ជាទិញ #{orderId} បានទទួលប្រាក់រួចរាល់
               </p>
+
+              <div className="mt-3 flex items-center gap-1.5 text-[10px] text-slate-400">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                <span>កំពុងបើកវិក្កយបត្រ...</span>
+              </div>
 
               <button
                 onClick={handleClose}

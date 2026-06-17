@@ -23,14 +23,36 @@ class KhqrProxyController extends Controller
         }
 
         try {
-            $response = Http::timeout(30)->get($decoded);
+            $response = Http::timeout(30)
+                ->withHeaders([
+                    'User-Agent' => $request->userAgent() ?? 'Mozilla/5.0',
+                    'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                ])
+                ->get($decoded);
 
             $content = $response->body();
             $contentType = $response->header('Content-Type') ?? 'text/html; charset=utf-8';
 
+            // For HTML, inject a <base> tag so the page's relative assets
+            // (CSS/JS/images/form actions) still resolve against khqr.cc
+            // instead of our proxy domain.
+            if (str_contains(strtolower($contentType), 'text/html')) {
+                $base = '<base href="'.htmlspecialchars($decoded, ENT_QUOTES).'">';
+
+                if (preg_match('/<head[^>]*>/i', $content)) {
+                    $content = preg_replace('/(<head[^>]*>)/i', '$1'.$base, $content, 1);
+                } else {
+                    $content = $base.$content;
+                }
+            }
+
+            // Re-serve from our own origin, dropping any framing restrictions
+            // (X-Frame-Options / CSP) so the page can be embedded in an iframe.
             return response($content, $response->status())
                 ->withHeaders([
                     'Content-Type' => $contentType,
+                    'X-Frame-Options' => 'ALLOWALL',
+                    'Content-Security-Policy' => 'frame-ancestors *;',
                 ]);
         } catch (\Exception $e) {
             return $this->htmlError('Failed to load payment page: '.$e->getMessage());
