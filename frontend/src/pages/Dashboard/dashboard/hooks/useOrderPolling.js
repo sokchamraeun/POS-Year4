@@ -39,11 +39,24 @@ export function useOrderPolling(
     setRecentOrders(visible.slice(0, 5))
     setStats(calculateStats(visible, [], [], 0, profit))
     setChartData({
+      hourly: processChartData(visible, 'hourly'),
       daily: processChartData(visible, 'daily'),
       monthly: processChartData(visible, 'monthly'),
       yearly: processChartData(visible, 'yearly'),
     })
   }, [setAllOrders, setRecentOrders, setStats, setChartData, profitDataRef])
+
+  // Recalc immediately for snappy order/revenue updates, then refetch profit
+  // (which is computed server-side) and recalc again so "Profit Today" stays
+  // in sync when an order is created or marked paid.
+  const recalcWithFreshProfit = useCallback(async (orders) => {
+    recalc(orders)
+    const freshProfit = await fetchProfitToday()
+    if (freshProfit != null) {
+      if (profitDataRef) profitDataRef.current = freshProfit
+      recalc(orders, freshProfit)
+    }
+  }, [recalc, profitDataRef])
 
   useSocket('order:created', useCallback((order) => {
     if (!isVisibleOrder(order)) return
@@ -51,23 +64,23 @@ export function useOrderPolling(
     if (orderId <= lastOrderIdRef.current) return
     lastOrderIdRef.current = orderId
     const updated = [order, ...ordersRef.current]
-    recalc(updated)
+    recalcWithFreshProfit(updated)
     setNewOrderAlert(true)
     setTimeout(() => setNewOrderAlert(false), 5000)
-  }, [recalc]))
+  }, [recalcWithFreshProfit]))
 
   useSocket('order:updated', useCallback((order) => {
     const arr = ordersRef.current
     const idx = arr.findIndex(o => o.id === Number(order.id))
     if (idx >= 0) {
       const updated = arr.map(o => o.id === Number(order.id) ? order : o)
-      recalc(updated)
+      recalcWithFreshProfit(updated)
     } else if (isVisibleOrder(order)) {
-      recalc([order, ...arr])
+      recalcWithFreshProfit([order, ...arr])
       setNewOrderAlert(true)
       setTimeout(() => setNewOrderAlert(false), 5000)
     }
-  }, [recalc, setNewOrderAlert]))
+  }, [recalcWithFreshProfit, setNewOrderAlert]))
 
   useEffect(() => {
     let alertTimeout
@@ -75,13 +88,15 @@ export function useOrderPolling(
       try {
         const [orders, freshProfit] = await Promise.all([fetchOrders(), fetchProfitToday()])
         if (orders.length === 0) return
+        const prevProfit = profitDataRef?.current ?? null
         if (profitDataRef) profitDataRef.current = freshProfit
         const prevMax = lastOrderIdRef.current
         const newMax = Math.max(...orders.map(o => o.id))
-        if (newMax > prevMax) {
+        const profitChanged = JSON.stringify(prevProfit) !== JSON.stringify(freshProfit)
+        if (newMax > prevMax || profitChanged) {
           lastOrderIdRef.current = newMax
           recalc(orders, freshProfit)
-          if (orders.some(o => o.id > prevMax && isVisibleOrder(o))) {
+          if (newMax > prevMax && orders.some(o => o.id > prevMax && isVisibleOrder(o))) {
             setNewOrderAlert(true)
             clearTimeout(alertTimeout)
             alertTimeout = setTimeout(() => setNewOrderAlert(false), 5000)

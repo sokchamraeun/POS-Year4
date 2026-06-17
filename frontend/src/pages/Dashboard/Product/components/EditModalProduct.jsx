@@ -8,7 +8,7 @@ const headers = { Authorization: `Bearer ${token}`, Accept: 'application/json' }
 
 export default function EditModalProduct({ product, onClose, onSaved }) {
   const [form, setForm] = useState({
-    name: '', category_id: '', description: '', status: true,
+    name: '', category_id: '', description: '', status: true, is_featured: false,
     image: null, imagePreview: '',
     sizes: [], prices: {}, addons: [], sugar_levels: [], ice_levels: [],
   })
@@ -43,6 +43,7 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
         category_id: p.category_id,
         description: p.description ?? '',
         status: p.status,
+        is_featured: p.is_featured ?? false,
         image: null,
         imagePreview: p.image
           ? `${p.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${p.image}`
@@ -143,6 +144,7 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
     fd.append('category_id', form.category_id)
     fd.append('description', form.description || '')
     fd.append('status', form.status ? '1' : '0')
+    fd.append('is_featured', form.is_featured ? '1' : '0')
     if (form.image) fd.append('image', form.image)
     form.sizes.forEach((sizeId, i) => {
       fd.append(`sizes[${i}][id]`, sizeId)
@@ -269,6 +271,21 @@ export default function EditModalProduct({ product, onClose, onSaved }) {
                   className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500/30 ${form.status ? 'bg-amber-500' : 'bg-gray-300'}`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${form.status ? 'translate-x-5' : 'translate-x-0'}`} />
+                </button>
+              </div>
+
+              {/* Best Seller Toggle */}
+              <div className="flex items-center justify-between bg-amber-50/50 rounded-xl px-4 py-3 border border-amber-100">
+                <div>
+                  <span className="text-sm font-medium text-gray-700">Best Seller</span>
+                  <p className="text-xs text-gray-400 mt-0.5">{form.is_featured ? 'Featured on the home page' : 'Not featured'}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setForm(prev => ({ ...prev, is_featured: !prev.is_featured }))}
+                  className={`relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-500/30 ${form.is_featured ? 'bg-amber-500' : 'bg-gray-300'}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${form.is_featured ? 'translate-x-5' : 'translate-x-0'}`} />
                 </button>
               </div>
 

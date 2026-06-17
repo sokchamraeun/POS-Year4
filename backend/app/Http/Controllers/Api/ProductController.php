@@ -36,6 +36,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
             'status' => 'boolean',
+            'is_featured' => 'boolean',
             'sugar_levels' => 'nullable|array',
             'sugar_levels.*' => 'exists:sugar_levels,id',
             'ice_levels' => 'nullable|array',
@@ -58,6 +59,7 @@ class ProductController extends Controller
             'description' => $data['description'] ?? null,
             'image' => $imagePath,
             'status' => $request->boolean('status'),
+            'is_featured' => $request->boolean('is_featured'),
         ]);
 
         if (! empty($data['sugar_levels'])) {
@@ -94,6 +96,7 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
             'status' => 'boolean',
+            'is_featured' => 'boolean',
             'sugar_levels' => 'nullable|array',
             'sugar_levels.*' => 'exists:sugar_levels,id',
             'ice_levels' => 'nullable|array',
@@ -119,6 +122,7 @@ class ProductController extends Controller
             'description' => $data['description'] ?? null,
             'image' => $imagePath,
             'status' => $request->boolean('status'),
+            'is_featured' => $request->boolean('is_featured'),
         ]);
 
         $product->sugarLevels()->sync($data['sugar_levels'] ?? []);
@@ -151,6 +155,18 @@ class ProductController extends Controller
         $product->load('category');
 
         return response()->json($product);
+    }
+
+    public function toggleFeatured(Request $request, Product $product): JsonResponse
+    {
+        $data = $request->validate([
+            'is_featured' => 'required|boolean',
+        ]);
+
+        $product->update(['is_featured' => $data['is_featured']]);
+        Cache::flush();
+
+        return response()->json(['id' => $product->id, 'is_featured' => $product->is_featured]);
     }
 
     public function destroy(Product $product, CloudinaryService $cloudinary): JsonResponse

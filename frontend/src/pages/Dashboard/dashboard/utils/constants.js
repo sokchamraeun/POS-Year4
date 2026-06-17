@@ -1,6 +1,7 @@
 // src/pages/staff/dashboard/utils/constants.js
 
 export const periods = [
+  { key: 'hourly', label: 'Hourly' },
   { key: 'daily', label: 'Daily' },
   { key: 'monthly', label: 'Monthly' },
   { key: 'yearly', label: 'Yearly' },

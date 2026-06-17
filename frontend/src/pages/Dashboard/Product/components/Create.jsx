@@ -33,6 +33,7 @@ export default function CreateProduct() {
     category_id: '',
     description: '',
     status: true,
+    is_featured: false,
     image: null,
     sizes: [],
     prices: {},
@@ -142,6 +143,7 @@ export default function CreateProduct() {
     fd.append('category_id', form.category_id)
     fd.append('description', form.description || '')
     fd.append('status', form.status ? '1' : '0')
+    fd.append('is_featured', form.is_featured ? '1' : '0')
     if (form.image) fd.append('image', form.image)
     form.sizes.forEach((id, i) => {
       fd.append(`sizes[${i}][id]`, id)
@@ -219,10 +221,14 @@ export default function CreateProduct() {
                 }} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
               </div>
 
-              <div className="mb-4">
+              <div className="mb-4 flex items-center gap-6">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" checked={form.status} onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.checked }))} className="rounded" />
                   <span className="text-sm font-medium text-gray-700">Active</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={form.is_featured} onChange={(e) => setForm((prev) => ({ ...prev, is_featured: e.target.checked }))} className="rounded" />
+                  <span className="text-sm font-medium text-gray-700">Best Seller (feature on home page)</span>
                 </label>
               </div>
 

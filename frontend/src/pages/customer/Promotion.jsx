@@ -35,7 +35,7 @@ export default function Promotion() {
     : promoProducts.filter((p) => p.category?.name === selectedCategory)
 
   return (
-    <div className="min-h-screen bg-orange-50 pb-24 sm:pb-0">
+    <div className="min-h-screen bg-white pb-24 sm:pb-0">
       <Navbar />
       <PromotionSlider products={promoProducts} />
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

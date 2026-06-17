@@ -11,6 +11,14 @@ import {
 const REVENUE_COLOR = '#0d9488'
 const ORDERS_COLOR = '#f59e0b'
 
+const SUBTITLES = {
+  hourly: "Today's performance broken down by the hour.",
+  daily: 'Daily performance over the last 7 days.',
+  monthly: 'Monthly performance over time.',
+  yearly: 'Yearly performance over time.',
+  custom: 'Performance within your selected date range.',
+}
+
 export default function RevenueChart({
   period,
   setPeriod,
@@ -34,6 +42,8 @@ export default function RevenueChart({
 
   const totalRevenue = data.reduce((sum, d) => sum + Number(d.revenue ?? 0), 0)
   const totalOrders = data.reduce((sum, d) => sum + Number(d.orders ?? 0), 0)
+  const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0
+  const peakRevenue = data.reduce((max, d) => Math.max(max, Number(d.revenue ?? 0)), 0)
 
   const xCenter = (i) => PAD.left + (i + 0.5) * (plotW / (data.length || 1))
 
@@ -50,7 +60,7 @@ export default function RevenueChart({
             Revenue & Orders
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Performance overview over time.
+            {SUBTITLES[period] ?? 'Performance overview over time.'}
           </p>
         </div>
 
@@ -94,6 +104,8 @@ export default function RevenueChart({
       <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
         <SummaryBox label="Total Revenue" value={formatCurrency(totalRevenue)} color={REVENUE_COLOR} />
         <SummaryBox label="Total Orders" value={totalOrders} color={ORDERS_COLOR} />
+        <SummaryBox label="Avg Order Value" value={formatCurrency(avgOrderValue)} color={REVENUE_COLOR} />
+        <SummaryBox label={period === 'hourly' ? 'Peak Hour' : 'Peak Revenue'} value={formatCurrency(peakRevenue)} color={ORDERS_COLOR} />
       </div>
 
       <div className="mb-4 flex items-center gap-5 text-xs">

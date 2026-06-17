@@ -206,6 +206,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('permission:edit-product')->group(function () {
         Route::put('/products/{product}', [ProductController::class, 'update']);
         Route::patch('/products/{product}/category', [ProductController::class, 'updateCategory']);
+        Route::patch('/products/{product}/featured', [ProductController::class, 'toggleFeatured']);
     });
     Route::middleware('permission:delete-product')->group(function () {
         Route::delete('/products/{product}', [ProductController::class, 'destroy']);

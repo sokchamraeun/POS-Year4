@@ -43,7 +43,7 @@ export default function StockIn() {
   const [error, setError] = useState('')
 
   const token = localStorage.getItem('token')
-  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+  const headers = { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `Bearer ${token}` }
 
   async function fetchOrders() {
     setLoading(true)

@@ -5,7 +5,7 @@ import { calculateStats, processChartData, getTopProducts } from '../utils/helpe
 export function useDashboardData() {
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState([])
-  const [chartData, setChartData] = useState({ daily: [], monthly: [], yearly: [] })
+  const [chartData, setChartData] = useState({ hourly: [], daily: [], monthly: [], yearly: [] })
   const [topProducts, setTopProducts] = useState([])
   const [products, setProducts] = useState([])
   const [recentOrders, setRecentOrders] = useState([])
@@ -40,6 +40,7 @@ export function useDashboardData() {
       setTopProducts(getTopProducts(visible, allProducts))
       
       setChartData({
+        hourly: processChartData(visible, 'hourly'),
         daily: processChartData(visible, 'daily'),
         monthly: processChartData(visible, 'monthly'),
         yearly: processChartData(visible, 'yearly'),

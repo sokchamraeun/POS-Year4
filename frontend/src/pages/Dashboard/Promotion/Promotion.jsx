@@ -32,6 +32,7 @@ export default function Promotions() {
   const [error, setError] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -177,6 +178,8 @@ export default function Promotions() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (submitting) return
+    setSubmitting(true)
     const token = localStorage.getItem('token')
     const url = editing ? `${API_URL}/${editing.id}` : API_URL
     const method = editing ? 'PUT' : 'POST'
@@ -202,10 +205,16 @@ export default function Promotions() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(body),
       })
-      if (!res.ok) throw new Error('Failed to save')
+      if (!res.ok) {
+        const data = await res.json().catch(() => null)
+        const msg = data?.errors
+          ? Object.values(data.errors).flat().join('\n')
+          : data?.message || 'Failed to save'
+        throw new Error(msg)
+      }
       setShowModal(false)
       fetchItems()
-    } catch (err) { alert(err.message) }
+    } catch (err) { alert(err.message) } finally { setSubmitting(false) }
   }
 
   const handleDelete = async (id) => {
@@ -659,9 +668,10 @@ export default function Promotions() {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2.5 bg-gradient-to-r from-amber-900 to-amber-800 text-white rounded-xl text-sm font-medium hover:from-amber-950 hover:to-amber-900 transition-all shadow-md hover:shadow-lg"
+                    disabled={submitting}
+                    className="px-5 py-2.5 bg-gradient-to-r from-amber-900 to-amber-800 text-white rounded-xl text-sm font-medium hover:from-amber-950 hover:to-amber-900 transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {editing ? 'Update Promotion' : 'Create Promotion'}
+                    {submitting ? 'Saving…' : editing ? 'Update Promotion' : 'Create Promotion'}
                   </button>
                 </div>
               </form>

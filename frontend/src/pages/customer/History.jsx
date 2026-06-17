@@ -71,7 +71,7 @@ export default function History() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-orange-50 pb-24 sm:pb-0">
+    <div className="min-h-screen flex flex-col bg-white pb-24 sm:pb-0">
       <Navbar />
 
       <div className="flex-1 max-w-4xl mx-auto w-full px-4 py-8 mt-8">

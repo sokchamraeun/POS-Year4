@@ -51,9 +51,50 @@ export const calculateStats = (orders, products, customers, lowStockCount = 0, p
   ]
 }
 
+const formatHourLabel = (hour) => {
+  const suffix = hour < 12 ? 'AM' : 'PM'
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12
+  return `${hour12}${suffix}`
+}
+
+// Breaks down today's orders by hour (Khmer time), filling any gaps
+// between the first and last active hour with zeros for a clean line.
+export const processHourlyData = (orders) => {
+  const today = getTodayDate()
+  const byHour = {}
+
+  for (const o of orders) {
+    const d = new Date(o.created_at ?? '')
+    if (isNaN(d)) continue
+    const kh = new Date(d.getTime() + 7 * 60 * 60 * 1000)
+    if (kh.toISOString().slice(0, 10) !== today) continue
+
+    const hour = kh.getUTCHours()
+    if (!byHour[hour]) byHour[hour] = { revenue: 0, orders: 0 }
+    if (o.payment_status === 'Paid') byHour[hour].revenue += Number(o.total ?? 0)
+    byHour[hour].orders += 1
+  }
+
+  const hours = Object.keys(byHour).map(Number)
+  if (hours.length === 0) {
+    return [{ label: 'No data', revenue: 0, orders: 0 }]
+  }
+
+  const start = Math.min(...hours)
+  const end = Math.max(...hours)
+  const result = []
+  for (let h = start; h <= end; h++) {
+    const entry = byHour[h] ?? { revenue: 0, orders: 0 }
+    result.push({ label: formatHourLabel(h), revenue: entry.revenue, orders: entry.orders })
+  }
+  return result
+}
+
 export const processChartData = (orders, period) => {
+  if (period === 'hourly') return processHourlyData(orders)
+
   const byPeriod = {}
-  
+
   for (const o of orders) {
     let key
     switch(period) {

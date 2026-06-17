@@ -40,7 +40,7 @@ export default function Products() {
     : products.filter((p) => p.category?.name === selectedCategory)
 
   return (
-    <div className="min-h-screen bg-orange-50 pb-24 sm:pb-0">
+    <div className="min-h-screen bg-white pb-24 sm:pb-0">
       <Navbar />
 
       <PromotionSlider products={promoProducts} />
@@ -73,7 +73,7 @@ export default function Products() {
               className={`whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
                 selectedCategory === cat
                   ? 'bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-100 scale-[1.02]'
-                  : 'bg-orange-50 text-slate-600 hover:bg-slate-100 border border-slate-100 active:scale-95'
+                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-100 active:scale-95'
               }`}
             >
               {cat}

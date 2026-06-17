@@ -4,7 +4,7 @@ import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import EditModalProduct from './components/EditModalProduct.jsx'
 import Loader from '../../../components/shared/Loader.jsx'
-import { fetchProducts as fetchProductsApi, fetchCategories as fetchCategoriesApi, fetchProductDetails, deleteProduct as deleteProductApi } from './api/productApi.js'
+import { fetchProducts as fetchProductsApi, fetchCategories as fetchCategoriesApi, fetchProductDetails, deleteProduct as deleteProductApi, toggleFeatured as toggleFeaturedApi } from './api/productApi.js'
 import ProductStats from './components/ProductStats.jsx'
 import ProductFilters from './components/ProductFilters.jsx'
 import ProductTable from './components/ProductTable.jsx'
@@ -60,6 +60,17 @@ export default function Products() {
     deleteProductApi(product.id)
       .then(() => loadProducts(page))
       .catch(() => alert('Failed to delete product'))
+  }
+
+  function handleToggleFeatured(product) {
+    const next = !product.is_featured
+    // Optimistic update
+    setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, is_featured: next } : p)))
+    toggleFeaturedApi(product.id, next).catch(() => {
+      // Revert on failure
+      setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, is_featured: !next } : p)))
+      alert('Failed to update best seller')
+    })
   }
 
   function handleView(product) {
@@ -128,8 +139,8 @@ export default function Products() {
               </div>
             ) : (
               <>
-                <ProductTable products={filtered} onView={handleView} onEdit={setEditProduct} onDelete={handleDelete} noProducts={noProducts} />
-                <ProductMobileCards products={filtered} onView={handleView} onEdit={setEditProduct} onDelete={handleDelete} noProducts={noProducts} />
+                <ProductTable products={filtered} onView={handleView} onEdit={setEditProduct} onDelete={handleDelete} onToggleFeatured={handleToggleFeatured} noProducts={noProducts} />
+                <ProductMobileCards products={filtered} onView={handleView} onEdit={setEditProduct} onDelete={handleDelete} onToggleFeatured={handleToggleFeatured} noProducts={noProducts} />
                 <ProductPagination page={page} lastPage={lastPage} from={from} to={to} total={total} onPageChange={loadProducts} />
               </>
             )}

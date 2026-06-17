@@ -1,6 +1,6 @@
 ﻿import { categoryColors } from '../constants/productConstants.js'
 
-export default function ProductMobileCards({ products, onView, onEdit, onDelete, noProducts }) {
+export default function ProductMobileCards({ products, onView, onEdit, onDelete, onToggleFeatured, noProducts }) {
   return (
     <div className="lg:hidden p-6 grid gap-4">
       {products.map((product) => (
@@ -70,10 +70,21 @@ export default function ProductMobileCards({ products, onView, onEdit, onDelete,
           </div>
 
           <div className="flex items-center justify-between mt-5 pt-4 border-t border-slate-200">
-            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${product.status ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-orange-50 text-slate-600 border-slate-200'}`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${product.status ? 'bg-amber-500' : 'bg-slate-400'}`}></div>
-              {product.status ? 'Active' : 'Inactive'}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${product.status ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-orange-50 text-slate-600 border-slate-200'}`}>
+                <div className={`w-1.5 h-1.5 rounded-full ${product.status ? 'bg-amber-500' : 'bg-slate-400'}`}></div>
+                {product.status ? 'Active' : 'Inactive'}
+              </span>
+              <button
+                onClick={() => onToggleFeatured(product)}
+                title={product.is_featured ? 'Remove from best sellers' : 'Mark as best seller'}
+                className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition-all ${product.is_featured ? 'bg-amber-50 border-amber-300 text-amber-500' : 'bg-white border-slate-200 text-slate-300'}`}
+              >
+                <svg className="w-4.5 h-4.5" fill={product.is_featured ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                </svg>
+              </button>
+            </div>
             <div className="flex gap-2">
               <button onClick={() => onView(product)} className="px-3 py-1.5 text-xs font-semibold text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-all border border-amber-200">View</button>
               <button onClick={() => onEdit(product)} className="px-3 py-1.5 text-xs font-semibold text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition-all border border-amber-200">Edit</button>

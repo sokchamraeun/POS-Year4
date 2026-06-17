@@ -3,6 +3,7 @@ import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
 import PromotionSlider from '../../components/customer/PromotionSlider.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
+import BestSellers from '../../components/customer/BestSellers.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import Loader from '../../components/shared/Loader.jsx'
@@ -45,11 +46,13 @@ export default function Home() {
       : products.filter((p) => p.category?.name === selectedCategory)
 
   return (
-    <div className="min-h-screen bg-orange-50 flex flex-col pb-24 sm:pb-0">
+    <div className="min-h-screen bg-white flex flex-col pb-24 sm:pb-0">
       <Navbar />
 
       <div className="flex-1">
         <PromotionSlider products={promoProducts} />
+
+        <BestSellers products={products} />
 
         <section id="products" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col gap-4 mb-6">
@@ -67,7 +70,7 @@ export default function Home() {
                     className={`whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ${
                       selectedCategory === cat
                         ? 'bg-linear-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-100 scale-[1.02]'
-                        : 'bg-orange-50 text-slate-600 hover:bg-slate-100 border border-slate-100 active:scale-95'
+                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-100 active:scale-95'
                     }`}
                   >
                     {cat}

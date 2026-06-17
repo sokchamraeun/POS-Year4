@@ -26,7 +26,7 @@ export default function Suppliers() {
   const [error, setError] = useState('')
 
   const token = localStorage.getItem('token')
-  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+  const headers = { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `Bearer ${token}` }
 
   async function fetchSuppliers() {
     setLoading(true)
@@ -80,14 +80,15 @@ export default function Suppliers() {
       const method = editItem ? 'PUT' : 'POST'
       const res = await fetch(url, { method, headers, body: JSON.stringify(form) })
       if (!res.ok) {
-        const err = await res.json()
-        setError(err.message || 'Failed to save.')
+        const err = await res.json().catch(() => ({}))
+        const msg = err?.errors ? Object.values(err.errors).flat().join('\n') : err?.message
+        setError(msg || `Failed to save (HTTP ${res.status}).`)
         return
       }
       setShowModal(false)
       fetchSuppliers()
-    } catch {
-      setError('Network error.')
+    } catch (e) {
+      setError(e?.message || 'Network error.')
     } finally {
       setSaving(false)
     }

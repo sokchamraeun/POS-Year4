@@ -19,6 +19,17 @@ export function fetchProductDetails(id) {
   })
 }
 
+export function toggleFeatured(id, isFeatured) {
+  return fetch(`${API_URL}/${id}/featured`, {
+    method: 'PATCH',
+    headers: { ...getHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ is_featured: isFeatured }),
+  }).then((res) => {
+    if (!res.ok) throw new Error('Failed to update best seller')
+    return res.json()
+  })
+}
+
 export function deleteProduct(id) {
   return fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: getHeaders() }).then((res) => {
     if (!res.ok) throw new Error('Failed to delete')

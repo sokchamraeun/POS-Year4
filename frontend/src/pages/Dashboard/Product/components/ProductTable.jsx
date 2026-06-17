@@ -1,6 +1,6 @@
 ﻿import { categoryColors } from '../constants/productConstants.js'
 
-export default function ProductTable({ products, onView, onEdit, onDelete, noProducts }) {
+export default function ProductTable({ products, onView, onEdit, onDelete, onToggleFeatured, noProducts }) {
   return (
     <div className="overflow-x-auto hidden lg:block">
       <table className="w-full text-sm">
@@ -13,11 +13,12 @@ export default function ProductTable({ products, onView, onEdit, onDelete, noPro
             <th className="px-6 py-4">Sugar</th>
             <th className="px-6 py-4">Ice</th>
             <th className="px-6 py-4 text-center">Status</th>
+            <th className="px-6 py-4 text-center">Top Seller</th>
             <th className="px-6 py-4 text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {products.map((product, index) => (
+          {products.map((product) => (
             <tr key={product.id} className="group border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200">
               <td className="px-6 py-4">
                 <div className="flex items-center gap-4">
@@ -80,6 +81,17 @@ export default function ProductTable({ products, onView, onEdit, onDelete, noPro
                   {product.status ? 'Active' : 'Inactive'}
                 </span>
               </td>
+              <td className="px-6 py-4 whitespace-nowrap text-center">
+                <button
+                  onClick={() => onToggleFeatured(product)}
+                  title={product.is_featured ? 'Remove from best sellers' : 'Mark as best seller'}
+                  className={`inline-flex items-center justify-center w-9 h-9 rounded-xl border transition-all duration-200 ${product.is_featured ? 'bg-amber-50 border-amber-300 text-amber-500' : 'bg-white border-slate-200 text-slate-300 hover:text-amber-400 hover:border-amber-200'}`}
+                >
+                  <svg className="w-5 h-5" fill={product.is_featured ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                  </svg>
+                </button>
+              </td>
               <td className="px-6 py-4 whitespace-nowrap text-right">
                 <div className="flex items-center justify-end gap-2">
                   <button onClick={() => onView(product)} className="px-3 py-1.5 text-xs font-semibold text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-xl transition-all duration-200 border border-amber-200">View</button>
@@ -91,7 +103,7 @@ export default function ProductTable({ products, onView, onEdit, onDelete, noPro
           ))}
           {noProducts && (
             <tr>
-              <td colSpan={8} className="px-6 py-16 text-center">
+              <td colSpan={9} className="px-6 py-16 text-center">
                 <div className="flex flex-col items-center gap-2">
                   <svg className="w-16 h-16 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
