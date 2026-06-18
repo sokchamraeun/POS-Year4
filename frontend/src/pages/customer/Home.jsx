@@ -2,6 +2,7 @@
 import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
 import PromotionSlider from '../../components/customer/PromotionSlider.jsx'
+import EventSection from '../../components/customer/EventSection.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
 import BestSellers from '../../components/customer/BestSellers.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
@@ -51,6 +52,8 @@ export default function Home() {
 
       <div className="flex-1">
         <PromotionSlider products={promoProducts} />
+
+        <EventSection />
 
         <BestSellers products={products} />
 

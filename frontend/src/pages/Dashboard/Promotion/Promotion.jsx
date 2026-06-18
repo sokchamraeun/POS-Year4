@@ -8,6 +8,7 @@ import Loader from '../../../components/shared/Loader.jsx'
 const API_URL = import.meta.env.VITE_API_URL + '/promotions'
 const PRODUCTS_URL = import.meta.env.VITE_API_URL + '/products'
 const CATEGORIES_URL = import.meta.env.VITE_API_URL + '/categories'
+const SIZES_URL = import.meta.env.VITE_API_URL + '/sizes'
 
 const types = [
   { value: 'percentage', label: 'Percentage', icon: Percent, color: 'purple' },
@@ -28,6 +29,7 @@ export default function Promotions() {
   const [items, setItems] = useState([])
   const [allProducts, setAllProducts] = useState([])
   const [allCategories, setAllCategories] = useState([])
+  const [allSizes, setAllSizes] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [showModal, setShowModal] = useState(false)
@@ -44,6 +46,7 @@ export default function Promotions() {
     end_date: '',
     active: true,
     product_ids: [],
+    size_values: {},
     combo_discount_type: 'percentage',
     combo_apply_to: 'each',
     combo_groups: [],
@@ -71,6 +74,16 @@ export default function Promotions() {
     } catch {}
   }
 
+  const fetchSizes = async () => {
+    try {
+      const res = await fetch(SIZES_URL, { headers: authHeaders() })
+      if (!res.ok) return
+      const json = await res.json()
+      const list = json.data ?? json
+      setAllSizes(Array.isArray(list) ? list : [])
+    } catch {}
+  }
+
   const fetchItems = () => {
     setLoading(true)
     fetch(API_URL, { headers: authHeaders() })
@@ -79,11 +92,11 @@ export default function Promotions() {
       .catch(err => { setError(err.message); setLoading(false) })
   }
 
-  useEffect(() => { fetchItems(); fetchProducts(); fetchCategories() }, [])
+  useEffect(() => { fetchItems(); fetchProducts(); fetchCategories(); fetchSizes() }, [])
 
   const openCreate = () => {
     setEditing(null)
-    setForm({ name: '', description: '', type: 'percentage', value: '', buy_qty: '', free_qty: '', start_date: '', end_date: '', active: true, product_ids: [], combo_discount_type: 'percentage', combo_apply_to: 'each', combo_groups: [] })
+    setForm({ name: '', description: '', type: 'percentage', value: '', buy_qty: '', free_qty: '', start_date: '', end_date: '', active: true, product_ids: [], size_values: {}, combo_discount_type: 'percentage', combo_apply_to: 'each', combo_groups: [] })
     setShowModal(true)
   }
 
@@ -110,6 +123,7 @@ export default function Promotions() {
       end_date: toLocalDatetime(item.end_date),
       active: item.active,
       product_ids: productIds,
+      size_values: item.size_values ?? {},
       combo_discount_type: item.combo_discount_type ?? 'percentage',
       combo_apply_to: item.combo_apply_to ?? 'each',
       combo_groups: item.combo_groups ?? [],
@@ -123,6 +137,13 @@ export default function Promotions() {
       product_ids: prev.product_ids.includes(id)
         ? prev.product_ids.filter((pid) => pid !== id)
         : [...prev.product_ids, id],
+    }))
+  }
+
+  const setSizeValue = (sizeId, value) => {
+    setForm((prev) => ({
+      ...prev,
+      size_values: { ...prev.size_values, [sizeId]: value },
     }))
   }
 
@@ -184,11 +205,19 @@ export default function Promotions() {
     const url = editing ? `${API_URL}/${editing.id}` : API_URL
     const method = editing ? 'PUT' : 'POST'
     const isCombo = form.type === 'combo' || form.type === 'combo_discount'
+    const valueBased = form.type === 'percentage' || form.type === 'fixed_amount'
+    // Keep only sizes with a non-empty override
+    const cleanedSizeValues = valueBased
+      ? Object.fromEntries(
+          Object.entries(form.size_values).filter(([, v]) => v !== '' && v != null)
+        )
+      : null
     const body = {
       name: form.name,
       description: form.description || null,
       type: form.type,
-      value: isCombo ? form.value : (form.type === 'percentage' || form.type === 'fixed_amount' ? form.value : null),
+      value: isCombo ? form.value : (valueBased ? form.value : null),
+      size_values: cleanedSizeValues && Object.keys(cleanedSizeValues).length ? cleanedSizeValues : null,
       buy_qty: form.type === 'buy_x_get_y' ? form.buy_qty : null,
       free_qty: form.type === 'buy_x_get_y' ? form.free_qty : null,
       start_date: form.start_date,
@@ -501,6 +530,38 @@ export default function Promotions() {
                           required
                           className="w-full border-2 border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                         />
+                      </div>
+                    </div>
+                  )}
+
+                  {needsValue && allSizes.length > 0 && (
+                    <div className="col-span-2 border-2 border-amber-200 bg-amber-50/30 rounded-xl p-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        Per-size {form.type === 'percentage' ? 'percentage' : 'amount'} <span className="font-normal text-gray-400">(optional)</span>
+                      </label>
+                      <p className="text-xs text-gray-500 mb-3">Leave a size empty to use the default value above.</p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {allSizes.map((s) => (
+                          <div key={s.id}>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">{s.name}</label>
+                            <div className="relative">
+                              {form.type === 'percentage' ? (
+                                <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                              ) : (
+                                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                              )}
+                              <input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={form.size_values[s.id] ?? ''}
+                                onChange={e => setSizeValue(s.id, e.target.value)}
+                                placeholder={form.value !== '' ? String(form.value) : 'default'}
+                                className="w-full border-2 border-gray-200 rounded-lg pl-8 pr-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                              />
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}

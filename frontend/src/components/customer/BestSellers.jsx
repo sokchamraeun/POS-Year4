@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useCart } from '../../context/CartContext.jsx'
+import { calcFinalPrice, resolvePromotionForSize } from '../../utils/promotion.js'
+import ProductModal from './ProductModal.jsx'
 
 const STORAGE_URL = import.meta.env.VITE_STORAGE_URL ?? ''
 
@@ -21,6 +23,58 @@ export default function BestSellers({ products = [] }) {
   const [addedId, setAddedId] = useState(null)
   const scrollRef = useRef(null)
   const pausedRef = useRef(false)
+
+  // Customization modal state for the selected best seller
+  const [modalProduct, setModalProduct] = useState(null)
+  const [selectedSize, setSelectedSize] = useState('')
+  const [selectedSugar, setSelectedSugar] = useState('')
+  const [selectedIce, setSelectedIce] = useState('')
+  const [selectedAddOn, setSelectedAddOn] = useState('')
+  const [modalQty, setModalQty] = useState(1)
+
+  function openModal(p) {
+    setModalProduct(p)
+    setSelectedSize(p.sizes?.[0]?.name || '')
+    setSelectedSugar(p.sugar_levels?.[0]?.name || '')
+    setSelectedIce(p.ice_levels?.[0]?.name || '')
+    setSelectedAddOn('')
+    setModalQty(1)
+  }
+
+  function modalBasePrice(sizeName) {
+    const size = modalProduct?.sizes?.find((s) => s.name === sizeName)
+    return size ? Number(size.pivot?.price ?? 0) : 0
+  }
+  function modalAddOnPrice(addOnName) {
+    if (!addOnName) return 0
+    const addon = modalProduct?.addons?.find((a) => a.name === addOnName)
+    return addon ? Number(addon.price) : 0
+  }
+
+  const modalSizeObj = modalProduct?.sizes?.find((s) => s.name === selectedSize)
+  const modalPromotion = modalProduct ? resolvePromotionForSize(modalProduct.promotion, modalSizeObj?.id) : null
+  const modalPrice = modalProduct ? modalBasePrice(selectedSize) + modalAddOnPrice(selectedAddOn) : 0
+  const modalFinalPrice = modalProduct
+    ? (modalPromotion?.type === 'buy_x_get_y' ? modalPrice : calcFinalPrice(modalPrice, modalPromotion))
+    : 0
+  const modalHasDiscount = modalFinalPrice < modalPrice
+
+  function handleModalAdd() {
+    if (!modalProduct) return
+    addItem(modalProduct, {
+      ...modalProduct,
+      promotion: modalPromotion,
+      size: selectedSize,
+      sugar: selectedSugar,
+      ice: selectedIce,
+      addOn: selectedAddOn,
+      unitPrice: modalPrice,
+      qty: modalQty,
+    })
+    setAddedId(modalProduct.id)
+    setTimeout(() => setAddedId(null), 1200)
+    setModalProduct(null)
+  }
 
   // Show products marked as "Best Seller" in the dashboard. If none are
   // flagged yet, fall back to the first products so the section isn't empty.
@@ -47,20 +101,6 @@ export default function BestSellers({ products = [] }) {
   }, [featured.length])
 
   if (featured.length === 0) return null
-
-  function handleAdd(p, price) {
-    addItem(p, {
-      ...p,
-      size: p.sizes?.[0]?.name || '',
-      sugar: p.sugar_levels?.[0]?.name || '',
-      ice: p.ice_levels?.[0]?.name || '',
-      addOn: '',
-      unitPrice: Number(price),
-      qty: 1,
-    })
-    setAddedId(p.id)
-    setTimeout(() => setAddedId(null), 1200)
-  }
 
   function scrollBy(direction) {
     const el = scrollRef.current
@@ -123,7 +163,8 @@ export default function BestSellers({ products = [] }) {
           return (
             <div
               key={p.id}
-              className={`group relative shrink-0 snap-start w-[280px] sm:w-[320px] overflow-hidden rounded-3xl bg-gradient-to-br ${theme.card} border border-white shadow-sm hover:shadow-[0_12px_40px_rgba(15,23,42,0.12)] hover:-translate-y-1 transition-all duration-300`}
+              onClick={() => openModal(p)}
+              className={`group relative shrink-0 snap-start w-[280px] sm:w-[320px] overflow-hidden rounded-3xl bg-gradient-to-br ${theme.card} border border-white shadow-sm hover:shadow-[0_12px_40px_rgba(15,23,42,0.12)] hover:-translate-y-1 transition-all duration-300 cursor-pointer`}
             >
               {/* Decorative blob */}
               <div className={`absolute -top-10 -left-10 w-32 h-32 rounded-full blur-2xl ${theme.blob}`} />
@@ -138,7 +179,7 @@ export default function BestSellers({ products = [] }) {
                     {p.name}
                   </h3>
                   <button
-                    onClick={() => handleAdd(p, price)}
+                    onClick={(e) => { e.stopPropagation(); openModal(p) }}
                     className={`mt-4 inline-flex items-center gap-1.5 text-sm font-bold transition-all duration-200 ${
                       isAdded ? 'text-emerald-600' : theme.link
                     }`}
@@ -180,6 +221,29 @@ export default function BestSellers({ products = [] }) {
           )
         })}
       </div>
+
+      {modalProduct && (
+        <ProductModal
+          product={modalProduct}
+          show={!!modalProduct}
+          onClose={() => setModalProduct(null)}
+          selectedSize={selectedSize}
+          selectedSugar={selectedSugar}
+          selectedIce={selectedIce}
+          selectedAddOn={selectedAddOn}
+          qty={modalQty}
+          price={modalPrice}
+          finalPrice={modalFinalPrice}
+          hasDiscount={modalHasDiscount}
+          stockMsg=""
+          onSizeChange={setSelectedSize}
+          onSugarChange={setSelectedSugar}
+          onIceChange={setSelectedIce}
+          onAddOnChange={setSelectedAddOn}
+          onQtyChange={setModalQty}
+          onAddToCart={handleModalAdd}
+        />
+      )}
     </section>
   )
 }

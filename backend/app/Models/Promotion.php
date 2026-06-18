@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['name', 'description', 'type', 'value', 'buy_qty', 'free_qty', 'start_date', 'end_date', 'active', 'created_by', 'combo_discount_type', 'combo_apply_to', 'combo_groups'])]
+#[Fillable(['name', 'description', 'type', 'value', 'size_values', 'buy_qty', 'free_qty', 'start_date', 'end_date', 'active', 'created_by', 'combo_discount_type', 'combo_apply_to', 'combo_groups'])]
 class Promotion extends Model
 {
     use HasFactory;
@@ -17,6 +17,7 @@ class Promotion extends Model
     {
         return [
             'value' => 'decimal:2',
+            'size_values' => 'array',
             'start_date' => 'datetime',
             'end_date' => 'datetime',
             'active' => 'boolean',

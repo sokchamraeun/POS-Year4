@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerAuthController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\HeroSliderController;
 use App\Http\Controllers\Api\IceLevelController;
 use App\Http\Controllers\Api\IngredientController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\Api\PromotionController;
 use App\Http\Controllers\Api\RecipeController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\SizeController;
 use App\Http\Controllers\Api\SugarLevelController;
 use App\Http\Controllers\Api\TableController;
@@ -50,6 +52,9 @@ Route::get('/orders/user-history', [OrderController::class, 'userHistory']);
 Route::get('/orders/{order}', [OrderController::class, 'show']);
 Route::get('/tables', [TableController::class, 'index']);
 Route::get('/hero-sliders', [HeroSliderController::class, 'index']);
+Route::get('/settings', [SettingController::class, 'index']);
+Route::get('/events', [EventController::class, 'index']);
+Route::get('/events/{event}', [EventController::class, 'show']);
 Route::get('/khqr-proxy', [KhqrProxyController::class, 'proxy']);
 Route::get('/orders/{order}/khqr-qr', [OrderController::class, 'generateKhqrQr']);
 Route::post('/orders/payment/initiate', [PaymentCheckoutController::class, 'initiate']);
@@ -305,6 +310,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/inventory-transactions/{inventoryTransaction}', [InventoryTransactionController::class, 'show']);
         Route::post('/inventory-transactions', [InventoryTransactionController::class, 'store']);
         Route::delete('/inventory-transactions/{inventoryTransaction}', [InventoryTransactionController::class, 'destroy']);
+    });
+
+    // Site settings (logo, name, footer contact)
+    Route::middleware('permission:manage-staff')->group(function () {
+        Route::post('/settings', [SettingController::class, 'update']);
+        Route::put('/settings', [SettingController::class, 'update']);
+
+        // Event images management
+        Route::post('/events', [EventController::class, 'store']);
+        Route::put('/events/{event}', [EventController::class, 'update']);
+        Route::delete('/events/{event}', [EventController::class, 'destroy']);
     });
 
     Route::get('/dashboard/profit-today', [ReportController::class, 'profitToday']);

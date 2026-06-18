@@ -34,6 +34,9 @@ import IceLevel from './pages/Dashboard/IceLevel/IceLevel.jsx'
 import SugarLevel from './pages/Dashboard/SugarLevel/SugarLevel.jsx'
 import Promotions from './pages/Dashboard/Promotion/Promotion.jsx'
 import HeroSliderPage from './pages/Dashboard/HeroSlider/Heroslider.jsx'
+import SiteSettings from './pages/Dashboard/Settings/Settings.jsx'
+import Events from './pages/Dashboard/Events/Events.jsx'
+import { SettingsProvider } from './context/SettingsContext.jsx'
 import UserTest from './pages/Dashboard/UserTest.jsx'
 import LoginHistory from './pages/Dashboard/LogHistory/LoginHistory.jsx'
 import Employees from './pages/Dashboard/Employees.jsx'
@@ -48,6 +51,7 @@ import Register from './pages/auth/Register.jsx'
 export default function App() {
   return (
     <BrowserRouter>
+      <SettingsProvider>
       <GlobalOrderNotification />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -83,6 +87,8 @@ export default function App() {
         <Route path="/staff/sugar-levels" element={<PrivateRoute><SugarLevel /></PrivateRoute>} />
         <Route path="/staff/promotions" element={<PrivateRoute><Promotions /></PrivateRoute>} />
         <Route path="/staff/hero-sliders" element={<PrivateRoute><HeroSliderPage /></PrivateRoute>} />
+        <Route path="/staff/settings" element={<PrivateRoute><SiteSettings /></PrivateRoute>} />
+        <Route path="/staff/events" element={<PrivateRoute><Events /></PrivateRoute>} />
         <Route path="/staff/login-history" element={<PrivateRoute><LoginHistory /></PrivateRoute>} />
         <Route path="/staff/employees" element={<PrivateRoute><Employees /></PrivateRoute>} />
         <Route path="/staff/suppliers" element={<PrivateRoute><Suppliers /></PrivateRoute>} />
@@ -92,6 +98,7 @@ export default function App() {
         <Route path="/staff/register" element={<Register />} />
         <Route path="/staff/change-password" element={<ChangePassword />} />
       </Routes>
+      </SettingsProvider>
     </BrowserRouter>
   )
 }

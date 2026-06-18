@@ -1,4 +1,5 @@
 ﻿import { useEffect } from 'react'
+import { calcFinalPrice, resolvePromotionForSize } from '../../utils/promotion.js'
 
 const STORAGE_URL = import.meta.env.VITE_API_URL
 
@@ -39,16 +40,20 @@ export default function ProductModal({
     ? product.image
     : STORAGE_URL + '/' + product.image
 
+  // Promotion resolved for the currently selected size (drives the badge text)
+  const selectedSizeObj = product.sizes?.find((s) => s.name === selectedSize)
+  const promo = resolvePromotionForSize(product.promotion, selectedSizeObj?.id)
+
   // Calculate Buy X Get Y promotion details
   let freeItems = 0
   let paidItems = qty
   let promotionMessage = ''
   let isBogo = false
 
-  if (product.promotion?.type === 'buy_x_get_y') {
+  if (promo?.type === 'buy_x_get_y') {
     isBogo = true
-    const buyQty = product.promotion.buy_qty || 1
-    const freeQty = product.promotion.free_qty || 1
+    const buyQty = promo.buy_qty || 1
+    const freeQty = promo.free_qty || 1
     const totalSets = Math.floor(qty / (buyQty + freeQty))
     const remainder = qty % (buyQty + freeQty)
     freeItems = totalSets * freeQty
@@ -100,11 +105,11 @@ export default function ProductModal({
             {hasDiscount && (
               <>
                 <div className="bg-gradient-to-r from-red-500 to-rose-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm">
-                  {product.promotion?.type === 'percentage' && `${parseFloat(product.promotion.value)}% OFF`}
-                  {product.promotion?.type === 'fixed_amount' && `$${product.promotion.value} OFF`}
-                  {product.promotion?.type === 'buy_x_get_y' && `Buy ${product.promotion.buy_qty} Get ${product.promotion.free_qty}`}
-                  {product.promotion?.type === 'combo' && 'COMBO'}
-                  {product.promotion?.type === 'combo_discount' && `${product.promotion.value}% OFF COMBO`}
+                  {promo?.type === 'percentage' && `${parseFloat(promo.value)}% OFF`}
+                  {promo?.type === 'fixed_amount' && `$${promo.value} OFF`}
+                  {promo?.type === 'buy_x_get_y' && `Buy ${promo.buy_qty} Get ${promo.free_qty}`}
+                  {promo?.type === 'combo' && 'COMBO'}
+                  {promo?.type === 'combo_discount' && `${promo.value}% OFF COMBO`}
                 </div>
                 {!isBogo && (
                   <div className="bg-black/50 backdrop-blur-md text-white/80 text-xs line-through font-medium px-3 py-1 rounded-full">
@@ -196,22 +201,43 @@ export default function ProductModal({
                   Select Size
                 </p>
                 <div className="grid grid-cols-3 gap-2">
-                  {product.sizes.map((s) => (
-                    <button
-                      key={s.id}
-                      onClick={() => onSizeChange(s.name)}
-                      className={`rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
-                        selectedSize === s.name 
-                          ? 'bg-amber-600 text-white shadow-md' 
-                          : 'bg-white text-slate-700 hover:bg-amber-100 border border-amber-200'
-                      }`}
-                    >
-                      {s.name}
-                      <span className={`block text-[10px] mt-0.5 ${selectedSize === s.name ? 'text-amber-100' : 'text-amber-600'}`}>
-                        +${Number(s.pivot?.price ?? 0).toFixed(2)}
-                      </span>
-                    </button>
-                  ))}
+                  {product.sizes.map((s) => {
+                    const sizePrice = Number(s.pivot?.price ?? 0)
+                    const sizePromo = resolvePromotionForSize(product.promotion, s.id)
+                    const sizeFinal = sizePromo?.type === 'buy_x_get_y'
+                      ? sizePrice
+                      : calcFinalPrice(sizePrice, sizePromo)
+                    const sizeHasDiscount = sizeFinal < sizePrice
+                    const isSelected = selectedSize === s.name
+                    return (
+                      <button
+                        key={s.id}
+                        onClick={() => onSizeChange(s.name)}
+                        className={`relative rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                          isSelected
+                            ? 'bg-amber-600 text-white shadow-md'
+                            : 'bg-white text-slate-700 hover:bg-amber-100 border border-amber-200'
+                        }`}
+                      >
+                        {sizeHasDiscount && (
+                          <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full shadow">
+                            {sizePromo.type === 'percentage' ? `-${parseFloat(sizePromo.value)}%` : 'SALE'}
+                          </span>
+                        )}
+                        {s.name}
+                        {sizeHasDiscount ? (
+                          <span className="block text-[10px] mt-0.5 leading-tight">
+                            <span className={`line-through ${isSelected ? 'text-amber-200/80' : 'text-slate-400'}`}>${sizePrice.toFixed(2)}</span>
+                            <span className={`ml-1 font-bold ${isSelected ? 'text-white' : 'text-rose-600'}`}>${sizeFinal.toFixed(2)}</span>
+                          </span>
+                        ) : (
+                          <span className={`block text-[10px] mt-0.5 ${isSelected ? 'text-amber-100' : 'text-amber-600'}`}>
+                            ${sizePrice.toFixed(2)}
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
             )}

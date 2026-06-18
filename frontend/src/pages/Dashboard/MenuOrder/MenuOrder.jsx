@@ -6,7 +6,7 @@ import ProductCard from './components/ProductCard.jsx'
 import CartSidebar from './components/CartSidebar.jsx'
 import KhqrIframeModal from './components/KhqrIframeModal.jsx'
 import ReceiptOverlay from './components/ReceiptOverlay.jsx'
-import { calcFinalPrice, calcComboCart, calcBuyXGetYGrouped } from '../../../utils/promotion.js'
+import { calcFinalPrice, calcComboCart, calcBuyXGetYGrouped, resolvePromotionForSize } from '../../../utils/promotion.js'
 import Loader from '../../../components/shared/Loader.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -193,7 +193,7 @@ export default function MenuOrder() {
           unit_price: c.unitPrice,
           subtotal: c.unitPrice * c.qty,
           addons: addon ? [{ addon_id: addon.id, price: Number(addon.price ?? 0) }] : [],
-          promotion_snapshot: product?.promotion ?? null,
+          promotion_snapshot: resolvePromotionForSize(product?.promotion, size?.id) ?? null,
         }
       })
 
@@ -236,6 +236,7 @@ export default function MenuOrder() {
         paymentMethod: paymentMethod === 'not_yet' ? null : paymentMethod,
         detail: cart.map((c) => {
           const cur = products.find((p) => p.id === c.id)
+          const sizeObj = cur?.sizes?.find((s) => s.name === c.size)
           return {
             name: c.name,
             qty: c.qty,
@@ -244,7 +245,7 @@ export default function MenuOrder() {
             sugar: c.sugar,
             ice: c.ice,
             addOn: c.addOn,
-            promotion: cur?.promotion ?? null,
+            promotion: resolvePromotionForSize(cur?.promotion, sizeObj?.id) ?? null,
           }
         }),
       }
@@ -284,7 +285,9 @@ export default function MenuOrder() {
   const buyXGetYResult = useMemo(() => calcBuyXGetYGrouped(cart), [cart])
   const total = cart.reduce((sum, c) => {
     const cur = products.find((p) => p.id === c.id)
-    const baseFinal = cur?.promotion?.type === 'buy_x_get_y' ? c.unitPrice : calcFinalPrice(c.unitPrice, cur?.promotion, c.qty)
+    const sizeObj = cur?.sizes?.find((s) => s.name === c.size)
+    const promo = resolvePromotionForSize(cur?.promotion, sizeObj?.id)
+    const baseFinal = promo?.type === 'buy_x_get_y' ? c.unitPrice : calcFinalPrice(c.unitPrice, promo, c.qty)
     const comboDisc = (comboResult.itemDiscounts[c.key] || 0) / c.qty
     const bxgyDisc = (buyXGetYResult.itemDiscounts[c.key] || 0) / c.qty
     return sum + (baseFinal - comboDisc - bxgyDisc) * c.qty

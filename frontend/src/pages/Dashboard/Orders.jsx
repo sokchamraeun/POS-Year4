@@ -6,8 +6,8 @@ import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
 import Loader from '../../components/shared/Loader.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
-const token = localStorage.getItem('token')
-const authHeaders = { Authorization: `Bearer ${token}` }
+// Read the token at call time (not module-load) so it isn't captured stale
+const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('token')}` })
 
 function mapOrder(o) {
   return {
@@ -108,7 +108,7 @@ export default function Orders() {
 
   function loadOrders() {
     setLoading(true)
-    fetch(`${API_URL}/orders?page=${page}`, { headers: authHeaders })
+    fetch(`${API_URL}/orders?page=${page}`, { headers: authHeaders() })
       .then((res) => res.json())
       .then((json) => {
         const apiOrders = (json.data ?? []).map(mapOrder)
@@ -123,7 +123,7 @@ export default function Orders() {
   }
 
   function pollOrders() {
-    fetch(`${API_URL}/orders?page=1&per_page=50`, { headers: authHeaders })
+    fetch(`${API_URL}/orders?page=1&per_page=50`, { headers: authHeaders() })
       .then((res) => res.json())
       .then((json) => {
         const apiOrders = (json.data ?? []).map(mapOrder)
@@ -183,7 +183,7 @@ export default function Orders() {
 
     fetch(`${API_URL}/orders/${numericId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeaders },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ status: newStatus }),
     })
 
@@ -213,7 +213,7 @@ export default function Orders() {
 
     fetch(`${API_URL}/orders/${numericId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json', ...authHeaders },
+      headers: { 'Content-Type': 'application/json', ...authHeaders() },
       body: JSON.stringify({ payment_status: newPayment }),
     })
   }
@@ -556,7 +556,7 @@ export default function Orders() {
                   <button
                     onClick={() => {
                       const numericId = selectedOrder.id.startsWith('#') ? selectedOrder.id.slice(1) : selectedOrder.id
-                      fetch(`${API_URL}/orders/${numericId}/mark-printed`, { method: 'POST', headers: authHeaders }).catch(() => {})
+                      fetch(`${API_URL}/orders/${numericId}/mark-printed`, { method: 'POST', headers: authHeaders() }).catch(() => {})
                       const w = window.open('', '_blank')
                       const o = selectedOrder
                       const itemsHtml = o.detail.map((item, idx) => {

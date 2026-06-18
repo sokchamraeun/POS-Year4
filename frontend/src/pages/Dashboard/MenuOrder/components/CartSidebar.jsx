@@ -4,7 +4,7 @@ import CartItem from './CartItem.jsx'
 import PaymentSelector from './PaymentSelector.jsx'
 import { Trash2 } from 'lucide-react'
 
-import { calcFinalPrice, getPromotionLabel } from '../../../../utils/promotion.js'
+import { calcFinalPrice, getPromotionLabel, getPromotionShort, resolvePromotionForSize } from '../../../../utils/promotion.js'
 
 export default function CartSidebar({
   cart,
@@ -50,52 +50,73 @@ export default function CartSidebar({
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
               {cart.map((c) => {
                 const cur = products?.find(p => p.id === c.id)
-                const isBogo = cur?.promotion?.type === 'buy_x_get_y'
-                
+                const sizeObj = cur?.sizes?.find((s) => s.name === c.size)
+                const promo = resolvePromotionForSize(cur?.promotion, sizeObj?.id)
+
                 return (
-                  <div key={c.key} className="border border-gray-200 rounded-lg p-3 bg-white hover:shadow-sm transition-shadow">
-                    {/* Product Name + Total Price */}
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-semibold text-gray-800">{c.name}</p>
-                        {isBogo && cur?.promotion && (
-                          <span className="text-[10px] font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
-                            Buy {cur.promotion.buy_qty} Get {cur.promotion.free_qty} Free
+                  <div key={c.key} className="border border-gray-200 rounded-lg p-3 bg-white">
+                    <div className="flex gap-3">
+                      {/* Mini image with diagonal promotion ribbon */}
+                      <div className="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                        {c.image ? (
+                          <img
+                            src={`${c.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${c.image}`}
+                            alt={c.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-300">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        )}
+                        {promo && (
+                          <span className="absolute -left-7 top-1.5 w-20 -rotate-45 bg-gradient-to-r from-red-600 to-rose-500 text-white text-[6px] font-extrabold leading-none uppercase tracking-wide text-center py-0.5 z-10 pointer-events-none">
+                            {getPromotionShort(promo)}
                           </span>
                         )}
                       </div>
-                      <p className="text-sm font-bold text-gray-800">${(c.unitPrice * c.qty).toFixed(2)}</p>
-                    </div>
 
-                    {/* Options */}
-                    <div className="flex flex-wrap gap-1.5 mt-1.5">
-                      {c.size && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.size}</span>}
-                      {c.sugar && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.sugar}</span>}
-                      {c.ice && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.ice}</span>}
-                      {c.addOn && <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">+{c.addOn}</span>}
-                    </div>
-
-                    {/* Unit Price + Qty + Delete */}
-                    <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center gap-1">
-                        {(() => {
-                          const hasPromo = cur?.promotion && !['combo', 'combo_discount'].includes(cur.promotion.type)
-                          const discPrice = hasPromo ? calcFinalPrice(c.unitPrice, cur.promotion, 1) : c.unitPrice
-                          if (hasPromo && discPrice !== c.unitPrice) {
-                            return <><span className="text-[10px] text-gray-400 line-through">${c.unitPrice.toFixed(2)}</span><span className="text-sm font-semibold text-amber-600 ml-1">${discPrice.toFixed(2)}</span></>
-                          }
-                          return <span className="text-sm font-semibold text-amber-600">${c.unitPrice.toFixed(2)}</span>
-                        })()}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1 bg-orange-50 border border-gray-200 rounded-lg p-0.5">
-                          <button onClick={() => onUpdateQty(c.key, Math.max(1, c.qty - 1))} className="w-6 h-6 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors">-</button>
-                          <span className="w-6 text-center text-sm font-medium text-gray-800">{c.qty}</span>
-                          <button onClick={() => onUpdateQty(c.key, c.qty + 1)} className="w-6 h-6 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors">+</button>
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        {/* Product Name + Total Price */}
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-sm font-semibold text-gray-800 truncate">{c.name}</p>
+                          <p className="text-sm font-bold text-gray-800 shrink-0">${(c.unitPrice * c.qty).toFixed(2)}</p>
                         </div>
-                        <button onClick={() => handleDeleteItem(c.key)} className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Remove">
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+
+                        {/* Options */}
+                        <div className="flex flex-wrap gap-1.5 mt-1.5">
+                          {c.size && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.size}</span>}
+                          {c.sugar && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.sugar}</span>}
+                          {c.ice && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.ice}</span>}
+                          {c.addOn && <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">+{c.addOn}</span>}
+                        </div>
+
+                        {/* Unit Price + Qty + Delete */}
+                        <div className="flex items-center justify-between mt-2">
+                          <div className="flex items-center gap-1">
+                            {(() => {
+                              const hasPromo = promo && !['combo', 'combo_discount'].includes(promo.type)
+                              const discPrice = hasPromo ? calcFinalPrice(c.unitPrice, promo, 1) : c.unitPrice
+                              if (hasPromo && discPrice !== c.unitPrice) {
+                                return <><span className="text-[10px] text-gray-400 line-through">${c.unitPrice.toFixed(2)}</span><span className="text-sm font-semibold text-amber-600 ml-1">${discPrice.toFixed(2)}</span></>
+                              }
+                              return <span className="text-sm font-semibold text-amber-600">${c.unitPrice.toFixed(2)}</span>
+                            })()}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 bg-orange-50 border border-gray-200 rounded-lg p-0.5">
+                              <button onClick={() => onUpdateQty(c.key, Math.max(1, c.qty - 1))} className="w-6 h-6 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors">-</button>
+                              <span className="w-6 text-center text-sm font-medium text-gray-800">{c.qty}</span>
+                              <button onClick={() => onUpdateQty(c.key, c.qty + 1)} className="w-6 h-6 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors">+</button>
+                            </div>
+                            <button onClick={() => handleDeleteItem(c.key)} className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Remove">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -123,13 +144,15 @@ export default function CartSidebar({
                   {/* Regular non-buy_x_get_y promotions */}
                   {cart.map(c => {
                     const cur = products?.find(p => p.id === c.id)
+                    const sizeObj = cur?.sizes?.find((s) => s.name === c.size)
+                    const promo = resolvePromotionForSize(cur?.promotion, sizeObj?.id)
                     const rows = []
-                    if (cur?.promotion && cur.promotion.type !== 'buy_x_get_y' && cur.promotion.type !== 'combo_discount' && cur.promotion.type !== 'combo') {
-                      const d = c.unitPrice * c.qty - calcFinalPrice(c.unitPrice, cur.promotion, c.qty) * c.qty
+                    if (promo && promo.type !== 'buy_x_get_y' && promo.type !== 'combo_discount' && promo.type !== 'combo') {
+                      const d = c.unitPrice * c.qty - calcFinalPrice(c.unitPrice, promo, c.qty) * c.qty
                       if (d > 0) {
                         rows.push(
                           <div key={c.key + '-reg'} className="flex items-center justify-between text-[10px] text-green-600 mb-0.5">
-                            <span className="truncate flex-1 mr-2">{getPromotionLabel(cur.promotion)} &mdash; {c.name}</span>
+                            <span className="truncate flex-1 mr-2">{getPromotionLabel(promo)} &mdash; {c.name}</span>
                             <span className="font-medium">-${d.toFixed(2)}</span>
                           </div>
                         )

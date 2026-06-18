@@ -1,3 +1,22 @@
+// Resolve the discount value for a specific size. Promotions may define
+// per-size overrides in `size_values` ({ "<size_id>": value }); when a size
+// has no override, the base `value` is used.
+export function promotionValueForSize(promotion, sizeId) {
+  if (!promotion) return undefined
+  const sv = promotion.size_values
+  if (sv && sizeId != null && sv[sizeId] != null && sv[sizeId] !== '') {
+    return Number(sv[sizeId])
+  }
+  return promotion.value != null ? Number(promotion.value) : undefined
+}
+
+// Return a copy of the promotion with `value` set to the size-specific value,
+// so the existing calc helpers can stay size-agnostic.
+export function resolvePromotionForSize(promotion, sizeId) {
+  if (!promotion) return promotion
+  return { ...promotion, value: promotionValueForSize(promotion, sizeId) }
+}
+
 export function calcFinalPrice(unitPrice, promotion, qty = 1) {
   if (!promotion) return unitPrice
 
@@ -60,6 +79,24 @@ export function getPromotionLabel(promotion) {
       return `$${Number(promotion.value).toFixed(2)} Off Combo`
     default:
       return 'Promotion'
+  }
+}
+
+// Short label suited to a small corner ribbon (e.g. on cart thumbnails)
+export function getPromotionShort(promotion) {
+  if (!promotion) return ''
+  switch (promotion.type) {
+    case 'percentage':
+      return `${parseFloat(promotion.value)}% OFF`
+    case 'fixed_amount':
+      return `$${Number(promotion.value).toFixed(0)} OFF`
+    case 'buy_x_get_y':
+      return `BUY ${promotion.buy_qty} GET ${promotion.free_qty}`
+    case 'combo':
+    case 'combo_discount':
+      return 'COMBO'
+    default:
+      return 'PROMO'
   }
 }
 

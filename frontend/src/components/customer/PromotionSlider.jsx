@@ -1,9 +1,31 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useCart } from '../../context/CartContext.jsx'
+import { resolvePromotionForSize } from '../../utils/promotion.js'
 import Loader from '../shared/Loader.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
-const colors = ['orange', 'red', 'green']
+const STORAGE_URL = import.meta.env.VITE_STORAGE_URL
+
+function imgUrl(image) {
+  if (!image) return 'https://placehold.co/600x600?text=No+Image'
+  return image.startsWith('http') ? image : `${STORAGE_URL}/${image}`
+}
+
+function promoLabel(promotion) {
+  if (!promotion) return null
+  switch (promotion.type) {
+    case 'percentage':
+      return `${parseFloat(promotion.value)}% OFF`
+    case 'fixed_amount':
+      return `$${promotion.value} OFF`
+    case 'buy_x_get_y':
+      return `Buy ${promotion.buy_qty} Get ${promotion.free_qty}`
+    case 'combo':
+      return 'Combo Deal'
+    default:
+      return 'Promo'
+  }
+}
 
 export default function PromotionSlider({ products: propProducts }) {
   const { addItem } = useCart()
@@ -12,7 +34,8 @@ export default function PromotionSlider({ products: propProducts }) {
   const [loading, setLoading] = useState(!propProducts)
   const [addedSlideId, setAddedSlideId] = useState(null)
 
-  const products = propProducts ?? fetched
+  // Only ever show products that have an active promotion
+  const products = (propProducts ?? fetched).filter((p) => p.promotion)
 
   useEffect(() => {
     if (propProducts) return
@@ -33,23 +56,23 @@ export default function PromotionSlider({ products: propProducts }) {
   const total = products.length
 
   const goTo = useCallback((index) => {
+    if (total === 0) return
     setCurrent((index + total) % total)
   }, [total])
 
   const next = useCallback(() => goTo(current + 1), [current, goTo])
-  const prev = useCallback(() => goTo(current - 1), [current, goTo])
 
   useEffect(() => {
     if (total <= 1) return
-    const timer = setInterval(next, 4000)
+    const timer = setInterval(next, 5000)
     return () => clearInterval(timer)
   }, [next, total])
 
   if (loading) {
     return (
       <section className="relative w-full max-w-7xl mx-auto mt-6 sm:mt-10 px-4">
-        <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden">
-          <div className="h-[400px] sm:h-[500px] md:h-[600px] flex items-center justify-center">
+        <div className="bg-[#f7efe6] rounded-3xl shadow-sm overflow-hidden">
+          <div className="h-[420px] sm:h-[480px] flex items-center justify-center">
             <Loader page={false} text="Loading promotions..." />
           </div>
         </div>
@@ -57,18 +80,17 @@ export default function PromotionSlider({ products: propProducts }) {
     )
   }
 
-  // Empty state
   if (total === 0) {
     return (
       <section className="relative w-full max-w-7xl mx-auto mt-6 sm:mt-10 px-4">
-        <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-3xl shadow-xl overflow-hidden">
-          <div className="h-[400px] sm:h-[500px] md:h-[600px] flex items-center justify-center">
+        <div className="bg-[#f7efe6] rounded-3xl shadow-sm overflow-hidden">
+          <div className="h-[420px] sm:h-[480px] flex items-center justify-center">
             <div className="text-center px-4">
-              <svg className="w-20 h-20 mx-auto text-slate-300 mb-4 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-20 h-20 mx-auto text-[#c9b29a] mb-4 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <h3 className="text-xl font-bold text-slate-700 mb-2">No promotions available</h3>
-              <p className="text-slate-500">Check back later for exciting offers!</p>
+              <h3 className="text-xl font-bold text-[#5b3a29] mb-2">No promotions available</h3>
+              <p className="text-[#8a715c]">Check back later for exciting offers!</p>
             </div>
           </div>
         </div>
@@ -79,6 +101,7 @@ export default function PromotionSlider({ products: propProducts }) {
   function handleAdd(p, slidePrice) {
     const item = {
       ...p,
+      promotion: resolvePromotionForSize(p.promotion, p.sizes?.[0]?.id),
       size: p.sizes?.[0]?.name || '',
       sugar: p.sugar_levels?.[0]?.name || '',
       ice: p.ice_levels?.[0]?.name || '',
@@ -88,274 +111,166 @@ export default function PromotionSlider({ products: propProducts }) {
     }
     addItem(p, item)
     setAddedSlideId(p.id)
-    setTimeout(() => {
-      setAddedSlideId(null)
-    }, 1200)
+    setTimeout(() => setAddedSlideId(null), 1200)
   }
 
-  const badgeColors = { 
-    orange: 'bg-linear-to-r from-orange-500 to-amber-600', 
-    red: 'bg-linear-to-r from-rose-500 to-red-600', 
-    green: 'bg-linear-to-r from-emerald-500 to-amber-600' 
-  }
-  
-  const btnColors = { 
-    orange: 'bg-linear-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 active:scale-95 shadow-md shadow-orange-500/10', 
-    red: 'bg-linear-to-r from-rose-500 to-red-500 hover:from-rose-600 hover:to-red-600 active:scale-95 shadow-md shadow-rose-500/10', 
-    green: 'bg-linear-to-r from-emerald-500 to-amber-500 hover:from-emerald-600 hover:to-amber-600 active:scale-95 shadow-md shadow-emerald-500/10' 
-  }
-  
-  const priceColors = { 
-    orange: 'text-amber-500', 
-    red: 'text-rose-500', 
-    green: 'text-emerald-500' 
-  }
+  const featured = products[current]
+  const featuredPrice = Number(featured.sizes?.[0]?.pivot?.price ?? 0)
+  const avatars = products.slice(0, 4)
 
-  const promoNames = ['🔥 HOT PROMOTION', '⚡ LIMITED OFFER', '🚚 FREE DELIVERY']
+  // A sliding window of 3 promo products starting at the current slide
+  const visibleCards = Array.from({ length: Math.min(3, total) }, (_, k) => {
+    const index = (current + k) % total
+    return { product: products[index], index }
+  })
 
   return (
     <section className="relative w-full max-w-7xl mx-auto mt-6 sm:mt-10 px-2 sm:px-4">
-      <div className="relative bg-linear-to-br from-slate-950 to-slate-900 rounded-3xl shadow-2xl overflow-hidden">
-        {/* Slider Container */}
-        <div
-          className="flex transition-transform duration-700 ease-in-out"
-          style={{ transform: `translateX(-${current * 100}%)` }}
-        >
-          {products.map((p, i) => {
-            const slideColor = colors[i % colors.length]
-            const slidePrice = Number(p.sizes?.[0]?.pivot?.price ?? 0)
+      <div className="relative overflow-hidden rounded-3xl bg-[#f7efe6] shadow-sm">
+        {/* Soft decorative blob on the right */}
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-white/40 rounded-l-[40%] hidden lg:block" />
 
-            return (
-              <div key={p.id} className="min-w-full relative">
-                {/* Background Image with better scaling */}
-                <div className="relative h-[480px] sm:h-[520px] md:h-[580px] lg:h-[620px]">
-                  <img
-                    src={p.image || "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4"}
-                    className="absolute inset-0 w-full h-full object-cover opacity-85 select-none"
-                    alt={p.name}
-                  />
-                  <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/65 to-transparent" />
-                </div>
-
-                {/* Content Overlay */}
-                <div className="absolute inset-0 flex flex-col lg:flex-row items-center justify-between px-6 sm:px-12 md:px-16 lg:px-20 py-8 sm:py-10">
-                  {/* Left Side - Text Content */}
-                  <div className="text-white text-center lg:text-left max-w-2xl lg:max-w-xl mb-6 lg:mb-0 flex flex-col items-center lg:items-start">
-                    <span className={`${badgeColors[slideColor]} inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold shadow-lg mb-4 sm:mb-6 select-none tracking-wider uppercase backdrop-blur-xs`}>
-                      <span>{promoNames[i % promoNames.length]}</span>
-                      {p.promotion && (
-                        <span className="w-1 h-3 bg-white/40 rounded-full"></span>
-                      )}
-                      {p.promotion && (
-                        <span>
-                          {p.promotion.type === 'percentage' && `${parseFloat(p.promotion.value)}% OFF`}
-                          {p.promotion.type === 'fixed_amount' && `$${p.promotion.value} OFF`}
-                          {p.promotion.type === 'buy_x_get_y' && `Buy ${p.promotion.buy_qty} Get ${p.promotion.free_qty}`}
-                          {p.promotion.type === 'combo' && 'COMBO'}
-                        </span>
-                      )}
-                    </span>
-
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight text-white drop-shadow-md line-clamp-2">
-                      {p.name}
-                    </h1>
-
-                    <p className="mt-3 sm:mt-5 text-sm sm:text-base md:text-lg text-slate-200/90 max-w-md line-clamp-2 leading-relaxed">
-                      {p.description || "Don't miss out on this amazing promo deal!"}
-                    </p>
-
-                    <a
-                      href="/promotion"
-                      className={`mt-6 sm:mt-8 inline-flex items-center gap-2 ${btnColors[slideColor]} transition-all duration-300 hover:scale-105 active:scale-95 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full font-bold text-sm sm:text-base shadow-lg`}
-                    >
-                      <span>Explore Offers</span>
-                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                      </svg>
-                    </a>
-                  </div>
-
-                  {/* Right Side - Product Card Overlay */}
-                  {/* Mobile version (simplified) */}
-                  <div className="block lg:hidden w-full max-w-[260px] bg-white/95 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl p-3">
-                    <div className="relative overflow-hidden rounded-xl bg-orange-50 aspect-4/3 mb-2.5">
-                      {/* Promotion Badge */}
-                      {p.promotion && (
-                        <div className="absolute top-2 left-2 z-10">
-                          <div className="bg-linear-to-r from-orange-500 to-rose-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-md whitespace-nowrap">
-                            {p.promotion.type === 'percentage' 
-                              ? `${parseFloat(p.promotion.value)}% OFF`
-                              : p.promotion.type === 'buy_x_get_y'
-                                ? `Buy ${p.promotion.buy_qty} Get ${p.promotion.free_qty}`
-                                : 'PROMO'}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Product Image */}
-                      <img
-                        src={p.image ? (p.image.startsWith('http') ? p.image : `${import.meta.env.VITE_STORAGE_URL}/${p.image}`) : 'https://placehold.co/400x400?text=No+Image'}
-                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                        alt={p.name}
-                      />
-                    </div>
-
-                    <div>
-                      <h3 className="text-xs sm:text-sm font-bold text-slate-800 line-clamp-1">
-                        {p.name}
-                      </h3>
-
-                      <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-100/60">
-                        <span className={`text-sm sm:text-base font-extrabold ${priceColors[slideColor]}`}>
-                          ${slidePrice.toFixed(2)}
-                        </span>
-
-                        <button
-                          onClick={() => handleAdd(p, slidePrice)}
-                          className={`px-3 py-1.5 rounded-xl text-[10px] sm:text-xs font-bold transition-all duration-300 active:scale-95 flex items-center gap-1 ${
-                            addedSlideId === p.id
-                              ? 'bg-emerald-500 text-white'
-                              : `${btnColors[slideColor]} text-white`
-                          }`}
-                        >
-                          {addedSlideId === p.id ? (
-                            <>
-                              <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                              </svg>
-                              <span>Added</span>
-                            </>
-                          ) : (
-                            <>
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                              </svg>
-                              <span>Add</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Desktop/Tablet version (full details) */}
-                  <div className="hidden lg:block bg-white/10 border border-white/20 backdrop-blur-md rounded-3xl p-5 sm:p-6 w-full sm:w-auto max-w-[280px] sm:max-w-[320px] transition-all hover:bg-white/15 duration-300 shadow-2xl">
-                    <div className="relative overflow-hidden rounded-2xl bg-orange-50 aspect-4/3 mb-4 shadow-inner">
-                      {/* Promotion Badge */}
-                      {p.promotion && (
-                        <div className="absolute top-3 left-3 z-10">
-                          <div className="bg-linear-to-r from-orange-500 to-rose-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
-                            {p.promotion.type === 'buy_x_get_y'
-                              ? `Buy ${p.promotion.buy_qty} Get ${p.promotion.free_qty} Free`
-                              : p.promotion.type === 'percentage'
-                                ? `${parseFloat(p.promotion.value)}% OFF`
-                                : p.promotion.type === 'fixed_amount'
-                                  ? `$${p.promotion.value} OFF`
-                                  : p.promotion.type === 'combo'
-                                    ? '🎯 Combo Deal'
-                                    : '🎉 Promo'}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Product Image */}
-                      <img
-                        src={p.image ? (p.image.startsWith('http') ? p.image : `${import.meta.env.VITE_STORAGE_URL}/${p.image}`) : 'https://via.placeholder.com/400'}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                        alt={p.name}
-                      />
-                    </div>
-
-                    <div>
-                      <h3 className="text-base sm:text-lg font-bold text-white line-clamp-1">
-                        {p.name}
-                      </h3>
-
-                      <p className="text-xs text-slate-300 mt-1 line-clamp-2 leading-relaxed min-h-8">
-                        {p.description || 'Delicately crafted beverage made from selected premium ingredients.'}
-                      </p>
-
-                      <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/15">
-                        <div className="flex flex-col">
-                          {p.original_price && (
-                            <span className="text-xs text-white/50 line-through mb-0.5">
-                              ${p.original_price}
-                            </span>
-                          )}
-                          <span className={`text-xl sm:text-2xl font-extrabold ${priceColors[slideColor]}`}>
-                            ${slidePrice.toFixed(2)}
-                          </span>
-                        </div>
-
-                        <button
-                          onClick={() => handleAdd(p, slidePrice)}
-                          className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl transition-all duration-300 active:scale-95 flex items-center gap-2 text-xs sm:text-sm font-bold shadow-md hover:shadow-lg ${
-                            addedSlideId === p.id
-                              ? 'bg-emerald-500 text-white shadow-emerald-100 scale-105'
-                              : `${btnColors[slideColor]} text-white`
-                          }`}
-                        >
-                          {addedSlideId === p.id ? (
-                            <>
-                              <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                              </svg>
-                              <span>Added</span>
-                            </>
-                          ) : (
-                            <>
-                              <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 18v3" />
-                              </svg>
-                              <span>Add Cart</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+        <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 items-center px-6 sm:px-10 md:px-14 py-10 sm:py-12">
+          {/* Left — text content */}
+          <div className="text-center lg:text-left">
+            {featured.promotion && (
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 mb-4">
+                {featured.promotion.name && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5b3a29] text-white text-[11px] font-bold tracking-wide">
+                    {featured.promotion.name}
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#5b3a29]/10 text-[#5b3a29] text-[11px] font-bold uppercase tracking-wider">
+                  {promoLabel(featured.promotion)}
+                </span>
               </div>
-            )
-          })}
+            )}
+
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-tight tracking-tight text-[#3d2817]">
+              Awaken Your Senses
+            </h1>
+
+            <p className="mt-4 text-sm sm:text-base text-[#7a6450] max-w-md mx-auto lg:mx-0 leading-relaxed">
+              {featured.description ||
+                'Because life is too short for bland coffee. Our brews are an invitation to taste, to feel, to savor.'}
+            </p>
+
+            {/* CTA buttons */}
+            <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-3">
+              <button
+                onClick={() => handleAdd(featured, featuredPrice)}
+                className={`inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all duration-300 active:scale-95 shadow-md ${
+                  addedSlideId === featured.id
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-[#5b3a29] hover:bg-[#4a2f20] text-white'
+                }`}
+              >
+                {addedSlideId === featured.id ? (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Added</span>
+                  </>
+                ) : (
+                  <span>Order Now</span>
+                )}
+              </button>
+
+              <a
+                href="/promotion"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold text-[#5b3a29] border border-[#5b3a29]/30 hover:bg-[#5b3a29]/5 transition-all duration-300 active:scale-95"
+              >
+                View Offers
+              </a>
+            </div>
+
+            {/* Social proof */}
+            <div className="mt-6 flex items-center justify-center lg:justify-start gap-3">
+              <div className="flex -space-x-3">
+                {avatars.map((p) => (
+                  <img
+                    key={p.id}
+                    src={imgUrl(p.image)}
+                    alt=""
+                    className="w-9 h-9 rounded-full border-2 border-[#f7efe6] object-cover"
+                  />
+                ))}
+                <span className="w-9 h-9 rounded-full border-2 border-[#f7efe6] bg-[#5b3a29] text-white text-[10px] font-bold flex items-center justify-center">
+                  +40
+                </span>
+              </div>
+              <p className="text-xs text-[#7a6450] font-medium">Happy customers recommends us!</p>
+            </div>
+
+            {/* Promotion product cards (sliding window of 3) */}
+            <div className="mt-8">
+              <h3 className="text-sm font-bold text-[#3d2817] mb-3">On Promotion</h3>
+              <div className="grid grid-cols-3 gap-3 max-w-md mx-auto lg:mx-0">
+                {visibleCards.map(({ product: p, index: i }) => {
+                  const price = Number(p.sizes?.[0]?.pivot?.price ?? 0)
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => goTo(i)}
+                      className={`text-left bg-white rounded-2xl p-2 transition-all duration-300 active:scale-95 ${
+                        i === current ? 'ring-2 ring-[#5b3a29] shadow-md' : 'hover:shadow-md border border-black/5'
+                      }`}
+                    >
+                      <div className="relative aspect-square overflow-hidden rounded-xl bg-[#f1e7db] mb-2">
+                        <img src={imgUrl(p.image)} alt={p.name} className="w-full h-full object-cover" />
+                        {p.promotion && (
+                          <span className="absolute top-1 left-1 bg-[#5b3a29] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
+                            {promoLabel(p.promotion)}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] font-bold text-[#3d2817] line-clamp-1">{p.name}</p>
+                      {p.promotion?.name && (
+                        <p className="text-[9px] font-medium text-[#7a6450] line-clamp-1">{p.promotion.name}</p>
+                      )}
+                      <p className="text-[10px] font-semibold text-[#a07d2e]">${price.toFixed(2)}</p>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Right — featured product image */}
+          <div className="relative flex items-center justify-center">
+            <div className="absolute w-64 h-64 sm:w-80 sm:h-80 rounded-full bg-[#e9d8c5] blur-2xl opacity-70" />
+            <div className="relative w-full max-w-md">
+              <img
+                key={featured.id}
+                src={imgUrl(featured.image)}
+                alt={featured.name}
+                className="relative z-10 w-full h-[260px] sm:h-[360px] object-contain drop-shadow-2xl transition-opacity duration-500"
+              />
+              {/* Floating price tag */}
+              <div className="absolute bottom-2 right-2 sm:right-6 z-20 bg-white rounded-2xl shadow-lg px-4 py-3 text-center">
+                <p className="text-[10px] font-semibold text-[#7a6450] line-clamp-1 max-w-[120px]">{featured.name}</p>
+                <p className="text-lg font-extrabold text-[#5b3a29]">${featuredPrice.toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Navigation Arrows - Touch friendly */}
-        <button
-          onClick={prev}
-          className="absolute top-1/2 left-4 sm:left-6 -translate-y-1/2 bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 backdrop-blur-md w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-white transition-all duration-300 z-10 hover:scale-105"
-          aria-label="Previous slide"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-
-        <button
-          onClick={next}
-          className="absolute top-1/2 right-4 sm:right-6 -translate-y-1/2 bg-white/10 hover:bg-white/20 active:scale-95 border border-white/20 backdrop-blur-md w-12 h-12 rounded-full shadow-lg flex items-center justify-center text-white transition-all duration-300 z-10 hover:scale-105"
-          aria-label="Next slide"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-
-        {/* Dots Navigation */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
-          {products.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              className={`transition-all duration-300 rounded-full ${
-                i === current 
-                  ? 'w-8 h-2 bg-white shadow-lg' 
-                  : 'w-2 h-2 bg-white/40 hover:bg-white/60'
-              }`}
-              aria-label={`Go to slide ${i + 1}`}
-            />
-          ))}
-        </div>
+        {/* Dots */}
+        {total > 1 && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {products.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                className={`transition-all duration-300 rounded-full ${
+                  i === current ? 'w-7 h-2 bg-[#5b3a29]' : 'w-2 h-2 bg-[#5b3a29]/30 hover:bg-[#5b3a29]/50'
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   )

@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { calcFinalPrice } from '../../../../utils/promotion.js'
+import { calcFinalPrice, resolvePromotionForSize, getPromotionShort } from '../../../../utils/promotion.js'
 import { X, Plus, Minus, Gift } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -23,7 +23,8 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
     }
   }
   const price = basePrice + addonPrice
-  const finalPrice = product.promotion?.type === 'buy_x_get_y' ? price : calcFinalPrice(price, product.promotion)
+  const resolvedPromotion = resolvePromotionForSize(product.promotion, size?.id)
+  const finalPrice = resolvedPromotion?.type === 'buy_x_get_y' ? price : calcFinalPrice(price, resolvedPromotion)
   const hasDiscount = finalPrice < price
   
   // Calculate Buy X Get Y promotion details
@@ -81,21 +82,15 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
 
   return (
     <>
-      <div className="rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all duration-300 flex flex-col bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=60')" }}>
+      <div className="relative rounded-xl overflow-hidden transition-all duration-300 flex flex-col bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=60')" }}>
+        {/* Diagonal promotion ribbon */}
+        {resolvedPromotion && (
+          <span className="absolute -left-10 top-3.5 w-32 -rotate-45 bg-gradient-to-r from-red-600 to-rose-500 text-white text-[9px] font-extrabold leading-none uppercase tracking-wide text-center py-1 z-20 shadow pointer-events-none">
+            {getPromotionShort(resolvedPromotion)}
+          </span>
+        )}
         <div className="bg-white/90 backdrop-blur-sm flex flex-col flex-1">
           <div className="p-3 pb-0 relative cursor-pointer" onClick={() => setShowModal(true)}>
-            {product.promotion && (
-              <div className="absolute top-4 left-4 z-10">
-                <span className="bg-red-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1">
-                  <Gift className="w-3 h-3" />
-                  {product.promotion.type === 'percentage' && `${parseFloat(product.promotion.value)}% OFF`}
-                  {product.promotion.type === 'fixed_amount' && `$${product.promotion.value} OFF`}
-                  {product.promotion.type === 'buy_x_get_y' && `Buy ${product.promotion.buy_qty} Get ${product.promotion.free_qty}`}
-                  {product.promotion.type === 'combo' && 'COMBO'}
-                  {product.promotion.type === 'combo_discount' && `${product.promotion.value}% OFF COMBO`}
-                </span>
-              </div>
-            )}
             {product.image ? (
               <img
                 src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`}
@@ -118,7 +113,7 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
             </div>
             <button
               onClick={() => setShowModal(true)}
-              className="mt-auto w-8 h-8 rounded-full bg-gradient-to-r from-amber-900 to-amber-800 text-white flex items-center justify-center hover:from-amber-950 hover:to-amber-900 transition-all duration-300 shadow-md hover:shadow-lg mx-auto"
+              className="mt-auto w-8 h-8 rounded-full bg-gradient-to-r from-amber-900 to-amber-800 text-white flex items-center justify-center hover:from-amber-950 hover:to-amber-900 transition-all duration-300 mx-auto"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -146,11 +141,11 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                 )}
                 <div>
                   <h2 className="text-white font-semibold text-lg">{product.name}</h2>
-                  {product.promotion && (
+                  {resolvedPromotion && (
                     <p className="text-xs text-white/80 mt-0.5">
-                      {product.promotion.type === 'percentage' && `${product.promotion.value}% OFF`}
-                      {product.promotion.type === 'fixed_amount' && `$${product.promotion.value} OFF`}
-                      {product.promotion.type === 'buy_x_get_y' && `Buy ${product.promotion.buy_qty} Get ${product.promotion.free_qty}`}
+                      {resolvedPromotion.type === 'percentage' && `${parseFloat(resolvedPromotion.value)}% OFF`}
+                      {resolvedPromotion.type === 'fixed_amount' && `$${resolvedPromotion.value} OFF`}
+                      {resolvedPromotion.type === 'buy_x_get_y' && `Buy ${resolvedPromotion.buy_qty} Get ${resolvedPromotion.free_qty}`}
                     </p>
                   )}
                 </div>
@@ -170,22 +165,41 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                     Select Size
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    {product.sizes?.map((s) => (
-                      <button
-                        key={s.id}
-                        onClick={() => setSelectedSize(s.name)}
-                        className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 ${
-                          selectedSize === s.name
-                            ? 'bg-amber-600 text-white border-amber-600 shadow-md'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
-                        }`}
-                      >
-                        {s.name}
-                        <span className="block text-xs mt-0.5">
-                          ${Number(s.pivot?.price ?? 0).toFixed(2)}
-                        </span>
-                      </button>
-                    ))}
+                    {product.sizes?.map((s) => {
+                      const sizePrice = Number(s.pivot?.price ?? 0)
+                      const sizePromo = resolvePromotionForSize(product.promotion, s.id)
+                      const sizeFinal = sizePromo?.type === 'buy_x_get_y'
+                        ? sizePrice
+                        : calcFinalPrice(sizePrice, sizePromo)
+                      const sizeHasDiscount = sizeFinal < sizePrice
+                      const isSelected = selectedSize === s.name
+                      return (
+                        <button
+                          key={s.id}
+                          onClick={() => setSelectedSize(s.name)}
+                          className={`relative px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 ${
+                            isSelected
+                              ? 'bg-amber-600 text-white border-amber-600 shadow-md'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
+                          }`}
+                        >
+                          {sizeHasDiscount && (
+                            <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full shadow">
+                              {sizePromo.type === 'percentage' ? `-${parseFloat(sizePromo.value)}%` : 'SALE'}
+                            </span>
+                          )}
+                          {s.name}
+                          {sizeHasDiscount ? (
+                            <span className="block text-xs mt-0.5 leading-tight">
+                              <span className={`line-through ${isSelected ? 'text-amber-100/80' : 'text-gray-400'}`}>${sizePrice.toFixed(2)}</span>
+                              <span className={`ml-1 font-bold ${isSelected ? 'text-white' : 'text-rose-600'}`}>${sizeFinal.toFixed(2)}</span>
+                            </span>
+                          ) : (
+                            <span className="block text-xs mt-0.5">${sizePrice.toFixed(2)}</span>
+                          )}
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
 

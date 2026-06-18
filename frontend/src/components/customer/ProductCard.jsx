@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react'
-import { calcFinalPrice } from '../../utils/promotion.js'
+import { calcFinalPrice, resolvePromotionForSize } from '../../utils/promotion.js'
 import ProductModal from './ProductModal.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -32,11 +32,13 @@ export default function ProductCard({ product, onAddToCart }) {
     return addon ? Number(addon.price) : 0
   }
 
+  const selectedSizeObj = product.sizes?.find((s) => s.name === selectedSize)
+  const resolvedPromotion = resolvePromotionForSize(product.promotion, selectedSizeObj?.id)
   const price = getBasePrice(selectedSize) + getAddOnPrice(selectedAddOn)
   const finalPrice =
-    product.promotion?.type === 'buy_x_get_y'
+    resolvedPromotion?.type === 'buy_x_get_y'
       ? price
-      : calcFinalPrice(price, product.promotion)
+      : calcFinalPrice(price, resolvedPromotion)
   const hasDiscount = finalPrice < price
 
   function promotionLabel(promo) {
@@ -73,7 +75,7 @@ export default function ProductCard({ product, onAddToCart }) {
 
     onAddToCart?.({
       ...product,
-      promotion: product.promotion,
+      promotion: resolvedPromotion,
       size: selectedSize,
       sugar: selectedSugar,
       ice: selectedIce,
@@ -86,7 +88,7 @@ export default function ProductCard({ product, onAddToCart }) {
     setTimeout(() => setIsAdded(false), 1200)
   }
 
-  const promoLabel = promotionLabel(product.promotion)
+  const promoLabel = promotionLabel(resolvedPromotion)
 
   return (
     <>

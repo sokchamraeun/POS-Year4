@@ -3,10 +3,11 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import CartSidebar from "./CartSidebar.jsx";
 import { useCart } from "../../context/CartContext.jsx";
 import { useCustomerAuth } from "../../context/CustomerAuthContext.jsx";
-import logo from "../../assets/images/logo.jpg";
+import { useSettings } from "../../context/SettingsContext.jsx";
 
 export default function Navbar() {
   const { totalItems: cartCount } = useCart();
+  const { settings } = useSettings();
   const { customer, isLoggedIn, logout: customerLogout } = useCustomerAuth();
   const [cartOpen, setCartOpen] = useState(false);
   const navigate = useNavigate();
@@ -78,17 +79,19 @@ export default function Navbar() {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full blur-lg opacity-30 group-hover:opacity-60 transition-all duration-300 scale-110" />
                 <div className="relative z-10 ring-2 ring-blue-200/80 group-hover:ring-blue-400/80 bg-white rounded-full p-0.5 shadow-lg transition-all duration-300">
                   <img
-                    src={logo}
-                    alt="The Bird Nest Logo"
+                    src={settings.logo}
+                    alt={`${settings.site_name} Logo`}
                     className="w-11 h-11 object-contain rounded-full transition-transform duration-300 group-hover:scale-110"
                   />
                 </div>
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="text-lg font-extrabold bg-gradient-to-r from-blue-700 via-blue-600 to-cyan-500 bg-clip-text text-transparent tracking-tight">
-                  The Bird Nest
+                  {settings.site_name}
                 </span>
-                <span className="text-xs text-gray-400 font-medium tracking-[0.2em] uppercase">Café</span>
+                {settings.tagline && (
+                  <span className="text-xs text-gray-400 font-medium tracking-[0.2em] uppercase">{settings.tagline}</span>
+                )}
               </div>
             </Link>
 

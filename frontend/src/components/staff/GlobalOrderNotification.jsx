@@ -52,7 +52,7 @@ export default function GlobalOrderNotification() {
     }
   }, [token])
 
-  function beep(count = 3) {
+  function beep(count = 1) {
     try {
       if (!audioCtxRef.current) {
         audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)()
@@ -81,15 +81,8 @@ export default function GlobalOrderNotification() {
   function playSound() {
     const audio = audioRef.current
     if (!audio) { beep(); return }
-    let played = 0
-    function play() {
-      if (played >= 3) return
-      played++
-      audio.currentTime = 0
-      audio.play().catch(() => { beep(); return })
-      audio.addEventListener('ended', play, { once: true })
-    }
-    play()
+    audio.currentTime = 0
+    audio.play().catch(() => beep())
   }
 
   function onNewOrder(order) {
