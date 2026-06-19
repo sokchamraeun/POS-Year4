@@ -391,7 +391,7 @@ export default function StockIn() {
             </div>
 
             {loading ? (
-              <div className="flex justify-center py-16"><Loader /></div>
+              <div className="flex justify-center py-16"><Loader page={false} text="Loading purchase orders..." /></div>
             ) : orders.length === 0 ? (
               <div className="text-center py-16 text-slate-400">No purchase orders found.</div>
             ) : (
@@ -634,7 +634,7 @@ export default function StockIn() {
             </div>
             <div className="overflow-y-auto px-6 py-5 space-y-4">
               {!detailData ? (
-                <div className="flex justify-center py-8"><Loader /></div>
+                <div className="flex justify-center py-8"><Loader page={false} text="Loading..." /></div>
               ) : (
                 <>
                   <div className="grid grid-cols-2 gap-3 text-sm">

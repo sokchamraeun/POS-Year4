@@ -343,14 +343,14 @@ export default function Sidebar() {
     <aside className="w-72 h-screen bg-zinc-950 text-zinc-100 flex flex-col shrink-0 border-r border-zinc-800/80 transition-all duration-300 shadow-2xl relative z-20">
       <div className="flex items-center gap-4 px-6 h-20 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
         {user?.avatar ? (
-          <img src={getImageUrl(user.avatar)} alt={user?.username || 'User'} className="w-11 h-11 rounded-xl object-cover shadow-lg" />
+          <img src={getImageUrl(user.avatar)} alt={user?.name || 'User'} className="w-11 h-11 rounded-xl object-cover shadow-lg" />
         ) : (
           <div className="w-11 h-11 bg-gradient-to-br from-amber-900 to-amber-950 rounded-xl flex items-center justify-center shadow-lg shadow-amber-700/25 transform -rotate-2">
-            <span className="text-white font-extrabold text-xl">{user?.username?.[0]?.toUpperCase() || 'V'}</span>
+            <span className="text-white font-extrabold text-xl">{user?.name?.[0]?.toUpperCase() || 'V'}</span>
           </div>
         )}
         <div className="flex flex-col">
-          <span className="text-base font-bold tracking-wide text-zinc-100">{user?.username || 'Visal'}</span>
+          <span className="text-base font-bold tracking-wide text-zinc-100">{user?.name || 'Staff'}</span>
           <span className="text-xs font-semibold text-amber-500 uppercase tracking-widest">{user?.role?.name || 'Staff'}</span>
         </div>
         <button

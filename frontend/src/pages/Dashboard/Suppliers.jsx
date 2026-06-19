@@ -162,7 +162,7 @@ export default function Suppliers() {
 
             {/* Table */}
             {loading ? (
-              <div className="flex justify-center py-16"><Loader /></div>
+              <div className="flex justify-center py-16"><Loader page={false} text="Loading suppliers..." /></div>
             ) : filtered.length === 0 ? (
               <div className="text-center py-16 text-slate-400">No suppliers found.</div>
             ) : (
