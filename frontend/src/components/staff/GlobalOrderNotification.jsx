@@ -119,46 +119,50 @@ export default function GlobalOrderNotification() {
     if (!token) return
     let interval
     let mounted = true
-    async function initMaxId() {
-      try {
-        const res = await fetch(`${API_URL}/orders?per_page=1`, { headers: headers() })
-        const json = await res.json()
-        const orders = json.data ?? []
-        if (orders.length > 0) {
-          lastOrderIdRef.current = Math.max(...orders.map(o => o.id))
-        }
-      } catch {}
-    }
-    initMaxId()
-    async function poll() {
+
+    // isBaseline=true establishes the starting point without alerting:
+    // every order that already exists when the app loads is marked as seen,
+    // so it can never trigger an alert again (incl. after a refresh).
+    async function poll(isBaseline = false) {
       try {
         const res = await fetch(`${API_URL}/orders?per_page=50`, { headers: headers() })
         const json = await res.json()
         const orders = json.data ?? []
-        if (!mounted || orders.length === 0) return
+        if (!mounted) return
 
         publishNewCount(orders)
+        if (orders.length === 0) return
+
+        const newMax = Math.max(...orders.map(o => o.id))
+
+        if (isBaseline) {
+          orders.forEach(o => seenIdsRef.current.add(o.id))
+          lastOrderIdRef.current = newMax
+          return
+        }
 
         const prevMax = lastOrderIdRef.current
-        const newMax = Math.max(...orders.map(o => o.id))
         if (newMax > prevMax) {
           lastOrderIdRef.current = newMax
           const newOrders = orders.filter(o => o.id > prevMax && !seenIdsRef.current.has(o.id))
           newOrders.forEach(o => seenIdsRef.current.add(o.id))
-          if (newOrders.length > 0) {
-            if (isStaffPageRef.current) {
-              setLatestOrder(newOrders[newOrders.length - 1])
-              setNewOrderAlert(true)
-              clearTimeout(alertTimeoutRef.current)
-              alertTimeoutRef.current = setTimeout(() => setNewOrderAlert(false), 5000)
-              playSound()
-            }
+          if (newOrders.length > 0 && isStaffPageRef.current) {
+            setLatestOrder(newOrders[newOrders.length - 1])
+            setNewOrderAlert(true)
+            clearTimeout(alertTimeoutRef.current)
+            alertTimeoutRef.current = setTimeout(() => setNewOrderAlert(false), 5000)
+            playSound()
           }
         }
       } catch {}
     }
-    poll()
-    interval = setInterval(poll, 8000)
+
+    // Establish the baseline first, then start polling for genuinely new orders.
+    poll(true).finally(() => {
+      if (!mounted) return
+      interval = setInterval(() => poll(false), 8000)
+    })
+
     return () => {
       mounted = false
       clearInterval(interval)
