@@ -16,6 +16,9 @@ class Setting extends Model
         'footer_location',
         'footer_phone',
         'footer_email',
+        'hours_weekday',
+        'hours_saturday',
+        'hours_sunday',
     ];
 
     /**

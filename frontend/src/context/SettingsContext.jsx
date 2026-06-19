@@ -10,6 +10,9 @@ const DEFAULTS = {
   footer_location: 'Phnom Penh, Cambodia',
   footer_phone: '+855 12 345 678',
   footer_email: 'contact@thebirdnest.com',
+  hours_weekday: '7:00 - 20:00',
+  hours_saturday: '8:00 - 21:00',
+  hours_sunday: '8:00 - 18:00',
 }
 
 const SettingsContext = createContext({ settings: DEFAULTS, refresh: () => {} })
@@ -30,6 +33,9 @@ export function SettingsProvider({ children }) {
           footer_location: data.footer_location || DEFAULTS.footer_location,
           footer_phone: data.footer_phone || DEFAULTS.footer_phone,
           footer_email: data.footer_email || DEFAULTS.footer_email,
+          hours_weekday: data.hours_weekday || DEFAULTS.hours_weekday,
+          hours_saturday: data.hours_saturday || DEFAULTS.hours_saturday,
+          hours_sunday: data.hours_sunday || DEFAULTS.hours_sunday,
         })
       })
       .catch(() => {})

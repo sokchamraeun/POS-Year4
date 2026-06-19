@@ -15,6 +15,7 @@ export default function Settings() {
   const [error, setError] = useState(null)
   const [form, setForm] = useState({
     site_name: '', tagline: '', footer_location: '', footer_phone: '', footer_email: '',
+    hours_weekday: '', hours_saturday: '', hours_sunday: '',
   })
   const [logoFile, setLogoFile] = useState(null)
   const [logoPreview, setLogoPreview] = useState('')
@@ -30,6 +31,9 @@ export default function Settings() {
           footer_location: data.footer_location ?? '',
           footer_phone: data.footer_phone ?? '',
           footer_email: data.footer_email ?? '',
+          hours_weekday: data.hours_weekday ?? '',
+          hours_saturday: data.hours_saturday ?? '',
+          hours_sunday: data.hours_sunday ?? '',
         })
         setLogoPreview(data.logo ?? '')
         setLoading(false)
@@ -54,6 +58,9 @@ export default function Settings() {
     fd.append('footer_location', form.footer_location ?? '')
     fd.append('footer_phone', form.footer_phone ?? '')
     fd.append('footer_email', form.footer_email ?? '')
+    fd.append('hours_weekday', form.hours_weekday ?? '')
+    fd.append('hours_saturday', form.hours_saturday ?? '')
+    fd.append('hours_sunday', form.hours_sunday ?? '')
     if (logoFile) fd.append('logo', logoFile)
 
     setSubmitting(true)
@@ -147,6 +154,25 @@ export default function Settings() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                       <input type="email" value={form.footer_email} onChange={(e) => setForm({ ...form, footer_email: e.target.value })} placeholder="contact@example.com" className={inputCls} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Opening hours */}
+                <div className="pt-2 border-t border-gray-100">
+                  <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 mt-4">Opening Hours</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Monday - Friday</label>
+                      <input type="text" value={form.hours_weekday} onChange={(e) => setForm({ ...form, hours_weekday: e.target.value })} placeholder="7:00 - 20:00" className={inputCls} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Saturday</label>
+                      <input type="text" value={form.hours_saturday} onChange={(e) => setForm({ ...form, hours_saturday: e.target.value })} placeholder="8:00 - 21:00" className={inputCls} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Sunday</label>
+                      <input type="text" value={form.hours_sunday} onChange={(e) => setForm({ ...form, hours_sunday: e.target.value })} placeholder="8:00 - 18:00" className={inputCls} />
                     </div>
                   </div>
                 </div>

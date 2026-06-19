@@ -34,6 +34,32 @@ export function CartProvider({ children }) {
     })
   }
 
+  function updateItem(oldKey, { size, sugar, ice, addOn, unitPrice, promotion, qty }) {
+    setItems((prev) => {
+      const current = prev.find((i) => i.key === oldKey)
+      if (!current) return prev
+
+      const newQty = qty ?? current.qty
+      const newKey = `${current.id}-${size}-${sugar}-${ice}-${addOn}`
+
+      // If another line already matches the new options, merge quantities into it
+      const duplicate = prev.find((i) => i.key === newKey && i.key !== oldKey)
+      if (duplicate) {
+        return prev
+          .filter((i) => i.key !== oldKey)
+          .map((i) =>
+            i.key === newKey ? { ...i, qty: i.qty + newQty } : i
+          )
+      }
+
+      return prev.map((i) =>
+        i.key === oldKey
+          ? { ...i, key: newKey, size, sugar, ice, addOn, unitPrice, promotion, qty: newQty }
+          : i
+      )
+    })
+  }
+
   function updateQty(key, qty) {
     if (qty <= 0) {
       setItems((prev) => prev.filter((i) => i.key !== key))
@@ -100,7 +126,7 @@ export function CartProvider({ children }) {
   }, [items])
 
   return (
-    <CartContext.Provider value={{ items, addItem, updateQty, removeItem, clearCart, totalItems, fullTotal, discountTotal, totalPrice, promotions, comboResult }}>
+    <CartContext.Provider value={{ items, addItem, updateItem, updateQty, removeItem, clearCart, totalItems, fullTotal, discountTotal, totalPrice, promotions, comboResult }}>
       {children}
     </CartContext.Provider>
   )

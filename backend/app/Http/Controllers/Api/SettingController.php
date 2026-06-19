@@ -24,6 +24,9 @@ class SettingController extends Controller
             'footer_location' => 'nullable|string|max:255',
             'footer_phone' => 'nullable|string|max:50',
             'footer_email' => 'nullable|email|max:255',
+            'hours_weekday' => 'nullable|string|max:100',
+            'hours_saturday' => 'nullable|string|max:100',
+            'hours_sunday' => 'nullable|string|max:100',
         ]);
 
         $setting = Setting::current();
