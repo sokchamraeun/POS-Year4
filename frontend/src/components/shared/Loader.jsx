@@ -11,19 +11,30 @@ export default function Loader({
       {/* POS Coffee Machine Card */}
       <div className="pos-float relative mx-auto mt-10 w-64 rounded-[2rem] bg-gradient-to-br from-amber-50 to-orange-100 border border-amber-200 shadow-2xl p-5">
 
-        {/* Coffee Icon Top */}
-        <div className="absolute -top-10 left-1/2 -translate-x-1/2">
-          <div className="relative w-20 h-20 rounded-full bg-white border border-amber-200 shadow-xl flex items-center justify-center">
+        {/* Coffee Icon Box */}
+        <div className="absolute -top-12 left-1/2 -translate-x-1/2">
+          <div className="relative w-24 h-24 rounded-3xl bg-white border border-amber-200 shadow-xl flex items-center justify-center">
             {/* Steam */}
-            <span className="pos-steam absolute -top-3 left-6 w-2 h-8 bg-amber-400/40 rounded-full blur-sm"></span>
-            <span className="pos-steam pos-steam-2 absolute -top-3 left-9 w-2 h-8 bg-amber-400/40 rounded-full blur-sm"></span>
-            <span className="pos-steam pos-steam-3 absolute -top-3 right-6 w-2 h-8 bg-amber-400/40 rounded-full blur-sm"></span>
-            <span className="text-4xl">☕</span>
+            <span className="pos-steam absolute -top-3 left-8 w-2 h-8 bg-amber-400/40 rounded-full blur-sm"></span>
+            <span className="pos-steam pos-steam-2 absolute -top-3 left-11 w-2 h-8 bg-amber-400/40 rounded-full blur-sm"></span>
+            <span className="pos-steam pos-steam-3 absolute -top-3 right-8 w-2 h-8 bg-amber-400/40 rounded-full blur-sm"></span>
+
+            {/* Coffee SVG Icon */}
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-200 flex items-center justify-center shadow-inner border border-amber-200">
+              <svg className="w-10 h-10 text-amber-900" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 8h12v6a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8Z" />
+                <path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16" />
+                <path d="M6 20h12" />
+                <path d="M7 4c0 1-1 1-1 2" />
+                <path d="M11 4c0 1-1 1-1 2" />
+                <path d="M15 4c0 1-1 1-1 2" />
+              </svg>
+            </div>
           </div>
         </div>
 
         {/* Screen */}
-        <div className="relative mt-8 h-44 rounded-3xl bg-gradient-to-br from-[#5c3a21] to-[#2f1b10] border border-amber-900/20 overflow-hidden p-4 shadow-inner">
+        <div className="relative mt-12 h-44 rounded-3xl bg-gradient-to-br from-[#5c3a21] to-[#2f1b10] border border-amber-900/20 overflow-hidden p-4 shadow-inner">
 
           {/* Scanner Line */}
           <div className="pos-scan absolute left-4 right-4 h-1 bg-amber-300 rounded-full shadow-[0_0_25px_#fcd34d]"></div>
