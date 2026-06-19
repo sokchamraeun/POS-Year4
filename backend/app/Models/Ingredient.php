@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'unit', 'stock_quantity', 'reorder_level', 'cost_per_unit', 'status'])]
+#[Fillable(['name', 'image', 'unit', 'stock_quantity', 'reorder_level', 'cost_per_unit', 'status'])]
 class Ingredient extends Model
 {
     use HasFactory;

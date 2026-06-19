@@ -13,6 +13,7 @@ export default function Inventory() {
   const [showHistory, setShowHistory] = useState(false)
   const [selectedIngredient, setSelectedIngredient] = useState(null)
   const [txForm, setTxForm] = useState({ type: 'purchase', quantity: '', note: '' })
+  const [saving, setSaving] = useState(false)
   const [txPage, setTxPage] = useState(1)
   const [txLastPage, setTxLastPage] = useState(1)
 
@@ -45,6 +46,8 @@ export default function Inventory() {
 
   const handleTx = async (e) => {
     e.preventDefault()
+    setSaving(true)
+
     try {
       const res = await fetch(`${API_URL}/inventory-transactions`, {
         method: 'POST',
@@ -67,12 +70,17 @@ export default function Inventory() {
       fetchData()
     } catch (err) {
       alert(err.message)
+    } finally {
+      setSaving(false)
     }
   }
 
   const formatDate = (dateStr) => {
     const d = new Date(dateStr)
-    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
   }
 
   const typeColors = {
@@ -90,6 +98,11 @@ export default function Inventory() {
     0
   )
 
+  const totalStock = ingredients.reduce(
+    (sum, ing) => sum + Number(ing.stock_quantity ?? 0),
+    0
+  )
+
   const getStockStatus = (ing) => {
     const stock = Number(ing.stock_quantity)
     const reorder = Number(ing.reorder_level)
@@ -97,122 +110,326 @@ export default function Inventory() {
     if (stock <= reorder) {
       return {
         text: 'Low Stock',
-        badge: 'bg-rose-100 text-rose-700 border-rose-200',
+        badge: 'bg-rose-50 text-rose-700 border-rose-200',
         bar: 'bg-rose-500',
+        row: 'bg-rose-50/40',
       }
     }
 
     if (stock <= reorder * 2) {
       return {
         text: 'Medium',
-        badge: 'bg-amber-100 text-amber-700 border-amber-200',
+        badge: 'bg-amber-50 text-amber-700 border-amber-200',
         bar: 'bg-amber-500',
+        row: 'bg-amber-50/30',
       }
     }
 
     return {
       text: 'Good',
-      badge: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      badge: 'bg-emerald-50 text-emerald-700 border-emerald-200',
       bar: 'bg-emerald-500',
+      row: 'bg-white',
     }
+  }
+
+  const getPercent = (ing) => {
+    const stock = Number(ing.stock_quantity)
+    const reorder = Number(ing.reorder_level)
+    return Math.min(100, Math.max(8, reorder > 0 ? (stock / (reorder * 3)) * 100 : 100))
   }
 
   if (loading) return <Loader text="Loading..." />
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-[#f8f4ef]">
       <Sidebar />
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
 
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="mb-6 rounded-2xl bg-white border border-gray-200 shadow-sm p-5">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-              <div>
-                <p className="text-sm font-semibold text-amber-600">Stock Management</p>
-                <h1 className="text-2xl font-bold text-gray-900 mt-1">Inventory</h1>
-                <p className="text-sm text-gray-500 mt-1">
-                  Manage ingredient stock, purchases, deductions and adjustments.
-                </p>
+          {/* Header */}
+          <div className="mb-6 rounded-[1.75rem] bg-gradient-to-br from-[#3b2415] via-[#5a341c] to-[#7c4a24] shadow-xl overflow-hidden">
+            <div className="relative p-6">
+              <div className="absolute -top-16 -right-16 w-56 h-56 bg-amber-300/20 rounded-full blur-3xl"></div>
+              <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-orange-300/10 rounded-full blur-3xl"></div>
+
+              <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-amber-100 text-xs font-bold mb-3">
+                    <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse"></span>
+                    Stock Management
+                  </div>
+
+                  <h1 className="text-3xl font-black text-white">
+                    Inventory List
+                  </h1>
+
+                  <p className="text-sm text-amber-100/80 mt-2">
+                    Manage ingredient stock, purchase, deduct, and adjust inventory.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setShowHistory(!showHistory)}
+                  className="w-fit bg-amber-400 text-[#3b2415] px-5 py-3 rounded-2xl text-sm font-black hover:bg-amber-300 transition-all shadow-lg shadow-black/10"
+                >
+                  {showHistory ? 'Back to Inventory List' : 'Transaction History'}
+                </button>
               </div>
 
-              <button
-                onClick={() => setShowHistory(!showHistory)}
-                className="bg-amber-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-amber-700 transition-colors shadow-sm"
-              >
-                {showHistory ? 'Adjust Stock' : 'Transaction History'}
-              </button>
-            </div>
+              {/* Stats */}
+              <div className="relative grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
+                <div className="rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md p-4">
+                  <p className="text-xs text-amber-100 font-semibold">Ingredients</p>
+                  <p className="text-3xl font-black text-white mt-1">{ingredients.length}</p>
+                </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
-              <div className="rounded-xl bg-amber-50 border border-amber-100 p-4">
-                <p className="text-xs text-amber-600 font-semibold">Ingredients</p>
-                <p className="text-2xl font-bold text-amber-900 mt-1">{ingredients.length}</p>
-              </div>
+                <div className="rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md p-4">
+                  <p className="text-xs text-rose-100 font-semibold">Low Stock</p>
+                  <p className="text-3xl font-black text-white mt-1">{lowStockCount}</p>
+                </div>
 
-              <div className="rounded-xl bg-rose-50 border border-rose-100 p-4">
-                <p className="text-xs text-rose-600 font-semibold">Low Stock</p>
-                <p className="text-2xl font-bold text-rose-900 mt-1">{lowStockCount}</p>
-              </div>
+                <div className="rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md p-4">
+                  <p className="text-xs text-sky-100 font-semibold">Transactions</p>
+                  <p className="text-3xl font-black text-white mt-1">{totalTransactions}</p>
+                </div>
 
-              <div className="rounded-xl bg-sky-50 border border-sky-100 p-4">
-                <p className="text-xs text-sky-600 font-semibold">Transactions</p>
-                <p className="text-2xl font-bold text-sky-900 mt-1">{totalTransactions}</p>
+                <div className="rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md p-4">
+                  <p className="text-xs text-emerald-100 font-semibold">Total Stock</p>
+                  <p className="text-3xl font-black text-white mt-1">{totalStock.toFixed(0)}</p>
+                </div>
               </div>
             </div>
           </div>
 
           {!showHistory ? (
             <>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-900">Adjust Stock</h2>
+              {/* Inventory List Header */}
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-black text-[#2b170c]">
+                    Ingredient Stock List
+                  </h2>
+                  <p className="text-sm text-stone-500 mt-1">
+                    View stock level and update quantity quickly.
+                  </p>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {/* Desktop List Table */}
+              <div className="hidden lg:block bg-white rounded-[1.75rem] border border-amber-100 shadow-sm overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-amber-50/80 border-b border-amber-100 text-left">
+                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide">
+                        Ingredient
+                      </th>
+                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide">
+                        Current Stock
+                      </th>
+                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide">
+                        Reorder Level
+                      </th>
+                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide">
+                        Stock Bar
+                      </th>
+                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide">
+                        Status
+                      </th>
+                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide text-right">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody className="divide-y divide-amber-50">
+                    {ingredients.map((ing) => {
+                      const status = getStockStatus(ing)
+                      const stock = Number(ing.stock_quantity)
+                      const reorder = Number(ing.reorder_level)
+                      const percent = getPercent(ing)
+
+                      return (
+                        <tr
+                          key={ing.id}
+                          className={`${status.row} hover:bg-amber-50/70 transition-colors`}
+                        >
+                          <td className="px-6 py-5">
+                            <div className="flex items-center gap-4">
+                              {ing.image ? (
+                                <img src={ing.image} alt={ing.name} className="w-12 h-12 rounded-2xl object-cover border border-amber-200 shadow-sm" />
+                              ) : (
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 flex items-center justify-center text-amber-900 font-black shadow-sm">
+                                  {ing.name?.charAt(0)?.toUpperCase() || 'I'}
+                                </div>
+                              )}
+
+                              <div>
+                                <p className="font-black text-[#2b170c]">
+                                  {ing.name}
+                                </p>
+                                <p className="text-xs text-stone-400 mt-0.5">
+                                  Unit: {ing.unit}
+                                </p>
+                                <p className="text-xs text-stone-400">
+                                  {ing.inventory_transactions_count ?? 0} transaction(s)
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="px-6 py-5">
+                            <div className="flex items-end gap-1">
+                              <span className="text-2xl font-black text-[#2b170c]">
+                                {stock.toFixed(2)}
+                              </span>
+                              <span className="text-xs text-stone-400 mb-1">
+                                {ing.unit}
+                              </span>
+                            </div>
+                          </td>
+
+                          <td className="px-6 py-5">
+                            <span className="font-bold text-stone-700">
+                              {reorder.toFixed(2)}
+                            </span>
+                            <span className="text-xs text-stone-400 ml-1">
+                              {ing.unit}
+                            </span>
+                          </td>
+
+                          <td className="px-6 py-5 min-w-[180px]">
+                            <div className="h-3 rounded-full bg-stone-100 overflow-hidden border border-stone-100">
+                              <div
+                                className={`h-full rounded-full ${status.bar}`}
+                                style={{ width: `${percent}%` }}
+                              />
+                            </div>
+                            <p className="text-[11px] text-stone-400 mt-1">
+                              {percent.toFixed(0)}% stock level
+                            </p>
+                          </td>
+
+                          <td className="px-6 py-5">
+                            <span className={`inline-flex px-3 py-1.5 rounded-full border text-xs font-black ${status.badge}`}>
+                              {status.text}
+                            </span>
+                          </td>
+
+                          <td className="px-6 py-5">
+                            <div className="flex justify-end gap-2">
+                              <button
+                                onClick={() => openTx(ing, 'purchase')}
+                                className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-black hover:bg-emerald-600 hover:text-white transition-all"
+                              >
+                                Purchase
+                              </button>
+
+                              <button
+                                onClick={() => openTx(ing, 'deduct')}
+                                className="px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-100 text-xs font-black hover:bg-rose-600 hover:text-white transition-all"
+                              >
+                                Deduct
+                              </button>
+
+                              <button
+                                onClick={() => openTx(ing, 'adjust')}
+                                className="px-3 py-2 rounded-xl bg-sky-50 text-sky-700 border border-sky-100 text-xs font-black hover:bg-sky-600 hover:text-white transition-all"
+                              >
+                                Adjust
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+
+                    {ingredients.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="px-6 py-14 text-center">
+                          <div className="w-16 h-16 rounded-3xl bg-amber-50 border border-amber-100 flex items-center justify-center mx-auto mb-3">
+                            <span className="text-2xl">📦</span>
+                          </div>
+                          <p className="font-bold text-stone-700">
+                            No ingredients found.
+                          </p>
+                          <p className="text-sm text-stone-400 mt-1">
+                            Add ingredients first to manage inventory stock.
+                          </p>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile List */}
+              <div className="lg:hidden space-y-4">
                 {ingredients.map((ing) => {
                   const status = getStockStatus(ing)
                   const stock = Number(ing.stock_quantity)
                   const reorder = Number(ing.reorder_level)
-                  const percent = Math.min(100, Math.max(8, reorder > 0 ? (stock / (reorder * 3)) * 100 : 100))
+                  const percent = getPercent(ing)
 
                   return (
                     <div
                       key={ing.id}
-                      className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all"
+                      className="bg-white rounded-[1.5rem] border border-amber-100 shadow-sm p-5"
                     >
-                      <div className="flex items-start justify-between gap-3 mb-4">
+                      <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
-                            {ing.name?.charAt(0)?.toUpperCase() || 'I'}
-                          </div>
+                          {ing.image ? (
+                            <img src={ing.image} alt={ing.name} className="w-12 h-12 rounded-2xl object-cover border border-amber-200" />
+                          ) : (
+                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 flex items-center justify-center text-amber-900 font-black">
+                              {ing.name?.charAt(0)?.toUpperCase() || 'I'}
+                            </div>
+                          )}
 
                           <div>
-                            <h3 className="font-bold text-gray-900">{ing.name}</h3>
-                            <span className="text-xs text-gray-400">{ing.unit}</span>
+                            <h3 className="font-black text-[#2b170c]">
+                              {ing.name}
+                            </h3>
+                            <p className="text-xs text-stone-400">
+                              Unit: {ing.unit}
+                            </p>
                           </div>
                         </div>
 
-                        <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${status.badge}`}>
+                        <span className={`text-xs font-black px-3 py-1 rounded-full border ${status.badge}`}>
                           {status.text}
                         </span>
                       </div>
 
-                      <div className="mb-4">
-                        <div className="text-xs text-gray-500 mb-1">In Stock</div>
-                        <div className="flex items-end gap-1">
-                          <div className="text-3xl font-black text-gray-900">
+                      <div className="grid grid-cols-2 gap-3 mt-5">
+                        <div className="rounded-2xl bg-amber-50 border border-amber-100 p-4">
+                          <p className="text-xs text-amber-700 font-bold">Current Stock</p>
+                          <p className="text-2xl font-black text-[#2b170c] mt-1">
                             {stock.toFixed(2)}
-                          </div>
-                          <div className="text-xs text-gray-400 mb-1">{ing.unit}</div>
+                          </p>
                         </div>
-                        <div className="text-xs text-gray-400 mt-1">
-                          Reorder level: {reorder.toFixed(2)}
+
+                        <div className="rounded-2xl bg-stone-50 border border-stone-100 p-4">
+                          <p className="text-xs text-stone-500 font-bold">Reorder Level</p>
+                          <p className="text-2xl font-black text-stone-800 mt-1">
+                            {reorder.toFixed(2)}
+                          </p>
                         </div>
                       </div>
 
-                      <div className="mb-4">
-                        <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
+                      <div className="mt-5">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-bold text-stone-500">
+                            Stock Level
+                          </span>
+                          <span className="text-xs font-bold text-stone-400">
+                            {percent.toFixed(0)}%
+                          </span>
+                        </div>
+
+                        <div className="h-3 rounded-full bg-stone-100 overflow-hidden">
                           <div
                             className={`h-full rounded-full ${status.bar}`}
                             style={{ width: `${percent}%` }}
@@ -220,28 +437,28 @@ export default function Inventory() {
                         </div>
                       </div>
 
-                      <div className="text-xs text-gray-500 mb-4">
+                      <p className="text-xs text-stone-400 mt-4">
                         {ing.inventory_transactions_count ?? 0} transaction(s)
-                      </div>
+                      </p>
 
-                      <div className="grid grid-cols-3 gap-2 mt-auto">
+                      <div className="grid grid-cols-3 gap-2 mt-4">
                         <button
                           onClick={() => openTx(ing, 'purchase')}
-                          className="bg-emerald-600 text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+                          className="bg-emerald-600 text-white text-xs font-black px-3 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors"
                         >
                           Purchase
                         </button>
 
                         <button
                           onClick={() => openTx(ing, 'deduct')}
-                          className="bg-rose-600 text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-rose-700 transition-colors"
+                          className="bg-rose-600 text-white text-xs font-black px-3 py-2.5 rounded-xl hover:bg-rose-700 transition-colors"
                         >
                           Deduct
                         </button>
 
                         <button
                           onClick={() => openTx(ing, 'adjust')}
-                          className="bg-sky-600 text-white text-xs font-semibold px-3 py-2 rounded-lg hover:bg-sky-700 transition-colors"
+                          className="bg-sky-600 text-white text-xs font-black px-3 py-2.5 rounded-xl hover:bg-sky-700 transition-colors"
                         >
                           Adjust
                         </button>
@@ -251,7 +468,7 @@ export default function Inventory() {
                 })}
 
                 {ingredients.length === 0 && (
-                  <div className="col-span-full bg-white rounded-2xl border border-gray-200 text-center text-gray-500 py-10">
+                  <div className="bg-white rounded-[1.5rem] border border-amber-100 text-center text-stone-500 py-12">
                     No ingredients found.
                   </div>
                 )}
@@ -259,12 +476,19 @@ export default function Inventory() {
             </>
           ) : (
             <>
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Transaction History</h2>
+              <div className="mb-4">
+                <h2 className="text-xl font-black text-[#2b170c]">
+                  Transaction History
+                </h2>
+                <p className="text-sm text-stone-500 mt-1">
+                  Recent stock purchase, deduct, and adjustment records.
+                </p>
+              </div>
 
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto">
+              <div className="bg-white rounded-[1.75rem] shadow-sm border border-amber-100 overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-gray-500 font-semibold bg-orange-50 border-b border-gray-200">
+                    <tr className="text-left text-amber-900 font-black bg-amber-50 border-b border-amber-100">
                       <th className="px-6 py-4">Date</th>
                       <th className="px-6 py-4">Ingredient</th>
                       <th className="px-6 py-4">Type</th>
@@ -273,31 +497,31 @@ export default function Inventory() {
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-amber-50">
                     {transactions.map((tx) => (
-                      <tr key={tx.id} className="hover:bg-teal-50/50 transition-colors">
-                        <td className="px-6 py-4 text-gray-500 text-xs">
+                      <tr key={tx.id} className="hover:bg-amber-50/60 transition-colors">
+                        <td className="px-6 py-4 text-stone-500 text-xs whitespace-nowrap">
                           {formatDate(tx.created_at)}
                         </td>
 
-                        <td className="px-6 py-4 font-semibold text-gray-900">
+                        <td className="px-6 py-4 font-black text-[#2b170c]">
                           {tx.ingredient?.name ?? '—'}
                         </td>
 
                         <td className="px-6 py-4">
-                          <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full ${typeColors[tx.type] || 'bg-gray-100 text-gray-600'}`}>
+                          <span className={`inline-block text-xs font-black px-3 py-1 rounded-full ${typeColors[tx.type] || 'bg-gray-100 text-gray-600'}`}>
                             {tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
                           </span>
                         </td>
 
                         <td className="px-6 py-4">
-                          <span className={`font-bold ${Number(tx.quantity) > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                          <span className={`font-black ${Number(tx.quantity) > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                             {Number(tx.quantity) > 0 ? '+' : ''}
                             {Number(tx.quantity).toFixed(2)}
                           </span>
                         </td>
 
-                        <td className="px-6 py-4 text-gray-500">
+                        <td className="px-6 py-4 text-stone-500">
                           {tx.note ?? '—'}
                         </td>
                       </tr>
@@ -305,7 +529,7 @@ export default function Inventory() {
 
                     {transactions.length === 0 && (
                       <tr>
-                        <td colSpan={5} className="px-6 py-10 text-center text-gray-500">
+                        <td colSpan={5} className="px-6 py-12 text-center text-stone-500">
                           No transactions yet.
                         </td>
                       </tr>
@@ -315,8 +539,8 @@ export default function Inventory() {
               </div>
 
               {txLastPage > 1 && (
-                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm px-6 py-4 mt-4 flex justify-between items-center">
-                  <span className="text-xs text-gray-500">
+                <div className="bg-white rounded-2xl border border-amber-100 shadow-sm px-6 py-4 mt-4 flex justify-between items-center">
+                  <span className="text-xs text-stone-500">
                     Page {txPage} of {txLastPage}
                   </span>
 
@@ -324,7 +548,7 @@ export default function Inventory() {
                     <button
                       onClick={() => setTxPage(p => Math.max(1, p - 1))}
                       disabled={txPage <= 1}
-                      className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg disabled:text-gray-300 disabled:cursor-not-allowed"
+                      className="px-4 py-2 text-xs font-black text-stone-600 hover:bg-amber-50 rounded-xl disabled:text-stone-300 disabled:cursor-not-allowed"
                     >
                       Prev
                     </button>
@@ -332,7 +556,7 @@ export default function Inventory() {
                     <button
                       onClick={() => setTxPage(p => Math.min(txLastPage, p + 1))}
                       disabled={txPage >= txLastPage}
-                      className="px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-100 rounded-lg disabled:text-gray-300 disabled:cursor-not-allowed"
+                      className="px-4 py-2 text-xs font-black text-stone-600 hover:bg-amber-50 rounded-xl disabled:text-stone-300 disabled:cursor-not-allowed"
                     >
                       Next
                     </button>
@@ -344,15 +568,20 @@ export default function Inventory() {
         </main>
       </div>
 
+      {/* Transaction Modal */}
       {showTxModal && selectedIngredient && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-100">
+          <div className="bg-white rounded-[1.75rem] shadow-2xl w-full max-w-md p-6 border border-amber-100">
             <div className="mb-5">
-              <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold mb-3">
-                {selectedIngredient.name?.charAt(0)?.toUpperCase() || 'I'}
-              </div>
+              {selectedIngredient.image ? (
+                <img src={selectedIngredient.image} alt={selectedIngredient.name} className="w-14 h-14 rounded-2xl object-cover border border-amber-200 mb-3" />
+              ) : (
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 text-amber-800 flex items-center justify-center font-black mb-3">
+                  {selectedIngredient.name?.charAt(0)?.toUpperCase() || 'I'}
+                </div>
+              )}
 
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-black text-[#2b170c]">
                 {txForm.type === 'purchase'
                   ? 'Purchase Stock'
                   : txForm.type === 'deduct'
@@ -360,9 +589,9 @@ export default function Inventory() {
                     : 'Adjust Stock'}
               </h2>
 
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-stone-500 mt-1">
                 {selectedIngredient.name} ({selectedIngredient.unit}) — Current:{' '}
-                <span className="font-semibold text-gray-700">
+                <span className="font-bold text-stone-700">
                   {Number(selectedIngredient.stock_quantity).toFixed(2)}
                 </span>
               </p>
@@ -370,7 +599,7 @@ export default function Inventory() {
 
             <form onSubmit={handleTx}>
               <div className="mb-4">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-bold text-stone-700 mb-1">
                   Quantity
                 </label>
 
@@ -382,39 +611,41 @@ export default function Inventory() {
                   min="0.01"
                   required
                   placeholder="Enter quantity"
-                  className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full border border-amber-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
               </div>
 
               <div className="mb-5">
-                <label className="block text-sm font-semibold text-gray-700 mb-1">
-                  Note (optional)
+                <label className="block text-sm font-bold text-stone-700 mb-1">
+                  Note
                 </label>
 
                 <input
                   type="text"
                   value={txForm.note}
                   onChange={e => setTxForm({ ...txForm, note: e.target.value })}
-                  placeholder="Write note"
-                  className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  placeholder="Write note optional"
+                  className="w-full border border-amber-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
               </div>
 
               <div className="flex gap-2 justify-end">
                 <button
                   type="button"
+                  disabled={saving}
                   onClick={() => {
                     setShowTxModal(false)
                     setSelectedIngredient(null)
                   }}
-                  className="bg-gray-100 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-200 transition-colors"
+                  className="bg-stone-100 text-stone-700 px-5 py-3 rounded-2xl text-sm font-black hover:bg-stone-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className={`px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors ${
+                  disabled={saving}
+                  className={`flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-sm font-black text-white transition-colors disabled:cursor-not-allowed disabled:opacity-90 ${
                     txForm.type === 'purchase'
                       ? 'bg-emerald-600 hover:bg-emerald-700'
                       : txForm.type === 'deduct'
@@ -422,7 +653,17 @@ export default function Inventory() {
                         : 'bg-sky-600 hover:bg-sky-700'
                   }`}
                 >
-                  Save
+                  {saving ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z" />
+                      </svg>
+                      Updating...
+                    </>
+                  ) : (
+                    'Save'
+                  )}
                 </button>
               </div>
             </form>

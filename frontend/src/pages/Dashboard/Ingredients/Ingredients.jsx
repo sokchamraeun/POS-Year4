@@ -34,7 +34,9 @@ export default function Ingredients() {
   ])
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [form, setForm] = useState({ name: '', unit: '', stock_quantity: '', reorder_level: '', cost_per_unit: '' })
+  const [form, setForm] = useState({ name: '', unit: '', stock_quantity: '', reorder_level: '', cost_per_unit: '', image: null })
+  const [imagePreview, setImagePreview] = useState(null)
+  const [saving, setSaving] = useState(false)
   const [search, setSearch] = useState('')
   const filteredIngredients = ingredients.filter(i => i.name.toLowerCase().includes(search.toLowerCase()))
   const [showStockModal, setShowStockModal] = useState(false)
@@ -65,25 +67,41 @@ export default function Ingredients() {
 
   useEffect(() => { fetchIngredients() }, [])
 
-  const openCreate = () => { setEditing(null); setForm({ name: '', unit: '', stock_quantity: '', reorder_level: '', cost_per_unit: '' }); setShowModal(true) }
+  const openCreate = () => { setEditing(null); setForm({ name: '', unit: '', stock_quantity: '', reorder_level: '', cost_per_unit: '', image: null }); setImagePreview(null); setShowModal(true) }
 
-  const openEdit = (i) => { setEditing(i); setForm({ name: i.name, unit: i.unit, stock_quantity: i.stock_quantity, reorder_level: i.reorder_level, cost_per_unit: i.cost_per_unit ?? '' }); setShowModal(true) }
+  const openEdit = (i) => { setEditing(i); setForm({ name: i.name, unit: i.unit, stock_quantity: i.stock_quantity, reorder_level: i.reorder_level, cost_per_unit: i.cost_per_unit ?? '', image: null }); setImagePreview(i.image ?? null); setShowModal(true) }
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setForm((f) => ({ ...f, image: file }))
+    setImagePreview(URL.createObjectURL(file))
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setSaving(true)
     const token = localStorage.getItem('token')
     const url = editing ? `${API_URL}/ingredients/${editing.id}` : `${API_URL}/ingredients`
-    const method = editing ? 'PUT' : 'POST'
+    const body = new FormData()
+    body.append('name', form.name)
+    body.append('unit', form.unit)
+    body.append('stock_quantity', form.stock_quantity)
+    body.append('reorder_level', form.reorder_level)
+    if (form.cost_per_unit !== '' && form.cost_per_unit != null) body.append('cost_per_unit', form.cost_per_unit)
+    if (form.image) body.append('image', form.image)
+    // Method spoofing: PHP can't parse multipart on PUT, so send POST + _method
+    if (editing) body.append('_method', 'PUT')
     try {
       const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form),
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body,
       })
       if (!res.ok) throw new Error('Failed to save')
       setShowModal(false)
       fetchIngredients()
-    } catch (err) { alert(err.message) }
+    } catch (err) { alert(err.message) } finally { setSaving(false) }
   }
 
   const handleDelete = async (id) => {
@@ -215,7 +233,18 @@ export default function Ingredients() {
                     {filteredIngredients.map((i) => (
                       <tr key={i.id} className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200">
                         <td className="px-6 py-4 font-semibold text-amber-600">{i.id}</td>
-                        <td className="px-6 py-4 font-medium text-slate-800">{i.name}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            {i.image ? (
+                              <img src={i.image} alt={i.name} className="w-10 h-10 rounded-xl object-cover border border-slate-200" />
+                            ) : (
+                              <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-700 font-bold text-sm">
+                                {i.name?.charAt(0)?.toUpperCase() || 'I'}
+                              </div>
+                            )}
+                            <span className="font-medium text-slate-800">{i.name}</span>
+                          </div>
+                        </td>
                         <td className="px-6 py-4 text-slate-600">{i.unit}</td>
                         <td className="px-6 py-4 font-medium text-slate-700">{Number(i.stock_quantity).toFixed(2)}</td>
                         <td className="px-6 py-4 text-slate-600">{Number(i.reorder_level).toFixed(2)}</td>
@@ -281,6 +310,27 @@ export default function Ingredients() {
             <form onSubmit={handleSubmit} className="p-6">
               <div className="space-y-4">
                 <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Ingredient Image</label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden flex items-center justify-center shrink-0">
+                      {imagePreview ? (
+                        <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      )}
+                    </div>
+                    <label className="flex-1 cursor-pointer">
+                      <span className="inline-block px-4 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-sm font-medium hover:bg-amber-100 transition-colors">
+                        {imagePreview ? 'Change Image' : 'Upload Image'}
+                      </span>
+                      <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                      <p className="text-xs text-slate-400 mt-1.5">PNG, JPG up to 2MB</p>
+                    </label>
+                  </div>
+                </div>
+                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Ingredient Name</label>
                   <input 
                     type="text" 
@@ -345,18 +395,28 @@ export default function Ingredients() {
                 </div>
               </div>
               <div className="flex gap-3 justify-end mt-6 pt-4 border-t border-slate-200">
-                <button 
-                  type="button" 
-                  onClick={() => setShowModal(false)} 
-                  className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors"
+                <button
+                  type="button"
+                  disabled={saving}
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
-                  className="px-4 py-2 bg-gradient-to-r from-amber-900 to-amber-800 text-white rounded-xl text-sm font-medium hover:from-amber-800 hover:to-amber-700 transition-all shadow-md flex items-center gap-2"
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="px-4 py-2 bg-gradient-to-r from-amber-900 to-amber-800 text-white rounded-xl text-sm font-medium hover:from-amber-800 hover:to-amber-700 transition-all shadow-md flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-90"
                 >
-                  {editing ? (
+                  {saving ? (
+                    <>
+                      <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z" />
+                      </svg>
+                      {editing ? 'Updating...' : 'Creating...'}
+                    </>
+                  ) : editing ? (
                     <>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
