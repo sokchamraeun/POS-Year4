@@ -89,8 +89,8 @@ export default function CartSidebar({
                         {/* Options */}
                         <div className="flex flex-wrap gap-1.5 mt-1.5">
                           {c.size && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.size}</span>}
-                          {c.sugar && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.sugar}</span>}
-                          {c.ice && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.ice}</span>}
+                          {c.sugar && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.sugarNote || c.sugar}</span>}
+                          {c.ice && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.iceNote || c.ice}</span>}
                           {c.addOn && <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">+{c.addOn}</span>}
                         </div>
 

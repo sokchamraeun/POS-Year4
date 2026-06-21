@@ -3,8 +3,8 @@ import { calcFinalPrice, calcDiscount, calcComboCart, calcBuyXGetYGrouped } from
 
 const CartContext = createContext()
 
-function getKey(product, size, sugar, ice, addOn) {
-  return `${product.id}-${size}-${sugar}-${ice}-${addOn}`
+function getKey(product, size, sugar, ice, addOn, sugarNote = '', iceNote = '') {
+  return `${product.id}-${size}-${sugar}-${ice}-${addOn}-${sugarNote}-${iceNote}`
 }
 
 export function CartProvider({ children }) {
@@ -21,8 +21,8 @@ export function CartProvider({ children }) {
     localStorage.setItem('customerCart', JSON.stringify(items))
   }, [items])
 
-  function addItem(product, { size, sugar, ice, addOn, qty, unitPrice }) {
-    const key = getKey(product, size, sugar, ice, addOn)
+  function addItem(product, { size, sugar, ice, addOn, qty, unitPrice, sugarNote = '', iceNote = '' }) {
+    const key = getKey(product, size, sugar, ice, addOn, sugarNote, iceNote)
     setItems((prev) => {
       const existing = prev.find((i) => i.key === key)
       if (existing) {
@@ -30,17 +30,17 @@ export function CartProvider({ children }) {
           i.key === key ? { ...i, qty: i.qty + qty } : i
         )
       }
-      return [...prev, { ...product, key, size, sugar, ice, addOn, unitPrice, qty }]
+      return [...prev, { ...product, key, size, sugar, ice, addOn, sugarNote, iceNote, unitPrice, qty }]
     })
   }
 
-  function updateItem(oldKey, { size, sugar, ice, addOn, unitPrice, promotion, qty }) {
+  function updateItem(oldKey, { size, sugar, ice, addOn, unitPrice, promotion, qty, sugarNote = '', iceNote = '' }) {
     setItems((prev) => {
       const current = prev.find((i) => i.key === oldKey)
       if (!current) return prev
 
       const newQty = qty ?? current.qty
-      const newKey = `${current.id}-${size}-${sugar}-${ice}-${addOn}`
+      const newKey = `${current.id}-${size}-${sugar}-${ice}-${addOn}-${sugarNote}-${iceNote}`
 
       // If another line already matches the new options, merge quantities into it
       const duplicate = prev.find((i) => i.key === newKey && i.key !== oldKey)
@@ -54,7 +54,7 @@ export function CartProvider({ children }) {
 
       return prev.map((i) =>
         i.key === oldKey
-          ? { ...i, key: newKey, size, sugar, ice, addOn, unitPrice, promotion, qty: newQty }
+          ? { ...i, key: newKey, size, sugar, ice, addOn, sugarNote, iceNote, unitPrice, promotion, qty: newQty }
           : i
       )
     })

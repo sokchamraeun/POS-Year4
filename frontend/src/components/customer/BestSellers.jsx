@@ -168,6 +168,8 @@ export default function BestSellers({ products = [] }) {
   const [selectedSize, setSelectedSize] = useState('')
   const [selectedSugar, setSelectedSugar] = useState('')
   const [selectedIce, setSelectedIce] = useState('')
+  const [sugarNote, setSugarNote] = useState('')
+  const [iceNote, setIceNote] = useState('')
   const [selectedAddOn, setSelectedAddOn] = useState('')
   const [modalQty, setModalQty] = useState(1)
 
@@ -176,6 +178,8 @@ export default function BestSellers({ products = [] }) {
     setSelectedSize(p.sizes?.[0]?.name || '')
     setSelectedSugar(p.sugar_levels?.[0]?.name || '')
     setSelectedIce(p.ice_levels?.[0]?.name || '')
+    setSugarNote('')
+    setIceNote('')
     setSelectedAddOn('')
     setModalQty(1)
   }
@@ -220,12 +224,17 @@ export default function BestSellers({ products = [] }) {
   function handleModalAdd() {
     if (!modalProduct) return
 
+    const iceObj = modalProduct.ice_levels?.find((i) => i.name === selectedIce)
+    const sugarObj = modalProduct.sugar_levels?.find((s) => s.name === selectedSugar)
+
     addItem(modalProduct, {
       ...modalProduct,
       promotion: modalPromotion,
       size: selectedSize,
       sugar: selectedSugar,
       ice: selectedIce,
+      sugarNote: sugarObj?.requires_input ? sugarNote.trim() : '',
+      iceNote: iceObj?.requires_input ? iceNote.trim() : '',
       addOn: selectedAddOn,
       unitPrice: modalPrice,
       qty: modalQty,
@@ -555,8 +564,12 @@ export default function BestSellers({ products = [] }) {
           hasDiscount={modalHasDiscount}
           stockMsg=""
           onSizeChange={setSelectedSize}
+          sugarNote={sugarNote}
+          iceNote={iceNote}
           onSugarChange={setSelectedSugar}
           onIceChange={setSelectedIce}
+          onSugarNoteChange={setSugarNote}
+          onIceNoteChange={setIceNote}
           onAddOnChange={setSelectedAddOn}
           onQtyChange={setModalQty}
           onAddToCart={handleModalAdd}

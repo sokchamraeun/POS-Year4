@@ -1,201 +1,371 @@
 ﻿import { useState } from 'react'
-import { calcFinalPrice, resolvePromotionForSize, getPromotionShort } from '../../../../utils/promotion.js'
+import {
+  calcFinalPrice,
+  resolvePromotionForSize,
+  getPromotionShort,
+} from '../../../../utils/promotion.js'
 import { X, Plus, Minus, Gift } from 'lucide-react'
 
-const API_URL = import.meta.env.VITE_API_URL
-
-export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
+export default function ProductCard({
+  product,
+  opt = {},
+  onSetOpt,
+  onAddToCart,
+}) {
   const [showModal, setShowModal] = useState(false)
-  const [selectedSize, setSelectedSize] = useState(opt.size || product.sizes?.[0]?.name || '')
-  const [selectedIce, setSelectedIce] = useState(opt.ice || product.ice_levels?.[0]?.name || '')
-  const [selectedSugar, setSelectedSugar] = useState(opt.sugar || product.sugar_levels?.[0]?.name || '')
+
+  const [selectedSize, setSelectedSize] = useState(
+    opt.size || product.sizes?.[0]?.name || ''
+  )
+  const [selectedIce, setSelectedIce] = useState(
+    opt.ice || product.ice_levels?.[0]?.name || ''
+  )
+  const [selectedSugar, setSelectedSugar] = useState(
+    opt.sugar || product.sugar_levels?.[0]?.name || ''
+  )
+  const [iceNote, setIceNote] = useState(opt.iceNote || '')
+  const [sugarNote, setSugarNote] = useState(opt.sugarNote || '')
   const [selectedAddOn, setSelectedAddOn] = useState(opt.addOn || '')
   const [quantity, setQuantity] = useState(1)
 
+  const selectedIceObj = product.ice_levels?.find((i) => i.name === selectedIce)
+  const selectedSugarObj = product.sugar_levels?.find((s) => s.name === selectedSugar)
+
+  const selectedStyle =
+    'border-[#c47a2c] bg-[#c47a2c] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c47a2c]/30'
+
+  const normalStyle =
+    'border-[#e1c1a0] bg-white text-[#6b3b1d] hover:border-[#c47a2c] hover:bg-[#fffaf3] focus-visible:outline-none focus-visible:border-[#c47a2c] focus-visible:bg-[#fff4e6] focus-visible:ring-2 focus-visible:ring-[#c47a2c]/20'
+
   const size = product.sizes?.find((s) => s.name === selectedSize)
   const basePrice = size ? Number(size.pivot?.price ?? 0) : 0
+
   let addonPrice = 0
   if (selectedAddOn) {
-    const a = product.addons?.find((a) => a.name === selectedAddOn)
-    if (a) {
-      const sp = a.size_prices?.find((sp) => sp.size_id === size?.id)
-      addonPrice = sp ? Number(sp.price) : (Number(a.price) || 0)
+    const addon = product.addons?.find((a) => a.name === selectedAddOn)
+
+    if (addon) {
+      const sizePrice = addon.size_prices?.find(
+        (sp) => sp.size_id === size?.id
+      )
+
+      addonPrice = sizePrice
+        ? Number(sizePrice.price)
+        : Number(addon.price || 0)
     }
   }
-  const price = basePrice + addonPrice
+
   const resolvedPromotion = resolvePromotionForSize(product.promotion, size?.id)
-  const finalPrice = resolvedPromotion?.type === 'buy_x_get_y' ? price : calcFinalPrice(price, resolvedPromotion)
-  const hasDiscount = finalPrice < price
-  
-  // Calculate Buy X Get Y promotion details
+
+  const isBuyGet =
+    resolvedPromotion && resolvedPromotion.type === 'buy_x_get_y'
+
+  // Original unit price = selected size + selected add-on
+  const originalUnitPrice = basePrice + addonPrice
+
+  // Discount only selected size price, not add-on price
+  const discountedBasePrice = isBuyGet
+    ? basePrice
+    : calcFinalPrice(basePrice, resolvedPromotion)
+
+  // Final unit price = discounted size + add-on
+  const finalUnitPrice = isBuyGet
+    ? originalUnitPrice
+    : discountedBasePrice + addonPrice
+
+  const hasDiscount = discountedBasePrice < basePrice
+
   let freeItems = 0
   let paidItems = quantity
   let promotionMessage = ''
-  
-  if (product.promotion?.type === 'buy_x_get_y') {
-    const buyQty = product.promotion.buy_qty || 1
-    const freeQty = product.promotion.free_qty || 1
-    const totalSets = Math.floor(quantity / (buyQty + freeQty))
-    const remainder = quantity % (buyQty + freeQty)
+
+  if (isBuyGet) {
+    const buyQty = Number(resolvedPromotion.buy_qty || 1)
+    const freeQty = Number(resolvedPromotion.free_qty || 1)
+
+    const setSize = buyQty + freeQty
+    const totalSets = Math.floor(quantity / setSize)
+
     freeItems = totalSets * freeQty
     paidItems = quantity - freeItems
-    promotionMessage = `Buy ${buyQty} Get ${freeQty} Free! (${freeItems} free item${freeItems !== 1 ? 's' : ''})`
+
+    promotionMessage = `Buy ${buyQty} Get ${freeQty} Free`
   }
-  
-  const totalPrice = finalPrice * paidItems
+
+  const totalPrice = finalUnitPrice * paidItems
+
+  const imageSrc = product.image
+    ? `${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`
+    : null
+
+  const promotionLabel = resolvedPromotion
+    ? getPromotionShort(resolvedPromotion)
+    : ''
 
   const handleAddToCart = () => {
-    // First update all options in parent state
-    onSetOpt(product.id, 'size', selectedSize)
-    onSetOpt(product.id, 'ice', selectedIce)
-    onSetOpt(product.id, 'sugar', selectedSugar)
-    onSetOpt(product.id, 'addOn', selectedAddOn)
-    
-    // Create a new product object with the CURRENT selections
-    const productWithOptions = {
+    onSetOpt?.(product.id, 'size', selectedSize)
+    onSetOpt?.(product.id, 'ice', selectedIce)
+    onSetOpt?.(product.id, 'sugar', selectedSugar)
+    onSetOpt?.(product.id, 'addOn', selectedAddOn)
+
+    onAddToCart({
       ...product,
-      quantity: quantity,
-      freeItems: freeItems,
-      // Explicitly set the selected options
-      selectedSize: selectedSize,
-      selectedIce: selectedIce,
-      selectedSugar: selectedSugar,
-      selectedAddOn: selectedAddOn
-    }
-    
-    onAddToCart(productWithOptions)
+      quantity,
+      freeItems,
+      paidItems,
+      selectedSize,
+      selectedIce,
+      selectedSugar,
+      selectedIceNote: selectedIceObj?.requires_input ? iceNote.trim() : '',
+      selectedSugarNote: selectedSugarObj?.requires_input ? sugarNote.trim() : '',
+      selectedAddOn,
+      originalUnitPrice,
+      finalUnitPrice,
+      totalPrice,
+    })
+
     setShowModal(false)
     setQuantity(1)
   }
 
-  const incrementQty = () => setQuantity(prev => prev + 1)
-  const decrementQty = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1))
+  const incrementQty = () => setQuantity((prev) => prev + 1)
+
+  const decrementQty = () =>
+    setQuantity((prev) => {
+      if (prev <= 1) return 1
+      return prev - 1
+    })
 
   const handleQuantityChange = (e) => {
-    const value = parseInt(e.target.value)
-    if (!isNaN(value) && value >= 1) {
+    const value = parseInt(e.target.value, 10)
+
+    if (!Number.isNaN(value) && value >= 1) {
       setQuantity(value)
-    } else if (e.target.value === '') {
+      return
+    }
+
+    if (e.target.value === '') {
       setQuantity(1)
     }
   }
 
   return (
     <>
-      <div className="relative rounded-xl overflow-hidden transition-all duration-300 flex flex-col bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=400&q=60')" }}>
-        {/* Diagonal promotion ribbon */}
+      {/* Product Card */}
+      <div className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-[#d7ad83] bg-[#fffaf3] transition-all duration-300 hover:-translate-y-1 hover:border-[#8a5a33]">
+        {/* Promotion Label */}
         {resolvedPromotion && (
-          <span className="absolute -left-10 top-3.5 w-32 -rotate-45 bg-gradient-to-r from-red-600 to-rose-500 text-white text-[9px] font-extrabold leading-none uppercase tracking-wide text-center py-1 z-20 shadow pointer-events-none">
-            {getPromotionShort(resolvedPromotion)}
-          </span>
+          <div className="absolute left-3 top-3 z-20">
+            <div className="flex items-center gap-1.5 rounded-full border border-red-700 bg-red-600 px-3 py-1.5 text-[11px] font-black uppercase tracking-wide text-white">
+              <Gift className="h-3.5 w-3.5" />
+              {promotionLabel}
+            </div>
+          </div>
         )}
-        <div className="bg-white/90 backdrop-blur-sm flex flex-col flex-1">
-          <div className="p-3 pb-0 relative cursor-pointer" onClick={() => setShowModal(true)}>
-            {product.image ? (
+
+        {/* Image */}
+        <div
+          onClick={() => setShowModal(true)}
+          className="relative cursor-pointer p-3 pb-0"
+        >
+          <div className="relative overflow-hidden rounded-2xl border border-[#ead2b8] bg-[#fff4e6] p-3">
+            {imageSrc ? (
               <img
-                src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`}
+                src={imageSrc}
                 alt={product.name}
-                className="w-full aspect-square object-contain rounded-lg transition-transform duration-300 hover:scale-105"
+                className="aspect-square w-full rounded-xl object-contain transition-transform duration-500 group-hover:scale-110"
               />
             ) : (
-              <div className="w-full aspect-square rounded-lg bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center text-amber-400 md:text-xs text-[10px]">
+              <div className="flex aspect-square w-full items-center justify-center rounded-xl border border-dashed border-[#c99a68] bg-[#fffaf3] text-xs font-bold text-[#8a5a33]">
                 No Image
               </div>
             )}
           </div>
-          <div className="p-3 flex-1 flex flex-col">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="md:text-base text-sm font-semibold text-gray-800">{product.name}</h3>
-              <div className="text-right">
-                {hasDiscount && <span className="md:text-base text-sm line-through text-red-400 mr-1">${price.toFixed(2)}</span>}
-                <span className="md:text-base text-sm font-bold text-amber-600">${finalPrice.toFixed(2)}</span>
+        </div>
+
+        {/* Content */}
+        <div className="flex flex-1 flex-col p-4">
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h3 className="line-clamp-1 text-sm font-black text-[#4b2a18] md:text-base">
+                {product.name}
+              </h3>
+
+              {selectedSize && (
+                <p className="mt-1 text-[11px] font-semibold text-[#8a5a33]">
+                  Size: {selectedSize}
+                </p>
+              )}
+            </div>
+
+            <div className="shrink-0 text-right">
+              {hasDiscount && (
+                <div className="text-xs font-bold text-red-500 line-through">
+                  ${originalUnitPrice.toFixed(2)}
+                </div>
+              )}
+
+              <div className="text-base font-black text-[#8a5a33] md:text-lg">
+                ${finalUnitPrice.toFixed(2)}
               </div>
             </div>
-            <button
-              onClick={() => setShowModal(true)}
-              className="mt-auto w-8 h-8 rounded-full bg-gradient-to-r from-amber-900 to-amber-800 text-white flex items-center justify-center hover:from-amber-950 hover:to-amber-900 transition-all duration-300 mx-auto"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
           </div>
+
+          {isBuyGet && (
+            <div className="mb-3 rounded-xl border border-red-500 bg-red-50 px-3 py-2 text-center text-[11px] font-black text-red-600">
+              {promotionMessage}
+            </div>
+          )}
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="mt-auto flex w-full items-center justify-center gap-2 rounded-2xl border border-[#c47a2c] bg-[#c47a2c] px-4 py-2.5 text-sm font-black text-white transition-all duration-300 hover:border-[#a86425] hover:bg-[#a86425] active:scale-[0.98]"
+          >
+            <Plus className="h-4 w-4" />
+            Add
+          </button>
         </div>
       </div>
 
-      {/* Customization Modal */}
+      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-white rounded-2xl shadow-2xl shadow-amber-500/20 w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col border border-amber-200" onClick={(e) => e.stopPropagation()}>
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-amber-900 to-amber-800 px-5 py-4 flex items-center justify-between sticky top-0 z-10">
-              <div className="flex items-center gap-3">
-                {product.image ? (
-                  <img
-                    src={`${product.image.startsWith('http') ? '' : import.meta.env.VITE_STORAGE_URL + '/'}${product.image}`}
-                    alt={product.name}
-                    className="w-12 h-12 rounded-lg object-cover bg-white/20 p-1"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-lg bg-white/20 flex items-center justify-center text-white text-xs">
-                    No img
-                  </div>
-                )}
-                <div>
-                  <h2 className="text-white font-semibold text-lg">{product.name}</h2>
-                  {resolvedPromotion && (
-                    <p className="text-xs text-white/80 mt-0.5">
-                      {resolvedPromotion.type === 'percentage' && `${parseFloat(resolvedPromotion.value)}% OFF`}
-                      {resolvedPromotion.type === 'fixed_amount' && `$${resolvedPromotion.value} OFF`}
-                      {resolvedPromotion.type === 'buy_x_get_y' && `Buy ${resolvedPromotion.buy_qty} Get ${resolvedPromotion.free_qty}`}
-                    </p>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/25 p-3"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-[2rem] border border-[#d7ad83] bg-[#fffaf3]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="border-b border-[#ead2b8] bg-[#fff4e6] px-5 py-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  {imageSrc ? (
+                    <img
+                      src={imageSrc}
+                      alt={product.name}
+                      className="h-16 w-16 rounded-3xl border border-[#d7ad83] bg-white object-cover p-1"
+                    />
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-[#d7ad83] bg-white text-[10px] font-bold text-[#8a5a33]">
+                      No img
+                    </div>
                   )}
+
+                  <div className="min-w-0">
+                    <h2 className="line-clamp-1 text-xl font-black text-[#4b2a18]">
+                      {product.name}
+                    </h2>
+
+                    <p className="mt-1 text-xs font-bold text-[#8a5a33]">
+                      Customize your drink
+                    </p>
+
+                    {resolvedPromotion && (
+                      <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-red-600 bg-red-600 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-white">
+                        <Gift className="h-3 w-3" />
+                        {promotionLabel}
+                      </div>
+                    )}
+                  </div>
                 </div>
+
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="rounded-full border border-[#d7ad83] bg-white p-2 text-[#6b3b1d] transition hover:border-red-500 hover:text-red-600"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
-              <button onClick={() => setShowModal(false)} className="text-white/80 hover:text-white transition-colors p-1">
-                <X className="w-5 h-5" />
-              </button>
             </div>
 
-            {/* Modal Body - ALL OPTIONS IN ONE BOX */}
-            <div className="p-5 overflow-y-auto flex-1">
-              <div className="border-2 border-amber-200 rounded-xl p-4 bg-amber-50/30">
-                {/* Size Selection */}
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto p-5">
+              <div className="rounded-3xl border border-[#ead2b8] bg-white p-4">
+                {/* Size */}
                 <div className="mb-5">
-                  <label className="block text-sm font-semibold text-amber-700 mb-2 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                  <label className="mb-2 block text-sm font-black text-[#6b3b1d]">
                     Select Size
                   </label>
+
                   <div className="grid grid-cols-3 gap-2">
                     {product.sizes?.map((s) => {
                       const sizePrice = Number(s.pivot?.price ?? 0)
-                      const sizePromo = resolvePromotionForSize(product.promotion, s.id)
-                      const sizeFinal = sizePromo?.type === 'buy_x_get_y'
+                      const sizePromo = resolvePromotionForSize(
+                        product.promotion,
+                        s.id
+                      )
+
+                      const sizeIsBuyGet =
+                        sizePromo && sizePromo.type === 'buy_x_get_y'
+
+                      const sizeFinal = sizeIsBuyGet
                         ? sizePrice
                         : calcFinalPrice(sizePrice, sizePromo)
+
                       const sizeHasDiscount = sizeFinal < sizePrice
                       const isSelected = selectedSize === s.name
+
+                      let sizePromoText = ''
+                      if (sizePromo) {
+                        if (sizePromo.type === 'percentage') {
+                          sizePromoText = `-${parseFloat(sizePromo.value)}%`
+                        } else if (sizePromo.type === 'fixed_amount') {
+                          sizePromoText = 'SALE'
+                        } else {
+                          sizePromoText = 'FREE'
+                        }
+                      }
+
                       return (
                         <button
                           key={s.id}
                           onClick={() => setSelectedSize(s.name)}
-                          className={`relative px-3 py-2 rounded-lg text-sm font-medium transition-all border-2 ${
-                            isSelected
-                              ? 'bg-amber-600 text-white border-amber-600 shadow-md'
-                              : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
+                          className={`relative rounded-2xl border px-2 py-3 text-center text-xs font-black transition-all ${
+                            isSelected ? selectedStyle : normalStyle
                           }`}
                         >
-                          {sizeHasDiscount && (
-                            <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full shadow">
-                              {sizePromo.type === 'percentage' ? `-${parseFloat(sizePromo.value)}%` : 'SALE'}
+                          {sizePromo && (
+                            <span
+                              className={`absolute rounded-full border border-red-700 bg-red-600 font-black text-white ${
+                                isSelected
+                                  ? '-right-2 -top-3 px-2.5 py-1 text-[10px]'
+                                  : '-right-1.5 -top-2 px-1.5 py-0.5 text-[8px]'
+                              }`}
+                            >
+                              {sizePromoText}
                             </span>
                           )}
-                          {s.name}
+
+                          <span className="block">{s.name}</span>
+
                           {sizeHasDiscount ? (
-                            <span className="block text-xs mt-0.5 leading-tight">
-                              <span className={`line-through ${isSelected ? 'text-amber-100/80' : 'text-gray-400'}`}>${sizePrice.toFixed(2)}</span>
-                              <span className={`ml-1 font-bold ${isSelected ? 'text-white' : 'text-rose-600'}`}>${sizeFinal.toFixed(2)}</span>
+                            <span className="mt-1 block leading-tight">
+                              <span
+                                className={`text-[10px] line-through ${
+                                  isSelected ? 'text-white/80' : 'text-red-400'
+                                }`}
+                              >
+                                ${sizePrice.toFixed(2)}
+                              </span>
+
+                              <span
+                                className={`ml-1 text-[11px] font-black ${
+                                  isSelected ? 'text-white' : 'text-[#8a5a33]'
+                                }`}
+                              >
+                                ${sizeFinal.toFixed(2)}
+                              </span>
                             </span>
                           ) : (
-                            <span className="block text-xs mt-0.5">${sizePrice.toFixed(2)}</span>
+                            <span
+                              className={`mt-1 block text-[11px] ${
+                                isSelected ? 'text-white' : 'text-[#8a5a33]'
+                              }`}
+                            >
+                              ${sizePrice.toFixed(2)}
+                            </span>
                           )}
                         </button>
                       )
@@ -203,181 +373,241 @@ export default function ProductCard({ product, opt, onSetOpt, onAddToCart }) {
                   </div>
                 </div>
 
-                {/* Divider */}
-                <div className="border-t border-amber-200 my-4"></div>
+                <div className="my-4 border-t border-[#ead2b8]" />
 
-                {/* Ice Level & Sugar Level */}
-                <div className="grid grid-cols-2 gap-4 mb-5">
-                  {/* Ice Level */}
+                {/* Ice + Sugar */}
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-amber-700 mb-2 flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                    <label className="mb-2 block text-xs font-black text-[#6b3b1d]">
                       Ice Level
                     </label>
+
                     <div className="flex flex-col gap-1.5">
-                      {product.ice_levels?.map((l) => (
+                      {product.ice_levels?.map((ice) => (
                         <button
-                          key={l.id}
-                          onClick={() => setSelectedIce(l.name)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
-                            selectedIce === l.name
-                              ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
-                              : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
+                          key={ice.id}
+                          onClick={() => {
+                            setSelectedIce(ice.name)
+                            if (!ice.requires_input) setIceNote('')
+                          }}
+                          className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                            selectedIce === ice.name
+                              ? selectedStyle
+                              : normalStyle
                           }`}
                         >
-                          {l.name}
+                          {ice.name}
                         </button>
                       ))}
                     </div>
+
+                    {selectedIceObj?.requires_input && (
+                      <input
+                        type="text"
+                        value={iceNote}
+                        onChange={(e) => setIceNote(e.target.value)}
+                        placeholder="Specify ice amount"
+                        className="mt-2 w-full rounded-xl border border-[#d7ad83] bg-white px-3 py-2 text-xs font-bold text-[#4b2a18] outline-none focus:border-[#c47a2c] focus:ring-2 focus:ring-[#c47a2c]/15"
+                      />
+                    )}
                   </div>
 
-                  {/* Sugar Level */}
                   <div>
-                    <label className="block text-xs font-semibold text-amber-700 mb-2 flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 bg-amber-500 rounded-full"></div>
+                    <label className="mb-2 block text-xs font-black text-[#6b3b1d]">
                       Sugar Level
                     </label>
+
                     <div className="flex flex-col gap-1.5">
-                      {product.sugar_levels?.map((s) => (
+                      {product.sugar_levels?.map((sugar) => (
                         <button
-                          key={s.id}
-                          onClick={() => setSelectedSugar(s.name)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
-                            selectedSugar === s.name
-                              ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
-                              : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
+                          key={sugar.id}
+                          onClick={() => {
+                            setSelectedSugar(sugar.name)
+                            if (!sugar.requires_input) setSugarNote('')
+                          }}
+                          className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                            selectedSugar === sugar.name
+                              ? selectedStyle
+                              : normalStyle
                           }`}
                         >
-                          {s.name}
+                          {sugar.name}
                         </button>
                       ))}
                     </div>
+
+                    {selectedSugarObj?.requires_input && (
+                      <input
+                        type="text"
+                        value={sugarNote}
+                        onChange={(e) => setSugarNote(e.target.value)}
+                        placeholder="Specify sugar amount"
+                        className="mt-2 w-full rounded-xl border border-[#d7ad83] bg-white px-3 py-2 text-xs font-bold text-[#4b2a18] outline-none focus:border-[#c47a2c] focus:ring-2 focus:ring-[#c47a2c]/15"
+                      />
+                    )}
                   </div>
                 </div>
 
-                {/* Divider */}
-                <div className="border-t border-amber-200 my-4"></div>
-
-                {/* Add-ons */}
+                {/* Addons */}
                 {product.addons?.length > 0 && (
-                  <div className="mb-5">
-                    <label className="block text-sm font-semibold text-amber-700 mb-2 flex items-center gap-2">
-                      <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                      Add-ons
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={() => setSelectedAddOn('')}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
-                          selectedAddOn === ''
-                            ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
-                            : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
-                        }`}
-                      >
-                        No Add On
-                      </button>
-                      {product.addons?.map((a) => {
-                        const sp = a.size_prices?.find((sp) => sp.size_id === size?.id)
-                        const ap = sp ? Number(sp.price) : (Number(a.price) || 0)
-                        return (
-                          <button
-                            key={a.id}
-                            onClick={() => setSelectedAddOn(a.name)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
-                              selectedAddOn === a.name
-                                ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
-                                : 'bg-white text-gray-700 border-gray-300 hover:border-teal-500 hover:bg-teal-50'
-                            }`}
-                          >
-                            {a.name} (+${ap.toFixed(2)})
-                          </button>
-                        )
-                      })}
+                  <>
+                    <div className="my-4 border-t border-[#ead2b8]" />
+
+                    <div>
+                      <label className="mb-2 block text-sm font-black text-[#6b3b1d]">
+                        Add-ons
+                      </label>
+
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => setSelectedAddOn('')}
+                          className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                            selectedAddOn === ''
+                              ? selectedStyle
+                              : normalStyle
+                          }`}
+                        >
+                          No Add On
+                        </button>
+
+                        {product.addons.map((addon) => {
+                          const sizePrice = addon.size_prices?.find(
+                            (sp) => sp.size_id === size?.id
+                          )
+
+                          const addonAmount = sizePrice
+                            ? Number(sizePrice.price)
+                            : Number(addon.price || 0)
+
+                          return (
+                            <button
+                              key={addon.id}
+                              onClick={() => setSelectedAddOn(addon.name)}
+                              className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                                selectedAddOn === addon.name
+                                  ? selectedStyle
+                                  : normalStyle
+                              }`}
+                            >
+                              {addon.name} +${addonAmount.toFixed(2)}
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
 
-              {/* Quantity Selector - Number Input */}
-              <div className="mt-5 pt-2">
-                <label className="block text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+              {/* Quantity */}
+              <div className="mt-5 rounded-3xl border border-[#ead2b8] bg-white p-4">
+                <label className="mb-3 block text-sm font-black text-[#6b3b1d]">
                   Quantity
                 </label>
+
                 <div className="flex items-center justify-center gap-4">
                   <button
                     onClick={decrementQty}
-                    className="w-10 h-10 rounded-lg bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-amber-100 hover:text-teal-700 transition-all border border-gray-300"
+                    className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#e1c1a0] bg-[#fffaf3] text-[#6b3b1d] transition hover:border-[#c47a2c] hover:bg-[#fff4e6]"
                   >
-                    <Minus className="w-4 h-4" />
+                    <Minus className="h-4 w-4" />
                   </button>
+
                   <input
                     type="number"
                     min="1"
                     value={quantity}
                     onChange={handleQuantityChange}
-                    className="w-20 h-10 text-center text-lg font-bold text-gray-800 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="h-11 w-24 rounded-2xl border border-[#d7ad83] bg-white text-center text-lg font-black text-[#4b2a18] outline-none transition focus:border-[#c47a2c] focus:ring-2 focus:ring-[#c47a2c]/10 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
+
                   <button
                     onClick={incrementQty}
-                    className="w-10 h-10 rounded-lg bg-amber-600 text-white flex items-center justify-center hover:bg-amber-700 transition-all shadow-md"
+                    className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#c47a2c] bg-[#fff4e6] text-[#6b3b1d] transition hover:border-[#a86425] hover:bg-[#fffaf3]"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="h-4 w-4" />
                   </button>
                 </div>
-                
-                {/* Buy X Get Y Promotion Message */}
-                {product.promotion?.type === 'buy_x_get_y' && freeItems > 0 && (
-                  <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-xs text-green-700 font-medium flex items-center justify-center gap-1">
-                      <Gift className="w-3 h-3" />
-                      {promotionMessage}
+
+                {isBuyGet && freeItems > 0 && (
+                  <div className="mt-4 rounded-2xl border border-red-500 bg-red-50 px-3 py-3">
+                    <p className="flex items-center justify-center gap-2 text-xs font-black text-red-600">
+                      <Gift className="h-4 w-4" />
+                      {promotionMessage} — {freeItems} free item
+                      {freeItems !== 1 ? 's' : ''}
                     </p>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="p-5 border-t border-amber-100 bg-amber-50/20">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-600">Unit Price</span>
+            {/* Footer */}
+            <div className="border-t border-[#ead2b8] bg-[#fff4e6] p-5">
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-bold text-[#6b3b1d]">
+                      Unit Price
+                    </span>
+
+                    {resolvedPromotion && (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-red-600 bg-red-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-wide text-white">
+                        <Gift className="h-2.5 w-2.5" />
+                        Promotion: {promotionLabel}
+                      </span>
+                    )}
+                  </div>
+
+                  {isBuyGet && (
+                    <p className="mt-1 text-[11px] font-bold text-red-600">
+                      {promotionMessage}
+                    </p>
+                  )}
+                </div>
+
                 <div className="text-right">
                   {hasDiscount && (
-                    <span className="text-sm line-through text-gray-400 mr-2">${price.toFixed(2)}</span>
+                    <span className="mr-2 text-sm font-bold text-red-500 line-through">
+                      ${originalUnitPrice.toFixed(2)}
+                    </span>
                   )}
-                  <span className="text-lg font-bold text-amber-600">${finalPrice.toFixed(2)}</span>
+
+                  <span className="text-lg font-black text-[#8a5a33]">
+                    ${finalUnitPrice.toFixed(2)}
+                  </span>
                 </div>
               </div>
-              
-              {product.promotion?.type === 'buy_x_get_y' && freeItems > 0 && (
-                <div className="flex items-center justify-between mb-2 text-sm bg-gradient-to-r from-green-50 to-emerald-50 p-2 rounded-lg border border-green-200">
-                  <span className="text-gray-700 font-medium flex items-center gap-1">
-                    <Gift className="w-3.5 h-3.5 text-green-600" />
-                    Items Summary
+
+              {isBuyGet && freeItems > 0 && (
+                <div className="mb-3 flex items-center justify-between rounded-2xl border border-red-500 bg-red-50 px-3 py-2 text-sm">
+                  <span className="flex items-center gap-1.5 font-black text-red-600">
+                    <Gift className="h-4 w-4" />
+                    Promotion
                   </span>
-                  <div className="text-right">
-                    <span className="text-green-700 font-semibold">{paidItems} paid</span>
-                    <span className="text-gray-400 mx-1">+</span>
-                    <span className="text-green-600 font-semibold">{freeItems} free</span>
-                  </div>
+
+                  <span className="font-black text-[#4b2a18]">
+                    {paidItems} paid + {freeItems} free
+                  </span>
                 </div>
               )}
-              
-              <div className="flex items-center justify-between mb-4 pt-2 border-t border-amber-200">
-                <span className="text-gray-800 font-semibold text-lg">Total Amount</span>
-                <div className="text-right">
-                  <span className="text-2xl font-bold text-amber-600">${totalPrice.toFixed(2)}</span>
-                </div>
+
+              <div className="mb-4 flex items-center justify-between border-t border-[#d7ad83] pt-3">
+                <span className="text-lg font-black text-[#4b2a18]">
+                  Total Amount
+                </span>
+
+                <span className="text-2xl font-black text-[#8a5a33]">
+                  ${totalPrice.toFixed(2)}
+                </span>
               </div>
-              
+
               <button
                 onClick={handleAddToCart}
-                className="w-full bg-gradient-to-r from-amber-900 to-amber-800 text-white py-3 rounded-xl font-semibold hover:from-amber-950 hover:to-amber-900 transition-all duration-300 shadow-md flex items-center justify-center gap-2"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[#c47a2c] bg-[#c47a2c] py-3.5 text-sm font-black text-white transition-all duration-300 hover:border-[#a86425] hover:bg-[#a86425] active:scale-[0.98]"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="h-4 w-4" />
                 Add to Order ({quantity} item{quantity !== 1 ? 's' : ''})
-                {freeItems > 0 && ` (${freeItems} free)`}
+                {freeItems > 0 && ` + ${freeItems} free`}
               </button>
             </div>
           </div>

@@ -107,14 +107,16 @@ export default function MenuOrder() {
     // Check if product has custom options from modal (selectedSize, selectedIce, etc.)
     const hasCustomOptions = product.selectedSize !== undefined
     
-    let size, sugar, ice, addOn
-    
+    let size, sugar, ice, addOn, iceNote, sugarNote
+
     if (hasCustomOptions) {
       // Use the values directly from the product object (passed from modal)
       size = product.selectedSize
       sugar = product.selectedSugar
       ice = product.selectedIce
       addOn = product.selectedAddOn
+      iceNote = product.selectedIceNote || ''
+      sugarNote = product.selectedSugarNote || ''
     } else {
       // Use stored options or defaults
       const opt = { ...getDefaultOpt(product), ...getOpt(product.id) }
@@ -122,6 +124,8 @@ export default function MenuOrder() {
       sugar = opt.sugar
       ice = opt.ice
       addOn = opt.addOn
+      iceNote = ''
+      sugarNote = ''
     }
 
     const sizeObj = product.sizes?.find((s) => s.name === size)
@@ -131,12 +135,12 @@ export default function MenuOrder() {
       return
     }
 
-    const key = `${product.id}-${sizeId}-${sugar}-${ice}-${addOn}`
+    const key = `${product.id}-${sizeId}-${sugar}-${ice}-${addOn}-${sugarNote}-${iceNote}`
     const unitPrice = getBasePrice(product, size) + addOnPrice(product, addOn, size)
-    
+
     // Get quantity from product if it exists, otherwise default to 1
     const quantity = product.quantity || 1
-    
+
     setCart((prev) => {
       const existing = prev.find((c) => c.key === key)
       if (existing) {
@@ -146,7 +150,7 @@ export default function MenuOrder() {
       }
       return [
         ...prev,
-        { ...product, key, size, sugar, ice, addOn, unitPrice, qty: quantity },
+        { ...product, key, size, sugar, ice, addOn, iceNote, sugarNote, unitPrice, qty: quantity },
       ]
     })
   }
@@ -188,7 +192,9 @@ export default function MenuOrder() {
           product_id: c.id,
           size_id: size?.id ?? null,
           sugar_level_id: sugar?.id ?? null,
+          sugar_note: c.sugarNote || null,
           ice_level_id: ice?.id ?? null,
+          ice_note: c.iceNote || null,
           qty: c.qty,
           unit_price: c.unitPrice,
           subtotal: c.unitPrice * c.qty,

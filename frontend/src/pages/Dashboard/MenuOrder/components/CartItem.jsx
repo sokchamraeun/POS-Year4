@@ -13,7 +13,7 @@ export default function CartItem({ item, products, onUpdateQty }) {
           <p className="text-xs text-green-600 font-medium mt-0.5">{getPromotionLabel(prom)}</p>
         )}
         <p className="text-xs text-gray-400">
-          {item.size}, {item.sugar}, {item.ice}
+          {item.size}, {item.sugarNote || item.sugar}, {item.iceNote || item.ice}
           {item.addOn ? `, +${item.addOn}` : ''}
         </p>
         <p className="text-xs text-gray-500">${item.unitPrice.toFixed(2)}</p>

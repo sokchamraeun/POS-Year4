@@ -9,6 +9,8 @@ export default function ProductCard({ product, onAddToCart }) {
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0]?.name || '')
   const [selectedSugar, setSelectedSugar] = useState(product.sugar_levels?.[0]?.name || '')
   const [selectedIce, setSelectedIce] = useState(product.ice_levels?.[0]?.name || '')
+  const [sugarNote, setSugarNote] = useState('')
+  const [iceNote, setIceNote] = useState('')
   const [selectedAddOn, setSelectedAddOn] = useState('')
   const [qty, setQty] = useState(1)
   const [isAdded, setIsAdded] = useState(false)
@@ -58,6 +60,8 @@ export default function ProductCard({ product, onAddToCart }) {
 
     const size = product.sizes?.find((s) => s.name === selectedSize)
     const addon = product.addons?.find((a) => a.name === selectedAddOn)
+    const iceObj = product.ice_levels?.find((i) => i.name === selectedIce)
+    const sugarObj = product.sugar_levels?.find((s) => s.name === selectedSugar)
 
     try {
       const res = await fetch(`${API_URL}/orders/check-stock`, {
@@ -100,6 +104,8 @@ export default function ProductCard({ product, onAddToCart }) {
       size: selectedSize,
       sugar: selectedSugar,
       ice: selectedIce,
+      sugarNote: sugarObj?.requires_input ? sugarNote.trim() : '',
+      iceNote: iceObj?.requires_input ? iceNote.trim() : '',
       addOn: selectedAddOn,
       unitPrice: price,
       qty: quantity,
@@ -256,6 +262,8 @@ export default function ProductCard({ product, onAddToCart }) {
         selectedSugar={selectedSugar}
         selectedIce={selectedIce}
         selectedAddOn={selectedAddOn}
+        sugarNote={sugarNote}
+        iceNote={iceNote}
         qty={qty}
         price={price}
         finalPrice={finalPrice}
@@ -265,6 +273,8 @@ export default function ProductCard({ product, onAddToCart }) {
         onSugarChange={setSelectedSugar}
         onIceChange={setSelectedIce}
         onAddOnChange={setSelectedAddOn}
+        onSugarNoteChange={setSugarNote}
+        onIceNoteChange={setIceNote}
         onQtyChange={setQty}
         onAddToCart={() => {
           handleAddToCart(qty)

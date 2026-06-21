@@ -333,5 +333,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/profit', [ReportController::class, 'profit']);
         Route::get('/customers', [ReportController::class, 'customers']);
         Route::get('/payments', [ReportController::class, 'payments']);
+        Route::get('/orders', [ReportController::class, 'orders']);
+        Route::get('/staff', [ReportController::class, 'staff']);
     });
 });

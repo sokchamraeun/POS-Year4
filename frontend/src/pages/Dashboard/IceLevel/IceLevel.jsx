@@ -15,7 +15,7 @@ export default function IceLevel() {
   const [error, setError] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [form, setForm] = useState({ name: '' })
+  const [form, setForm] = useState({ name: '', requires_input: false })
   const [submitting, setSubmitting] = useState(false)
 
   const fetchItems = () => {
@@ -41,13 +41,13 @@ export default function IceLevel() {
 
   const openCreate = () => {
     setEditing(null)
-    setForm({ name: '' })
+    setForm({ name: '', requires_input: false })
     setShowModal(true)
   }
 
   const openEdit = (item) => {
     setEditing(item)
-    setForm({ name: item.name })
+    setForm({ name: item.name, requires_input: !!item.requires_input })
     setShowModal(true)
   }
 
@@ -170,7 +170,14 @@ export default function IceLevel() {
                       </td>
 
                       <td className="px-6 py-4 font-medium text-slate-800">
-                        {item.name}
+                        <div className="flex items-center gap-2">
+                          <span>{item.name}</span>
+                          {item.requires_input && (
+                            <span className="inline-flex items-center rounded-full bg-teal-100 px-2.5 py-0.5 text-[11px] font-bold text-teal-700">
+                              Custom input
+                            </span>
+                          )}
+                        </div>
                       </td>
 
                       <td className="px-6 py-4 text-right">
@@ -265,6 +272,20 @@ export default function IceLevel() {
                   />
                   <p className="text-xs text-slate-400 mt-1">Enter a unique ice level name</p>
                 </div>
+                <label className="mb-5 flex items-start gap-3 rounded-xl border-2 border-slate-200 p-3 cursor-pointer hover:border-amber-300 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={form.requires_input}
+                    onChange={(e) => setForm({ ...form, requires_input: e.target.checked })}
+                    className="mt-0.5 h-4 w-4 accent-amber-700"
+                  />
+                  <span>
+                    <span className="block text-sm font-semibold text-slate-700">Requires custom input</span>
+                    <span className="block text-xs text-slate-400 mt-0.5">
+                      When selected during an order, the customer/staff can type an exact amount (e.g. More Ice).
+                    </span>
+                  </span>
+                </label>
                 <div className="flex gap-3 justify-end pt-2 border-t border-slate-200">
                   <button
                     type="button"

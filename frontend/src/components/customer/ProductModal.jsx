@@ -12,6 +12,8 @@ export default function ProductModal({
   selectedSugar,
   selectedIce,
   selectedAddOn,
+  sugarNote = '',
+  iceNote = '',
   qty,
   price,
   finalPrice,
@@ -21,10 +23,14 @@ export default function ProductModal({
   onSugarChange,
   onIceChange,
   onAddOnChange,
+  onSugarNoteChange,
+  onIceNoteChange,
   onQtyChange,
   onAddToCart,
   submitLabel = 'Add to Cart',
 }) {
+  const selectedIceObj = product.ice_levels?.find((i) => i.name === selectedIce)
+  const selectedSugarObj = product.sugar_levels?.find((s) => s.name === selectedSugar)
   useEffect(() => {
     if (show) {
       document.body.dataset.modalOpen = 'true'
@@ -341,7 +347,10 @@ export default function ProductModal({
                     {product.ice_levels.map((i) => (
                       <button
                         key={i.id}
-                        onClick={() => onIceChange(i.name)}
+                        onClick={() => {
+                          onIceChange(i.name)
+                          if (!i.requires_input) onIceNoteChange?.('')
+                        }}
                         className={`rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200 ${
                           selectedIce === i.name
                             ? 'bg-gradient-to-r from-[#5b3a29] to-amber-700 text-white shadow-sm'
@@ -352,6 +361,16 @@ export default function ProductModal({
                       </button>
                     ))}
                   </div>
+
+                  {selectedIceObj?.requires_input && (
+                    <input
+                      type="text"
+                      value={iceNote}
+                      onChange={(e) => onIceNoteChange?.(e.target.value)}
+                      placeholder="Specify ice amount"
+                      className="mt-2 w-full rounded-xl border border-amber-900/20 bg-white px-3 py-2 text-xs font-semibold text-[#3d2817] outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/15"
+                    />
+                  )}
                 </div>
               )}
 
@@ -366,7 +385,10 @@ export default function ProductModal({
                     {product.sugar_levels.map((s) => (
                       <button
                         key={s.id}
-                        onClick={() => onSugarChange(s.name)}
+                        onClick={() => {
+                          onSugarChange(s.name)
+                          if (!s.requires_input) onSugarNoteChange?.('')
+                        }}
                         className={`rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200 ${
                           selectedSugar === s.name
                             ? 'bg-gradient-to-r from-[#5b3a29] to-amber-700 text-white shadow-sm'
@@ -377,6 +399,16 @@ export default function ProductModal({
                       </button>
                     ))}
                   </div>
+
+                  {selectedSugarObj?.requires_input && (
+                    <input
+                      type="text"
+                      value={sugarNote}
+                      onChange={(e) => onSugarNoteChange?.(e.target.value)}
+                      placeholder="Specify sugar amount"
+                      className="mt-2 w-full rounded-xl border border-amber-900/20 bg-white px-3 py-2 text-xs font-semibold text-[#3d2817] outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/15"
+                    />
+                  )}
                 </div>
               )}
             </div>

@@ -128,8 +128,8 @@ export default function Invoice({ order, customer }) {
 
             const opts = [
               item.size?.name,
-              item.sugar_level?.name,
-              item.ice_level?.name,
+              item.sugar_level?.name ? (item.sugar_note || item.sugar_level.name) : null,
+              item.ice_level?.name ? (item.ice_note || item.ice_level.name) : null,
               ...(item.addons?.map(a => a.addon?.name).filter(Boolean) ?? []),
             ]
               .filter(Boolean)

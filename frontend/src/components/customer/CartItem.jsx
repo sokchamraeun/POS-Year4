@@ -18,6 +18,8 @@ export default function CartItem({ item }) {
   const [editSize, setEditSize] = useState('')
   const [editSugar, setEditSugar] = useState('')
   const [editIce, setEditIce] = useState('')
+  const [editSugarNote, setEditSugarNote] = useState('')
+  const [editIceNote, setEditIceNote] = useState('')
   const [editAddOn, setEditAddOn] = useState('')
   const [editQty, setEditQty] = useState(1)
 
@@ -38,6 +40,8 @@ export default function CartItem({ item }) {
     setEditSize(item.size || item.sizes?.[0]?.name || '')
     setEditSugar(item.sugar || item.sugar_levels?.[0]?.name || '')
     setEditIce(item.ice || item.ice_levels?.[0]?.name || '')
+    setEditSugarNote(item.sugarNote || '')
+    setEditIceNote(item.iceNote || '')
     setEditAddOn(item.addOn || '')
     setEditQty(item.qty || 1)
     setEditing(true)
@@ -70,11 +74,16 @@ export default function CartItem({ item }) {
     ? editFinalPrice < editPrice || editPromotion.type === 'buy_x_get_y'
     : false
 
+  const editIceObj = item.ice_levels?.find((i) => i.name === editIce)
+  const editSugarObj = item.sugar_levels?.find((s) => s.name === editSugar)
+
   function handleSaveEdit() {
     updateItem(item.key, {
       size: editSize,
       sugar: editSugar,
       ice: editIce,
+      sugarNote: editSugarObj?.requires_input ? editSugarNote.trim() : '',
+      iceNote: editIceObj?.requires_input ? editIceNote.trim() : '',
       addOn: editAddOn,
       unitPrice: editPrice,
       promotion: editPromotion,
@@ -133,8 +142,8 @@ export default function CartItem({ item }) {
         {/* Option pills */}
         <div className="mt-1 flex flex-wrap gap-1">
           {item.size && <span className="rounded-md bg-[#f8f4ee] px-1.5 py-0.5 text-[10px] font-semibold text-[#8a715c]">{item.size}</span>}
-          {item.sugar && <span className="rounded-md bg-[#f8f4ee] px-1.5 py-0.5 text-[10px] font-semibold text-[#8a715c]">{item.sugar}</span>}
-          {item.ice && <span className="rounded-md bg-[#f8f4ee] px-1.5 py-0.5 text-[10px] font-semibold text-[#8a715c]">{item.ice}</span>}
+          {item.sugar && <span className="rounded-md bg-[#f8f4ee] px-1.5 py-0.5 text-[10px] font-semibold text-[#8a715c]">{item.sugarNote || item.sugar}</span>}
+          {item.ice && <span className="rounded-md bg-[#f8f4ee] px-1.5 py-0.5 text-[10px] font-semibold text-[#8a715c]">{item.iceNote || item.ice}</span>}
           {item.addOn && <span className="rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">+{item.addOn}</span>}
         </div>
 
@@ -184,6 +193,8 @@ export default function CartItem({ item }) {
           selectedSugar={editSugar}
           selectedIce={editIce}
           selectedAddOn={editAddOn}
+          sugarNote={editSugarNote}
+          iceNote={editIceNote}
           qty={editQty}
           price={editPrice}
           finalPrice={editFinalPrice}
@@ -193,6 +204,8 @@ export default function CartItem({ item }) {
           onSugarChange={setEditSugar}
           onIceChange={setEditIce}
           onAddOnChange={setEditAddOn}
+          onSugarNoteChange={setEditSugarNote}
+          onIceNoteChange={setEditIceNote}
           onQtyChange={setEditQty}
           onAddToCart={handleSaveEdit}
           submitLabel="Update Item"

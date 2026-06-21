@@ -14,8 +14,8 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
       const qty = item.qty ?? 1
       const price = Number(item.unit_price ?? item.price ?? 0)
       const size = item.size?.name ?? ''
-      const sugar = item.sugar_level?.name ?? ''
-      const ice = item.ice_level?.name ?? ''
+      const sugar = item.sugar_level?.name ? (item.sugar_note || item.sugar_level.name) : ''
+      const ice = item.ice_level?.name ? (item.ice_note || item.ice_level.name) : ''
       const addOn = (item.addons ?? []).map(a => a.addon?.name).filter(Boolean).join(', ')
       const vars = [size, sugar, ice, addOn].filter(Boolean).join('|')
       const prom = item.promotion
@@ -175,8 +175,8 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
                 const price = Number(item.unit_price ?? item.price ?? 0)
                 const qty = item.qty ?? 1
                 const size = item.size?.name ?? ''
-                const sugar = item.sugar_level?.name ?? ''
-                const ice = item.ice_level?.name ?? ''
+                const sugar = item.sugar_level?.name ? (item.sugar_note || item.sugar_level.name) : ''
+                const ice = item.ice_level?.name ? (item.ice_note || item.ice_level.name) : ''
                 const addOn = (item.addons ?? []).map(a => a.addon?.name).filter(Boolean).join(', ')
                 const prom = item.promotion
                 return (

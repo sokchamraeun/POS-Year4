@@ -76,8 +76,8 @@ export default function ReceiptOverlay({ order: initialOrder, onClose }) {
                     </div>
                     <div className="flex flex-wrap gap-1 text-[10px] text-slate-400 mt-0.5">
                       {item.size?.name && <span>{item.size.name}</span>}
-                      {item.sugar_level?.name && <span>• {item.sugar_level.name}</span>}
-                      {item.ice_level?.name && <span>• {item.ice_level.name}</span>}
+                      {item.sugar_level?.name && <span>• {item.sugar_note || item.sugar_level.name}</span>}
+                      {item.ice_level?.name && <span>• {item.ice_note || item.ice_level.name}</span>}
                       {item.addons?.map((a) => (
                         <span key={a.id}>• +{a.addon?.name}</span>
                       ))}

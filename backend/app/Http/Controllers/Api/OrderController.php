@@ -81,7 +81,9 @@ class OrderController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.size_id' => 'required|exists:sizes,id',
             'items.*.sugar_level_id' => 'nullable|exists:sugar_levels,id',
+            'items.*.sugar_note' => 'nullable|string|max:255',
             'items.*.ice_level_id' => 'nullable|exists:ice_levels,id',
+            'items.*.ice_note' => 'nullable|string|max:255',
             'items.*.qty' => 'nullable|integer|min:1',
             'items.*.unit_price' => 'nullable|numeric|min:0',
             'items.*.subtotal' => 'nullable|numeric|min:0',
@@ -142,11 +144,16 @@ class OrderController extends Controller
             return response()->json(['message' => 'Insufficient ingredient stock', 'errors' => $insufficient], 422);
         }
 
-        $order = DB::transaction(function () use ($data, $allRecipes, $allAddonIngredients) {
+        // The store route is public (POS may post without the sanctum middleware group),
+        // so resolve the authenticated cashier on demand via the sanctum guard.
+        $staffId = auth('sanctum')->id();
+
+        $order = DB::transaction(function () use ($data, $allRecipes, $allAddonIngredients, $staffId) {
             $discount = $data['discount'] ?? 0;
 
             $order = Order::create([
                 'customer_id' => $data['customer_id'] ?? null,
+                'staff_id' => $staffId,
                 'table_id' => $data['table_id'] ?? null,
                 'total' => $data['total'],
                 'discount' => $discount,
@@ -166,7 +173,9 @@ class OrderController extends Controller
                     'product_id' => $itemData['product_id'],
                     'size_id' => $itemData['size_id'],
                     'sugar_level_id' => $itemData['sugar_level_id'] ?? null,
+                    'sugar_note' => $itemData['sugar_note'] ?? null,
                     'ice_level_id' => $itemData['ice_level_id'] ?? null,
+                    'ice_note' => $itemData['ice_note'] ?? null,
                     'qty' => $qty,
                     'unit_price' => $itemData['unit_price'] ?? 0,
                     'subtotal' => $itemData['subtotal'] ?? 0,
