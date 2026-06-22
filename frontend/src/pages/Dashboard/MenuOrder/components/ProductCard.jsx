@@ -211,12 +211,6 @@ export default function ProductCard({
             </div>
           </div>
 
-          {isBuyGet && (
-            <div className="mb-3 rounded-xl border border-red-500 bg-red-50 px-3 py-2 text-center text-[11px] font-black text-red-600">
-              {promotionMessage}
-            </div>
-          )}
-
           <button
             onClick={() => setShowModal(true)}
             className="mt-auto flex w-full items-center justify-center gap-2 rounded-2xl border border-[#c47a2c] bg-[#c47a2c] px-4 py-2.5 text-sm font-black text-white transition-all duration-300 hover:border-[#a86425] hover:bg-[#a86425] active:scale-[0.98]"

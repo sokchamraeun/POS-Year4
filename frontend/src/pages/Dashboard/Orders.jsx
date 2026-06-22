@@ -82,16 +82,16 @@ const recipes = {
 const tabs = ['All', 'Completed', 'Processing', 'New', 'Cancelled']
 
 const statusColors = {
-  Completed: 'text-amber-700 bg-amber-100',
-  Processing: 'text-blue-600 bg-blue-100',
-  New: 'text-amber-600 bg-amber-100',
-  Cancelled: 'text-red-600 bg-red-100',
+  Completed: 'text-emerald-700 bg-emerald-50 border border-emerald-200',
+  Processing: 'text-sky-700 bg-sky-50 border border-sky-200',
+  New: 'text-amber-800 bg-amber-50 border border-amber-200',
+  Cancelled: 'text-rose-700 bg-rose-50 border border-rose-200',
 }
 
 const paymentColors = {
-  Paid: 'text-amber-700 bg-amber-100',
-  Unpaid: 'text-red-600 bg-red-100',
-  Refunded: 'text-gray-600 bg-gray-100',
+  Paid: 'text-emerald-700 bg-emerald-50 border border-emerald-200',
+  Unpaid: 'text-rose-700 bg-rose-50 border border-rose-200',
+  Refunded: 'text-slate-600 bg-slate-100 border border-slate-200',
 }
 
 export default function Orders() {
@@ -176,6 +176,13 @@ export default function Orders() {
     .filter((o) => !todayOnly || o.date === todayStr)
     .filter((o) => !search || o.customer.toLowerCase().includes(search.toLowerCase()) || o.id.toLowerCase().includes(search.toLowerCase()) || o.phone.includes(search))
 
+  const summary = {
+    shown: filtered.length,
+    paid: orders.filter((o) => o.payment === 'Paid').length,
+    unpaid: orders.filter((o) => o.payment === 'Unpaid').length,
+    revenue: orders.reduce((sum, o) => sum + o.total, 0),
+  }
+
   function handleStatusChange(orderId, newStatus) {
     const numericId = orderId.startsWith('#') ? orderId.slice(1) : orderId
     setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)))
@@ -221,28 +228,28 @@ export default function Orders() {
   if (loading) return <Loader text="Loading Orders" />
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="flex h-screen bg-[radial-gradient(circle_at_top_left,_#fff7ed_0%,_#f1dcc0_42%,_#c99a63_100%)] text-stone-900">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="flex items-center justify-between mb-6">
+        <main className="flex-1 overflow-y-auto bg-white p-4 sm:p-6">
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-amber-900 to-amber-800 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#5c351c]">
                 Orders
               </h1>
-              <p className="text-sm text-slate-500 mt-1">Manage and track customer orders</p>
+              <p className="mt-1 text-sm text-[#8a5a2b]/80">Manage and track customer orders with clean status and payment tracking</p>
             </div>
             <button
               onClick={clearLocal}
-              className="text-sm text-red-600 hover:text-red-700 font-medium transition-colors"
+              className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 shadow-sm transition-all hover:border-red-300 hover:bg-red-100"
             >
               Clear Local
             </button>
           </div>
 
           {deductMsg && (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
+            <div className="mb-6 flex items-center gap-3 rounded-2xl border border-emerald-300/50 bg-emerald-50 p-4 shadow-lg shadow-emerald-900/10">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -250,8 +257,31 @@ export default function Orders() {
             </div>
           )}
 
-          <div className="bg-white rounded-2xl shadow-lg shadow-amber-100/50 border border-amber-200 overflow-hidden">
-            <div className="px-6 py-4 border-b border-amber-200 flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-gradient-to-r from-white to-amber-50/30">
+          <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="rounded-2xl border border-amber-300/30 bg-white/95 p-4 shadow-lg shadow-black/10">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-700">Shown Orders</p>
+              <p className="mt-1.5 text-2xl font-extrabold text-stone-900">{summary.shown}</p>
+              <p className="mt-1 text-[11px] text-stone-500">After search and filter</p>
+            </div>
+            <div className="rounded-2xl border border-emerald-300/40 bg-white/95 p-4 shadow-lg shadow-black/10">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700">Paid</p>
+              <p className="mt-1.5 text-2xl font-extrabold text-stone-900">{summary.paid}</p>
+              <p className="mt-1 text-[11px] text-stone-500">Paid orders loaded</p>
+            </div>
+            <div className="rounded-2xl border border-rose-300/40 bg-white/95 p-4 shadow-lg shadow-black/10">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-rose-700">Unpaid</p>
+              <p className="mt-1.5 text-2xl font-extrabold text-stone-900">{summary.unpaid}</p>
+              <p className="mt-1 text-[11px] text-stone-500">Need follow up</p>
+            </div>
+            <div className="rounded-2xl border border-amber-400/50 bg-gradient-to-br from-[#c79255] to-[#8b5a2b] p-4 text-white shadow-lg shadow-amber-900/15">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-100">Loaded Revenue</p>
+              <p className="mt-1.5 text-2xl font-extrabold">${summary.revenue.toFixed(2)}</p>
+              <p className="mt-1 text-[11px] text-amber-50/85">Current page / polling data</p>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-[1.75rem] border border-amber-700/20 bg-[#fffaf3] shadow-2xl shadow-amber-900/15 ring-1 ring-white/70">
+            <div className="flex flex-col gap-3 border-b border-amber-200/80 bg-gradient-to-r from-[#fff8ed] via-white to-[#f5e5d2] px-4 py-4 sm:flex-row sm:items-center sm:px-6">
               <div className="relative flex-1 w-full">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -261,12 +291,12 @@ export default function Orders() {
                   placeholder="Search by order ID, customer, or phone..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-10 py-2 rounded-xl text-sm bg-white border border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-400/20 transition-all"
+                  className="w-full rounded-2xl border border-amber-200 bg-white px-10 py-2.5 text-sm text-stone-800 shadow-inner outline-none transition-all placeholder:text-stone-400 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15"
                 />
                 {search && (
                   <button
                     onClick={() => setSearch('')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-slate-100 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl border border-transparent p-1 transition-colors hover:border-amber-200 hover:bg-amber-50"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -278,8 +308,8 @@ export default function Orders() {
                 onClick={() => setTodayOnly(!todayOnly)}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
                   todayOnly
-                    ? 'bg-amber-600 text-white shadow-md shadow-amber-200'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-orange-50'
+                    ? 'border border-[#8b5a2b] bg-gradient-to-r from-[#9b6737] to-[#c79255] text-white shadow-lg shadow-amber-900/15'
+                    : 'border border-amber-200 bg-white text-stone-700 shadow-sm hover:bg-amber-50'
                 }`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -290,7 +320,7 @@ export default function Orders() {
               {(search || todayOnly) && (
                 <button
                   onClick={() => { setSearch(''); setTodayOnly(false) }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 transition-all whitespace-nowrap"
+                  className="inline-flex items-center gap-2 whitespace-nowrap rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 shadow-sm transition-all hover:bg-red-100"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -299,15 +329,15 @@ export default function Orders() {
                 </button>
               )}
             </div>
-            <div className="px-6 py-4 border-b border-amber-200 flex items-center gap-4 overflow-x-auto bg-gradient-to-r from-white to-amber-50/30">
+            <div className="flex items-center gap-3 overflow-x-auto border-b border-amber-200/80 bg-[#fff8ed] px-4 py-4 sm:px-6">
               {tabs.map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                  className={`whitespace-nowrap rounded-2xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === tab
-                      ? 'text-amber-600 border-b-2 border-amber-600 pb-1'
-                      : 'text-slate-500 hover:text-teal-700'
+                      ? 'border border-[#8b5a2b] bg-gradient-to-r from-[#9b6737] to-[#c79255] px-4 py-2 text-white shadow-md shadow-amber-900/15'
+                      : 'border border-amber-200 bg-white px-4 py-2 text-stone-500 hover:border-amber-400 hover:text-amber-900'
                   }`}
                 >
                   {tab}
@@ -316,9 +346,9 @@ export default function Orders() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full min-w-[980px] text-sm">
                 <thead>
-                  <tr className="text-left text-amber-600 font-semibold bg-amber-50/50 border-b border-amber-200">
+                  <tr className="border-b border-amber-200 bg-gradient-to-r from-[#4a2b18] to-[#7b4b25] text-left font-semibold text-white">
                     <th className="px-6 py-4">Order</th>
                     <th className="px-6 py-4">Customer</th>
                     <th className="px-6 py-4">Phone</th>
@@ -334,19 +364,19 @@ export default function Orders() {
                 </thead>
                 <tbody>
                   {filtered.map((order) => (
-                    <tr key={order.id} className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200">
-                      <td className="px-6 py-4 font-semibold text-amber-600">{order.id}</td>
-                      <td className="px-6 py-4 text-slate-700">{order.customer}</td>
-                      <td className="px-6 py-4 text-slate-500">{order.phone}</td>
-                      <td className="px-6 py-4 text-slate-500">{order.table || '-'}</td>
-                      <td className="px-6 py-4 text-slate-700 font-medium">{order.items}</td>
-                      <td className="px-6 py-4 font-bold text-amber-600">${order.total.toFixed(2)}</td>
-                      <td className="px-6 py-4 text-slate-500">{order.date}</td>
+                    <tr key={order.id} className="border-b border-amber-100 bg-white transition-colors duration-200 hover:bg-amber-50/80">
+                      <td className="px-6 py-4 font-bold text-amber-800">{order.id}</td>
+                      <td className="px-6 py-4 font-medium text-stone-800">{order.customer}</td>
+                      <td className="px-6 py-4 text-stone-500">{order.phone}</td>
+                      <td className="px-6 py-4 text-stone-500">{order.table || '-'}</td>
+                      <td className="px-6 py-4 font-semibold text-stone-700">{order.items}</td>
+                      <td className="px-6 py-4 font-extrabold text-amber-800">${order.total.toFixed(2)}</td>
+                      <td className="px-6 py-4 text-stone-500">{order.date}</td>
                       <td className="px-6 py-4">
                         <select
                           value={order.status}
                           onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                          className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${statusColors[order.status]}`}
+                          className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-bold outline-none transition-all ${statusColors[order.status]}`}
                           style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
                         >
                           <option value="New">New</option>
@@ -359,7 +389,7 @@ export default function Orders() {
                         <select
                           value={order.payment}
                           onChange={(e) => handlePaymentChange(order.id, e.target.value)}
-                          className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer ${paymentColors[order.payment]}`}
+                          className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-bold outline-none transition-all ${paymentColors[order.payment]}`}
                           style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
                         >
                           <option value="Paid">Paid</option>
@@ -367,11 +397,11 @@ export default function Orders() {
                           <option value="Refunded">Refunded</option>
                         </select>
                       </td>
-                      <td className="px-6 py-4 text-slate-600 capitalize">{order.paymentMethod}</td>
+                      <td className="px-6 py-4 capitalize text-stone-600">{order.paymentMethod}</td>
                       <td className="px-6 py-4">
                         <button
                           onClick={() => setSelectedOrder(order)}
-                          className="text-amber-600 hover:text-amber-700 text-xs font-medium transition-colors"
+                          className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800 transition-all hover:border-[#8b5a2b] hover:bg-[#9b6737] hover:text-white"
                         >
                           View Detail
                         </button>
@@ -380,16 +410,23 @@ export default function Orders() {
                   ))}
                 </tbody>
               </table>
+              {filtered.length === 0 && (
+                <div className="flex flex-col items-center justify-center border-t border-amber-100 bg-white px-6 py-14 text-center">
+                  <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-200 bg-amber-50 text-2xl">☕</div>
+                  <h3 className="text-base font-extrabold text-stone-800">No orders found</h3>
+                  <p className="mt-1 text-sm text-stone-500">Try changing the search, status tab, or Today filter.</p>
+                </div>
+              )}
             </div>
 
             {lastPage > 1 && !loading && (
-              <div className="px-6 py-4 border-t border-amber-200 bg-amber-50/20 flex items-center justify-between">
-                <span className="text-xs text-slate-500">Page {page} of {lastPage} ({total} orders)</span>
+              <div className="flex flex-col gap-3 border-t border-amber-200 bg-[#fff8ed] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                <span className="text-xs font-medium text-stone-500">Page {page} of {lastPage} ({total} orders)</span>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setPage(page - 1)}
                     disabled={page <= 1}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page <= 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-amber-100'}`}
+                    className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors ${page <= 1 ? 'cursor-not-allowed border-slate-100 text-slate-300' : 'border-amber-200 bg-white text-stone-600 hover:bg-amber-100'}`}
                   >
                     Prev
                   </button>
@@ -402,12 +439,12 @@ export default function Orders() {
                     }, [])
                     .map((item, i) =>
                       item === '...' ? (
-                        <span key={`e${i}`} className="px-2 py-1.5 text-xs text-slate-400">...</span>
+                        <span key={`e${i}`} className="px-2 py-1.5 text-xs text-stone-400">...</span>
                       ) : (
                         <button
                           key={item}
                           onClick={() => setPage(item)}
-                          className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${item === page ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 hover:bg-amber-100'}`}
+                          className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors ${item === page ? 'border-[#8b5a2b] bg-[#9b6737] text-white shadow-md' : 'border-amber-200 bg-white text-stone-600 hover:bg-amber-100'}`}
                         >
                           {item}
                         </button>
@@ -416,7 +453,7 @@ export default function Orders() {
                   <button
                     onClick={() => setPage(page + 1)}
                     disabled={page >= lastPage}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${page >= lastPage ? 'text-slate-300 cursor-not-allowed' : 'text-slate-600 hover:bg-amber-100'}`}
+                    className={`rounded-xl border px-3 py-1.5 text-xs font-semibold transition-colors ${page >= lastPage ? 'cursor-not-allowed border-slate-100 text-slate-300' : 'border-amber-200 bg-white text-stone-600 hover:bg-amber-100'}`}
                   >
                     Next
                   </button>
@@ -426,40 +463,40 @@ export default function Orders() {
           </div>
 
           {selectedOrder && (
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] flex flex-col border border-amber-200">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-amber-200 bg-gradient-to-r from-amber-50 to-white">
-                  <h2 className="text-lg font-bold text-amber-600">{selectedOrder.id}</h2>
-                  <button onClick={() => setSelectedOrder(null)} className="text-slate-400 hover:text-slate-600 transition-colors">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/45 p-4 backdrop-blur-md">
+              <div className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-[1.75rem] border border-amber-700/25 bg-[#fffaf3] shadow-2xl shadow-amber-900/20 ring-1 ring-white/70">
+                <div className="flex items-center justify-between border-b border-amber-200 bg-gradient-to-r from-[#8b5e34] to-[#c08a4b] px-6 py-4">
+                  <h2 className="text-lg font-extrabold text-white">Order Detail {selectedOrder.id}</h2>
+                  <button onClick={() => setSelectedOrder(null)} className="rounded-xl border border-white/10 p-1 text-amber-100 transition-colors hover:bg-white/10 hover:text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
-                <div className="px-6 py-4 overflow-y-auto">
-                  <div className="flex items-center justify-between text-sm text-slate-500 mb-4">
-                    <div className="flex items-center gap-4">
-                      <span><span className="text-slate-400">Customer:</span> <span className="text-slate-800 font-medium">{selectedOrder.customer}</span></span>
-                      <span className="text-amber-300">|</span>
+                <div className="overflow-y-auto px-4 py-4 sm:px-6">
+                  <div className="mb-4 flex flex-col justify-between gap-3 rounded-2xl border border-amber-200 bg-white p-4 text-sm text-stone-500 shadow-sm sm:flex-row sm:items-center">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span><span className="text-stone-400">Customer:</span> <span className="font-bold text-stone-800">{selectedOrder.customer}</span></span>
+                      <span className="text-amber-300">•</span>
                       <span>{selectedOrder.phone}</span>
-                      {selectedOrder.table && selectedOrder.table !== '-' ? <><span className="text-amber-300">|</span><span>Table: <span className="text-amber-600 font-medium">{selectedOrder.table}</span></span></> : null}
+                      {selectedOrder.table && selectedOrder.table !== '-' ? <><span className="text-amber-300">•</span><span>Table: <span className="font-bold text-amber-800">{selectedOrder.table}</span></span></> : null}
                     </div>
-                    <div className="flex items-center gap-4">
-                      {selectedOrder.printedBy && <span><span className="text-slate-400">Staff:</span> <span className="text-slate-800 font-medium">{selectedOrder.printedBy}</span></span>}
-                      <span className="text-slate-400 ml-auto">{selectedOrder.datetime}</span>
+                    <div className="flex flex-wrap items-center gap-3">
+                      {selectedOrder.printedBy && <span><span className="text-stone-400">Staff:</span> <span className="font-bold text-stone-800">{selectedOrder.printedBy}</span></span>}
+                      <span className="ml-auto text-stone-400">{selectedOrder.datetime}</span>
                     </div>
                   </div>
-                  <div className="mb-4 pb-4 border-b border-amber-200 space-y-2">
+                  <div className="mb-4 grid gap-3 border-b border-amber-200 pb-4 sm:grid-cols-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-slate-500 w-20">Method:</span>
-                      <span className="text-sm text-slate-700 font-medium capitalize">{selectedOrder.paymentMethod}</span>
+                      <span className="w-20 text-sm font-medium text-stone-500">Method:</span>
+                      <span className="text-sm font-bold capitalize text-stone-800">{selectedOrder.paymentMethod}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-slate-500 w-20">Status:</span>
+                      <span className="w-20 text-sm font-medium text-stone-500">Status:</span>
                       <select
                         value={selectedOrder.status}
                         onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
-                        className={`text-sm border border-amber-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${statusColors[selectedOrder.status]?.split(' ')[0] || 'text-slate-600'}`}
+                        className={`rounded-xl border border-amber-200 bg-white px-3 py-1.5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/15 ${statusColors[selectedOrder.status]?.split(' ')[0] || 'text-stone-600'}`}
                       >
                         <option value="New">New</option>
                         <option value="Processing">Processing</option>
@@ -468,11 +505,11 @@ export default function Orders() {
                       </select>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-slate-500 w-20">Payment:</span>
+                      <span className="w-20 text-sm font-medium text-stone-500">Payment:</span>
                       <select
                         value={selectedOrder.payment}
                         onChange={(e) => handlePaymentChange(selectedOrder.id, e.target.value)}
-                        className={`text-sm border border-amber-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${paymentColors[selectedOrder.payment]?.split(' ')[0] || 'text-slate-600'}`}
+                        className={`rounded-xl border border-amber-200 bg-white px-3 py-1.5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-4 focus:ring-amber-500/15 ${paymentColors[selectedOrder.payment]?.split(' ')[0] || 'text-stone-600'}`}
                       >
                         <option value="Paid">Paid</option>
                         <option value="Unpaid">Unpaid</option>
@@ -480,9 +517,9 @@ export default function Orders() {
                       </select>
                     </div>
                   </div>
-                  <table className="w-full text-sm">
+                  <table className="w-full min-w-[980px] text-sm">
                     <thead>
-                      <tr className="text-left text-amber-600 font-semibold border-b border-amber-200">
+                      <tr className="border-b border-amber-200 bg-amber-50 text-left font-bold text-amber-900">
                         <th className="pb-2">Item</th>
                         <th className="pb-2">Size</th>
                         <th className="pb-2">Sugar</th>
@@ -497,30 +534,30 @@ export default function Orders() {
                       {selectedOrder.detail.map((item, i) => {
                         const recipe = recipes[item.name]
                         return (
-                          <tr key={i} className="border-b border-amber-50">
-                            <td className="py-2.5 text-slate-800 font-medium">
+                          <tr key={i} className="border-b border-amber-100 bg-white hover:bg-amber-50/70">
+                            <td className="py-3 font-bold text-stone-800">
                               {item.name}
                               {item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' && (
-                                <span className="ml-1.5 text-[10px] text-green-600 font-medium">
+                                <span className="ml-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-200">
                                   ({getPromotionLabel(item.promotion)})
                                 </span>
                               )}
                             </td>
-                            <td className="py-2.5 text-slate-600">{item.size || '-'}</td>
-                            <td className="py-2.5 text-slate-600">{item.sugar || '-'}</td>
-                            <td className="py-2.5 text-slate-600">{item.ice || '-'}</td>
-                            <td className="py-2.5 text-slate-600">{item.addOn || '-'}</td>
-                            <td className="py-2.5 text-slate-600">{item.qty}</td>
-                            <td className="py-2.5 text-slate-600 text-right">${item.price.toFixed(2)}</td>
-                            <td className="py-2.5 text-slate-800 text-right font-medium">${(item.qty * item.price).toFixed(2)}</td>
+                            <td className="py-3 text-stone-600">{item.size || '-'}</td>
+                            <td className="py-3 text-stone-600">{item.sugar || '-'}</td>
+                            <td className="py-3 text-stone-600">{item.ice || '-'}</td>
+                            <td className="py-3 text-stone-600">{item.addOn || '-'}</td>
+                            <td className="py-3 font-semibold text-stone-700">{item.qty}</td>
+                            <td className="py-3 text-right text-stone-600">${item.price.toFixed(2)}</td>
+                            <td className="py-3 text-right font-bold text-stone-800">${(item.qty * item.price).toFixed(2)}</td>
                           </tr>
                         )
                       })}
                     </tbody>
                     <tfoot>
                       <tr>
-                        <td colSpan={7} className="pt-3 text-right text-sm text-slate-500">Subtotal</td>
-                        <td className="pt-3 text-right text-sm text-slate-500">${(selectedOrder.total + selectedOrder.discount).toFixed(2)}</td>
+                        <td colSpan={7} className="pt-4 text-right text-sm font-medium text-stone-500">Subtotal</td>
+                        <td className="pt-4 text-right text-sm font-medium text-stone-500">${(selectedOrder.total + selectedOrder.discount).toFixed(2)}</td>
                       </tr>
                       {selectedOrder.discount > 0 && selectedOrder.detail.filter(i => i.promotion).length > 0 && (
                         selectedOrder.detail.filter(i => i.promotion).map((item, idx) => {
@@ -529,30 +566,30 @@ export default function Orders() {
                           const displayQty = item.promotion?.type === 'buy_x_get_y' ? Math.round(d / item.price) : item.qty
                           return (
                             <tr key={idx}>
-                              <td colSpan={7} className="pt-1 text-right text-[11px] text-green-600 font-medium">
+                              <td colSpan={7} className="pt-1 text-right text-[11px] font-bold text-emerald-700">
                                 {getPromotionLabel(item.promotion)} &mdash; {item.name}{item.size ? ` (${item.size})` : ''} x{displayQty}
                               </td>
-                              <td className="pt-1 text-right text-[11px] text-green-600 font-medium">-${d.toFixed(2)}</td>
+                              <td className="pt-1 text-right text-[11px] font-bold text-emerald-700">-${d.toFixed(2)}</td>
                             </tr>
                           )
                         })
                       )}
                       {selectedOrder.discount > 0 && (
                         <tr>
-                          <td colSpan={7} className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">
+                          <td colSpan={7} className="border-t border-dashed border-emerald-200 pt-2 text-right text-sm font-bold text-emerald-700">
                             {selectedOrder.detail.some(i => i.promotion) ? (() => { const pNames = [...new Set(selectedOrder.detail.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', '); return `Total Discount${pNames ? ' ('+pNames+')' : ''}` })() : 'Promotion'}
                           </td>
-                          <td className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">-${selectedOrder.discount.toFixed(2)}</td>
+                          <td className="border-t border-dashed border-emerald-200 pt-2 text-right text-sm font-bold text-emerald-700">-${selectedOrder.discount.toFixed(2)}</td>
                         </tr>
                       )}
                       <tr>
-                        <td colSpan={7} className="pt-3 text-right font-semibold text-slate-800">Total</td>
-                        <td className="pt-3 text-right font-semibold text-amber-600">${selectedOrder.total.toFixed(2)}</td>
+                        <td colSpan={7} className="pt-4 text-right text-base font-extrabold text-stone-900">Total</td>
+                        <td className="pt-4 text-right text-base font-extrabold text-amber-800">${selectedOrder.total.toFixed(2)}</td>
                       </tr>
                     </tfoot>
                   </table>
                 </div>
-                <div className="px-6 py-4 border-t border-amber-200 bg-amber-50/30 flex justify-between items-center gap-2">
+                <div className="flex items-center justify-between gap-2 border-t border-amber-200 bg-[#fff8ed] px-6 py-4">
                   <button
                     onClick={() => {
                       const numericId = selectedOrder.id.startsWith('#') ? selectedOrder.id.slice(1) : selectedOrder.id
@@ -561,14 +598,14 @@ export default function Orders() {
                       const o = selectedOrder
                       const itemsHtml = o.detail.map((item, idx) => {
                         const vars = [item.size, item.sugar, item.ice, item.addOn].filter(Boolean).join('|')
-                        const promLabel = item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' ? `<br><span style="color:#14b8a6;font-size:8px">${getPromotionLabel(item.promotion)}</span>` : ''
+                        const promLabel = item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' ? `<br><span style="color:#8b5a2b;font-size:8px">${getPromotionLabel(item.promotion)}</span>` : ''
                         return `<tr><td style="padding:4px 4px;text-align:center;font-size:10px">${idx + 1}</td><td style="padding:4px 4px;font-size:10px">${item.name}${vars ? '<br><span style="color:#666;font-size:8px">'+vars+'</span>' : ''}${promLabel}</td><td style="padding:4px 4px;text-align:center;font-size:10px">${item.qty}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${item.price.toFixed(2)}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${(item.qty * item.price).toFixed(2)}</td></tr>`
                       }).join('')
                       w.document.write(`
                         <html><head><title>Receipt ${o.id}</title>
                         <style>
                           body { font-family: 'Courier New', monospace; font-size: 11px; margin: 0; padding: 8px; width: 58mm; font-weight: bold; }
-                          h1 { font-size: 14px; text-align: center; margin-bottom: 4px; color: #0d9488; }
+                          h1 { font-size: 14px; text-align: center; margin-bottom: 4px; color: #8b5a2b; }
                           .info { text-align: center; color: #555; margin-bottom: 12px; font-size: 10px; }
                           table { width: 100%; border-collapse: collapse; }
                           th { border-bottom: 1px solid #333; padding: 4px 4px; text-align: left; font-size: 10px; }
@@ -598,13 +635,13 @@ export default function Orders() {
                               const d = calcDiscount(item.price, item.promotion, item.qty)
                               if (d <= 0) return
                               const displayQty = item.promotion?.type === 'buy_x_get_y' ? Math.round(d / item.price) : item.qty
-                              html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#14b8a6">${getPromotionLabel(item.promotion)} &mdash; ${item.name}${item.size ? ' ('+item.size+')' : ''} x${displayQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#14b8a6">-${d.toFixed(2)}</td></tr>`
+                              html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#8b5a2b">${getPromotionLabel(item.promotion)} &mdash; ${item.name}${item.size ? ' ('+item.size+')' : ''} x${displayQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#8b5a2b">-${d.toFixed(2)}</td></tr>`
                             })
                             if (html) {
                               const pNames = [...new Set(o.detail.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', ')
-                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#14b8a6;border-top:1px dashed #ccc">Total Discount${pNames ? ' ('+pNames+')' : ''}</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#14b8a6;border-top:1px dashed #ccc">-${o.discount.toFixed(2)}</td></tr>`
+                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#8b5a2b;border-top:1px dashed #ccc">Total Discount${pNames ? ' ('+pNames+')' : ''}</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#8b5a2b;border-top:1px dashed #ccc">-${o.discount.toFixed(2)}</td></tr>`
                             } else if (o.discount > 0) {
-                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#14b8a6">Promotion</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#14b8a6">-${o.discount.toFixed(2)}</td></tr>`
+                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#8b5a2b">Promotion</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#8b5a2b">-${o.discount.toFixed(2)}</td></tr>`
                             }
                             if (html) {
                               const subtotal = o.total + o.discount
@@ -620,13 +657,13 @@ export default function Orders() {
                       `)
                       w.document.close()
                     }}
-                    className="bg-gradient-to-r from-amber-900 to-amber-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-amber-950 hover:to-amber-900 transition-all duration-200 shadow-md"
+                    className="rounded-2xl border border-[#8b5a2b] bg-gradient-to-r from-[#9b6737] to-[#c79255] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-amber-900/20 transition-all duration-200 hover:from-[#8b5a2b] hover:to-[#b7793d]"
                   >
                     Print Receipt
                   </button>
                   <button
                     onClick={() => setSelectedOrder(null)}
-                    className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors"
+                    className="rounded-2xl border border-stone-200 bg-white px-5 py-2.5 text-sm font-bold text-stone-700 shadow-sm transition-colors hover:bg-stone-100"
                   >
                     Close
                   </button>

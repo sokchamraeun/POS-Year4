@@ -248,6 +248,7 @@ function hasPerm(slug, u) {
 
 export default function Sidebar() {
   const [user, setUser] = useState(safeParseUser)
+  const [newOrders, setNewOrders] = useState(0)
 
   const filteredLinks = links.filter(l => !l.perm || hasPerm(l.perm, user))
   const filteredUserLinks = userLinks.filter(l => hasPerm(l.perm, user))
@@ -263,6 +264,35 @@ export default function Sidebar() {
     refresh()
     window.addEventListener('focus', refresh)
     return () => window.removeEventListener('focus', refresh)
+  }, [])
+
+  useEffect(() => {
+    let active = true
+
+    function loadNewOrders() {
+      fetch(`${API_BASE}/orders?page=1&per_page=50`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Accept: 'application/json',
+        },
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json) => {
+          if (!active || !json) return
+          const count = (json.data ?? []).filter(
+            (o) => (o.status ?? 'New') === 'New'
+          ).length
+          setNewOrders(count)
+        })
+        .catch(() => {})
+    }
+
+    loadNewOrders()
+    const interval = setInterval(loadNewOrders, 5000)
+    return () => {
+      active = false
+      clearInterval(interval)
+    }
   }, [])
 
   function setCollapsedPersist(val) {
@@ -312,7 +342,7 @@ export default function Sidebar() {
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
-                `flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-200 ${
+                `relative flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-200 ${
                   isActive
                     ? 'bg-gradient-to-tr from-amber-900 to-amber-950 text-white shadow-lg shadow-amber-700/30 transform scale-105'
                     : 'text-zinc-400 hover:text-white hover:bg-zinc-800/80 hover:scale-105'
@@ -321,6 +351,11 @@ export default function Sidebar() {
               title={link.label}
             >
               {link.icon}
+              {link.to === '/staff/orders' && newOrders > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white shadow-md">
+                  {newOrders > 99 ? '99+' : newOrders}
+                </span>
+              )}
             </NavLink>
           ))}
           <button
@@ -379,6 +414,11 @@ export default function Sidebar() {
           >
             <div className="shrink-0">{link.icon}</div>
             {link.label}
+            {link.to === '/staff/orders' && newOrders > 0 && (
+              <span className="ml-auto flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-600 px-1.5 text-[11px] font-bold text-white shadow-md">
+                {newOrders > 99 ? '99+' : newOrders}
+              </span>
+            )}
           </NavLink>
         ))}
 

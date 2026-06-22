@@ -150,56 +150,55 @@ export default function Inventory() {
 
         <main className="flex-1 overflow-y-auto p-6">
           {/* Header */}
-          <div className="mb-6 rounded-[1.75rem] bg-gradient-to-br from-[#3b2415] via-[#5a341c] to-[#7c4a24] shadow-xl overflow-hidden">
-            <div className="relative p-6">
-              <div className="absolute -top-16 -right-16 w-56 h-56 bg-amber-300/20 rounded-full blur-3xl"></div>
-              <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-orange-300/10 rounded-full blur-3xl"></div>
-
-              <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/15 text-amber-100 text-xs font-bold mb-3">
-                    <span className="w-2 h-2 rounded-full bg-amber-300 animate-pulse"></span>
-                    Stock Management
-                  </div>
-
-                  <h1 className="text-3xl font-black text-white">
-                    Inventory List
-                  </h1>
-
-                  <p className="text-sm text-amber-100/80 mt-2">
-                    Manage ingredient stock, purchase, deduct, and adjust inventory.
-                  </p>
+          <div className="mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold mb-3">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                  Stock Management
                 </div>
 
-                <button
-                  onClick={() => setShowHistory(!showHistory)}
-                  className="w-fit bg-amber-400 text-[#3b2415] px-5 py-3 rounded-2xl text-sm font-black hover:bg-amber-300 transition-all shadow-lg shadow-black/10"
-                >
-                  {showHistory ? 'Back to Inventory List' : 'Transaction History'}
-                </button>
+                <h1 className="text-3xl font-black text-[#2b170c]">
+                  Inventory List
+                </h1>
+
+                <p className="text-sm text-stone-500 mt-2">
+                  Manage ingredient stock, purchase, deduct, and adjust inventory.
+                </p>
               </div>
 
-              {/* Stats */}
-              <div className="relative grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
-                <div className="rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md p-4">
-                  <p className="text-xs text-amber-100 font-semibold">Ingredients</p>
-                  <p className="text-3xl font-black text-white mt-1">{ingredients.length}</p>
-                </div>
+              <button
+                onClick={() => setShowHistory(!showHistory)}
+                className="w-fit bg-amber-400 text-[#3b2415] px-5 py-3 rounded-2xl text-sm font-black hover:bg-amber-300 transition-all shadow-lg shadow-black/10"
+              >
+                {showHistory ? 'Back to Inventory List' : 'Transaction History'}
+              </button>
+            </div>
 
-                <div className="rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md p-4">
-                  <p className="text-xs text-rose-100 font-semibold">Low Stock</p>
-                  <p className="text-3xl font-black text-white mt-1">{lowStockCount}</p>
-                </div>
+            {/* Stats */}
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-2xl border border-amber-300/30 bg-white/95 p-4 shadow-lg shadow-black/10">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-700">Ingredients</p>
+                <p className="mt-1.5 text-2xl font-extrabold text-stone-900">{ingredients.length}</p>
+                <p className="mt-1 text-[11px] text-stone-500">Total ingredients</p>
+              </div>
 
-                <div className="rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md p-4">
-                  <p className="text-xs text-sky-100 font-semibold">Transactions</p>
-                  <p className="text-3xl font-black text-white mt-1">{totalTransactions}</p>
-                </div>
+              <div className="rounded-2xl border border-rose-300/40 bg-white/95 p-4 shadow-lg shadow-black/10">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-rose-700">Low Stock</p>
+                <p className="mt-1.5 text-2xl font-extrabold text-stone-900">{lowStockCount}</p>
+                <p className="mt-1 text-[11px] text-stone-500">Need restock</p>
+              </div>
 
-                <div className="rounded-2xl bg-white/10 border border-white/15 backdrop-blur-md p-4">
-                  <p className="text-xs text-emerald-100 font-semibold">Total Stock</p>
-                  <p className="text-3xl font-black text-white mt-1">{totalStock.toFixed(0)}</p>
-                </div>
+              <div className="rounded-2xl border border-emerald-300/40 bg-white/95 p-4 shadow-lg shadow-black/10">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700">Transactions</p>
+                <p className="mt-1.5 text-2xl font-extrabold text-stone-900">{totalTransactions}</p>
+                <p className="mt-1 text-[11px] text-stone-500">All movements</p>
+              </div>
+
+              <div className="rounded-2xl border border-amber-400/50 bg-gradient-to-br from-[#c79255] to-[#8b5a2b] p-4 text-white shadow-lg shadow-amber-900/15">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-100">Total Stock</p>
+                <p className="mt-1.5 text-2xl font-extrabold">{totalStock.toFixed(0)}</p>
+                <p className="mt-1 text-[11px] text-amber-50/85">Current quantity on hand</p>
               </div>
             </div>
           </div>
