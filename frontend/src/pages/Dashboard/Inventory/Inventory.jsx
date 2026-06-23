@@ -142,7 +142,7 @@ export default function Inventory() {
   if (loading) return <Loader text="Loading..." />
 
   return (
-    <div className="flex h-screen bg-[#f8f4ef]">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
 
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -153,23 +153,23 @@ export default function Inventory() {
           <div className="mb-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold mb-3">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-bold mb-3">
+                  <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
                   Stock Management
                 </div>
 
-                <h1 className="text-3xl font-black text-[#2b170c]">
+                <h1 className="text-3xl font-black bg-gradient-to-r from-teal-900 to-teal-800 bg-clip-text text-transparent">
                   Inventory List
                 </h1>
 
-                <p className="text-sm text-stone-500 mt-2">
+                <p className="text-sm text-slate-500 mt-2">
                   Manage ingredient stock, purchase, deduct, and adjust inventory.
                 </p>
               </div>
 
               <button
                 onClick={() => setShowHistory(!showHistory)}
-                className="w-fit bg-amber-400 text-[#3b2415] px-5 py-3 rounded-2xl text-sm font-black hover:bg-amber-300 transition-all shadow-lg shadow-black/10"
+                className="w-fit bg-gradient-to-r from-teal-900 to-teal-800 text-white px-5 py-3 rounded-2xl text-sm font-black hover:from-teal-950 hover:to-teal-900 transition-all shadow-lg shadow-teal-200"
               >
                 {showHistory ? 'Back to Inventory List' : 'Transaction History'}
               </button>
@@ -177,28 +177,28 @@ export default function Inventory() {
 
             {/* Stats */}
             <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-2xl border border-amber-300/30 bg-white/95 p-4 shadow-lg shadow-black/10">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-700">Ingredients</p>
-                <p className="mt-1.5 text-2xl font-extrabold text-stone-900">{ingredients.length}</p>
-                <p className="mt-1 text-[11px] text-stone-500">Total ingredients</p>
+              <div className="rounded-2xl border border-teal-300/30 bg-white p-4 shadow-lg shadow-black/10">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-teal-700">Ingredients</p>
+                <p className="mt-1.5 text-2xl font-extrabold text-slate-800">{ingredients.length}</p>
+                <p className="mt-1 text-[11px] text-slate-500">Total ingredients</p>
               </div>
 
-              <div className="rounded-2xl border border-rose-300/40 bg-white/95 p-4 shadow-lg shadow-black/10">
+              <div className="rounded-2xl border border-rose-300/40 bg-white p-4 shadow-lg shadow-black/10">
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-rose-700">Low Stock</p>
-                <p className="mt-1.5 text-2xl font-extrabold text-stone-900">{lowStockCount}</p>
-                <p className="mt-1 text-[11px] text-stone-500">Need restock</p>
+                <p className="mt-1.5 text-2xl font-extrabold text-slate-800">{lowStockCount}</p>
+                <p className="mt-1 text-[11px] text-slate-500">Need restock</p>
               </div>
 
-              <div className="rounded-2xl border border-emerald-300/40 bg-white/95 p-4 shadow-lg shadow-black/10">
+              <div className="rounded-2xl border border-emerald-300/40 bg-white p-4 shadow-lg shadow-black/10">
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700">Transactions</p>
-                <p className="mt-1.5 text-2xl font-extrabold text-stone-900">{totalTransactions}</p>
-                <p className="mt-1 text-[11px] text-stone-500">All movements</p>
+                <p className="mt-1.5 text-2xl font-extrabold text-slate-800">{totalTransactions}</p>
+                <p className="mt-1 text-[11px] text-slate-500">All movements</p>
               </div>
 
-              <div className="rounded-2xl border border-amber-400/50 bg-gradient-to-br from-[#c79255] to-[#8b5a2b] p-4 text-white shadow-lg shadow-amber-900/15">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-100">Total Stock</p>
+              <div className="rounded-2xl border border-teal-400/50 bg-gradient-to-br from-teal-900 to-teal-800 p-4 text-white shadow-lg shadow-teal-900/15">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-teal-100">Total Stock</p>
                 <p className="mt-1.5 text-2xl font-extrabold">{totalStock.toFixed(0)}</p>
-                <p className="mt-1 text-[11px] text-amber-50/85">Current quantity on hand</p>
+                <p className="mt-1 text-[11px] text-teal-50/85">Current quantity on hand</p>
               </div>
             </div>
           </div>
@@ -208,42 +208,42 @@ export default function Inventory() {
               {/* Inventory List Header */}
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-black text-[#2b170c]">
+                  <h2 className="text-xl font-black bg-gradient-to-r from-teal-900 to-teal-800 bg-clip-text text-transparent">
                     Ingredient Stock List
                   </h2>
-                  <p className="text-sm text-stone-500 mt-1">
+                  <p className="text-sm text-slate-500 mt-1">
                     View stock level and update quantity quickly.
                   </p>
                 </div>
               </div>
 
               {/* Desktop List Table */}
-              <div className="hidden lg:block bg-white rounded-[1.75rem] border border-amber-100 shadow-sm overflow-hidden">
+              <div className="hidden lg:block bg-white rounded-[1.75rem] border border-teal-100 shadow-sm overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-amber-50/80 border-b border-amber-100 text-left">
-                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide">
+                    <tr className="bg-teal-50/80 border-b border-teal-100 text-left">
+                      <th className="px-6 py-4 text-xs font-black text-teal-600 uppercase tracking-wide">
                         Ingredient
                       </th>
-                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide">
+                      <th className="px-6 py-4 text-xs font-black text-teal-600 uppercase tracking-wide">
                         Current Stock
                       </th>
-                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide">
+                      <th className="px-6 py-4 text-xs font-black text-teal-600 uppercase tracking-wide">
                         Reorder Level
                       </th>
-                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide">
+                      <th className="px-6 py-4 text-xs font-black text-teal-600 uppercase tracking-wide">
                         Stock Bar
                       </th>
-                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide">
+                      <th className="px-6 py-4 text-xs font-black text-teal-600 uppercase tracking-wide">
                         Status
                       </th>
-                      <th className="px-6 py-4 text-xs font-black text-amber-900 uppercase tracking-wide text-right">
+                      <th className="px-6 py-4 text-xs font-black text-teal-600 uppercase tracking-wide text-right">
                         Action
                       </th>
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-amber-50">
+                  <tbody className="divide-y divide-teal-50">
                     {ingredients.map((ing) => {
                       const status = getStockStatus(ing)
                       const stock = Number(ing.stock_quantity)
@@ -253,26 +253,26 @@ export default function Inventory() {
                       return (
                         <tr
                           key={ing.id}
-                          className={`${status.row} hover:bg-amber-50/70 transition-colors`}
+                          className={`${status.row} hover:bg-teal-50/30 transition-colors`}
                         >
                           <td className="px-6 py-5">
                             <div className="flex items-center gap-4">
                               {ing.image ? (
-                                <img src={ing.image} alt={ing.name} className="w-12 h-12 rounded-2xl object-cover border border-amber-200 shadow-sm" />
+                                <img src={ing.image} alt={ing.name} className="w-12 h-12 rounded-2xl object-cover border border-teal-200 shadow-sm" />
                               ) : (
-                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 flex items-center justify-center text-amber-900 font-black shadow-sm">
+                                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-100 to-teal-200 border border-teal-200 flex items-center justify-center text-teal-700 font-black shadow-sm">
                                   {ing.name?.charAt(0)?.toUpperCase() || 'I'}
                                 </div>
                               )}
 
                               <div>
-                                <p className="font-black text-[#2b170c]">
+                                <p className="font-black text-slate-800">
                                   {ing.name}
                                 </p>
-                                <p className="text-xs text-stone-400 mt-0.5">
+                                <p className="text-xs text-slate-400 mt-0.5">
                                   Unit: {ing.unit}
                                 </p>
-                                <p className="text-xs text-stone-400">
+                                <p className="text-xs text-slate-400">
                                   {ing.inventory_transactions_count ?? 0} transaction(s)
                                 </p>
                               </div>
@@ -281,32 +281,32 @@ export default function Inventory() {
 
                           <td className="px-6 py-5">
                             <div className="flex items-end gap-1">
-                              <span className="text-2xl font-black text-[#2b170c]">
+                              <span className="text-2xl font-black text-slate-800">
                                 {stock.toFixed(2)}
                               </span>
-                              <span className="text-xs text-stone-400 mb-1">
+                              <span className="text-xs text-slate-400 mb-1">
                                 {ing.unit}
                               </span>
                             </div>
                           </td>
 
                           <td className="px-6 py-5">
-                            <span className="font-bold text-stone-700">
+                            <span className="font-bold text-slate-700">
                               {reorder.toFixed(2)}
                             </span>
-                            <span className="text-xs text-stone-400 ml-1">
+                            <span className="text-xs text-slate-400 ml-1">
                               {ing.unit}
                             </span>
                           </td>
 
                           <td className="px-6 py-5 min-w-[180px]">
-                            <div className="h-3 rounded-full bg-stone-100 overflow-hidden border border-stone-100">
+                            <div className="h-3 rounded-full bg-slate-100 overflow-hidden border border-slate-100">
                               <div
                                 className={`h-full rounded-full ${status.bar}`}
                                 style={{ width: `${percent}%` }}
                               />
                             </div>
-                            <p className="text-[11px] text-stone-400 mt-1">
+                            <p className="text-[11px] text-slate-400 mt-1">
                               {percent.toFixed(0)}% stock level
                             </p>
                           </td>
@@ -348,13 +348,13 @@ export default function Inventory() {
                     {ingredients.length === 0 && (
                       <tr>
                         <td colSpan={6} className="px-6 py-14 text-center">
-                          <div className="w-16 h-16 rounded-3xl bg-amber-50 border border-amber-100 flex items-center justify-center mx-auto mb-3">
+                          <div className="w-16 h-16 rounded-3xl bg-teal-50 border border-teal-100 flex items-center justify-center mx-auto mb-3">
                             <span className="text-2xl">📦</span>
                           </div>
-                          <p className="font-bold text-stone-700">
+                          <p className="font-bold text-slate-700">
                             No ingredients found.
                           </p>
-                          <p className="text-sm text-stone-400 mt-1">
+                          <p className="text-sm text-slate-400 mt-1">
                             Add ingredients first to manage inventory stock.
                           </p>
                         </td>
@@ -375,23 +375,23 @@ export default function Inventory() {
                   return (
                     <div
                       key={ing.id}
-                      className="bg-white rounded-[1.5rem] border border-amber-100 shadow-sm p-5"
+                      className="bg-white rounded-[1.5rem] border border-teal-100 shadow-sm p-5"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex items-center gap-3">
                           {ing.image ? (
-                            <img src={ing.image} alt={ing.name} className="w-12 h-12 rounded-2xl object-cover border border-amber-200" />
+                            <img src={ing.image} alt={ing.name} className="w-12 h-12 rounded-2xl object-cover border border-teal-200" />
                           ) : (
-                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 flex items-center justify-center text-amber-900 font-black">
+                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-100 to-teal-200 border border-teal-200 flex items-center justify-center text-teal-700 font-black">
                               {ing.name?.charAt(0)?.toUpperCase() || 'I'}
                             </div>
                           )}
 
                           <div>
-                            <h3 className="font-black text-[#2b170c]">
+                            <h3 className="font-black text-slate-800">
                               {ing.name}
                             </h3>
-                            <p className="text-xs text-stone-400">
+                            <p className="text-xs text-slate-400">
                               Unit: {ing.unit}
                             </p>
                           </div>
@@ -403,16 +403,16 @@ export default function Inventory() {
                       </div>
 
                       <div className="grid grid-cols-2 gap-3 mt-5">
-                        <div className="rounded-2xl bg-amber-50 border border-amber-100 p-4">
-                          <p className="text-xs text-amber-700 font-bold">Current Stock</p>
-                          <p className="text-2xl font-black text-[#2b170c] mt-1">
+                        <div className="rounded-2xl bg-teal-50 border border-teal-100 p-4">
+                          <p className="text-xs text-teal-700 font-bold">Current Stock</p>
+                          <p className="text-2xl font-black text-slate-800 mt-1">
                             {stock.toFixed(2)}
                           </p>
                         </div>
 
-                        <div className="rounded-2xl bg-stone-50 border border-stone-100 p-4">
-                          <p className="text-xs text-stone-500 font-bold">Reorder Level</p>
-                          <p className="text-2xl font-black text-stone-800 mt-1">
+                        <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
+                          <p className="text-xs text-slate-500 font-bold">Reorder Level</p>
+                          <p className="text-2xl font-black text-slate-700 mt-1">
                             {reorder.toFixed(2)}
                           </p>
                         </div>
@@ -420,15 +420,15 @@ export default function Inventory() {
 
                       <div className="mt-5">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-bold text-stone-500">
+                          <span className="text-xs font-bold text-slate-500">
                             Stock Level
                           </span>
-                          <span className="text-xs font-bold text-stone-400">
+                          <span className="text-xs font-bold text-slate-400">
                             {percent.toFixed(0)}%
                           </span>
                         </div>
 
-                        <div className="h-3 rounded-full bg-stone-100 overflow-hidden">
+                        <div className="h-3 rounded-full bg-slate-100 overflow-hidden">
                           <div
                             className={`h-full rounded-full ${status.bar}`}
                             style={{ width: `${percent}%` }}
@@ -436,7 +436,7 @@ export default function Inventory() {
                         </div>
                       </div>
 
-                      <p className="text-xs text-stone-400 mt-4">
+                      <p className="text-xs text-slate-400 mt-4">
                         {ing.inventory_transactions_count ?? 0} transaction(s)
                       </p>
 
@@ -467,7 +467,7 @@ export default function Inventory() {
                 })}
 
                 {ingredients.length === 0 && (
-                  <div className="bg-white rounded-[1.5rem] border border-amber-100 text-center text-stone-500 py-12">
+                  <div className="bg-white rounded-[1.5rem] border border-teal-100 text-center text-slate-500 py-12">
                     No ingredients found.
                   </div>
                 )}
@@ -476,18 +476,18 @@ export default function Inventory() {
           ) : (
             <>
               <div className="mb-4">
-                <h2 className="text-xl font-black text-[#2b170c]">
+                <h2 className="text-xl font-black bg-gradient-to-r from-teal-900 to-teal-800 bg-clip-text text-transparent">
                   Transaction History
                 </h2>
-                <p className="text-sm text-stone-500 mt-1">
+                <p className="text-sm text-slate-500 mt-1">
                   Recent stock purchase, deduct, and adjustment records.
                 </p>
               </div>
 
-              <div className="bg-white rounded-[1.75rem] shadow-sm border border-amber-100 overflow-x-auto">
+              <div className="bg-white rounded-[1.75rem] shadow-sm border border-teal-100 overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-amber-900 font-black bg-amber-50 border-b border-amber-100">
+                    <tr className="text-left text-teal-600 font-black bg-teal-50 border-b border-teal-100">
                       <th className="px-6 py-4">Date</th>
                       <th className="px-6 py-4">Ingredient</th>
                       <th className="px-6 py-4">Type</th>
@@ -496,14 +496,14 @@ export default function Inventory() {
                     </tr>
                   </thead>
 
-                  <tbody className="divide-y divide-amber-50">
+                  <tbody className="divide-y divide-teal-50">
                     {transactions.map((tx) => (
-                      <tr key={tx.id} className="hover:bg-amber-50/60 transition-colors">
-                        <td className="px-6 py-4 text-stone-500 text-xs whitespace-nowrap">
+                      <tr key={tx.id} className="hover:bg-teal-50/30 transition-colors">
+                        <td className="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">
                           {formatDate(tx.created_at)}
                         </td>
 
-                        <td className="px-6 py-4 font-black text-[#2b170c]">
+                        <td className="px-6 py-4 font-black text-slate-800">
                           {tx.ingredient?.name ?? '—'}
                         </td>
 
@@ -520,7 +520,7 @@ export default function Inventory() {
                           </span>
                         </td>
 
-                        <td className="px-6 py-4 text-stone-500">
+                        <td className="px-6 py-4 text-slate-500">
                           {tx.note ?? '—'}
                         </td>
                       </tr>
@@ -528,7 +528,7 @@ export default function Inventory() {
 
                     {transactions.length === 0 && (
                       <tr>
-                        <td colSpan={5} className="px-6 py-12 text-center text-stone-500">
+                        <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
                           No transactions yet.
                         </td>
                       </tr>
@@ -538,8 +538,8 @@ export default function Inventory() {
               </div>
 
               {txLastPage > 1 && (
-                <div className="bg-white rounded-2xl border border-amber-100 shadow-sm px-6 py-4 mt-4 flex justify-between items-center">
-                  <span className="text-xs text-stone-500">
+                <div className="bg-white rounded-2xl border border-teal-100 shadow-sm px-6 py-4 mt-4 flex justify-between items-center">
+                  <span className="text-xs text-slate-500">
                     Page {txPage} of {txLastPage}
                   </span>
 
@@ -547,7 +547,7 @@ export default function Inventory() {
                     <button
                       onClick={() => setTxPage(p => Math.max(1, p - 1))}
                       disabled={txPage <= 1}
-                      className="px-4 py-2 text-xs font-black text-stone-600 hover:bg-amber-50 rounded-xl disabled:text-stone-300 disabled:cursor-not-allowed"
+                      className="px-4 py-2 text-xs font-black text-slate-600 hover:bg-teal-50 rounded-xl disabled:text-slate-300 disabled:cursor-not-allowed"
                     >
                       Prev
                     </button>
@@ -555,7 +555,7 @@ export default function Inventory() {
                     <button
                       onClick={() => setTxPage(p => Math.min(txLastPage, p + 1))}
                       disabled={txPage >= txLastPage}
-                      className="px-4 py-2 text-xs font-black text-stone-600 hover:bg-amber-50 rounded-xl disabled:text-stone-300 disabled:cursor-not-allowed"
+                      className="px-4 py-2 text-xs font-black text-slate-600 hover:bg-teal-50 rounded-xl disabled:text-slate-300 disabled:cursor-not-allowed"
                     >
                       Next
                     </button>
@@ -570,17 +570,17 @@ export default function Inventory() {
       {/* Transaction Modal */}
       {showTxModal && selectedIngredient && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-[1.75rem] shadow-2xl w-full max-w-md p-6 border border-amber-100">
+          <div className="bg-white rounded-[1.75rem] shadow-2xl w-full max-w-md p-6 border border-teal-200">
             <div className="mb-5">
               {selectedIngredient.image ? (
-                <img src={selectedIngredient.image} alt={selectedIngredient.name} className="w-14 h-14 rounded-2xl object-cover border border-amber-200 mb-3" />
+                <img src={selectedIngredient.image} alt={selectedIngredient.name} className="w-14 h-14 rounded-2xl object-cover border border-teal-200 mb-3" />
               ) : (
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-200 text-amber-800 flex items-center justify-center font-black mb-3">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-100 to-teal-200 border border-teal-200 text-teal-700 flex items-center justify-center font-black mb-3">
                   {selectedIngredient.name?.charAt(0)?.toUpperCase() || 'I'}
                 </div>
               )}
 
-              <h2 className="text-xl font-black text-[#2b170c]">
+              <h2 className="text-xl font-black text-slate-800">
                 {txForm.type === 'purchase'
                   ? 'Purchase Stock'
                   : txForm.type === 'deduct'
@@ -588,9 +588,9 @@ export default function Inventory() {
                     : 'Adjust Stock'}
               </h2>
 
-              <p className="text-sm text-stone-500 mt-1">
+              <p className="text-sm text-slate-500 mt-1">
                 {selectedIngredient.name} ({selectedIngredient.unit}) — Current:{' '}
-                <span className="font-bold text-stone-700">
+                <span className="font-bold text-slate-700">
                   {Number(selectedIngredient.stock_quantity).toFixed(2)}
                 </span>
               </p>
@@ -598,7 +598,7 @@ export default function Inventory() {
 
             <form onSubmit={handleTx}>
               <div className="mb-4">
-                <label className="block text-sm font-bold text-stone-700 mb-1">
+                <label className="block text-sm font-bold text-slate-700 mb-1">
                   Quantity
                 </label>
 
@@ -610,12 +610,12 @@ export default function Inventory() {
                   min="0.01"
                   required
                   placeholder="Enter quantity"
-                  className="w-full border border-amber-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full border border-teal-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
 
               <div className="mb-5">
-                <label className="block text-sm font-bold text-stone-700 mb-1">
+                <label className="block text-sm font-bold text-slate-700 mb-1">
                   Note
                 </label>
 
@@ -624,7 +624,7 @@ export default function Inventory() {
                   value={txForm.note}
                   onChange={e => setTxForm({ ...txForm, note: e.target.value })}
                   placeholder="Write note optional"
-                  className="w-full border border-amber-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  className="w-full border border-teal-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
 
@@ -636,7 +636,7 @@ export default function Inventory() {
                     setShowTxModal(false)
                     setSelectedIngredient(null)
                   }}
-                  className="bg-stone-100 text-stone-700 px-5 py-3 rounded-2xl text-sm font-black hover:bg-stone-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-slate-100 text-slate-700 px-5 py-3 rounded-2xl text-sm font-black hover:bg-slate-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>

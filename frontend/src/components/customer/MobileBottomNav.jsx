@@ -25,13 +25,14 @@ export default function MobileBottomNav() {
     {
       to: '/',
       label: 'Home',
+      end: true,
       icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="h-[20px] w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2.2}
-            d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10.5z"
+            d="M3 10.75 12 3.5l9 7.25V21a1 1 0 0 1-1 1h-5.25v-6.25h-5.5V22H4a1 1 0 0 1-1-1V10.75Z"
           />
         </svg>
       ),
@@ -40,12 +41,18 @@ export default function MobileBottomNav() {
       to: '/products',
       label: 'Menu',
       icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="h-[20px] w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2.2}
-            d="M20 13V7a2 2 0 00-2-2H6a2 2 0 00-2 2v6m16 0v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4m16 0H4"
+            d="M6 4.5h12a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-11a2 2 0 0 1 2-2Z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.2}
+            d="M8 8h8M8 12h8M8 16h5"
           />
         </svg>
       ),
@@ -54,12 +61,24 @@ export default function MobileBottomNav() {
       to: '/history',
       label: 'History',
       icon: (
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="h-[20px] w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2.2}
-            d="M12 8v4l3 3m6-3a9 9 0 11-9-9"
+            d="M12 8v4l3 2.5"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.2}
+            d="M21 12a9 9 0 1 1-2.64-6.36"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.2}
+            d="M21 4v5h-5"
           />
         </svg>
       ),
@@ -69,17 +88,23 @@ export default function MobileBottomNav() {
       label: 'Cart',
       icon: (
         <div className="relative">
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="h-[20px] w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
               strokeWidth={2.2}
-              d="M3 3h2l1 5h13l1-5h2M6 8l1.5 9h9L18 8M9 21a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z"
+              d="M3 3h2l.55 3M5.55 6h15.2l-1.6 8.25a2 2 0 0 1-1.96 1.62H8.1a2 2 0 0 1-1.96-1.62L5.55 6Z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.2}
+              d="M9 21a1.25 1.25 0 1 0 0-2.5A1.25 1.25 0 0 0 9 21Zm8 0a1.25 1.25 0 1 0 0-2.5A1.25 1.25 0 0 0 17 21Z"
             />
           </svg>
 
           {totalItems > 0 && (
-            <span className="absolute -right-2.5 -top-2.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-[#120b07] bg-red-600 px-1 text-[9px] font-black text-white shadow-lg animate-cart-bounce">
+            <span className="absolute -right-3 -top-3 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-red-600 px-1 text-[9px] font-black text-white shadow-lg animate-cartPulse">
               {totalItems > 99 ? '99+' : totalItems}
             </span>
           )}
@@ -91,90 +116,97 @@ export default function MobileBottomNav() {
   return (
     <>
       <style>{`
-        @keyframes navSlideUp {
+        @keyframes bottomNavIn {
           from {
             opacity: 0;
-            transform: translateY(24px) scale(0.96);
+            transform: translateY(24px);
           }
+
           to {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateY(0);
           }
         }
 
-        @keyframes activePop {
-          0%, 100% {
-            transform: translateY(0) scale(1);
-          }
-          50% {
-            transform: translateY(-3px) scale(1.08);
-          }
-        }
-
-        @keyframes cartBounce {
+        @keyframes activeScale {
           0%, 100% {
             transform: scale(1);
           }
+
           50% {
-            transform: scale(1.18);
+            transform: scale(1.06);
           }
         }
 
-        .animate-nav-slide-up {
-          animation: navSlideUp 0.35s ease-out;
+        @keyframes cartPulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+
+          50% {
+            transform: scale(1.15);
+          }
         }
 
-        .animate-active-pop {
-          animation: activePop 1.8s ease-in-out infinite;
+        .animate-bottomNavIn {
+          animation: bottomNavIn 0.32s ease-out;
         }
 
-        .animate-cart-bounce {
-          animation: cartBounce 1.3s ease-in-out infinite;
+        .animate-activeScale {
+          animation: activeScale 1.8s ease-in-out infinite;
+        }
+
+        .animate-cartPulse {
+          animation: cartPulse 1.3s ease-in-out infinite;
         }
       `}</style>
 
-      <div className="fixed bottom-3 left-3 right-3 z-50 md:hidden pb-[env(safe-area-inset-bottom)]">
-        <div className="animate-nav-slide-up rounded-[2rem] border border-white/10 bg-[#120b07]/95 p-2 shadow-2xl shadow-black/35 backdrop-blur-xl">
-          <div className="grid h-[68px] grid-cols-4 gap-1">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `group relative flex flex-col items-center justify-center rounded-[1.5rem] text-[11px] font-black transition-all duration-300 ${
-                    isActive
-                      ? 'bg-white text-[#120b07] shadow-lg shadow-amber-950/20'
-                      : 'text-white/55 hover:bg-white/10 hover:text-white'
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    {isActive && (
-                      <span className="absolute -top-1 h-1 w-8 rounded-full bg-amber-500 shadow-lg shadow-amber-500/40"></span>
-                    )}
+      <div className="fixed inset-x-0 bottom-3 z-50 px-3 pb-[env(safe-area-inset-bottom)] md:hidden">
+        <div className="mx-auto max-w-md animate-bottomNavIn">
+          <div className="rounded-[1.75rem] border border-[#e6c8a1] bg-white/95 p-2 shadow-[0_18px_45px_rgba(61,40,23,0.20)] backdrop-blur-2xl">
+            <div className="grid h-[66px] grid-cols-4 gap-1.5">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  aria-label={item.label}
+                  className={({ isActive }) =>
+                    `group relative flex flex-col items-center justify-center rounded-[1.35rem] text-[10px] font-black transition-all duration-300 ${
+                      isActive
+                        ? 'bg-[#3d2415] text-white shadow-[0_12px_28px_rgba(61,36,21,0.32)]'
+                        : 'text-[#8a6a50] hover:bg-[#fff1dd] hover:text-[#3d2415]'
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <span className="absolute -top-1.5 h-1.5 w-9 rounded-full bg-gradient-to-r from-[#c58b49] to-[#a86530] shadow-[0_6px_14px_rgba(197,139,73,0.45)]" />
+                      )}
 
-                    <span
-                      className={`mb-1 flex h-9 w-9 items-center justify-center rounded-2xl transition-all duration-300 ${
-                        isActive
-                          ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white animate-active-pop'
-                          : 'bg-white/5 text-white/65 group-hover:bg-white/10 group-hover:text-amber-300'
-                      }`}
-                    >
-                      {item.icon}
-                    </span>
+                      <span
+                        className={`mb-1 flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-300 ${
+                          isActive
+                            ? 'animate-activeScale bg-white/15 text-white'
+                            : 'bg-[#fff7ec] text-[#7b4a26] group-hover:bg-white group-hover:text-[#3d2415]'
+                        }`}
+                      >
+                        {item.icon}
+                      </span>
 
-                    <span
-                      className={`leading-none transition-all duration-300 ${
-                        isActive ? 'text-[#120b07]' : 'text-white/55 group-hover:text-white'
-                      }`}
-                    >
-                      {item.label}
-                    </span>
-                  </>
-                )}
-              </NavLink>
-            ))}
+                      <span
+                        className={`leading-none transition-all duration-300 ${
+                          isActive ? 'text-white' : 'text-[#8a6a50] group-hover:text-[#3d2415]'
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </div>
           </div>
         </div>
       </div>

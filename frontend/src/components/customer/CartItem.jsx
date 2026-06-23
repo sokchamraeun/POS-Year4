@@ -1,7 +1,5 @@
-import { useState } from 'react'
 import { useCart } from '../../context/CartContext.jsx'
-import { calcFinalPrice, getPromotionShort, resolvePromotionForSize } from '../../utils/promotion.js'
-import ProductModal from './ProductModal.jsx'
+import { calcFinalPrice, getPromotionShort } from '../../utils/promotion.js'
 
 const STORAGE_URL = import.meta.env.VITE_STORAGE_URL
 
@@ -10,18 +8,8 @@ function getImageUrl(image) {
   return image.startsWith('http') ? image : `${STORAGE_URL}/${image}`
 }
 
-export default function CartItem({ item }) {
-  const { updateQty, removeItem, updateItem } = useCart()
-  const [editing, setEditing] = useState(false)
-
-  // Edit-modal selections
-  const [editSize, setEditSize] = useState('')
-  const [editSugar, setEditSugar] = useState('')
-  const [editIce, setEditIce] = useState('')
-  const [editSugarNote, setEditSugarNote] = useState('')
-  const [editIceNote, setEditIceNote] = useState('')
-  const [editAddOn, setEditAddOn] = useState('')
-  const [editQty, setEditQty] = useState(1)
+export default function CartItem({ item, onEditItem }) {
+  const { updateQty, removeItem } = useCart()
 
   const promo = item.promotion
   const hasPromotion = !!promo
@@ -35,62 +23,6 @@ export default function CartItem({ item }) {
     item.sugar_levels?.length > 0 ||
     item.ice_levels?.length > 0 ||
     item.addons?.length > 0
-
-  function openEdit() {
-    setEditSize(item.size || item.sizes?.[0]?.name || '')
-    setEditSugar(item.sugar || item.sugar_levels?.[0]?.name || '')
-    setEditIce(item.ice || item.ice_levels?.[0]?.name || '')
-    setEditSugarNote(item.sugarNote || '')
-    setEditIceNote(item.iceNote || '')
-    setEditAddOn(item.addOn || '')
-    setEditQty(item.qty || 1)
-    setEditing(true)
-  }
-
-  // Pricing for the edit modal (mirrors BestSellers/ProductModal pricing)
-  const editBasePrice = (sizeName) => {
-    const s = item.sizes?.find((x) => x.name === sizeName)
-    return s ? Number(s.pivot?.price ?? 0) : 0
-  }
-  const editAddOnPrice = (addOnName) => {
-    if (!addOnName) return 0
-    const addon = item.addons?.find((a) => a.name === addOnName)
-    if (!addon) return 0
-    const size = item.sizes?.find((s) => s.name === editSize)
-    const sp = addon.size_prices?.find((x) => x.size_id === size?.id)
-    return sp ? Number(sp.price) : Number(addon.price) || 0
-  }
-
-  const editSizeObj = item.sizes?.find((s) => s.name === editSize)
-  const editPromotion = item.promotion
-    ? resolvePromotionForSize(item.promotion, editSizeObj?.id)
-    : item.promotion
-  const editPrice = editBasePrice(editSize) + editAddOnPrice(editAddOn)
-  const editFinalPrice =
-    editPromotion?.type === 'buy_x_get_y'
-      ? editPrice
-      : calcFinalPrice(editPrice, editPromotion)
-  const editHasDiscount = editPromotion
-    ? editFinalPrice < editPrice || editPromotion.type === 'buy_x_get_y'
-    : false
-
-  const editIceObj = item.ice_levels?.find((i) => i.name === editIce)
-  const editSugarObj = item.sugar_levels?.find((s) => s.name === editSugar)
-
-  function handleSaveEdit() {
-    updateItem(item.key, {
-      size: editSize,
-      sugar: editSugar,
-      ice: editIce,
-      sugarNote: editSugarObj?.requires_input ? editSugarNote.trim() : '',
-      iceNote: editIceObj?.requires_input ? editIceNote.trim() : '',
-      addOn: editAddOn,
-      unitPrice: editPrice,
-      promotion: editPromotion,
-      qty: editQty,
-    })
-    setEditing(false)
-  }
 
   return (
     <div className="relative flex gap-3 rounded-2xl border border-orange-100 bg-white p-2.5 shadow-sm transition-shadow hover:shadow-md">
@@ -118,7 +50,7 @@ export default function CartItem({ item }) {
           <div className="flex shrink-0 items-center gap-1.5">
             {hasOptions && (
               <button
-                onClick={openEdit}
+                onClick={() => onEditItem?.(item)}
                 className="text-[#8a715c] transition-colors hover:text-amber-600"
                 aria-label="Edit options"
               >
@@ -184,33 +116,6 @@ export default function CartItem({ item }) {
         </div>
       </div>
 
-      {editing && (
-        <ProductModal
-          product={item}
-          show={editing}
-          onClose={() => setEditing(false)}
-          selectedSize={editSize}
-          selectedSugar={editSugar}
-          selectedIce={editIce}
-          selectedAddOn={editAddOn}
-          sugarNote={editSugarNote}
-          iceNote={editIceNote}
-          qty={editQty}
-          price={editPrice}
-          finalPrice={editFinalPrice}
-          hasDiscount={editHasDiscount}
-          stockMsg=""
-          onSizeChange={setEditSize}
-          onSugarChange={setEditSugar}
-          onIceChange={setEditIce}
-          onAddOnChange={setEditAddOn}
-          onSugarNoteChange={setEditSugarNote}
-          onIceNoteChange={setEditIceNote}
-          onQtyChange={setEditQty}
-          onAddToCart={handleSaveEdit}
-          submitLabel="Update Item"
-        />
-      )}
     </div>
   )
 }

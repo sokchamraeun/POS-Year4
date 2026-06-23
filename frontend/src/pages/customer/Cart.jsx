@@ -1,18 +1,30 @@
-﻿import { useState, useEffect, useRef } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../../components/customer/Navbar.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
 import CartItem from '../../components/customer/CartItem.jsx'
+import ProductModal from '../../components/customer/ProductModal.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
-import { getPromotionLabel } from '../../utils/promotion.js'
+import { calcFinalPrice, getPromotionLabel, resolvePromotionForSize } from '../../utils/promotion.js'
 
 const API_URL = import.meta.env.VITE_API_URL
 
 export default function Cart() {
   const navigate = useNavigate()
-  const { items, updateQty, removeItem, clearCart, totalItems, fullTotal, discountTotal, totalPrice } = useCart()
+
+  const {
+    items,
+    updateItem,
+    clearCart,
+    totalItems,
+    fullTotal,
+    discountTotal,
+    totalPrice,
+  } = useCart()
+
   const { customer, isLoggedIn } = useCustomerAuth()
+
   const [orderNote, setOrderNote] = useState('')
   const [name, setName] = useState(customer?.name || '')
   const [phone, setPhone] = useState(customer?.phone || '')
@@ -22,49 +34,165 @@ export default function Cart() {
   const [placing, setPlacing] = useState(false)
   const [done, setDone] = useState(false)
 
+  // Edit item modal state
+  const [editItem, setEditItem] = useState(null)
+  const [editSize, setEditSize] = useState('')
+  const [editSugar, setEditSugar] = useState('')
+  const [editIce, setEditIce] = useState('')
+  const [editSugarNote, setEditSugarNote] = useState('')
+  const [editIceNote, setEditIceNote] = useState('')
+  const [editAddOn, setEditAddOn] = useState('')
+  const [editQty, setEditQty] = useState(1)
+
+  function openEditItem(item) {
+    setEditItem(item)
+    setEditSize(item.size || item.sizes?.[0]?.name || '')
+    setEditSugar(item.sugar || item.sugar_levels?.[0]?.name || '')
+    setEditIce(item.ice || item.ice_levels?.[0]?.name || '')
+    setEditSugarNote(item.sugarNote || '')
+    setEditIceNote(item.iceNote || '')
+    setEditAddOn(item.addOn || '')
+    setEditQty(item.qty || 1)
+  }
+
+  function closeEditItem() {
+    setEditItem(null)
+  }
+
+  // Derived edit pricing
+  const editBasePrice = (sizeName) => {
+    const s = editItem?.sizes?.find((x) => x.name === sizeName)
+    return s ? Number(s.pivot?.price ?? 0) : 0
+  }
+  const editAddOnPrice = (addOnName) => {
+    if (!addOnName) return 0
+    const addon = editItem?.addons?.find((a) => a.name === addOnName)
+    if (!addon) return 0
+    const size = editItem?.sizes?.find((s) => s.name === editSize)
+    const sp = addon.size_prices?.find((x) => x.size_id === size?.id)
+    return sp ? Number(sp.price) : Number(addon.price) || 0
+  }
+
+  const editSizeObj = editItem?.sizes?.find((s) => s.name === editSize)
+  const editPromotion = editItem?.promotion
+    ? resolvePromotionForSize(editItem.promotion, editSizeObj?.id)
+    : editItem?.promotion
+  const editPrice = editBasePrice(editSize) + editAddOnPrice(editAddOn)
+  const editFinalPrice =
+    editPromotion?.type === 'buy_x_get_y'
+      ? editPrice
+      : calcFinalPrice(editPrice, editPromotion)
+  const editHasDiscount = editPromotion
+    ? editFinalPrice < editPrice || editPromotion.type === 'buy_x_get_y'
+    : false
+  const editIceObj = editItem?.ice_levels?.find((i) => i.name === editIce)
+  const editSugarObj = editItem?.sugar_levels?.find((s) => s.name === editSugar)
+
+  function handleSaveEdit() {
+    if (!editItem) return
+    updateItem(editItem.key, {
+      size: editSize,
+      sugar: editSugar,
+      ice: editIce,
+      sugarNote: editSugarObj?.requires_input ? editSugarNote.trim() : '',
+      iceNote: editIceObj?.requires_input ? editIceNote.trim() : '',
+      addOn: editAddOn,
+      unitPrice: editPrice,
+      promotion: editPromotion,
+      qty: editQty,
+    })
+    closeEditItem()
+  }
+
+  const subtotal = Number(fullTotal || 0)
+  const discount = Number(discountTotal || 0)
+  const finalTotal = Number(totalPrice || 0)
+
+  const canPlaceOrder = items.length > 0 && !placing && (isLoggedIn || phone.trim())
+
   useEffect(() => {
-    if (customer?.phone) {
-      setPhone(customer.phone)
-    }
+    if (customer?.name) setName(customer.name)
+    if (customer?.phone) setPhone(customer.phone)
   }, [customer])
 
   useEffect(() => {
     fetch(`${API_URL}/tables/available`)
-      .then(r => r.json())
-      .then(setTables)
-      .catch(() => {})
+      .then((r) => r.json())
+      .then((data) => {
+        const list = Array.isArray(data) ? data : Array.isArray(data.data) ? data.data : []
+        setTables(list)
+      })
+      .catch(() => setTables([]))
   }, [])
 
+  useEffect(() => {
+    if (!done) return
+
+    const timer = setTimeout(() => {
+      navigate('/products')
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [done])
+
   async function placeOrder() {
+    if (!canPlaceOrder) return
+
     setPlacing(true)
+
     try {
       let customerId = customer?.id || null
+
       if (!customerId && phone.trim()) {
-        const custRes = await fetch(`${API_URL}/customers?phone=${encodeURIComponent(phone.trim())}`, {
-          headers: { 'Accept': 'application/json' },
-        })
+        const cleanPhone = phone.trim()
+
+        const custRes = await fetch(
+          `${API_URL}/customers?phone=${encodeURIComponent(cleanPhone)}`,
+          {
+            headers: {
+              Accept: 'application/json',
+            },
+          }
+        )
+
         const custData = await custRes.json()
-        const existing = custData.data?.find(c => c.phone === phone.trim())
+        const customerList = Array.isArray(custData.data) ? custData.data : []
+        const existing = customerList.find((c) => c.phone === cleanPhone)
+
         if (existing) {
           customerId = existing.id
         } else {
           const createRes = await fetch(`${API_URL}/customers`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({ phone: phone.trim(), name: name.trim() || phone.trim() }),
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              phone: cleanPhone,
+              name: name.trim() || cleanPhone,
+            }),
           })
+
           if (createRes.ok) {
             const created = await createRes.json()
-            customerId = created.id
+            customerId = created.id ?? created.data?.id ?? null
           }
         }
       }
 
       const orderItems = items.map((c) => {
-        const sizeId = c.sizes?.find(s => s.name === c.size)?.id ?? null
-        const sugarId = (c.sugar_levels || c.sugarLevels)?.find(s => s.name === c.sugar)?.id ?? null
-        const iceId = (c.ice_levels || c.iceLevels)?.find(i => i.name === c.ice)?.id ?? null
-        const addonObj = c.addons?.find(a => a.name === c.addOn)
+        const sizeId = c.sizes?.find((s) => s.name === c.size)?.id ?? null
+
+        const sugarId =
+          (c.sugar_levels || c.sugarLevels)?.find((s) => s.name === c.sugar)?.id ??
+          null
+
+        const iceId =
+          (c.ice_levels || c.iceLevels)?.find((i) => i.name === c.ice)?.id ?? null
+
+        const addonObj = c.addons?.find((a) => a.name === c.addOn)
+
         return {
           product_id: c.id,
           size_id: sizeId,
@@ -79,21 +207,31 @@ export default function Cart() {
         }
       })
 
-      const pm = paymentMethod === 'khqr' ? 'KHQR' : paymentMethod === 'cash' ? 'Cash' : null
+      const pm =
+        paymentMethod === 'khqr'
+          ? 'KHQR'
+          : paymentMethod === 'cash'
+            ? 'Cash'
+            : null
+
       const orderPayload = {
         customer_id: customerId,
         table_id: selectedTable || null,
-        total: totalPrice,
-        discount: discountTotal,
+        total: finalTotal,
+        discount,
         status: 'New',
         payment_method: pm,
         payment_status: paymentMethod === 'cash' ? 'Paid' : 'Unpaid',
+        note: orderNote.trim() || null,
         items: orderItems,
       }
 
       const res = await fetch(`${API_URL}/orders`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         body: JSON.stringify(orderPayload),
       })
 
@@ -105,21 +243,29 @@ export default function Cart() {
       }
 
       const createdOrder = await res.json()
-      const dbOrderId = createdOrder.id ?? null
+      const dbOrderId = createdOrder.id ?? createdOrder.data?.id ?? null
 
       clearCart()
 
       if (paymentMethod === 'khqr' && dbOrderId) {
         const initRes = await fetch(`${API_URL}/orders/payment/initiate`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ order_id: dbOrderId }),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            order_id: dbOrderId,
+          }),
         })
+
         const initData = await initRes.json()
+
         if (initData.checkout_url) {
           window.location.href = initData.checkout_url
           return
         }
+
         alert(initData.message || 'KHQR payment initiation failed')
         setPlacing(false)
         return
@@ -133,185 +279,433 @@ export default function Cart() {
     }
   }
 
-  const navigateRef = useRef(navigate)
-  navigateRef.current = navigate
-
-  useEffect(() => {
-    if (done) {
-      const timer = setTimeout(() => navigateRef.current('/products'), 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [done])
+  const promotionLabels = items
+    .map((item) =>
+      item.promotion &&
+      item.promotion.type !== 'combo_discount' &&
+      item.promotion.type !== 'combo'
+        ? getPromotionLabel(item.promotion)
+        : ''
+    )
+    .filter(Boolean)
 
   if (done) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center pb-24 sm:pb-0">
+      <div className="min-h-screen bg-[#fff8ef] pb-24 text-[#2b170d] sm:pb-0">
         <Navbar />
-        <div className="text-center max-w-sm mx-auto px-4">
-          <svg className="w-16 h-16 mx-auto text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <p className="text-xl font-bold text-gray-800 mb-2">Order Placed!</p>
-          <p className="text-sm text-gray-500 mb-6">Your order has been submitted.</p>
-          <button
-            onClick={() => navigate('/products')}
-            className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700"
-          >
-            Continue Shopping
-          </button>
-        </div>
+
+        <main className="flex min-h-[calc(100vh-76px)] items-center justify-center px-4">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-[#e7cda7] bg-white p-7 text-center shadow-[0_28px_80px_rgba(61,40,23,0.16)]">
+            <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-emerald-300/25 blur-3xl" />
+
+            <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-emerald-100 text-emerald-600 shadow-inner">
+              <svg
+                className="h-11 w-11"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.4}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+
+            <h1 className="text-2xl font-black text-[#2b170d]">ការបញ្ជាទិញបានជោគជ័យ!</h1>
+
+            <p className="mt-2 text-sm font-semibold leading-6 text-[#8a6a50]">
+              ការបញ្ជាទិញរបស់អ្នកត្រូវបានដាក់ជូនដោយជោគជ័យ។ យើងនឹងរៀបចំវាឆាប់ៗនេះ។
+            </p>
+
+            <button
+              type="button"
+              onClick={() => navigate('/products')}
+              className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#3d2415] via-[#6f3f1f] to-[#a86530] px-6 py-3 text-sm font-black text-white shadow-[0_16px_35px_rgba(111,63,31,0.30)] transition-all duration-300 hover:-translate-y-0.5"
+            >
+              បន្តការដើរទិញ
+            </button>
+          </div>
+        </main>
+
         <MobileBottomNav />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-white pb-24 sm:pb-0">
+    <div className="min-h-screen bg-[#fff8ef] pb-24 text-[#2b170d] sm:pb-0">
       <Navbar />
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Your Cart</h1>
-          {items.length > 0 && (
-            <button
-              onClick={clearCart}
-              className="text-sm text-red-500 hover:text-red-700"
-            >
-              Clear All
-            </button>
+
+      <main className="relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(197,139,73,0.22),transparent_34%),radial-gradient(circle_at_top_right,rgba(91,50,26,0.14),transparent_32%)]" />
+        <div className="pointer-events-none absolute -left-24 top-24 h-64 w-64 rounded-full bg-amber-300/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 top-72 h-72 w-72 rounded-full bg-[#6f3f1f]/15 blur-3xl" />
+
+        <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          {items.length === 0 ? (
+            <EmptyCart onBrowse={() => navigate('/products')} />
+          ) : (
+            <div className="rounded-[1rem] border border-[#d8b98b] bg-white/45 p-3 shadow-[0_24px_70px_rgba(61,40,23,0.12)] backdrop-blur-xl sm:p-5">
+              <div className="mb-5 flex flex-col gap-2 border-b border-[#e7cda7] pb-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a47a55]">
+                    ត្រួតពិនិត្យការបញ្ជាទិញ
+                  </p>
+                  <h1 className="mt-1 text-2xl font-black text-[#2b170d] sm:text-3xl">
+                    ពិនិត្យការបញ្ជាទិញរបស់អ្នក
+                  </h1>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-[#fff0dc] px-4 py-2 text-xs font-black text-[#7b4a26]">
+                    {totalItems} មុខ
+                  </span>
+                  <span className="rounded-full bg-[#2b170d] px-4 py-2 text-xs font-black text-white">
+                    ${finalTotal.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-6 lg:grid-cols-[1fr_420px] lg:items-start">
+                {/* Left */}
+                <section className="space-y-4">
+                  <div>
+                    <div className="mb-4 flex items-center justify-between gap-4">
+                      <div>
+                        <h2 className="text-xl font-black text-[#2b170d]">
+                          មុខម្ហូបដែលបានជ្រើសរើស
+                        </h2>
+
+                        <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-[#a47a55]">
+                          {totalItems} មុខក្នុងកន្ត្រករបស់អ្នក
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={clearCart}
+                        className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-xs font-black text-red-600 transition-all hover:bg-red-100"
+                      >
+                        លុបទាំងអស់
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {items.map((item) => (
+                        <CartItem
+                          key={item.key}
+                          item={item}
+                          onEditItem={openEditItem}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <Panel title="កំណត់ចំណាំ" subtitle="សារបន្ថែមសម្រាប់បុគ្គលិក">
+                    <textarea
+                      placeholder="ឧទាហរណ៍: ផ្អែមតិច រៀបចំក្រោយ១០នាទី..."
+                      value={orderNote}
+                      onChange={(e) => setOrderNote(e.target.value)}
+                      className="min-h-[96px] w-full resize-none rounded-2xl border border-[#e2c59b] bg-[#fffaf3] p-4 text-sm font-semibold text-[#3d2415] outline-none transition-all placeholder:text-[#b99a78] focus:border-[#a86530] focus:bg-white focus:ring-4 focus:ring-[#c58b49]/20"
+                      rows={3}
+                    />
+                  </Panel>
+                </section>
+
+                {/* Right */}
+                <aside className="space-y-4 lg:sticky lg:top-[96px]">
+                  <Panel title="ព័ត៌មានអតិថិជន" subtitle="សម្រាប់ប្រវត្តិការបញ្ជាទិញ និងទំនាក់ទំនង">
+                    {isLoggedIn ? (
+                      <div className="flex items-center gap-3 rounded-2xl border border-[#e2c59b] bg-[#fffaf3] p-4">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3d2415] to-[#a86530] text-sm font-black text-white shadow-md">
+                          {(customer?.name?.[0] || 'U').toUpperCase()}
+                        </div>
+
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-black text-[#2b170d]">
+                            {customer?.name}
+                          </p>
+                          <p className="truncate text-xs font-bold text-[#8a6a50]">
+                            {customer?.phone}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <Field
+                          label="ឈ្មោះរបស់អ្នក"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="បញ្ចូលឈ្មោះរបស់អ្នក"
+                        />
+
+                        <Field
+                          label="លេខទូរស័ព្ទ"
+                          type="tel"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          placeholder="បញ្ចូលលេខទូរស័ព្ទ"
+                          required
+                        />
+                      </div>
+                    )}
+
+                    <div className="mt-3">
+                      <label className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a5d3b]">
+                        តុ
+                      </label>
+
+                      <select
+                        value={selectedTable}
+                        onChange={(e) => setSelectedTable(e.target.value)}
+                        className="w-full rounded-2xl border border-[#e2c59b] bg-[#fffaf3] px-4 py-3 text-sm font-black text-[#3d2415] outline-none transition-all focus:border-[#a86530] focus:bg-white focus:ring-4 focus:ring-[#c58b49]/20"
+                      >
+                        <option value="">គ្មានតុ</option>
+                        {tables.map((table) => (
+                          <option key={table.id} value={table.id}>
+                            {table.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </Panel>
+
+                  <Panel title="វិធីបង់ប្រាក់" subtitle="ជ្រើសរើសវិធីបង់ប្រាក់ដែលអ្នកចង់ប្រើ">
+                    <div className="grid grid-cols-3 gap-2">
+                      <PaymentButton
+                        active={paymentMethod === 'pay_later'}
+                        label="បង់ក្រោយ"
+                        sub="មិនទាន់បង់"
+                        onClick={() => setPaymentMethod('pay_later')}
+                      />
+
+                      <PaymentButton
+                        active={paymentMethod === 'cash'}
+                        label="សាច់ប្រាក់"
+                        sub="បង់រួច"
+                        onClick={() => setPaymentMethod('cash')}
+                      />
+
+                      <PaymentButton
+                        active={paymentMethod === 'khqr'}
+                        label="KHQR"
+                        sub="ស្កេន"
+                        onClick={() => setPaymentMethod('khqr')}
+                      />
+                    </div>
+                  </Panel>
+
+                  <Panel title="សង្ខេបការបញ្ជាទិញ" subtitle="ពិនិត្យតម្លៃសរុបមុនពេលដាក់បញ្ជា">
+                    <div className="space-y-3">
+                      <SummaryRow label="តម្លៃសរុប" value={`$${subtotal.toFixed(2)}`} />
+                      <SummaryRow label="ចំនួនមុខ" value={`${totalItems}`} />
+
+                      {discount > 0 && (
+                        <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-3">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-black text-emerald-700">
+                              បញ្ចុះតម្លៃ
+                            </span>
+                            <span className="font-black text-emerald-700">
+                              -${discount.toFixed(2)}
+                            </span>
+                          </div>
+
+                          {promotionLabels.length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              {promotionLabels.map((label, index) => (
+                                <span
+                                  key={`${label}-${index}`}
+                                  className="rounded-full bg-white px-2 py-1 text-[10px] font-black text-emerald-700"
+                                >
+                                  {label}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="border-t border-[#ead2ad] pt-3">
+                        <div className="flex items-end justify-between">
+                          <div>
+                            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#a47a55]">
+                              សរុប
+                            </p>
+                            <p className="text-xs font-semibold text-[#8a6a50]">
+                              រួមទាំងបញ្ចុះតម្លៃ
+                            </p>
+                          </div>
+
+                          <p className="text-3xl font-black text-[#6f3f1f]">
+                            ${finalTotal.toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {!isLoggedIn && !phone.trim() && (
+                        <p className="rounded-2xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
+                          សូមបញ្ចូលលេខទូរស័ព្ទមុនពេលដាក់ការបញ្ជាទិញ។
+                        </p>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={placeOrder}
+                        disabled={!canPlaceOrder}
+                        className="w-full rounded-2xl bg-gradient-to-r from-[#3d2415] via-[#6f3f1f] to-[#a86530] py-4 text-sm font-black text-white shadow-[0_18px_40px_rgba(111,63,31,0.30)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_50px_rgba(111,63,31,0.40)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
+                      >
+                        {placing ? 'កំពុងដំណើរការ...' : 'ដាក់ការបញ្ជាទិញ'}
+                      </button>
+                    </div>
+                  </Panel>
+                </aside>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+
+      <MobileBottomNav />
+
+      {editItem && (
+        <ProductModal
+          product={editItem}
+          show={!!editItem}
+          onClose={closeEditItem}
+          selectedSize={editSize}
+          selectedSugar={editSugar}
+          selectedIce={editIce}
+          selectedAddOn={editAddOn}
+          sugarNote={editSugarNote}
+          iceNote={editIceNote}
+          qty={editQty}
+          price={editPrice}
+          finalPrice={editFinalPrice}
+          hasDiscount={editHasDiscount}
+          stockMsg=""
+          onSizeChange={setEditSize}
+          onSugarChange={setEditSugar}
+          onIceChange={setEditIce}
+          onAddOnChange={setEditAddOn}
+          onSugarNoteChange={setEditSugarNote}
+          onIceNoteChange={setEditIceNote}
+          onQtyChange={setEditQty}
+          onAddToCart={handleSaveEdit}
+          submitLabel="ធ្វើបច្ចុប្បន្នភាព"
+        />
+      )}
+    </div>
+  )
+}
+
+function Panel({ title, subtitle, action, children }) {
+  return (
+    <div className="rounded-[1rem] border border-[#e7cda7] bg-white/85 p-4 shadow-[0_20px_55px_rgba(61,40,23,0.08)] backdrop-blur-xl sm:p-5">
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-black text-[#2b170d]">{title}</h2>
+
+          {subtitle && (
+            <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-[#a47a55]">
+              {subtitle}
+            </p>
           )}
         </div>
 
-        {items.length === 0 ? (
-          <div className="text-center py-16">
-            <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l1 5h13l1-5h2M6 8l1.5 9h9L18 8M9 21a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z" />
-            </svg>
-            <p className="text-gray-500 mb-4">Your cart is empty</p>
-            <button
-              onClick={() => navigate('/products')}
-              className="bg-blue-600 text-white px-6 py-2 rounded-xl text-sm font-semibold hover:bg-blue-700"
-            >
-              Browse Products
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="space-y-3 mb-6">
-              {items.map((item) => (
-                <CartItem
-                  key={item.key}
-                  item={item}
-                  onUpdateQty={updateQty}
-                  onRemove={removeItem}
-                />
-              ))}
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-4">
-              <textarea
-                placeholder="Add order note..."
-                value={orderNote}
-                onChange={(e) => setOrderNote(e.target.value)}
-                className="w-full text-sm border border-gray-200 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                rows={2}
-              />
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-4 space-y-3">
-              {isLoggedIn ? (
-                <div className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 bg-slate-50 text-gray-700">
-                  {customer?.name} ({customer?.phone})
-                </div>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Your name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  <input
-                    type="tel"
-                    placeholder="Phone number"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </>
-              )}
-              <select
-                value={selectedTable}
-                onChange={(e) => setSelectedTable(e.target.value)}
-                className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">No table</option>
-                {tables.map((t) => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
-                ))}
-              </select>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('pay_later')}
-                  className={`flex-1 text-sm font-medium py-2 rounded-xl transition-colors ${
-                    paymentMethod === 'pay_later'
-                      ? 'bg-yellow-100 text-yellow-700 ring-2 ring-yellow-400'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                  }`}
-                >
-                  Pay Later
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('cash')}
-                  className={`flex-1 text-sm font-medium py-2 rounded-xl transition-colors ${
-                    paymentMethod === 'cash'
-                      ? 'bg-green-100 text-green-700 ring-2 ring-green-400'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                  }`}
-                >
-                  Cash
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('khqr')}
-                  className={`flex-1 text-sm font-medium py-2 rounded-xl transition-colors ${
-                    paymentMethod === 'khqr'
-                      ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-400'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                  }`}
-                >
-                  KHQR
-                </button>
-              </div>
-              {discountTotal > 0 && (
-                <div className="flex items-center justify-between text-sm">
-                  <div className="text-gray-500">
-                    <span>Discount</span>
-                    {items.map(i => i.promotion && i.promotion.type !== 'combo_discount' && i.promotion.type !== 'combo' ? getPromotionLabel(i.promotion) : '').filter(Boolean).map((l, idx) => (
-                      <span key={idx} className="ml-1 text-xs text-gray-400">({l})</span>
-                    ))}
-                  </div>
-                  <span className="text-green-600 font-medium">-${discountTotal.toFixed(2)}</span>
-                </div>
-              )}
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-gray-800">Total</span>
-                <span className="text-lg font-bold text-blue-600">${totalPrice.toFixed(2)}</span>
-              </div>
-              <button
-                onClick={placeOrder}
-                disabled={placing}
-                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl text-sm font-bold hover:shadow-lg transition-all disabled:opacity-60 active:scale-[0.98]"
-              >
-                {placing ? 'Processing...' : 'Place Order'}
-              </button>
-            </div>
-          </>
-        )}
+        {action}
       </div>
-      <MobileBottomNav />
+
+      {children}
+    </div>
+  )
+}
+
+function Field({ label, type = 'text', required = false, ...props }) {
+  return (
+    <div>
+      <label className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a5d3b]">
+        {label}
+        {required && <span className="ml-1 text-red-500">*</span>}
+      </label>
+
+      <input
+        type={type}
+        className="w-full rounded-2xl border border-[#e2c59b] bg-[#fffaf3] px-4 py-3 text-sm font-semibold text-[#3d2415] outline-none transition-all placeholder:text-[#b99a78] focus:border-[#a86530] focus:bg-white focus:ring-4 focus:ring-[#c58b49]/20"
+        {...props}
+      />
+    </div>
+  )
+}
+
+function PaymentButton({ active, label, sub, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-2xl border p-3 text-center transition-all duration-300 active:scale-95 ${
+        active
+          ? 'border-[#5b321a] bg-[#2b170d] text-white shadow-[0_14px_30px_rgba(43,23,13,0.25)]'
+          : 'border-[#e2c59b] bg-[#fffaf3] text-[#76543a] hover:bg-[#fff0dc] hover:text-[#2b170d]'
+      }`}
+    >
+      <p className="text-sm font-black">{label}</p>
+
+      <p
+        className={`mt-0.5 text-[10px] font-black uppercase tracking-[0.12em] ${
+          active ? 'text-[#f9d9ac]' : 'text-[#a47a55]'
+        }`}
+      >
+        {sub}
+      </p>
+    </button>
+  )
+}
+
+function SummaryRow({ label, value }) {
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <span className="font-bold text-[#8a6a50]">{label}</span>
+      <span className="font-black text-[#2b170d]">{value}</span>
+    </div>
+  )
+}
+
+function EmptyCart({ onBrowse }) {
+  return (
+    <div className="mx-auto max-w-lg rounded-[2rem] border border-[#e7cda7] bg-white/85 px-5 py-16 text-center shadow-[0_20px_55px_rgba(61,40,23,0.08)] backdrop-blur-xl">
+      <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-[#fff0dc] text-[#7b4a26] shadow-inner">
+        <svg
+          className="h-11 w-11"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={1.8}
+            d="M3 3h2l1 5h13l1-5h2M6 8l1.5 9h9L18 8M9 21a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2z"
+          />
+        </svg>
+      </div>
+
+      <h2 className="text-2xl font-black text-[#2b170d]">កន្ត្រករបស់អ្នកទទេ</h2>
+
+      <p className="mx-auto mt-2 max-w-sm text-sm font-semibold leading-6 text-[#8a6a50]">
+        សូមបន្ថែមកាហ្វេ ឬភេសជ្ជៈដែលអ្នកចូលចិត្តមុនពេលទិញ។
+      </p>
+
+      <button
+        type="button"
+        onClick={onBrowse}
+        className="mt-6 rounded-2xl bg-gradient-to-r from-[#3d2415] via-[#6f3f1f] to-[#a86530] px-6 py-3 text-sm font-black text-white shadow-[0_16px_35px_rgba(111,63,31,0.30)] transition-all duration-300 hover:-translate-y-0.5"
+      >
+        មើលមុខម្ហូប
+      </button>
     </div>
   )
 }
