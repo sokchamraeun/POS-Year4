@@ -6,6 +6,16 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts'
+import {
+  DollarSign,
+  TrendingUp,
+  ShoppingCart,
+  Receipt,
+  Wallet,
+  Clock,
+  RotateCcw,
+  Tag,
+} from 'lucide-react'
 import MetricCard from '../components/MetricCard.jsx'
 import Card from '../components/Card.jsx'
 import ChartCard from '../components/ChartCard.jsx'
@@ -14,6 +24,8 @@ import StatusBadge from '../components/StatusBadge.jsx'
 import Pagination from '../components/Pagination.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import { money, formatDate, printOrderReceipt } from '../utils/reportHelpers.js'
+
+const STORAGE_URL = import.meta.env.VITE_STORAGE_URL ?? ''
 
 export default function SalesReport({ data, orders = [], pagination = {}, ordersLoading = false, page = 1, onPageChange }) {
   const {
@@ -43,17 +55,17 @@ export default function SalesReport({ data, orders = [], pagination = {}, orders
   return (
     <>
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Total Sales" value={money(total_sales)} tone="green" />
-        <MetricCard label="Total Profit" value={money(total_profit)} sub={`Cost ${money(total_cost)}`} tone="teal" />
-        <MetricCard label="Total Orders" value={total_orders ?? 0} sub={`${paid_orders ?? 0} paid`} tone="blue" />
-        <MetricCard label="Average Order" value={money(avg_order_value)} tone="orange" />
+        <MetricCard label="Total Sales" value={money(total_sales)} tone="green" icon={DollarSign} />
+        <MetricCard label="Total Profit" value={money(total_profit)} sub={`Cost ${money(total_cost)}`} tone="teal" icon={TrendingUp} />
+        <MetricCard label="Total Orders" value={total_orders ?? 0} sub={`${paid_orders ?? 0} paid`} tone="blue" icon={ShoppingCart} />
+        <MetricCard label="Average Order" value={money(avg_order_value)} tone="orange" icon={Receipt} />
       </div>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Paid Amount" value={money(paid_amount)} sub={`${paid_orders ?? 0} orders`} tone="green" />
-        <MetricCard label="Unpaid Amount" value={money(unpaid_amount)} sub={`${unpaid_orders ?? 0} orders`} tone="orange" />
-        <MetricCard label="Refund Amount" value={money(refund_amount)} sub={`${refund_orders ?? 0} orders`} tone="red" />
-        <MetricCard label="Total Discount" value={money(total_discount)} tone="slate" />
+        <MetricCard label="Paid Amount" value={money(paid_amount)} sub={`${paid_orders ?? 0} orders`} tone="green" icon={Wallet} />
+        <MetricCard label="Unpaid Amount" value={money(unpaid_amount)} sub={`${unpaid_orders ?? 0} orders`} tone="orange" icon={Clock} />
+        <MetricCard label="Refund Amount" value={money(refund_amount)} sub={`${refund_orders ?? 0} orders`} tone="red" icon={RotateCcw} />
+        <MetricCard label="Total Discount" value={money(total_discount)} tone="slate" icon={Tag} />
       </div>
 
       <div className="mb-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
@@ -78,22 +90,49 @@ export default function SalesReport({ data, orders = [], pagination = {}, orders
         </div>
 
         <div className="space-y-6">
-          <SmallList
-            title="Payment Methods"
-            items={payment_methods.map(row => ({
-              label: row.payment_method || 'Unknown',
-              value: money(row.revenue),
-              sub: `${row.count ?? 0} orders`,
-            }))}
-          />
+          <Card title="Payment Methods">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-teal-800 text-white">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-black">Method</th>
+                    <th className="px-4 py-3 text-right font-black">Orders</th>
+                    <th className="px-4 py-3 text-right font-black">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payment_methods.length > 0 ? payment_methods.map((row, i) => (
+                    <tr key={i} className="border-t border-slate-100 hover:bg-teal-50/50">
+                      <td className="px-4 py-3 font-black text-slate-800">{row.payment_method || 'Unknown'}</td>
+                      <td className="px-4 py-3 text-right text-slate-700">{row.count ?? 0}</td>
+                      <td className="px-4 py-3 text-right font-black text-slate-900">{money(row.revenue)}</td>
+                    </tr>
+                  )) : (
+                    <tr>
+                      <td colSpan={3} className="px-4 py-8 text-center text-slate-400">No data.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
 
           <SmallList
             title="Best Sellers"
-            items={best_sellers.slice(0, 5).map((row, index) => ({
-              label: `${index + 1}. ${row.product?.name || 'Unknown'}`,
-              value: `${row.total_qty ?? 0} sold`,
-              sub: money(row.revenue),
-            }))}
+            items={best_sellers.slice(0, 5).map((row, index) => {
+              const img = row.product?.image
+              const imgSrc = img
+                ? img.startsWith('http')
+                  ? img
+                  : STORAGE_URL + '/' + img
+                : null
+              return {
+                image: imgSrc,
+                label: `${index + 1}. ${row.product?.name || 'Unknown'}`,
+                value: `${row.total_qty ?? 0} sold`,
+                sub: money(row.revenue),
+              }
+            })}
           />
         </div>
       </div>
@@ -101,7 +140,7 @@ export default function SalesReport({ data, orders = [], pagination = {}, orders
       <Card title="Sales Detail" subtitle="Per-order sales with cost and profit">
         <div className="overflow-x-auto">
           <table className="min-w-[1100px] w-full text-sm">
-            <thead className="bg-slate-950 text-white">
+            <thead className="bg-teal-800 text-white">
               <tr>
                 <th className="px-4 py-3 text-left font-black">Order</th>
                 <th className="px-4 py-3 text-left font-black">Date</th>

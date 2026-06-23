@@ -456,9 +456,9 @@ class OrderController extends Controller
                 $recipe->ingredient->decrement('stock_quantity', $deductQty);
                 $transactions[] = [
                     'ingredient_id' => $recipe->ingredient_id,
-                    'type'          => 'deduct',
-                    'quantity'      => $deductQty,
-                    'note'          => "Deducted for completed Order #{$order->id}",
+                    'type' => 'deduct',
+                    'quantity' => $deductQty,
+                    'note' => "Deducted for completed Order #{$order->id}",
                 ];
             }
 
@@ -472,9 +472,9 @@ class OrderController extends Controller
                     $ai->ingredient->decrement('stock_quantity', $deductQty);
                     $transactions[] = [
                         'ingredient_id' => $ai->ingredient_id,
-                        'type'          => 'deduct',
-                        'quantity'      => $deductQty,
-                        'note'          => "Deducted for completed Order #{$order->id} (addon)",
+                        'type' => 'deduct',
+                        'quantity' => $deductQty,
+                        'note' => "Deducted for completed Order #{$order->id} (addon)",
                     ];
                 }
             }

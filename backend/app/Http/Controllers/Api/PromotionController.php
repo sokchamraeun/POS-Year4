@@ -18,7 +18,7 @@ class PromotionController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'name'        => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'type' => 'required|in:percentage,fixed_amount,buy_x_get_y,combo,combo_discount',
             'value' => 'nullable|numeric|min:0',
@@ -63,7 +63,7 @@ class PromotionController extends Controller
     public function update(Request $request, Promotion $promotion): JsonResponse
     {
         $data = $request->validate([
-            'name'        => 'sometimes|string|max:255',
+            'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'type' => 'sometimes|in:percentage,fixed_amount,buy_x_get_y,combo,combo_discount',
             'value' => 'nullable|numeric|min:0',

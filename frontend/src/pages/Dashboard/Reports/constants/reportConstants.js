@@ -11,7 +11,6 @@ export const tabs = [
   { key: 'staff', label: 'Staff' },
   { key: 'customers', label: 'Customers' },
   { key: 'payments', label: 'Payments' },
-  { key: 'printer', label: 'Printer' },
 ]
 
 export const presets = [

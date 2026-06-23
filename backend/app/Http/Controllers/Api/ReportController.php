@@ -9,16 +9,27 @@ use App\Models\InventoryTransaction;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Recipe;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
+    public function saleUsers(): JsonResponse
+    {
+        $users = User::select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($users);
+    }
+
     public function sales(Request $request): JsonResponse
     {
         $from = $request->get('from');
         $to = $request->get('to');
+        $saleUser = $request->get('sale_user', 'all');
 
         $query = Order::query();
         if ($from) {
@@ -26,6 +37,9 @@ class ReportController extends Controller
         }
         if ($to) {
             $query->whereDate('created_at', '<=', $to);
+        }
+        if ($saleUser !== 'all') {
+            $query->where('staff_id', $saleUser);
         }
 
         $totalSales = (clone $query)->whereIn('payment_status', ['Paid', 'Refunded'])->sum('total');
@@ -60,19 +74,22 @@ class ReportController extends Controller
             ->get();
 
         $bestSellers = OrderItem::select('product_id', DB::raw('SUM(qty) as total_qty'), DB::raw('COALESCE(SUM(subtotal), 0) as revenue'))
-            ->whereHas('order', function ($q) use ($from, $to) {
+            ->whereHas('order', function ($q) use ($from, $to, $saleUser) {
                 if ($from) {
                     $q->whereDate('created_at', '>=', $from);
                 }
                 if ($to) {
                     $q->whereDate('created_at', '<=', $to);
                 }
+                if ($saleUser !== 'all') {
+                    $q->where('staff_id', $saleUser);
+                }
                 $q->whereIn('payment_status', ['Paid', 'Refunded']);
             })
             ->groupBy('product_id')
             ->orderByDesc('total_qty')
             ->limit(10)
-            ->with('product:id,name')
+            ->with('product:id,name,image')
             ->get();
 
         return response()->json([
@@ -139,16 +156,19 @@ class ReportController extends Controller
             ]);
 
         $all = Ingredient::selectRaw("CASE WHEN stock_quantity <= 0 THEN 'Out of Stock' WHEN stock_quantity <= reorder_level THEN 'Low Stock' ELSE 'In Stock' END as status, COUNT(*) as count")
-            ->groupBy('status')
+            ->groupBy(DB::raw("CASE WHEN stock_quantity <= 0 THEN 'Out of Stock' WHEN stock_quantity <= reorder_level THEN 'Low Stock' ELSE 'In Stock' END"))
             ->pluck('count', 'status');
 
+        $items = $ingredients->items();
+
         return response()->json([
-            'ingredients' => $ingredients->items(),
+            'ingredients' => $items,
             'pagination' => [
                 'current_page' => $ingredients->currentPage(),
                 'last_page' => $ingredients->lastPage(),
                 'total' => $ingredients->total(),
             ],
+            'low_stock' => array_values(array_filter($items, fn ($i) => $i['status'] !== 'In Stock')),
             'low_stock_count' => ($all['Low Stock'] ?? 0) + ($all['Out of Stock'] ?? 0),
             'total_ingredients' => $ingredients->total(),
         ]);
@@ -292,23 +312,44 @@ class ReportController extends Controller
                 'created_at' => $c->created_at,
             ]);
 
+        $guestOrders = Order::whereNull('customer_id')
+            ->whereIn('payment_status', ['Paid', 'Refunded'])
+            ->when($from, fn ($q) => $q->whereDate('created_at', '>=', $from))
+            ->when($to, fn ($q) => $q->whereDate('created_at', '<=', $to))
+            ->selectRaw('COUNT(*) as orders_count, COALESCE(SUM(total), 0) as total_spent')
+            ->first();
+
         $totalCustomers = Customer::count();
         $newCustomers = Customer::when($from, fn ($q) => $q->whereDate('created_at', '>=', $from))
             ->when($to, fn ($q) => $q->whereDate('created_at', '<=', $to))
             ->count();
 
+        if ($guestOrders && $guestOrders->orders_count > 0) {
+            $customers->prepend([
+                'id' => null,
+                'name' => 'Guest',
+                'phone' => null,
+                'points' => 0,
+                'orders_count' => (int) $guestOrders->orders_count,
+                'total_spent' => (float) $guestOrders->total_spent,
+                'created_at' => null,
+            ]);
+        }
+
         return response()->json([
             'customers' => $customers,
-            'total_customers' => $totalCustomers,
+            'total_customers' => $totalCustomers + ($guestOrders && $guestOrders->orders_count > 0 ? 1 : 0),
             'new_customers' => $newCustomers,
+            'guest_orders_count' => $guestOrders ? (int) $guestOrders->orders_count : 0,
+            'guest_total_spent' => $guestOrders ? (float) $guestOrders->total_spent : 0,
         ]);
     }
 
     public function profitToday(): JsonResponse
     {
-        $tz       = 'Asia/Phnom_Penh';
+        $tz = 'Asia/Phnom_Penh';
         $dayStart = now()->timezone($tz)->startOfDay()->utc()->toDateTimeString();
-        $dayEnd   = now()->timezone($tz)->endOfDay()->utc()->toDateTimeString();
+        $dayEnd = now()->timezone($tz)->endOfDay()->utc()->toDateTimeString();
 
         // Revenue and order count from paid orders today
         $paidOrderIds = Order::whereBetween('created_at', [$dayStart, $dayEnd])
@@ -316,7 +357,7 @@ class ReportController extends Controller
             ->pluck('id');
 
         $revenue = (float) Order::whereIn('id', $paidOrderIds)->sum('total');
-        $count   = $paidOrderIds->count();
+        $count = $paidOrderIds->count();
 
         // Get all items from paid orders today
         $items = OrderItem::whereIn('order_id', $paidOrderIds)
@@ -327,13 +368,13 @@ class ReportController extends Controller
         $recipes = Recipe::whereIn('product_id', $productIds)
             ->with('ingredient:id,cost_per_unit')
             ->get()
-            ->groupBy(fn ($r) => $r->product_id . '-' . ($r->size_id ?? 0));
+            ->groupBy(fn ($r) => $r->product_id.'-'.($r->size_id ?? 0));
 
         // Calculate COGS: recipe_qty × ingredient_cost × item_qty
         $cogs = 0.0;
         foreach ($items as $item) {
-            $key  = $item->product_id . '-' . ($item->size_id ?? 0);
-            $keyB = $item->product_id . '-0';
+            $key = $item->product_id.'-'.($item->size_id ?? 0);
+            $keyB = $item->product_id.'-0';
             $rows = $recipes->get($key) ?? $recipes->get($keyB) ?? collect();
 
             foreach ($rows as $r) {
@@ -344,9 +385,9 @@ class ReportController extends Controller
         }
 
         return response()->json([
-            'revenue'      => round($revenue, 2),
-            'cogs'         => round($cogs, 2),
-            'profit'       => round($revenue - $cogs, 2),
+            'revenue' => round($revenue, 2),
+            'cogs' => round($cogs, 2),
+            'profit' => round($revenue - $cogs, 2),
             'orders_count' => $count,
         ]);
     }

@@ -17,9 +17,9 @@ class Employee extends Model
     protected function casts(): array
     {
         return [
-            'salary'    => 'decimal:2',
+            'salary' => 'decimal:2',
             'hire_date' => 'date',
-            'status'    => 'boolean',
+            'status' => 'boolean',
         ];
     }
 }

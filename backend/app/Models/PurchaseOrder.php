@@ -29,7 +29,7 @@ class PurchaseOrder extends Model
     {
         return [
             'purchase_date' => 'date',
-            'total_amount'  => 'decimal:2',
+            'total_amount' => 'decimal:2',
         ];
     }
 }

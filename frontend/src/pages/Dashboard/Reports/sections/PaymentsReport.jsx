@@ -1,3 +1,4 @@
+import { Wallet, Clock, RotateCcw } from 'lucide-react'
 import {
   PieChart,
   Pie,
@@ -27,9 +28,9 @@ export default function PaymentsReport({ data }) {
   return (
     <>
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <MetricCard label="Paid Amount" value={money(data?.paid_amount)} tone="green" />
-        <MetricCard label="Unpaid Amount" value={money(data?.unpaid_amount)} tone="orange" />
-        <MetricCard label="Refund Amount" value={money(data?.refund_amount)} tone="red" />
+        <MetricCard label="Paid Amount" value={money(data?.paid_amount)} tone="green" icon={Wallet} />
+        <MetricCard label="Unpaid Amount" value={money(data?.unpaid_amount)} tone="orange" icon={Clock} />
+        <MetricCard label="Refund Amount" value={money(data?.refund_amount)} tone="red" icon={RotateCcw} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">

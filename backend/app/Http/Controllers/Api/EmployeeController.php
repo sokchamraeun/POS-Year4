@@ -17,8 +17,8 @@ class EmployeeController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('full_name', 'like', "%{$search}%")
-                  ->orWhere('position', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+                    ->orWhere('position', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
@@ -41,13 +41,13 @@ class EmployeeController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'user_id'   => 'nullable|exists:users,id',
+            'user_id' => 'nullable|exists:users,id',
             'full_name' => 'required|string|max:255',
-            'phone'     => 'nullable|string|max:30',
-            'position'  => 'nullable|string|max:100',
-            'salary'    => 'nullable|numeric|min:0',
+            'phone' => 'nullable|string|max:30',
+            'position' => 'nullable|string|max:100',
+            'salary' => 'nullable|numeric|min:0',
             'hire_date' => 'nullable|date',
-            'status'    => 'boolean',
+            'status' => 'boolean',
         ]);
 
         $employee = Employee::create($data);
@@ -55,7 +55,7 @@ class EmployeeController extends Controller
         if ($employee->user_id) {
             $employee->user()->update([
                 'status' => $employee->status,
-                'phone'  => $employee->phone,
+                'phone' => $employee->phone,
             ]);
         }
 
@@ -67,13 +67,13 @@ class EmployeeController extends Controller
     public function update(Request $request, Employee $employee): JsonResponse
     {
         $data = $request->validate([
-            'user_id'   => 'nullable|exists:users,id',
+            'user_id' => 'nullable|exists:users,id',
             'full_name' => 'required|string|max:255',
-            'phone'     => 'nullable|string|max:30',
-            'position'  => 'nullable|string|max:100',
-            'salary'    => 'nullable|numeric|min:0',
+            'phone' => 'nullable|string|max:30',
+            'position' => 'nullable|string|max:100',
+            'salary' => 'nullable|numeric|min:0',
             'hire_date' => 'nullable|date',
-            'status'    => 'boolean',
+            'status' => 'boolean',
         ]);
 
         $employee->update($data);
@@ -81,7 +81,7 @@ class EmployeeController extends Controller
         if ($employee->user_id) {
             $employee->user()->update([
                 'status' => $employee->status,
-                'phone'  => $employee->phone,
+                'phone' => $employee->phone,
             ]);
         }
 

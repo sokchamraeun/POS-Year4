@@ -7,6 +7,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts'
+import { TrendingUp, DollarSign, Percent, Tag, RotateCcw, TrendingDown } from 'lucide-react'
 import MetricCard from '../components/MetricCard.jsx'
 import Card from '../components/Card.jsx'
 import ChartCard from '../components/ChartCard.jsx'
@@ -25,16 +26,16 @@ export default function ProfitReport({ data }) {
   return (
     <>
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Revenue" value={money(data?.revenue)} tone="green" />
-        <MetricCard label="Total Cost" value={money(data?.cost)} tone="orange" />
-        <MetricCard label="Gross Profit" value={money(data?.gross_profit)} tone="teal" />
-        <MetricCard label="Profit Margin" value={percent(data?.margin)} tone="blue" />
+        <MetricCard label="Revenue" value={money(data?.revenue)} tone="green" icon={TrendingUp} />
+        <MetricCard label="Total Cost" value={money(data?.cost)} tone="orange" icon={DollarSign} />
+        <MetricCard label="Gross Profit" value={money(data?.gross_profit)} tone="teal" icon={TrendingUp} />
+        <MetricCard label="Profit Margin" value={percent(data?.margin)} tone="blue" icon={Percent} />
       </div>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <MetricCard label="Net Profit" value={money(data?.net_profit)} sub="After refunds" tone="green" />
-        <MetricCard label="Total Discount" value={money(data?.discount)} tone="slate" />
-        <MetricCard label="Refund" value={money(data?.refund)} tone="red" />
+        <MetricCard label="Net Profit" value={money(data?.net_profit)} sub="After refunds" tone="green" icon={TrendingDown} />
+        <MetricCard label="Total Discount" value={money(data?.discount)} tone="slate" icon={Tag} />
+        <MetricCard label="Refund" value={money(data?.refund)} tone="red" icon={RotateCcw} />
       </div>
 
       {chartData.length > 0 && (
@@ -57,24 +58,24 @@ export default function ProfitReport({ data }) {
         {monthly.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="min-w-[720px] w-full text-sm">
-              <thead className="bg-slate-950 text-white">
+              <thead className="bg-teal-800 text-white">
                 <tr>
-                  <th className="px-5 py-3 text-left font-black">Month</th>
-                  <th className="px-5 py-3 text-right font-black">Revenue</th>
-                  <th className="px-5 py-3 text-right font-black">Cost</th>
-                  <th className="px-5 py-3 text-right font-black">Discount</th>
-                  <th className="px-5 py-3 text-right font-black">Profit</th>
+                  <th className="px-4 py-3 text-left font-black">Month</th>
+                  <th className="px-4 py-3 text-right font-black">Revenue</th>
+                  <th className="px-4 py-3 text-right font-black">Cost</th>
+                  <th className="px-4 py-3 text-right font-black">Discount</th>
+                  <th className="px-4 py-3 text-right font-black">Profit</th>
                 </tr>
               </thead>
 
               <tbody>
                 {monthly.map(row => (
                   <tr key={row.month} className="border-t border-slate-100 hover:bg-teal-50/50">
-                    <td className="px-5 py-4 font-black text-slate-800">{row.month}</td>
-                    <td className="px-5 py-4 text-right text-slate-700">{money(row.revenue)}</td>
-                    <td className="px-5 py-4 text-right text-slate-600">{money(row.cost)}</td>
-                    <td className="px-5 py-4 text-right text-slate-600">{money(row.discount)}</td>
-                    <td className="px-5 py-4 text-right font-black text-emerald-700">{money(row.profit)}</td>
+                    <td className="px-4 py-3 font-black text-slate-800">{row.month}</td>
+                    <td className="px-4 py-3 text-right text-slate-700">{money(row.revenue)}</td>
+                    <td className="px-4 py-3 text-right text-slate-600">{money(row.cost)}</td>
+                    <td className="px-4 py-3 text-right text-slate-600">{money(row.discount)}</td>
+                    <td className="px-4 py-3 text-right font-black text-emerald-700">{money(row.profit)}</td>
                   </tr>
                 ))}
               </tbody>

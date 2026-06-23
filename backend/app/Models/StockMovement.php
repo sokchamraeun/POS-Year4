@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class StockMovement extends Model
 {
     public $timestamps = false;
+
     const CREATED_AT = 'created_at';
 
     public function ingredient(): BelongsTo
@@ -25,7 +26,7 @@ class StockMovement extends Model
     protected function casts(): array
     {
         return [
-            'quantity'   => 'decimal:2',
+            'quantity' => 'decimal:2',
             'created_at' => 'datetime',
         ];
     }

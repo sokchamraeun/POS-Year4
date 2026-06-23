@@ -35,11 +35,11 @@ class SupplierController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'name'    => 'required|string|max:255',
-            'phone'   => 'nullable|string|max:30',
-            'email'   => 'nullable|email|max:255',
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:30',
+            'email' => 'nullable|email|max:255',
             'address' => 'nullable|string',
-            'status'  => 'boolean',
+            'status' => 'boolean',
         ]);
 
         return response()->json(Supplier::create($data), 201);
@@ -48,11 +48,11 @@ class SupplierController extends Controller
     public function update(Request $request, Supplier $supplier): JsonResponse
     {
         $data = $request->validate([
-            'name'    => 'sometimes|string|max:255',
-            'phone'   => 'nullable|string|max:30',
-            'email'   => 'nullable|email|max:255',
+            'name' => 'sometimes|string|max:255',
+            'phone' => 'nullable|string|max:30',
+            'email' => 'nullable|email|max:255',
             'address' => 'nullable|string',
-            'status'  => 'boolean',
+            'status' => 'boolean',
         ]);
 
         $supplier->update($data);

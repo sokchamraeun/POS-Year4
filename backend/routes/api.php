@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerAuthController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\HeroSliderController;
 use App\Http\Controllers\Api\IceLevelController;
@@ -18,17 +19,16 @@ use App\Http\Controllers\Api\PaymentCheckoutController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PromotionController;
+use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\RecipeController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\SizeController;
 use App\Http\Controllers\Api\SugarLevelController;
+use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\TableController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\EmployeeController;
-use App\Http\Controllers\Api\SupplierController;
-use App\Http\Controllers\Api\PurchaseOrderController;
 use Illuminate\Support\Facades\Route;
 
 // Health check (keep-alive for Render free tier)
@@ -326,6 +326,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/profit-today', [ReportController::class, 'profitToday']);
 
     Route::middleware('permission:view-reports,manage-staff')->prefix('reports')->group(function () {
+        Route::get('/sale-users', [ReportController::class, 'saleUsers']);
         Route::get('/sales', [ReportController::class, 'sales']);
         Route::get('/products', [ReportController::class, 'products']);
         Route::get('/inventory', [ReportController::class, 'inventory']);
