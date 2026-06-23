@@ -170,7 +170,7 @@ export default function Employees() {
   if (loading) return <Loader text="Loading employees" />
 
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />
@@ -225,7 +225,7 @@ export default function Employees() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 bg-orange-50">
+                  <tr className="text-left text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 bg-teal-50">
                     <th className="px-5 py-3">#</th>
                     <th className="px-5 py-3">Full Name</th>
                     <th className="px-5 py-3">Position</th>
@@ -245,7 +245,7 @@ export default function Employees() {
                       </td>
                     </tr>
                   ) : filtered.map((emp, i) => (
-                    <tr key={emp.id} className="hover:bg-orange-50 transition-colors">
+                    <tr key={emp.id} className="hover:bg-teal-50/30 transition-colors">
                       <td className="px-5 py-3.5 text-slate-400 font-medium">{i + 1}</td>
                       <td className="px-5 py-3.5 font-semibold text-slate-800">
                         <div className="flex items-center gap-3">
@@ -371,8 +371,8 @@ export default function Employees() {
                         onClick={() => setForm({ ...form, status: val })}
                         className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all ${
                           form.status === val
-                            ? 'bg-blue-600 text-white border-amber-600 shadow-md shadow-blue-200'
-                            : 'bg-white text-slate-500 border-slate-200 hover:border-amber-300'
+                            ? 'bg-blue-600 text-white border-teal-600 shadow-md shadow-blue-200'
+                            : 'bg-white text-slate-500 border-slate-200 hover:border-teal-300'
                         }`}
                       >
                         {label}
@@ -383,7 +383,7 @@ export default function Employees() {
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-orange-50 transition-colors">
+                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-teal-50 transition-colors">
                   Cancel
                 </button>
                 <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md shadow-blue-200 transition-all active:scale-95 disabled:opacity-60">
@@ -434,7 +434,7 @@ export default function Employees() {
                 <button onClick={() => { setShowDetail(false); openEdit(detail) }} className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors">
                   Edit
                 </button>
-                <button onClick={() => setShowDetail(false)} className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-orange-50 transition-colors">
+                <button onClick={() => setShowDetail(false)} className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-teal-50 transition-colors">
                   Close
                 </button>
               </div>

@@ -32,10 +32,10 @@ export default function ProductCard({
   const selectedSugarObj = product.sugar_levels?.find((s) => s.name === selectedSugar)
 
   const selectedStyle =
-    'border-[#c47a2c] bg-[#c47a2c] text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c47a2c]/30'
+    'border-teal-600 bg-teal-600 text-white shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/30'
 
   const normalStyle =
-    'border-[#e1c1a0] bg-white text-[#6b3b1d] hover:border-[#c47a2c] hover:bg-[#fffaf3] focus-visible:outline-none focus-visible:border-[#c47a2c] focus-visible:bg-[#fff4e6] focus-visible:ring-2 focus-visible:ring-[#c47a2c]/20'
+    'border-slate-200 bg-white text-slate-700 hover:border-teal-500 hover:bg-teal-50/50 hover:text-teal-700 focus-visible:outline-none focus-visible:border-teal-500 focus-visible:bg-teal-50/50 focus-visible:ring-2 focus-visible:ring-teal-500/20'
 
   const size = product.sizes?.find((s) => s.name === selectedSize)
   const basePrice = size ? Number(size.pivot?.price ?? 0) : 0
@@ -152,7 +152,7 @@ export default function ProductCard({
   return (
     <>
       {/* Product Card */}
-      <div className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-[#d7ad83] bg-[#fffaf3] transition-all duration-300 hover:-translate-y-1 hover:border-[#8a5a33]">
+      <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
         {/* Promotion Label */}
         {resolvedPromotion && (
           <div className="absolute left-3 top-3 z-20">
@@ -168,7 +168,7 @@ export default function ProductCard({
           onClick={() => setShowModal(true)}
           className="relative cursor-pointer p-3 pb-0"
         >
-          <div className="relative overflow-hidden rounded-2xl border border-[#ead2b8] bg-[#fff4e6] p-3">
+          <div className="relative overflow-hidden rounded-xl border border-slate-100 bg-slate-50 p-3">
             {imageSrc ? (
               <img
                 src={imageSrc}
@@ -176,7 +176,7 @@ export default function ProductCard({
                 className="aspect-square w-full rounded-xl object-contain transition-transform duration-500 group-hover:scale-110"
               />
             ) : (
-              <div className="flex aspect-square w-full items-center justify-center rounded-xl border border-dashed border-[#c99a68] bg-[#fffaf3] text-xs font-bold text-[#8a5a33]">
+              <div className="flex aspect-square w-full items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 text-xs font-bold text-slate-400">
                 No Image
               </div>
             )}
@@ -187,12 +187,12 @@ export default function ProductCard({
         <div className="flex flex-1 flex-col p-4">
           <div className="mb-3 flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="line-clamp-1 text-sm font-black text-[#4b2a18] md:text-base">
+              <h3 className="line-clamp-1 text-sm font-black text-slate-900 md:text-base">
                 {product.name}
               </h3>
 
               {selectedSize && (
-                <p className="mt-1 text-[11px] font-semibold text-[#8a5a33]">
+                <p className="mt-1 text-[11px] font-semibold text-slate-500">
                   Size: {selectedSize}
                 </p>
               )}
@@ -205,7 +205,7 @@ export default function ProductCard({
                 </div>
               )}
 
-              <div className="text-base font-black text-[#8a5a33] md:text-lg">
+              <div className="text-base font-black text-slate-900 md:text-lg">
                 ${finalUnitPrice.toFixed(2)}
               </div>
             </div>
@@ -213,7 +213,7 @@ export default function ProductCard({
 
           <button
             onClick={() => setShowModal(true)}
-            className="mt-auto flex w-full items-center justify-center gap-2 rounded-2xl border border-[#c47a2c] bg-[#c47a2c] px-4 py-2.5 text-sm font-black text-white transition-all duration-300 hover:border-[#a86425] hover:bg-[#a86425] active:scale-[0.98]"
+            className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-black text-white shadow-sm transition-all duration-300 hover:bg-teal-700 active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
             Add
@@ -228,31 +228,31 @@ export default function ProductCard({
           onClick={() => setShowModal(false)}
         >
           <div
-            className="flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-[2rem] border border-[#d7ad83] bg-[#fffaf3]"
+            className="flex max-h-[92vh] w-full max-w-md flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="border-b border-[#ead2b8] bg-[#fff4e6] px-5 py-4">
+            <div className="border-b border-slate-100 bg-slate-50 px-5 py-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
                   {imageSrc ? (
                     <img
                       src={imageSrc}
                       alt={product.name}
-                      className="h-16 w-16 rounded-3xl border border-[#d7ad83] bg-white object-cover p-1"
+                      className="h-16 w-16 rounded-xl border border-slate-200 bg-white object-cover p-1"
                     />
                   ) : (
-                    <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-[#d7ad83] bg-white text-[10px] font-bold text-[#8a5a33]">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-xl border border-slate-200 bg-white text-[10px] font-bold text-slate-400">
                       No img
                     </div>
                   )}
 
                   <div className="min-w-0">
-                    <h2 className="line-clamp-1 text-xl font-black text-[#4b2a18]">
+                    <h2 className="line-clamp-1 text-xl font-black text-slate-900">
                       {product.name}
                     </h2>
 
-                    <p className="mt-1 text-xs font-bold text-[#8a5a33]">
+                    <p className="mt-1 text-xs font-bold text-slate-500">
                       Customize your drink
                     </p>
 
@@ -267,7 +267,7 @@ export default function ProductCard({
 
                 <button
                   onClick={() => setShowModal(false)}
-                  className="rounded-full border border-[#d7ad83] bg-white p-2 text-[#6b3b1d] transition hover:border-red-500 hover:text-red-600"
+                  className="rounded-full border border-slate-200 bg-white p-2 text-slate-600 transition hover:border-red-500 hover:text-red-600"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -276,10 +276,10 @@ export default function ProductCard({
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto p-5">
-              <div className="rounded-3xl border border-[#ead2b8] bg-white p-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-4">
                 {/* Size */}
                 <div className="mb-5">
-                  <label className="mb-2 block text-sm font-black text-[#6b3b1d]">
+                  <label className="mb-2 block text-sm font-black text-slate-700">
                     Select Size
                   </label>
 
@@ -346,7 +346,7 @@ export default function ProductCard({
 
                               <span
                                 className={`ml-1 text-[11px] font-black ${
-                                  isSelected ? 'text-white' : 'text-[#8a5a33]'
+                                  isSelected ? 'text-white' : 'text-slate-600'
                                 }`}
                               >
                                 ${sizeFinal.toFixed(2)}
@@ -355,7 +355,7 @@ export default function ProductCard({
                           ) : (
                             <span
                               className={`mt-1 block text-[11px] ${
-                                isSelected ? 'text-white' : 'text-[#8a5a33]'
+                                isSelected ? 'text-white' : 'text-slate-600'
                               }`}
                             >
                               ${sizePrice.toFixed(2)}
@@ -367,12 +367,12 @@ export default function ProductCard({
                   </div>
                 </div>
 
-                <div className="my-4 border-t border-[#ead2b8]" />
+                <div className="my-4 border-t border-slate-100" />
 
                 {/* Ice + Sugar */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="mb-2 block text-xs font-black text-[#6b3b1d]">
+                    <label className="mb-2 block text-xs font-black text-slate-700">
                       Ice Level
                     </label>
 
@@ -401,13 +401,13 @@ export default function ProductCard({
                         value={iceNote}
                         onChange={(e) => setIceNote(e.target.value)}
                         placeholder="Specify ice amount"
-                        className="mt-2 w-full rounded-xl border border-[#d7ad83] bg-white px-3 py-2 text-xs font-bold text-[#4b2a18] outline-none focus:border-[#c47a2c] focus:ring-2 focus:ring-[#c47a2c]/15"
+                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
                       />
                     )}
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-xs font-black text-[#6b3b1d]">
+                    <label className="mb-2 block text-xs font-black text-slate-700">
                       Sugar Level
                     </label>
 
@@ -436,7 +436,7 @@ export default function ProductCard({
                         value={sugarNote}
                         onChange={(e) => setSugarNote(e.target.value)}
                         placeholder="Specify sugar amount"
-                        className="mt-2 w-full rounded-xl border border-[#d7ad83] bg-white px-3 py-2 text-xs font-bold text-[#4b2a18] outline-none focus:border-[#c47a2c] focus:ring-2 focus:ring-[#c47a2c]/15"
+                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
                       />
                     )}
                   </div>
@@ -445,10 +445,10 @@ export default function ProductCard({
                 {/* Addons */}
                 {product.addons?.length > 0 && (
                   <>
-                    <div className="my-4 border-t border-[#ead2b8]" />
+                <div className="my-4 border-t border-slate-100" />
 
                     <div>
-                      <label className="mb-2 block text-sm font-black text-[#6b3b1d]">
+                      <label className="mb-2 block text-sm font-black text-slate-700">
                         Add-ons
                       </label>
 
@@ -494,15 +494,15 @@ export default function ProductCard({
               </div>
 
               {/* Quantity */}
-              <div className="mt-5 rounded-3xl border border-[#ead2b8] bg-white p-4">
-                <label className="mb-3 block text-sm font-black text-[#6b3b1d]">
+              <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
+                <label className="mb-3 block text-sm font-black text-slate-700">
                   Quantity
                 </label>
 
                 <div className="flex items-center justify-center gap-4">
                   <button
                     onClick={decrementQty}
-                    className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#e1c1a0] bg-[#fffaf3] text-[#6b3b1d] transition hover:border-[#c47a2c] hover:bg-[#fff4e6]"
+                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-teal-500 hover:bg-teal-50/50"
                   >
                     <Minus className="h-4 w-4" />
                   </button>
@@ -512,12 +512,12 @@ export default function ProductCard({
                     min="1"
                     value={quantity}
                     onChange={handleQuantityChange}
-                    className="h-11 w-24 rounded-2xl border border-[#d7ad83] bg-white text-center text-lg font-black text-[#4b2a18] outline-none transition focus:border-[#c47a2c] focus:ring-2 focus:ring-[#c47a2c]/10 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="h-11 w-24 rounded-xl border border-slate-200 bg-white text-center text-lg font-black text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
 
                   <button
                     onClick={incrementQty}
-                    className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#c47a2c] bg-[#fff4e6] text-[#6b3b1d] transition hover:border-[#a86425] hover:bg-[#fffaf3]"
+                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-teal-500 bg-teal-50/50 text-teal-700 transition hover:border-teal-600 hover:bg-teal-50"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -536,11 +536,11 @@ export default function ProductCard({
             </div>
 
             {/* Footer */}
-            <div className="border-t border-[#ead2b8] bg-[#fff4e6] p-5">
+            <div className="border-t border-slate-100 bg-slate-50 p-5">
               <div className="mb-2 flex items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-bold text-[#6b3b1d]">
+                    <span className="text-sm font-bold text-slate-700">
                       Unit Price
                     </span>
 
@@ -566,38 +566,38 @@ export default function ProductCard({
                     </span>
                   )}
 
-                  <span className="text-lg font-black text-[#8a5a33]">
+                  <span className="text-lg font-black text-slate-900">
                     ${finalUnitPrice.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               {isBuyGet && freeItems > 0 && (
-                <div className="mb-3 flex items-center justify-between rounded-2xl border border-red-500 bg-red-50 px-3 py-2 text-sm">
+                <div className="mb-3 flex items-center justify-between rounded-xl border border-red-500 bg-red-50 px-3 py-2 text-sm">
                   <span className="flex items-center gap-1.5 font-black text-red-600">
                     <Gift className="h-4 w-4" />
                     Promotion
                   </span>
 
-                  <span className="font-black text-[#4b2a18]">
+                  <span className="font-black text-slate-700">
                     {paidItems} paid + {freeItems} free
                   </span>
                 </div>
               )}
 
-              <div className="mb-4 flex items-center justify-between border-t border-[#d7ad83] pt-3">
-                <span className="text-lg font-black text-[#4b2a18]">
+              <div className="mb-4 flex items-center justify-between border-t border-slate-200 pt-3">
+                <span className="text-lg font-black text-slate-900">
                   Total Amount
                 </span>
 
-                <span className="text-2xl font-black text-[#8a5a33]">
+                <span className="text-2xl font-black text-slate-900">
                   ${totalPrice.toFixed(2)}
                 </span>
               </div>
 
               <button
                 onClick={handleAddToCart}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[#c47a2c] bg-[#c47a2c] py-3.5 text-sm font-black text-white transition-all duration-300 hover:border-[#a86425] hover:bg-[#a86425] active:scale-[0.98]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-3.5 text-sm font-black text-white shadow-sm transition-all duration-300 hover:bg-teal-700 active:scale-[0.98]"
               >
                 <Plus className="h-4 w-4" />
                 Add to Order ({quantity} item{quantity !== 1 ? 's' : ''})

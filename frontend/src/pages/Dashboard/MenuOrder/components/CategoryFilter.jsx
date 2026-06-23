@@ -7,11 +7,11 @@
   onSearchClear,
 }) {
   return (
-    <div className="border-b border-[#ead2b8] bg-[#fffaf3] px-4 py-3">
+    <div className="border-b border-slate-200 bg-white px-4 py-3">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
         {/* Search Box */}
         <div className="relative w-full shrink-0 lg:w-80">
-          <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8a5a33]">
+          <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
             <svg
               className="h-4 w-4"
               fill="none"
@@ -32,14 +32,14 @@
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search products..."
-            className="h-11 w-full rounded-2xl border border-[#d7ad83] bg-white pl-9 pr-10 text-sm font-semibold text-[#4b2a18] outline-none transition placeholder:text-[#b08a65] focus:border-[#c47a2c] focus:bg-[#fff4e6] focus:ring-2 focus:ring-[#c47a2c]/10"
+            className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-10 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-teal-500 focus:bg-slate-50/50 focus:ring-4 focus:ring-teal-500/10"
           />
 
           {search && (
             <button
               type="button"
               onClick={onSearchClear}
-              className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-xl border border-[#ead2b8] bg-[#fffaf3] text-[#8a5a33] transition hover:border-red-300 hover:bg-red-50 hover:text-red-600"
+              className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition hover:border-red-300 hover:bg-red-50 hover:text-red-600"
               aria-label="Clear search"
             >
               <svg
@@ -69,10 +69,10 @@
                 key={cat}
                 type="button"
                 onClick={() => onSelect(cat)}
-                className={`shrink-0 rounded-2xl border px-4 py-2 text-sm font-black whitespace-nowrap transition-all duration-200 active:scale-[0.97] ${
+                className={`shrink-0 rounded-xl border px-4 py-2 text-sm font-black whitespace-nowrap transition-all duration-200 active:scale-[0.97] ${
                   isActive
-                    ? 'border-[#c47a2c] bg-[#c47a2c] text-white'
-                    : 'border-[#ead2b8] bg-white text-[#6b3b1d] hover:border-[#c47a2c] hover:bg-[#fff4e6] hover:text-[#4b2a18]'
+                    ? 'border-teal-600 bg-teal-600 text-white shadow-sm'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-teal-500 hover:bg-teal-50/50 hover:text-teal-700'
                 }`}
               >
                 {cat}

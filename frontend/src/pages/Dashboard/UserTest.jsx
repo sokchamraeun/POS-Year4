@@ -57,7 +57,7 @@ export default function UserTest() {
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-500 font-medium bg-orange-50 border-b border-gray-200">
+                <tr className="text-left text-gray-500 font-medium bg-slate-50 border-b border-gray-200">
                   <th className="px-6 py-4">ID</th>
                   <th className="px-6 py-4">Name</th>
                   <th className="px-6 py-4">Email</th>
@@ -79,7 +79,7 @@ export default function UserTest() {
                   </tr>
                 ) : (
                   users.map((user) => (
-                    <tr key={user.id} className="border-b border-gray-100 hover:bg-orange-50">
+                    <tr key={user.id} className="border-b border-gray-100 hover:bg-slate-50">
                       <td className="px-6 py-4 text-gray-800 font-medium">{user.id}</td>
                       <td className="px-6 py-4 text-gray-800">{user.name}</td>
                       <td className="px-6 py-4 text-gray-600">{user.email}</td>

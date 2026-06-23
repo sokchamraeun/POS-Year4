@@ -5,7 +5,7 @@ import Topbar from '../../components/staff/Topbar.jsx'
 const API = import.meta.env.VITE_API_URL || '/api'
 const hardcodedModules = ['', 'Dashboard', 'Products', 'Categories', 'Sizes', 'Sugar Levels', 'Ice Levels', 'Addons', 'Tables', 'Orders', 'Inventory', 'Ingredients', 'Recipe', 'Reports', 'Promotions', 'Hero Sliders', 'Permissions', 'Roles', 'Staff', 'Customers']
 
-const moduleStyle = { bg: 'bg-amber-50', header: 'bg-amber-100', text: 'text-amber-800', dot: 'bg-amber-500' }
+const moduleStyle = { bg: 'bg-teal-50', header: 'bg-teal-100', text: 'text-teal-800', dot: 'bg-teal-500' }
 
 export default function Permissions() {
   const [permissions, setPermissions] = useState([])
@@ -119,13 +119,13 @@ export default function Permissions() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Permissions</h1>
+            <h1 className="text-2xl font-bold text-slate-800">Permissions</h1>
             <button
               onClick={openAddModal}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
@@ -137,7 +137,7 @@ export default function Permissions() {
           {error && (
             <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm flex items-center justify-between">
               <span>{error}</span>
-              <button onClick={() => setError(null)} className="font-bold text-gray-400 hover:text-gray-600">&times;</button>
+              <button onClick={() => setError(null)} className="font-bold text-slate-400 hover:text-gray-600">&times;</button>
             </div>
           )}
 
@@ -168,15 +168,15 @@ export default function Permissions() {
             {(() => { let idx = 0; return grouped.map(([module, perms]) => {
               const c = moduleStyle
               return (
-                <div key={module} className={`${c.bg} rounded-xl shadow-sm overflow-hidden border border-gray-200`}>
-                  <div className={`${c.header} px-6 py-3 flex items-center gap-2 border-b border-gray-200`}>
+                <div key={module} className={`${c.bg} rounded-xl shadow-sm overflow-hidden border border-slate-200`}>
+                  <div className={`${c.header} px-6 py-3 flex items-center gap-2 border-b border-slate-200`}>
                     <span className={`w-2 h-2 rounded-full ${c.dot}`} />
                     <span className={`text-sm font-semibold ${c.text}`}>{module}</span>
                     <span className={`ml-auto text-xs ${c.text} opacity-70`}>{perms.length} permission{perms.length !== 1 ? 's' : ''}</span>
                   </div>
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="text-left text-gray-500 font-medium text-xs">
+                      <tr className="text-left text-slate-500 font-medium text-xs">
                         <th className="px-6 py-2 w-16">ID</th>
                         <th className="px-6 py-2">Name</th>
                         <th className="px-6 py-2">Slug</th>
@@ -188,16 +188,16 @@ export default function Permissions() {
                       {perms.map((perm) => {
                         idx++
                         return (
-                        <tr key={perm.id} className="border-t border-gray-100 hover:bg-black/[0.02] transition-colors">
-                          <td className="px-6 py-2.5 text-gray-400 text-xs font-mono">{String(idx).padStart(2, '0')}</td>
-                          <td className="px-6 py-2.5 text-gray-800 font-medium">{perm.name}</td>
-                          <td className="px-6 py-2.5 text-gray-500 font-mono text-xs">{perm.slug}</td>
+                        <tr key={perm.id} className="border-t border-slate-100 hover:bg-black/[0.02] transition-colors">
+                          <td className="px-6 py-2.5 text-slate-400 text-xs font-mono">{String(idx).padStart(2, '0')}</td>
+                          <td className="px-6 py-2.5 text-slate-800 font-medium">{perm.name}</td>
+                          <td className="px-6 py-2.5 text-slate-500 font-mono text-xs">{perm.slug}</td>
                           <td className="px-6 py-2.5"><span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${c.text} ${c.header}`}>{module}</span></td>
                           <td className="px-6 py-2.5">
                             <div className="flex items-center gap-1.5">
                               <button
                                 onClick={() => openEditModal(perm)}
-                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors"
+                                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-teal-700 bg-teal-50 hover:bg-teal-100 transition-colors"
                               >
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -228,13 +228,13 @@ export default function Permissions() {
           {showModal && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-800">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+                  <h2 className="text-lg font-semibold text-slate-800">
                     {editing ? 'Edit Permission' : 'Add New Permission'}
                   </h2>
                   <button
                     onClick={() => { setShowModal(false); resetForm() }}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-slate-400 hover:text-gray-600"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -243,29 +243,29 @@ export default function Permissions() {
                 </div>
                 <div className="px-6 py-4 space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
                     <input
                       type="text" value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Permission name"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Slug</label>
                     <input
                       type="text" value={formData.slug}
                       onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                       placeholder="permission-slug"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Module</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Module</label>
                     <select
                       value={formData.module}
                       onChange={(e) => setFormData({ ...formData, module: e.target.value })}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                     >
                       {moduleOptions.map((m) => (
                         <option key={m} value={m}>{m || '(none)'}</option>
@@ -273,10 +273,10 @@ export default function Permissions() {
                     </select>
                   </div>
                 </div>
-                <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                <div className="px-6 py-4 border-t border-slate-200 flex justify-end gap-3">
                   <button
                     onClick={() => { setShowModal(false); resetForm() }}
-                    className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                    className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors"
                   >
                     Cancel
                   </button>

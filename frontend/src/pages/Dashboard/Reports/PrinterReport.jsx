@@ -662,7 +662,7 @@ function Section({ title, children }) {
 
 function SummaryCard({ label, value, valueClass = 'text-gray-950' }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-orange-50/70 p-4 text-center shadow-sm print:shadow-none">
+    <div className="rounded-2xl border border-gray-200 bg-slate-50/70 p-4 text-center shadow-sm print:shadow-none">
       <p className="text-xs font-semibold uppercase tracking-wide text-gray-500">
         {label}
       </p>

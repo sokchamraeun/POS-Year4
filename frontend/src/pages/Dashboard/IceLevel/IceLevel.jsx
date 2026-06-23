@@ -117,7 +117,7 @@ export default function IceLevel() {
           {/* HEADER */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-amber-900 to-amber-800 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-900 to-teal-800 bg-clip-text text-transparent">
                 Ice Levels
               </h1>
               <p className="text-sm text-slate-500 mt-1">Manage drink ice customization</p>
@@ -125,7 +125,7 @@ export default function IceLevel() {
 
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-900 to-amber-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-amber-950 hover:to-amber-900 transition-all duration-200 shadow-lg shadow-amber-200 hover:shadow-xl"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-900 to-teal-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-950 hover:to-teal-900 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl"
             >
               <Plus className="w-4 h-4" />
               Add Ice Level
@@ -133,7 +133,7 @@ export default function IceLevel() {
           </div>
 
           {/* TABLE CARD */}
-          <div className="bg-white rounded-2xl shadow-sm border border-amber-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-teal-100 overflow-hidden">
 
             {loading ? <Loader page={false} text="Loading ice levels..." /> : error ? (
               <div className="p-12 text-center">
@@ -146,7 +146,7 @@ export default function IceLevel() {
               <table className="w-full text-sm">
 
                 <thead>
-                  <tr className="text-left text-amber-600 font-semibold bg-amber-50/50 border-b border-amber-100">
+                  <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-100">
                     <th className="px-6 py-4">#ID</th>
                     <th className="px-6 py-4">Name</th>
                     <th className="px-6 py-4 text-right">Actions</th>
@@ -164,7 +164,7 @@ export default function IceLevel() {
                       className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200 group"
                     >
                       <td className="px-6 py-4">
-                        <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">
+                        <div className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
                           {String(index + 1).padStart(2, '0')}
                         </div>
                       </td>
@@ -185,7 +185,7 @@ export default function IceLevel() {
 
                           <button
                             onClick={() => openEdit(item)}
-                            className="p-2 text-amber-600 hover:bg-teal-50 rounded-xl transition-all duration-200 group-hover:scale-105"
+                            className="p-2 text-teal-600 hover:bg-teal-50 rounded-xl transition-all duration-200 group-hover:scale-105"
                             title="Edit"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -245,14 +245,14 @@ export default function IceLevel() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', duration: 0.3, bounce: 0.2 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-amber-200"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-teal-200"
             >
-              <div className="bg-gradient-to-r from-amber-900 to-amber-800 px-6 py-4">
+              <div className="bg-gradient-to-r from-teal-900 to-teal-800 px-6 py-4">
                 <h2 className="text-white text-lg font-semibold flex items-center gap-2">
                   {editing ? <Edit2 className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                   {editing ? 'Edit Ice Level' : 'Add Ice Level'}
                 </h2>
-                <p className="text-amber-100 text-xs mt-1">
+                <p className="text-teal-100 text-xs mt-1">
                   {editing ? 'Update ice level details' : 'Create a new ice level option'}
                 </p>
               </div>
@@ -272,12 +272,12 @@ export default function IceLevel() {
                   />
                   <p className="text-xs text-slate-400 mt-1">Enter a unique ice level name</p>
                 </div>
-                <label className="mb-5 flex items-start gap-3 rounded-xl border-2 border-slate-200 p-3 cursor-pointer hover:border-amber-300 transition-colors">
+                <label className="mb-5 flex items-start gap-3 rounded-xl border-2 border-slate-200 p-3 cursor-pointer hover:border-teal-300 transition-colors">
                   <input
                     type="checkbox"
                     checked={form.requires_input}
                     onChange={(e) => setForm({ ...form, requires_input: e.target.checked })}
-                    className="mt-0.5 h-4 w-4 accent-amber-700"
+                    className="mt-0.5 h-4 w-4 accent-teal-700"
                   />
                   <span>
                     <span className="block text-sm font-semibold text-slate-700">Requires custom input</span>
@@ -297,7 +297,7 @@ export default function IceLevel() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2.5 bg-gradient-to-r from-amber-900 to-amber-800 text-white rounded-xl text-sm font-medium hover:from-amber-950 hover:to-amber-900 transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-5 py-2.5 bg-gradient-to-r from-teal-900 to-teal-800 text-white rounded-xl text-sm font-medium hover:from-teal-950 hover:to-teal-900 transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {submitting && (
                       <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">

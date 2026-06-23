@@ -107,20 +107,24 @@ export default function Suppliers() {
   const inactiveCount = suppliers.filter(s => !s.status).length
 
   return (
-    <div className="flex h-screen bg-orange-50">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
 
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">Suppliers</h1>
-              <p className="text-slate-500 text-sm mt-0.5">Manage your ingredient suppliers</p>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-900 to-teal-800 bg-clip-text text-transparent">
+                Suppliers
+              </h1>
+              <p className="text-slate-500 text-sm mt-1">Manage your ingredient suppliers</p>
             </div>
-            <button onClick={openAdd}
-              className="flex items-center gap-2 bg-amber-900 hover:bg-amber-800 text-white px-4 py-2 rounded-lg font-medium text-sm transition">
+            <button
+              onClick={openAdd}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-900 to-teal-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-950 hover:to-teal-900 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl"
+            >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
@@ -130,23 +134,23 @@ export default function Suppliers() {
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-orange-100">
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-teal-100">
               <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">Total</p>
               <p className="text-3xl font-bold text-slate-800 mt-1">{suppliers.length}</p>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-orange-100">
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-teal-100">
               <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">Active</p>
               <p className="text-3xl font-bold text-green-600 mt-1">{activeCount}</p>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-orange-100">
+            <div className="bg-white rounded-xl p-4 shadow-sm border border-teal-100">
               <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">Inactive</p>
-              <p className="text-3xl font-bold text-amber-600 mt-1">{inactiveCount}</p>
+              <p className="text-3xl font-bold text-teal-600 mt-1">{inactiveCount}</p>
             </div>
           </div>
 
           {/* Search */}
-          <div className="bg-white rounded-xl shadow-sm border border-orange-100 mb-4">
-            <div className="p-4 border-b border-orange-100">
+          <div className="bg-white rounded-xl shadow-sm border border-teal-100 mb-4">
+            <div className="p-4 border-b border-teal-100">
               <div className="relative max-w-xs">
                 <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
@@ -155,7 +159,7 @@ export default function Suppliers() {
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search name, phone, email…"
-                  className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-300"
+                  className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:ring-2 focus:ring-teal-300"
                 />
               </div>
             </div>
@@ -169,20 +173,20 @@ export default function Suppliers() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-orange-100 bg-orange-50/50">
-                      <th className="text-left px-4 py-3 text-slate-500 font-medium">#</th>
-                      <th className="text-left px-4 py-3 text-slate-500 font-medium">Name</th>
-                      <th className="text-left px-4 py-3 text-slate-500 font-medium">Phone</th>
-                      <th className="text-left px-4 py-3 text-slate-500 font-medium">Email</th>
-                      <th className="text-left px-4 py-3 text-slate-500 font-medium">Address</th>
-                      <th className="text-left px-4 py-3 text-slate-500 font-medium">Orders</th>
-                      <th className="text-left px-4 py-3 text-slate-500 font-medium">Status</th>
-                      <th className="text-right px-4 py-3 text-slate-500 font-medium">Actions</th>
+                    <tr className="bg-teal-800 text-white font-black">
+                      <th className="px-4 py-3 text-left">#</th>
+                      <th className="px-4 py-3 text-left">Name</th>
+                      <th className="px-4 py-3 text-left">Phone</th>
+                      <th className="px-4 py-3 text-left">Email</th>
+                      <th className="px-4 py-3 text-left">Address</th>
+                      <th className="px-4 py-3 text-left">Orders</th>
+                      <th className="px-4 py-3 text-left">Status</th>
+                      <th className="px-4 py-3 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-orange-50">
+                  <tbody className="divide-y divide-teal-50">
                     {filtered.map((s, i) => (
-                      <tr key={s.id} className="hover:bg-orange-50/40 transition">
+                      <tr key={s.id} className="hover:bg-teal-50/30 transition">
                         <td className="px-4 py-3 text-slate-400">{i + 1}</td>
                         <td className="px-4 py-3 font-medium text-slate-800">{s.name}</td>
                         <td className="px-4 py-3 text-slate-600">{s.phone || '—'}</td>
@@ -204,7 +208,7 @@ export default function Suppliers() {
                               </svg>
                             </button>
                             <button onClick={() => openEdit(s)}
-                              className="p-1.5 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition">
+                              className="p-1.5 text-slate-400 hover:text-teal-700 hover:bg-teal-50 rounded-lg transition">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
@@ -232,7 +236,7 @@ export default function Suppliers() {
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-orange-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-teal-100">
               <h2 className="text-lg font-bold text-slate-800">{editItem ? 'Edit Supplier' : 'Add Supplier'}</h2>
               <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,26 +250,26 @@ export default function Suppliers() {
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Name <span className="text-red-500">*</span></label>
                 <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" placeholder="Supplier name" />
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-300" placeholder="Supplier name" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Phone</label>
                   <input value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" placeholder="Phone number" />
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-300" placeholder="Phone number" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-600 mb-1">Email</label>
                   <input value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                     type="email"
-                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300" placeholder="Email address" />
+                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-300" placeholder="Email address" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs font-medium text-slate-600 mb-1">Address</label>
                 <textarea value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
                   rows={2}
-                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300 resize-none" placeholder="Address" />
+                  className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-300 resize-none" placeholder="Address" />
               </div>
               <div className="flex items-center gap-3">
                 <button type="button"
@@ -276,13 +280,13 @@ export default function Suppliers() {
                 <span className="text-sm text-slate-600">{form.status ? 'Active' : 'Inactive'}</span>
               </div>
             </div>
-            <div className="flex gap-3 px-6 py-4 border-t border-orange-100">
+            <div className="flex gap-3 px-6 py-4 border-t border-teal-100">
               <button onClick={() => setShowModal(false)}
                 className="flex-1 border border-slate-200 text-slate-600 py-2 rounded-lg text-sm font-medium hover:bg-slate-50 transition">
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving}
-                className="flex-1 bg-amber-900 hover:bg-amber-800 text-white py-2 rounded-lg text-sm font-medium transition disabled:opacity-60">
+                className="flex-1 bg-gradient-to-r from-teal-900 to-teal-800 hover:from-teal-950 hover:to-teal-900 text-white py-2 rounded-xl text-sm font-medium transition-all shadow-md disabled:opacity-60">
                 {saving ? 'Saving…' : editItem ? 'Update' : 'Create'}
               </button>
             </div>
@@ -294,7 +298,7 @@ export default function Suppliers() {
       {detailItem && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-orange-100">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-teal-100">
               <h2 className="text-lg font-bold text-slate-800">Supplier Detail</h2>
               <button onClick={() => setDetailItem(null)} className="text-slate-400 hover:text-slate-600">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -322,9 +326,9 @@ export default function Suppliers() {
                 </span>
               </div>
             </div>
-            <div className="px-6 py-4 border-t border-orange-100 flex gap-2">
+            <div className="px-6 py-4 border-t border-teal-100 flex gap-2">
               <button onClick={() => { setDetailItem(null); openEdit(detailItem) }}
-                className="flex-1 bg-amber-900 hover:bg-amber-800 text-white py-2 rounded-lg text-sm font-medium transition">
+                className="flex-1 bg-gradient-to-r from-teal-900 to-teal-800 hover:from-teal-950 hover:to-teal-900 text-white py-2 rounded-xl text-sm font-medium transition-all shadow-md">
                 Edit
               </button>
               <button onClick={() => setDetailItem(null)}

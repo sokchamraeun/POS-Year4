@@ -38,7 +38,7 @@ export default function ProductManagement({ products = [] }) {
 
   return (
     <>
-      <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-amber-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/20">
+      <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <h2 className="text-xl font-bold text-slate-900">
@@ -50,8 +50,8 @@ export default function ProductManagement({ products = [] }) {
             </p>
           </div>
 
-          <div className="rounded-2xl bg-cyan-800 px-5 py-3 text-right text-white shadow-sm">
-            <p className="text-xs font-medium text-cyan-100">
+          <div className="rounded-2xl bg-teal-700 px-5 py-3 text-right text-white shadow-sm">
+            <p className="text-xs font-medium text-teal-100">
               Products
             </p>
 
@@ -65,16 +65,16 @@ export default function ProductManagement({ products = [] }) {
           <SummaryBox
             label="Active"
             value={activeCount}
-            bg="bg-cyan-50"
-            border="border-amber-300"
-            text="text-cyan-800"
+            bg="bg-teal-50"
+            border="border-teal-300"
+            text="text-teal-800"
             onClick={() => setModalFilter('active')}
           />
 
           <SummaryBox
             label="Inactive"
             value={inactiveCount}
-            bg="bg-orange-50"
+            bg="bg-slate-50"
             border="border-slate-300"
             text="text-slate-700"
             onClick={() => setModalFilter('inactive')}
@@ -130,7 +130,7 @@ export default function ProductManagement({ products = [] }) {
                     return (
                       <div
                         key={product.id ?? product.name ?? index}
-                        className="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition-all duration-200 hover:border-amber-200 hover:shadow-md"
+                        className="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition-all duration-200 hover:border-teal-200 hover:shadow-md"
                       >
                         <div className="flex items-center gap-3">
                           {product.image ? (
@@ -140,7 +140,7 @@ export default function ProductManagement({ products = [] }) {
                               className="h-10 w-10 shrink-0 rounded-lg object-contain shadow-sm ring-1 ring-slate-200 bg-white"
                             />
                           ) : (
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-50 text-sm font-bold text-cyan-800">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-sm font-bold text-teal-700">
                               {index + 1}
                             </div>
                           )}
@@ -152,7 +152,7 @@ export default function ProductManagement({ products = [] }) {
                         <span
                           className={`rounded-full px-3 py-1 text-xs font-semibold ${
                             product.status
-                              ? 'bg-cyan-50 text-cyan-700'
+                              ? 'bg-teal-50 text-teal-700'
                               : 'bg-slate-100 text-slate-500'
                           }`}
                         >

@@ -298,7 +298,7 @@ export default function Users() {
 
           <button
             onClick={openAddModal}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-amber-700"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-900 to-teal-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-teal-950 hover:to-teal-900"
           >
             <Plus className="h-4 w-4" />
             Add User
@@ -310,7 +310,7 @@ export default function Users() {
             title="Total Users"
             value={users.length}
             icon={<User className="h-5 w-5" />}
-            color="amber"
+            color="teal"
           />
           <StatCard
             title="Active Users"
@@ -328,7 +328,7 @@ export default function Users() {
             title="Inactive"
             value={inactiveUsers}
             icon={<XCircle className="h-5 w-5" />}
-            color="orange"
+            color="gray"
           />
         </div>
 
@@ -347,7 +347,7 @@ export default function Users() {
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-orange-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <thead className="bg-teal-50 text-left text-xs font-semibold uppercase tracking-wide text-teal-600">
                 <tr>
                   <th className="px-5 py-4">#</th>
                   <th className="px-5 py-4">Avatar</th>
@@ -377,10 +377,10 @@ export default function Users() {
                   users.map((user, index) => (
                     <tr
                       key={user.id}
-                      className="transition hover:bg-orange-50"
+                      className="transition hover:bg-teal-50/30"
                     >
                       <td className="px-5 py-4">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-xs font-bold text-amber-700">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-100 text-xs font-bold text-teal-700">
                           {String(index + 1).padStart(2, "0")}
                         </span>
                       </td>
@@ -425,7 +425,7 @@ export default function Users() {
                         <div className="flex justify-end gap-2">
                           <IconButton
                             title="View"
-                            color="amber"
+                            color="teal"
                             onClick={() => {
                               setDetailUser(user);
                               setShowDetail(true);
@@ -436,7 +436,7 @@ export default function Users() {
 
                           <IconButton
                             title="Edit"
-                            color="amber"
+                            color="teal"
                             onClick={() => openEditModal(user)}
                           >
                             <Edit2 className="h-4 w-4" />
@@ -524,13 +524,13 @@ export default function Users() {
               <div className="flex gap-3">
                 <button
                   onClick={handleCropCancel}
-                  className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-orange-50"
+                  className="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-teal-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleCropSave}
-                  className="flex-1 rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-teal-900 to-teal-800 px-4 py-2 text-sm font-semibold text-white hover:from-teal-950 hover:to-teal-900"
                 >
                   Apply
                 </button>
@@ -545,7 +545,7 @@ export default function Users() {
 
 function PageLayout({ children }) {
   return (
-    <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />
@@ -557,10 +557,10 @@ function PageLayout({ children }) {
 
 function StatCard({ title, value, icon, color }) {
   const colors = {
-    amber: "bg-amber-50 text-amber-600",
+    teal: "bg-teal-50 text-teal-600",
     green: "bg-green-50 text-green-600",
     purple: "bg-purple-50 text-purple-600",
-    orange: "bg-orange-50 text-orange-600",
+    gray: "bg-slate-100 text-slate-500",
   };
 
   return (
@@ -603,8 +603,8 @@ function StatusBadge({ active }) {
 
 function IconButton({ children, title, color, onClick }) {
   const colors = {
-    amber: "text-amber-600 hover:bg-teal-50",
-    amber: "text-amber-600 hover:bg-teal-50",
+    teal: "text-teal-600 hover:bg-teal-50",
+    teal: "text-teal-600 hover:bg-teal-50",
     red: "text-red-600 hover:bg-red-50",
   };
 
@@ -633,7 +633,7 @@ function UserDetailModal({ user, onClose, onEdit }) {
               className="h-20 w-20 rounded-full object-cover shadow-sm"
             />
           ) : (
-            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-amber-50 text-2xl font-bold text-amber-700">
+            <span className="flex h-20 w-20 items-center justify-center rounded-full bg-teal-100 text-2xl font-bold text-teal-700">
               {user.name?.charAt(0)?.toUpperCase() || "?"}
             </span>
           )}
@@ -659,7 +659,7 @@ function UserDetailModal({ user, onClose, onEdit }) {
 
           <div className="max-h-56 overflow-y-auto rounded-xl border border-slate-200">
             <table className="w-full text-xs">
-              <thead className="sticky top-0 bg-orange-50 text-left text-slate-500">
+              <thead className="sticky top-0 bg-teal-50 text-left text-teal-600">
                 <tr>
                   <th className="px-3 py-2">#</th>
                   <th className="px-3 py-2">Login</th>
@@ -701,7 +701,7 @@ function UserDetailModal({ user, onClose, onEdit }) {
         <div className="flex justify-end gap-3 border-t pt-4">
           <button
             onClick={onEdit}
-            className="rounded-xl bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-100"
+            className="rounded-xl bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-700 hover:bg-teal-100"
           >
             Edit User
           </button>
@@ -719,7 +719,7 @@ function UserDetailModal({ user, onClose, onEdit }) {
 
 function DetailBox({ label, value }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-orange-50 p-4">
+    <div className="rounded-xl border border-slate-200 bg-teal-50 p-4">
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
         {label}
       </p>
@@ -774,7 +774,7 @@ function UserFormModal({
               type="file"
               accept="image/*"
               onChange={onFileSelect}
-              className="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-amber-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-amber-700 hover:file:bg-amber-100"
+              className="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-teal-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-teal-700 hover:file:bg-teal-100"
             />
           </div>
         </div>
@@ -860,7 +860,7 @@ function UserFormModal({
           <button
             onClick={onSave}
             disabled={saving}
-            className="inline-flex items-center gap-2 rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-900 to-teal-800 px-4 py-2 text-sm font-semibold text-white hover:from-teal-950 hover:to-teal-900 disabled:opacity-60"
           >
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             {editing ? "Save Changes" : "Create User"}

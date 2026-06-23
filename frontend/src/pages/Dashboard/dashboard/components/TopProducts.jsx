@@ -9,7 +9,7 @@ export default function TopProducts({ topProducts = [] }) {
 
   if (topProducts.length === 0) {
     return (
-      <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-amber-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/20">
+      <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
         <div>
           <h2 className="text-lg font-bold text-slate-900">Top Products</h2>
           <p className="mt-1 text-sm text-slate-500">
@@ -17,8 +17,8 @@ export default function TopProducts({ topProducts = [] }) {
           </p>
         </div>
 
-        <div className="mt-6 flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-amber-200 bg-cyan-50/30 py-12 text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-amber-200 bg-white shadow-sm">
+        <div className="mt-6 flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50/30 py-12 text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm">
             <span className="text-xl">☕</span>
           </div>
 
@@ -32,7 +32,7 @@ export default function TopProducts({ topProducts = [] }) {
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-amber-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/20">
+    <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-bold text-slate-900">Top Products</h2>
@@ -41,8 +41,8 @@ export default function TopProducts({ topProducts = [] }) {
           </p>
         </div>
 
-        <div className="rounded-2xl bg-cyan-800 px-4 py-3 text-right text-white shadow-sm">
-          <p className="text-xs font-medium text-cyan-100">Total Sold</p>
+        <div className="rounded-2xl bg-teal-700 px-4 py-3 text-right text-white shadow-sm">
+          <p className="text-xs font-medium text-teal-100">Total Sold</p>
           <p className="text-2xl font-bold">{total}</p>
         </div>
       </div>
@@ -59,7 +59,7 @@ export default function TopProducts({ topProducts = [] }) {
           return (
             <div
               key={product.id ?? product.name ?? index}
-              className="flex flex-col items-center rounded-2xl border border-amber-100 bg-white p-3 shadow-sm transition-all duration-300 hover:border-teal-500 hover:shadow-md"
+              className="flex flex-col items-center rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:border-teal-500 hover:shadow-md"
             >
               <div className="relative mb-2">
                 {product.image ? (
@@ -69,11 +69,11 @@ export default function TopProducts({ topProducts = [] }) {
                     className="h-14 w-14 rounded-xl object-contain shadow-sm ring-1 ring-slate-200 bg-white"
                   />
                 ) : (
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-cyan-50 text-lg font-bold text-cyan-800 ring-1 ring-slate-200">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-teal-50 text-lg font-bold text-teal-700 ring-1 ring-slate-200">
                     {index + 1}
                   </div>
                 )}
-                <div className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-cyan-800 text-[10px] font-bold text-white shadow-sm">
+                <div className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-teal-700 text-[10px] font-bold text-white shadow-sm">
                   {index + 1}
                 </div>
               </div>
@@ -89,9 +89,9 @@ export default function TopProducts({ topProducts = [] }) {
               <p className="text-lg font-bold text-slate-900">{qty}</p>
               <p className="text-xs font-medium text-slate-500 mb-2">sold</p>
 
-              <div className="h-2 w-full overflow-hidden rounded-full bg-cyan-50">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
                 <div
-                  className="h-full rounded-full bg-cyan-800 transition-all duration-700"
+                  className="h-full rounded-full bg-teal-600 transition-all duration-700"
                   style={{ width: `${percent}%` }}
                 />
               </div>

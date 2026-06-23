@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Plus } from 'lucide-react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import Loader from '../../../components/shared/Loader.jsx'
@@ -90,7 +91,7 @@ export default function Addon() {
   }
 
   return (
-    <div className="flex h-screen bg-orange-50">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
 
       <Sidebar />
 
@@ -101,26 +102,25 @@ export default function Addon() {
         <main className="flex-1 overflow-y-auto p-6">
 
           {/* HEADER */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-900 to-teal-800 bg-clip-text text-transparent">
                 Addons
               </h1>
-              <p className="text-sm text-gray-500">
-                Manage extra product add-ons
-              </p>
+              <p className="text-sm text-slate-500 mt-1">Manage extra product add-ons</p>
             </div>
 
             <button
               onClick={openCreate}
-              className="bg-amber-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow hover:bg-amber-700 transition"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-900 to-teal-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-950 hover:to-teal-900 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl"
             >
-              + Add Addon
+              <Plus className="w-4 h-4" />
+              Add Addon
             </button>
           </div>
 
           {/* TABLE */}
-          <div className="bg-white border border-amber-200 rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-teal-100 overflow-hidden">
 
             {loading ? <Loader page={false} text="Loading addons..." /> : error ? (
               <div className="p-10 text-center text-red-500">
@@ -129,8 +129,8 @@ export default function Addon() {
             ) : (
               <table className="w-full text-sm">
 
-                <thead className="bg-amber-50 border-b border-amber-200">
-                  <tr className="text-left text-amber-700 text-xs uppercase tracking-wider">
+                <thead className="bg-teal-50 border-b border-teal-100">
+                  <tr className="text-left text-teal-600 font-semibold">
                     <th className="px-6 py-4">ID</th>
                     <th className="px-6 py-4">Name</th>
                     <th className="px-6 py-4">Price</th>
@@ -144,13 +144,13 @@ export default function Addon() {
                   {addons.map((a) => (
                     <tr
                       key={a.id}
-                      className="border-b border-amber-100 hover:bg-teal-50 transition"
+                      className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200 group"
                     >
 
                       <td className="px-6 py-4">
-                        <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-lg text-xs font-semibold">
-                          #{a.id}
-                        </span>
+                        <div className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
+                          {String(a.id).padStart(2, '0')}
+                        </div>
                       </td>
 
                       <td className="px-6 py-4 font-medium text-gray-800">
@@ -172,14 +172,14 @@ export default function Addon() {
 
                           <Link
                             to={`/staff/addons/${a.id}`}
-                            className="px-3 py-1.5 text-xs font-semibold text-blue-600 border border-amber-200 rounded-lg hover:bg-blue-50 transition"
+                            className="px-3 py-1.5 text-xs font-semibold text-teal-600 border border-teal-200 rounded-lg hover:bg-teal-50 transition"
                           >
                             View
                           </Link>
 
                           <button
                             onClick={() => openEdit(a)}
-                            className="px-3 py-1.5 text-xs font-semibold text-yellow-600 border border-yellow-200 rounded-lg hover:bg-yellow-50 transition"
+                            className="px-3 py-1.5 text-xs font-semibold text-teal-600 border border-teal-200 rounded-lg hover:bg-teal-50 transition"
                           >
                             Edit
                           </button>
@@ -219,37 +219,38 @@ export default function Addon() {
       {showModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
 
-          <div className="bg-white border border-amber-200 rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-teal-200">
 
-            <h2 className="text-lg font-bold text-gray-900 mb-4">
-              {editing ? 'Edit Addon' : 'Add Addon'}
-            </h2>
+            <div className="bg-gradient-to-r from-teal-900 to-teal-800 px-6 py-4">
+              <h2 className="text-white text-lg font-semibold flex items-center gap-2">
+                {editing ? 'Edit Addon' : 'Add New Addon'}
+              </h2>
+              <p className="text-teal-100 text-xs mt-1">
+                {editing ? 'Update addon details' : 'Create a new addon option'}
+              </p>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6">
 
-            <form onSubmit={handleSubmit}>
-
-              {/* NAME */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="mb-5">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Name
                 </label>
-
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) =>
                     setForm({ ...form, name: e.target.value })
                   }
-                  className="w-full border border-amber-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500"
+                  placeholder="e.g., Whipped Cream, Chocolate Syrup"
+                  className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                   required
                 />
               </div>
 
-              {/* PRICE */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="mb-5">
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
                   Price
                 </label>
-
                 <input
                   type="number"
                   step="0.01"
@@ -257,25 +258,25 @@ export default function Addon() {
                   onChange={(e) =>
                     setForm({ ...form, price: e.target.value })
                   }
-                  className="w-full border border-amber-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-500"
+                  placeholder="0.00"
+                  className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                   required
                 />
               </div>
 
-              {/* BUTTONS */}
-              <div className="flex justify-end gap-2">
+              <div className="flex gap-3 justify-end pt-2 border-t border-slate-200">
 
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-100"
+                  className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm bg-amber-600 text-white rounded-lg hover:bg-amber-700"
+                  className="px-5 py-2.5 bg-gradient-to-r from-teal-900 to-teal-800 text-white rounded-xl text-sm font-medium hover:from-teal-950 hover:to-teal-900 transition-all shadow-md"
                 >
                   {editing ? 'Update' : 'Create'}
                 </button>

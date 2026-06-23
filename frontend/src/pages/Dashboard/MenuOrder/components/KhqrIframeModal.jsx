@@ -203,7 +203,7 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 px-3 py-4 backdrop-blur-sm">
       <div className="flex h-[95vh] max-h-[860px] w-full max-w-lg flex-col overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 ring-white/20">
         {/* Header */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-amber-600 via-cyan-600 to-emerald-600 px-4 py-4 text-white">
+        <div className="relative overflow-hidden bg-gradient-to-br from-teal-600 via-cyan-600 to-emerald-600 px-4 py-4 text-white">
           <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/10" />
           <div className="absolute -bottom-14 -left-10 h-32 w-32 rounded-full bg-white/10" />
 
@@ -215,7 +215,7 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
 
               <div>
                 <h3 className="text-base font-bold">ទូទាត់តាម KHQR</h3>
-                <p className="mt-0.5 text-xs text-amber-50">
+                <p className="mt-0.5 text-xs text-teal-50">
                   ស្កេន QR ដើម្បីបង់ប្រាក់
                 </p>
               </div>
@@ -231,12 +231,12 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
 
           <div className="relative mt-4 grid grid-cols-2 gap-2">
             <div className="rounded-2xl bg-white/12 p-2.5 backdrop-blur">
-              <p className="text-[11px] text-amber-50">លេខបញ្ជាទិញ</p>
+              <p className="text-[11px] text-teal-50">លេខបញ្ជាទិញ</p>
               <p className="mt-0.5 text-sm font-semibold">#{orderId}</p>
             </div>
 
             <div className="rounded-2xl bg-white/12 p-2.5 backdrop-blur">
-              <p className="text-[11px] text-amber-50">ចំនួនទឹកប្រាក់</p>
+              <p className="text-[11px] text-teal-50">ចំនួនទឹកប្រាក់</p>
               <p className="mt-0.5 text-sm font-semibold">
                 ${Number(total || 0).toFixed(2)}
               </p>
@@ -245,11 +245,11 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
         </div>
 
         {/* Body */}
-        <div className="flex flex-1 flex-col overflow-hidden bg-orange-50">
+        <div className="flex flex-1 flex-col overflow-hidden bg-slate-50">
           {loading && (
             <div className="flex flex-1 flex-col items-center justify-center px-5 py-8 text-center">
               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-white shadow-sm ring-1 ring-slate-200">
-                <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
+                <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
               </div>
 
               <h4 className="text-sm font-semibold text-slate-800">
@@ -295,7 +295,7 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
                   className={`flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold ${
                     secondsLeft <= 30
                       ? 'bg-red-50 text-red-600'
-                      : 'bg-amber-100 text-amber-700'
+                      : 'bg-teal-100 text-teal-700'
                   }`}
                 >
                   <Clock className="h-4 w-4" />
@@ -315,7 +315,7 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
                 />
               </div>
 
-              <div className="border-t border-slate-200 bg-orange-50 px-4 py-3">
+              <div className="border-t border-slate-200 bg-slate-50 px-4 py-3">
                 <div className="mb-2.5 flex items-center justify-center gap-1.5 text-[10px] text-slate-400">
                   <Loader2 className="h-3 w-3 animate-spin" />
                   <span>ពិនិត្យស្ថានភាពរៀងរាល់ 3 វិនាទី</span>
@@ -325,7 +325,7 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
                   <button
                     onClick={markAsPaid}
                     disabled={markingPaid}
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-600 px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-70"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-teal-600 px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     {markingPaid ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -361,7 +361,7 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
               <div className="mt-5 grid w-full max-w-xs grid-cols-2 gap-2">
                 <button
                   onClick={retry}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-amber-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-amber-700"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-teal-700"
                 >
                   <RefreshCcw className="h-4 w-4" />
                   បង្កើតកូដថ្មី
@@ -378,11 +378,11 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
 
           {paid && (
             <div className="flex flex-1 flex-col items-center justify-center px-5 py-8 text-center">
-              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-amber-100">
-                <CheckCircle2 className="h-10 w-10 text-amber-600" />
+              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-teal-100">
+                <CheckCircle2 className="h-10 w-10 text-teal-600" />
               </div>
 
-              <h4 className="text-lg font-bold text-amber-700">
+              <h4 className="text-lg font-bold text-teal-700">
                 ទូទាត់បានជោគជ័យ
               </h4>
 
@@ -397,7 +397,7 @@ export default function KhqrIframeModal({ orderId, total, onClose, onPaid }) {
 
               <button
                 onClick={handleClose}
-                className="mt-5 rounded-2xl bg-amber-600 px-7 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-amber-700"
+                className="mt-5 rounded-2xl bg-teal-600 px-7 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-teal-700"
               >
                 រួចរាល់
               </button>

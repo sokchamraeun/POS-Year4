@@ -344,7 +344,7 @@ export default function Sidebar() {
               className={({ isActive }) =>
                 `relative flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-200 ${
                   isActive
-                    ? 'bg-gradient-to-tr from-amber-900 to-amber-950 text-white shadow-lg shadow-amber-700/30 transform scale-105'
+                    ? 'bg-gradient-to-tr from-teal-800 to-teal-950 text-white shadow-lg shadow-teal-700/30 transform scale-105'
                     : 'text-zinc-400 hover:text-white hover:bg-zinc-800/80 hover:scale-105'
                 }`
               }
@@ -380,13 +380,13 @@ export default function Sidebar() {
         {user?.avatar ? (
           <img src={getImageUrl(user.avatar)} alt={user?.name || 'User'} className="w-11 h-11 rounded-xl object-cover shadow-lg" />
         ) : (
-          <div className="w-11 h-11 bg-gradient-to-br from-amber-900 to-amber-950 rounded-xl flex items-center justify-center shadow-lg shadow-amber-700/25 transform -rotate-2">
+          <div className="w-11 h-11 bg-gradient-to-br from-teal-800 to-teal-950 rounded-xl flex items-center justify-center shadow-lg shadow-teal-700/25 transform -rotate-2">
             <span className="text-white font-extrabold text-xl">{user?.name?.[0]?.toUpperCase() || 'V'}</span>
           </div>
         )}
         <div className="flex flex-col">
           <span className="text-base font-bold tracking-wide text-zinc-100">{user?.name || 'Staff'}</span>
-          <span className="text-xs font-semibold text-amber-500 uppercase tracking-widest">{user?.role?.name || 'Staff'}</span>
+          <span className="text-xs font-semibold text-teal-400 uppercase tracking-widest">{user?.role?.name || 'Staff'}</span>
         </div>
         <button
           onClick={() => setCollapsedPersist(true)}
@@ -407,7 +407,7 @@ export default function Sidebar() {
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? 'bg-gradient-to-r from-amber-900 to-amber-950 text-white shadow-md shadow-blue-500/20'
+                  ? 'bg-gradient-to-r from-teal-800 to-teal-950 text-white shadow-md shadow-teal-500/20'
                   : 'text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/60'
               }`
             }
@@ -433,7 +433,7 @@ export default function Sidebar() {
             User Management
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 ml-auto transition-transform duration-300 ${open ? 'rotate-180 text-amber-600' : ''}`}
+              className={`h-4 w-4 ml-auto transition-transform duration-300 ${open ? 'rotate-180 text-teal-500' : ''}`}
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -448,12 +448,12 @@ export default function Sidebar() {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-amber-700/10 text-amber-600 font-semibold'
+                        ? 'bg-teal-700/10 text-teal-400 font-semibold'
                         : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/80'
                     }`
                   }
                 >
-                  <div className={`w-1.5 h-1.5 rounded-full ${window.location.pathname === l.to ? 'bg-amber-600 shadow-[0_0_8px_rgba(180,83,9,0.8)]' : 'bg-zinc-600'}`}></div>
+                  <div className={`w-1.5 h-1.5 rounded-full ${window.location.pathname === l.to ? 'bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.8)]' : 'bg-zinc-600'}`}></div>
                   {l.label}
                 </NavLink>
               ))}
@@ -472,7 +472,7 @@ export default function Sidebar() {
             Item Product
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 ml-auto transition-transform duration-300 ${ipOpen ? 'rotate-180 text-amber-600' : ''}`}
+              className={`h-4 w-4 ml-auto transition-transform duration-300 ${ipOpen ? 'rotate-180 text-teal-500' : ''}`}
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -487,12 +487,12 @@ export default function Sidebar() {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-amber-700/10 text-amber-600 font-semibold'
+                        ? 'bg-teal-700/10 text-teal-400 font-semibold'
                         : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/80'
                     }`
                   }
                 >
-                  <div className={`w-1.5 h-1.5 rounded-full ${window.location.pathname === l.to ? 'bg-amber-600 shadow-[0_0_8px_rgba(180,83,9,0.8)]' : 'bg-zinc-600'}`}></div>
+                  <div className={`w-1.5 h-1.5 rounded-full ${window.location.pathname === l.to ? 'bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.8)]' : 'bg-zinc-600'}`}></div>
                   {l.label}
                 </NavLink>
               ))}
@@ -512,7 +512,7 @@ export default function Sidebar() {
             Settings
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 ml-auto transition-transform duration-300 ${settingsOpen ? 'rotate-180 text-amber-600' : ''}`}
+              className={`h-4 w-4 ml-auto transition-transform duration-300 ${settingsOpen ? 'rotate-180 text-teal-500' : ''}`}
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -527,12 +527,12 @@ export default function Sidebar() {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-amber-700/10 text-amber-600 font-semibold'
+                        ? 'bg-teal-700/10 text-teal-400 font-semibold'
                         : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/80'
                     }`
                   }
                 >
-                  <div className={`w-1.5 h-1.5 rounded-full ${window.location.pathname === l.to ? 'bg-amber-600 shadow-[0_0_8px_rgba(180,83,9,0.8)]' : 'bg-zinc-600'}`}></div>
+                  <div className={`w-1.5 h-1.5 rounded-full ${window.location.pathname === l.to ? 'bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.8)]' : 'bg-zinc-600'}`}></div>
                   {l.label}
                 </NavLink>
               ))}

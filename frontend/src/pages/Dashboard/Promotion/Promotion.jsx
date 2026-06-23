@@ -14,7 +14,7 @@ const types = [
   { value: 'percentage', label: 'Percentage', icon: Percent, color: 'purple' },
   { value: 'fixed_amount', label: 'Fixed Amount', icon: DollarSign, color: 'green' },
   { value: 'buy_x_get_y', label: 'Buy X Get Y', icon: Gift, color: 'orange' },
-  { value: 'combo', label: 'Combo', icon: Coffee, color: 'amber' },
+  { value: 'combo', label: 'Combo', icon: Coffee, color: 'teal' },
   { value: 'combo_discount', label: 'Combo Discount', icon: Zap, color: 'indigo' },
 ]
 
@@ -285,14 +285,14 @@ export default function Promotions() {
     const isUpcoming = start > now
     const isActive = item.active && !isExpired && !isUpcoming
 
-    if (isActive) return { text: 'Active', color: 'amber', bg: 'bg-amber-50', border: 'border-amber-200', textColor: 'text-amber-700' }
+    if (isActive) return { text: 'Active', color: 'amber', bg: 'bg-teal-50', border: 'border-teal-200', textColor: 'text-teal-700' }
     if (isExpired) return { text: 'Expired', color: 'red', bg: 'bg-red-50', border: 'border-red-200', textColor: 'text-red-700' }
-    if (isUpcoming) return { text: 'Upcoming', color: 'amber', bg: 'bg-amber-50', border: 'border-amber-200', textColor: 'text-amber-700' }
-    return { text: 'Inactive', color: 'gray', bg: 'bg-orange-50', border: 'border-gray-200', textColor: 'text-gray-500' }
+    if (isUpcoming) return { text: 'Upcoming', color: 'amber', bg: 'bg-teal-50', border: 'border-teal-200', textColor: 'text-teal-700' }
+    return { text: 'Inactive', color: 'gray', bg: 'bg-slate-50', border: 'border-slate-200', textColor: 'text-slate-500' }
   }
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
@@ -300,14 +300,14 @@ export default function Promotions() {
           {/* Header with Title and Add Button */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-900 to-amber-800 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-teal-900 to-teal-800 bg-clip-text text-transparent">
                 Promotions
               </h1>
-              <p className="text-gray-500 text-sm mt-1">Manage discounts, combos, and special offers</p>
+              <p className="text-slate-500 text-sm mt-1">Manage discounts, combos, and special offers</p>
             </div>
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-900 to-amber-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-amber-950 hover:to-amber-900 transition-all duration-200 shadow-lg shadow-amber-200 hover:shadow-xl transform hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-900 to-teal-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-950 hover:to-teal-900 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl transform hover:scale-[1.02]"
             >
               <Plus className="w-4 h-4" />
               Add Promotion
@@ -315,26 +315,26 @@ export default function Promotions() {
           </div>
 
           {/* Table */}
-          <div className="bg-white rounded-2xl shadow-sm border-2 border-amber-200 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border-2 border-teal-200 overflow-hidden">
             {loading ? <Loader page={false} text="Loading promotions..." /> : error ? (
               <div className="p-12 text-center">
                 <div className="text-red-500 mb-2">⚠️ {error}</div>
-                <button onClick={fetchItems} className="text-amber-600 hover:underline text-sm">Try again</button>
+                <button onClick={fetchItems} className="text-teal-600 hover:underline text-sm">Try again</button>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-gradient-to-r from-amber-50 to-amber-100 border-b-2 border-amber-200">
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">ID</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Name</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Type</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Value</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Products</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Duration</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-amber-700 uppercase tracking-wider">Created By</th>
-                      <th className="px-6 py-4 text-right text-xs font-semibold text-amber-700 uppercase tracking-wider">Actions</th>
+                    <tr className="bg-gradient-to-r from-teal-50 to-teal-100 border-b-2 border-teal-200">
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-teal-700 uppercase tracking-wider">ID</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-teal-700 uppercase tracking-wider">Name</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-teal-700 uppercase tracking-wider">Type</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-teal-700 uppercase tracking-wider">Value</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-teal-700 uppercase tracking-wider">Products</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-teal-700 uppercase tracking-wider">Duration</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-teal-700 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-teal-700 uppercase tracking-wider">Created By</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-teal-700 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -344,25 +344,25 @@ export default function Promotions() {
                       const TypeIcon = typeIcon
                       
                       return (
-                        <tr key={item.id} className="border-b border-amber-100 hover:bg-gradient-to-r hover:from-amber-50/50 hover:to-transparent transition-all duration-200 group">
+                        <tr key={item.id} className="border-b border-teal-100 hover:bg-gradient-to-r hover:from-teal-50/50 hover:to-transparent transition-all duration-200 group">
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2">
-                              <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">
+                              <div className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
                                 {String(idx + 1).padStart(2, '0')}
                               </div>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="font-semibold text-gray-800">{item.name}</span>
+                            <span className="font-semibold text-slate-800">{item.name}</span>
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-1.5">
-                              <TypeIcon className="w-3.5 h-3.5 text-amber-600" />
-                              <span className="text-xs font-medium text-gray-700">{typeLabel(item.type)}</span>
+                              <TypeIcon className="w-3.5 h-3.5 text-teal-600" />
+                              <span className="text-xs font-medium text-slate-700">{typeLabel(item.type)}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-sm font-medium text-gray-800">
+                            <span className="text-sm font-medium text-slate-800">
                               {item.type === 'percentage' && `${item.value}%`}
                               {item.type === 'fixed_amount' && `$${parseFloat(item.value).toFixed(2)}`}
                               {item.type === 'buy_x_get_y' && `Buy ${item.buy_qty} Get ${item.free_qty}`}
@@ -372,15 +372,15 @@ export default function Promotions() {
                            </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-1">
-                              <Package className="w-3.5 h-3.5 text-amber-400" />
-                              <span className="text-sm text-gray-700">{item.products_count ?? 0}</span>
+                              <Package className="w-3.5 h-3.5 text-teal-400" />
+                              <span className="text-sm text-slate-700">{item.products_count ?? 0}</span>
                             </div>
                            </td>
                           <td className="px-6 py-4">
-                            <div className="flex items-center gap-1 text-xs text-gray-600">
-                              <Calendar className="w-3 h-3 text-amber-400" />
+                            <div className="flex items-center gap-1 text-xs text-slate-600">
+                              <Calendar className="w-3 h-3 text-teal-400" />
                               <span>{formatDate(item.start_date).split(',')[0]}</span>
-                              <Clock className="w-3 h-3 text-amber-400 ml-1" />
+                              <Clock className="w-3 h-3 text-teal-400 ml-1" />
                               <span>{formatDate(item.end_date).split(',')[0]}</span>
                             </div>
                            </td>
@@ -393,13 +393,13 @@ export default function Promotions() {
                             </button>
                            </td>
                           <td className="px-6 py-4">
-                            <span className="text-xs text-gray-500">{item.created_by_user?.name ?? item.created_by?.name ?? '—'}</span>
+                            <span className="text-xs text-slate-500">{item.created_by_user?.name ?? item.created_by?.name ?? '—'}</span>
                           </td>
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <button
                                 onClick={() => openEdit(item)}
-                                className="p-2 text-amber-600 hover:bg-teal-50 rounded-xl transition-all duration-200 group-hover:scale-105"
+                                className="p-2 text-teal-600 hover:bg-teal-50 rounded-xl transition-all duration-200 group-hover:scale-105"
                                 title="Edit"
                               >
                                 <Edit2 className="w-4 h-4" />
@@ -419,12 +419,12 @@ export default function Promotions() {
                     {items.length === 0 && (
                       <tr>
                         <td colSpan={9} className="px-6 py-16 text-center">
-                          <div className="text-gray-400">
+                          <div className="text-slate-400">
                             <div className="text-5xl mb-3">🎉</div>
                             <p className="text-sm">No promotions found</p>
                             <button
                               onClick={openCreate}
-                              className="mt-3 text-amber-600 hover:text-amber-700 text-sm font-medium inline-flex items-center gap-1"
+                              className="mt-3 text-teal-600 hover:text-teal-700 text-sm font-medium inline-flex items-center gap-1"
                             >
                               <Plus className="w-3 h-3" />
                               Create your first promotion
@@ -455,10 +455,10 @@ export default function Promotions() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', duration: 0.3, bounce: 0.2 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto border-2 border-amber-200"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto border-2 border-teal-200"
             >
               {/* Modal Header */}
-              <div className="bg-gradient-to-r from-amber-900 to-amber-800 px-6 py-4 flex justify-between items-center sticky top-0">
+              <div className="bg-gradient-to-r from-teal-900 to-teal-800 px-6 py-4 flex justify-between items-center sticky top-0">
                 <h2 className="text-white text-lg font-semibold flex items-center gap-2">
                   <Tag className="w-5 h-5" />
                   {editing ? 'Edit Promotion' : 'Create New Promotion'}
@@ -475,34 +475,34 @@ export default function Promotions() {
               <form onSubmit={handleSubmit} className="p-6 space-y-5">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Promotion Name</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Promotion Name</label>
                     <input
                       type="text"
                       value={form.name}
                       onChange={e => setForm({ ...form, name: e.target.value })}
                       placeholder="e.g., Summer Sale, Happy Hour, Weekend Special"
                       required
-                      className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                      className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                     />
                   </div>
 
                   <div className="col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Description</label>
                     <textarea
                       rows={2}
                       value={form.description}
                       onChange={e => setForm({ ...form, description: e.target.value })}
                       placeholder="e.g., Buy 3 drinks and get 1 free every weekend"
-                      className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
+                      className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Promotion Type</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Promotion Type</label>
                     <select
                       value={form.type}
                       onChange={e => setForm({ ...form, type: e.target.value })}
-                      className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                      className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                     >
                       {types.map((t) => (
                         <option key={t.value} value={t.value}>{t.label}</option>
@@ -512,14 +512,14 @@ export default function Promotions() {
 
                   {needsValue && (
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">
                         {form.type === 'percentage' ? 'Discount Percentage' : 'Discount Amount ($)'}
                       </label>
                       <div className="relative">
                         {form.type === 'percentage' ? (
-                          <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         ) : (
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         )}
                         <input
                           type="number"
@@ -528,27 +528,27 @@ export default function Promotions() {
                           value={form.value}
                           onChange={e => setForm({ ...form, value: e.target.value })}
                           required
-                          className="w-full border-2 border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                          className="w-full border-2 border-slate-200 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                         />
                       </div>
                     </div>
                   )}
 
                   {needsValue && allSizes.length > 0 && (
-                    <div className="col-span-2 border-2 border-amber-200 bg-amber-50/30 rounded-xl p-4">
-                      <label className="block text-sm font-semibold text-gray-700 mb-1">
-                        Per-size {form.type === 'percentage' ? 'percentage' : 'amount'} <span className="font-normal text-gray-400">(optional)</span>
+                    <div className="col-span-2 border-2 border-teal-200 bg-teal-50/30 rounded-xl p-4">
+                      <label className="block text-sm font-semibold text-slate-700 mb-1">
+                        Per-size {form.type === 'percentage' ? 'percentage' : 'amount'} <span className="font-normal text-slate-400">(optional)</span>
                       </label>
-                      <p className="text-xs text-gray-500 mb-3">Leave a size empty to use the default value above.</p>
+                      <p className="text-xs text-slate-500 mb-3">Leave a size empty to use the default value above.</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         {allSizes.map((s) => (
                           <div key={s.id}>
-                            <label className="block text-xs font-medium text-gray-600 mb-1">{s.name}</label>
+                            <label className="block text-xs font-medium text-slate-600 mb-1">{s.name}</label>
                             <div className="relative">
                               {form.type === 'percentage' ? (
-                                <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                               ) : (
-                                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                               )}
                               <input
                                 type="number"
@@ -557,7 +557,7 @@ export default function Promotions() {
                                 value={form.size_values[s.id] ?? ''}
                                 onChange={e => setSizeValue(s.id, e.target.value)}
                                 placeholder={form.value !== '' ? String(form.value) : 'default'}
-                                className="w-full border-2 border-gray-200 rounded-lg pl-8 pr-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                                className="w-full border-2 border-slate-200 rounded-lg pl-8 pr-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                               />
                             </div>
                           </div>
@@ -569,65 +569,65 @@ export default function Promotions() {
                   {isBuyXGetY && (
                     <>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Buy Quantity</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Buy Quantity</label>
                         <input
                           type="number"
                           min="1"
                           value={form.buy_qty}
                           onChange={e => setForm({ ...form, buy_qty: e.target.value })}
                           required
-                          className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                          className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Free Quantity</label>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">Free Quantity</label>
                         <input
                           type="number"
                           min="1"
                           value={form.free_qty}
                           onChange={e => setForm({ ...form, free_qty: e.target.value })}
                           required
-                          className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                          className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                         />
                       </div>
                     </>
                   )}
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Start Date & Time</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Start Date & Time</label>
                     <input
                       type="datetime-local"
                       value={form.start_date}
                       onChange={e => setForm({ ...form, start_date: e.target.value })}
                       required
-                      className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                      className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">End Date & Time</label>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">End Date & Time</label>
                     <input
                       type="datetime-local"
                       value={form.end_date}
                       onChange={e => setForm({ ...form, end_date: e.target.value })}
                       required
-                      className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
+                      className="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all"
                     />
                   </div>
                 </div>
 
                 {isCombo && (
-                  <div className="border-t-2 border-amber-200 pt-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">Combo Groups</label>
+                  <div className="border-t-2 border-teal-200 pt-4">
+                    <label className="block text-sm font-semibold text-slate-700 mb-3">Combo Groups</label>
                     {form.combo_groups.map((group, gi) => (
-                      <div key={gi} className="border-2 border-amber-200 bg-amber-50/30 rounded-xl p-4 mb-3">
+                      <div key={gi} className="border-2 border-teal-200 bg-teal-50/30 rounded-xl p-4 mb-3">
                         <div className="flex items-center justify-between mb-3">
                           <input
                             type="text"
                             placeholder="Group label (e.g., Coffee, Pastry, Sandwich)"
                             value={group.label}
                             onChange={e => updateGroup(gi, 'label', e.target.value)}
-                            className="flex-1 border-2 border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                            className="flex-1 border-2 border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
                           />
                           <button
                             type="button"
@@ -639,15 +639,15 @@ export default function Promotions() {
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <span className="text-xs font-semibold text-gray-600">Categories</span>
-                            <div className="max-h-32 overflow-y-auto border-2 border-gray-200 rounded-lg p-2 mt-1 space-y-1 bg-white">
+                            <span className="text-xs font-semibold text-slate-600">Categories</span>
+                            <div className="max-h-32 overflow-y-auto border-2 border-slate-200 rounded-lg p-2 mt-1 space-y-1 bg-white">
                               {allCategories.map((cat) => (
                                 <label key={cat.id} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-teal-50 cursor-pointer text-sm">
                                   <input
                                     type="checkbox"
                                     checked={group.categories.includes(cat.id)}
                                     onChange={() => toggleGroupCategory(gi, cat.id)}
-                                    className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-teal-500"
+                                    className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
                                   />
                                   <span>{cat.name}</span>
                                 </label>
@@ -655,15 +655,15 @@ export default function Promotions() {
                             </div>
                           </div>
                           <div>
-                            <span className="text-xs font-semibold text-gray-600">Products</span>
-                            <div className="max-h-32 overflow-y-auto border-2 border-gray-200 rounded-lg p-2 mt-1 space-y-1 bg-white">
+                            <span className="text-xs font-semibold text-slate-600">Products</span>
+                            <div className="max-h-32 overflow-y-auto border-2 border-slate-200 rounded-lg p-2 mt-1 space-y-1 bg-white">
                               {allProducts.map((p) => (
                                 <label key={p.id} className="flex items-center gap-2 px-2 py-1 rounded hover:bg-teal-50 cursor-pointer text-sm">
                                   <input
                                     type="checkbox"
                                     checked={group.products.includes(p.id)}
                                     onChange={() => toggleGroupProduct(gi, p.id)}
-                                    className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-teal-500"
+                                    className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
                                   />
                                   <span>{p.name}</span>
                                 </label>
@@ -676,7 +676,7 @@ export default function Promotions() {
                     <button
                       type="button"
                       onClick={addGroup}
-                      className="text-sm text-amber-600 hover:text-amber-700 font-semibold inline-flex items-center gap-1"
+                      className="text-sm text-teal-600 hover:text-teal-700 font-semibold inline-flex items-center gap-1"
                     >
                       <Plus className="w-4 h-4" />
                       Add Group
@@ -684,53 +684,53 @@ export default function Promotions() {
                   </div>
                 )}
 
-                <div className="border-t-2 border-amber-200 pt-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Apply to Products</label>
-                  <div className="max-h-48 overflow-y-auto border-2 border-gray-200 rounded-xl p-3 space-y-1 bg-orange-50">
+                <div className="border-t-2 border-teal-200 pt-4">
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Apply to Products</label>
+                  <div className="max-h-48 overflow-y-auto border-2 border-slate-200 rounded-xl p-3 space-y-1 bg-teal-50/30">
                     {allProducts.map((p) => (
                       <label key={p.id} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-teal-50 cursor-pointer transition-colors">
                         <input
                           type="checkbox"
                           checked={form.product_ids.includes(p.id)}
                           onChange={() => toggleProduct(p.id)}
-                          className="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-teal-500"
+                          className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
                         />
-                        <span className="text-sm text-gray-700">{p.name}</span>
+                        <span className="text-sm text-slate-700">{p.name}</span>
                       </label>
                     ))}
                     {form.product_ids.length > 0 && (
-                      <div className="text-xs text-amber-600 font-medium mt-2 pt-2 border-t border-gray-200">
+                      <div className="text-xs text-teal-600 font-medium mt-2 pt-2 border-t border-slate-200">
                         {form.product_ids.length} product(s) selected
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl border-2 border-amber-200">
+                <div className="flex items-center gap-3 p-3 bg-teal-50 rounded-xl border-2 border-teal-200">
                   <input
                     type="checkbox"
                     id="active"
                     checked={form.active}
                     onChange={e => setForm({ ...form, active: e.target.checked })}
-                    className="w-5 h-5 text-amber-600 border-gray-300 rounded focus:ring-teal-500"
+                    className="w-5 h-5 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
                   />
-                  <label htmlFor="active" className="text-sm font-medium text-gray-700">
+                  <label htmlFor="active" className="text-sm font-medium text-slate-700">
                     Active (immediately available for use)
                   </label>
                 </div>
 
-                <div className="flex gap-3 justify-end pt-4 border-t-2 border-amber-200">
+                <div className="flex gap-3 justify-end pt-4 border-t-2 border-teal-200">
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-colors"
+                    className="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2.5 bg-gradient-to-r from-amber-900 to-amber-800 text-white rounded-xl text-sm font-medium hover:from-amber-950 hover:to-amber-900 transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="px-5 py-2.5 bg-gradient-to-r from-teal-900 to-teal-800 text-white rounded-xl text-sm font-medium hover:from-teal-950 hover:to-teal-900 transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {submitting ? 'Saving…' : editing ? 'Update Promotion' : 'Create Promotion'}
                   </button>

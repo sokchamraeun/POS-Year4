@@ -9,14 +9,14 @@ export default function RecentOrdersTable({
   onViewDetail 
 }) {
   return (
-    <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-amber-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/20">
+    <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
       <div className="flex items-center gap-4 mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Recent Orders</h2>
           <p className="text-sm text-gray-500 mt-1 font-medium">Latest transactions needing attention</p>
         </div>
         {newOrderAlert && (
-          <span className="ml-auto animate-pulse px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-amber-600 to-amber-800 shadow-lg shadow-amber-900/40">
+          <span className="ml-auto animate-pulse px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white bg-gradient-to-r from-teal-600 to-teal-800 shadow-lg shadow-teal-900/40">
             New Order!
           </span>
         )}
@@ -26,7 +26,7 @@ export default function RecentOrdersTable({
         <div className="overflow-x-auto custom-scrollbar">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="text-left text-gray-500 font-bold uppercase tracking-wider text-xs border-b border-amber-800/20">
+              <tr className="text-left text-gray-500 font-bold uppercase tracking-wider text-xs border-b border-slate-200">
                 <th className="pb-3 pr-4 pl-2">Order ID</th>
                 <th className="pb-3 pr-4">Customer</th>
                 <th className="pb-3 pr-4 text-center">Items</th>
@@ -38,7 +38,7 @@ export default function RecentOrdersTable({
             </thead>
             <tbody>
               {recentOrders.map(o => (
-                <tr key={o.id} className="group border-b border-amber-800/10 hover:bg-gradient-to-r hover:from-amber-50/30 hover:to-amber-100/30 transition-colors last:border-0">
+                <tr key={o.id} className="group border-b border-slate-100 hover:bg-teal-50/50 transition-colors last:border-0">
                   <td className="py-4 pr-4 pl-2 font-bold text-gray-900 whitespace-nowrap">
                     #{o.id}
                    </td>
@@ -56,7 +56,7 @@ export default function RecentOrdersTable({
                       <select
                         value={o.payment_status ?? 'Unpaid'}
                         onChange={(e) => onPaymentChange(o.id, e.target.value)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold border-0 cursor-pointer shadow-sm ring-1 ring-inset ring-amber-700/30 hover:ring-amber-700/50 focus:ring-2 focus:ring-teal-600 transition-all ${paymentColors[o.payment_status ?? 'Unpaid']}`}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold border-0 cursor-pointer shadow-sm ring-1 ring-inset ring-slate-300 hover:ring-slate-400 focus:ring-2 focus:ring-teal-600 transition-all ${paymentColors[o.payment_status ?? 'Unpaid']}`}
                         style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
                       >
                         <option value="Paid">Paid</option>
@@ -73,7 +73,7 @@ export default function RecentOrdersTable({
                       <select
                         value={o.status ?? 'New'}
                         onChange={(e) => onStatusChange(o.id, e.target.value)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold border-0 cursor-pointer shadow-sm ring-1 ring-inset ring-amber-700/30 hover:ring-amber-700/50 focus:ring-2 focus:ring-teal-600 transition-all ${statusColors[o.status ?? 'New']}`}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold border-0 cursor-pointer shadow-sm ring-1 ring-inset ring-slate-300 hover:ring-slate-400 focus:ring-2 focus:ring-teal-600 transition-all ${statusColors[o.status ?? 'New']}`}
                         style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
                       >
                         <option value="New">New</option>
@@ -89,7 +89,7 @@ export default function RecentOrdersTable({
                   <td className="py-4 pl-2 text-right whitespace-nowrap">
                     <button 
                       onClick={() => onViewDetail(o)} 
-                      className="inline-flex items-center gap-1 text-xs font-bold text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 px-3 py-1.5 rounded-lg transition-all opacity-80 group-hover:opacity-100"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-teal-700 hover:text-teal-800 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg transition-all opacity-80 group-hover:opacity-100"
                     >
                       View
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -103,12 +103,12 @@ export default function RecentOrdersTable({
           </table>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-amber-800/15 rounded-2xl bg-gradient-to-br from-amber-50/20 to-white">
-          <svg className="w-12 h-12 text-amber-600/40 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-slate-300 rounded-2xl bg-gradient-to-br from-slate-50/50 to-white">
+          <svg className="w-12 h-12 text-slate-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
           <p className="text-gray-600 font-medium">No orders yet.</p>
-          <p className="text-xs text-amber-600/60 mt-1">When customers place orders, they will appear here.</p>
+          <p className="text-xs text-slate-500 mt-1">When customers place orders, they will appear here.</p>
         </div>
       )}
     </div>

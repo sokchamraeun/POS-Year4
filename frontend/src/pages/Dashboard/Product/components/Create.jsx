@@ -309,7 +309,7 @@ export default function CreateProduct() {
                         </div>
                       </div>
                       <div className="flex gap-3">
-                        <button onClick={handleCropCancel} className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-orange-50">Cancel</button>
+                        <button onClick={handleCropCancel} className="flex-1 px-4 py-2 border rounded-lg text-gray-700 hover:bg-slate-100">Cancel</button>
                         <button onClick={handleCropSave} className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Apply</button>
                       </div>
                     </div>

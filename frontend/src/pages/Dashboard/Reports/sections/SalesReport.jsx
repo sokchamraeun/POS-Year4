@@ -117,23 +117,49 @@ export default function SalesReport({ data, orders = [], pagination = {}, orders
             </div>
           </Card>
 
-          <SmallList
-            title="Best Sellers"
-            items={best_sellers.slice(0, 5).map((row, index) => {
-              const img = row.product?.image
-              const imgSrc = img
-                ? img.startsWith('http')
-                  ? img
-                  : STORAGE_URL + '/' + img
-                : null
-              return {
-                image: imgSrc,
-                label: `${index + 1}. ${row.product?.name || 'Unknown'}`,
-                value: `${row.total_qty ?? 0} sold`,
-                sub: money(row.revenue),
-              }
-            })}
-          />
+          <Card title="Best Sellers">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-teal-800 text-white">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-black">#</th>
+                    <th className="px-4 py-3 text-left font-black">Product</th>
+                    <th className="px-4 py-3 text-right font-black">Sold</th>
+                    <th className="px-4 py-3 text-right font-black">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {best_sellers.length > 0 ? best_sellers.slice(0, 5).map((row, i) => {
+                    const img = row.product?.image
+                    const imgSrc = img
+                      ? img.startsWith('http')
+                        ? img
+                        : STORAGE_URL + '/' + img
+                      : null
+                    return (
+                      <tr key={i} className="border-t border-slate-100 hover:bg-teal-50/50">
+                        <td className="px-4 py-3 text-sm font-black text-slate-400">{i + 1}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            {imgSrc && (
+                              <img src={imgSrc} alt="" className="h-8 w-8 rounded-lg object-contain bg-white ring-1 ring-slate-200" />
+                            )}
+                            <span className="font-black text-slate-800">{row.product?.name || 'Unknown'}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-right font-black text-slate-900">{row.total_qty ?? 0}</td>
+                        <td className="px-4 py-3 text-right font-black text-slate-900">{money(row.revenue)}</td>
+                      </tr>
+                    )
+                  }) : (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-8 text-center text-slate-400">No data.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         </div>
       </div>
 

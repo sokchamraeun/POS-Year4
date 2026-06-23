@@ -97,7 +97,7 @@ export default function LoginHistory() {
                 const now = new Date().toISOString().slice(0, 16)
                 setFilters({ ...filters, date_from: now, date_to: now })
               }}
-              className="self-end bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-700 transition-colors"
+              className="self-end bg-teal-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors"
             >
               Today
             </button>
@@ -117,7 +117,7 @@ export default function LoginHistory() {
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>
-            <button type="submit" className="bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-700 transition-colors">Search</button>
+            <button type="submit" className="bg-teal-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-teal-700 transition-colors">Search</button>
             <button
               type="button"
               onClick={() => setFilters({ ...filters, date_from: '', date_to: '' })}
@@ -134,7 +134,7 @@ export default function LoginHistory() {
           <div id="login-history-table" className="bg-white rounded-xl shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-500 font-medium bg-orange-50 border-b border-gray-200">
+                <tr className="text-left text-gray-500 font-medium bg-slate-50 border-b border-gray-200">
                   <th className="px-6 py-4 w-16">ID</th>
                   <th className="px-6 py-4">User</th>
                   <th className="px-6 py-4">Login Time</th>
@@ -150,7 +150,7 @@ export default function LoginHistory() {
                   </tr>
                 ) : (
                   histories.map((h) => (
-                    <tr key={h.id} className="border-b border-gray-100 hover:bg-orange-50 transition-colors">
+                    <tr key={h.id} className="border-b border-gray-100 hover:bg-slate-50 transition-colors">
                       <td className="px-6 py-4 text-gray-400 text-xs font-mono">{String(h.id).padStart(2, '0')}</td>
                       <td className="px-6 py-4 font-semibold text-gray-800">{h.user?.name || '—'}</td>
                       <td className="px-6 py-4 text-gray-600 text-xs">{fmt(h.login_at)}</td>

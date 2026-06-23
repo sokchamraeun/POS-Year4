@@ -4,6 +4,7 @@ import Card from './Card.jsx'
 export default function ChartCard({
   title,
   subtitle,
+  value,
   height = 320,
   children,
 }) {
@@ -11,6 +12,7 @@ export default function ChartCard({
     <Card
       title={title}
       subtitle={subtitle}
+      value={value}
       className="
         group flex h-full flex-col overflow-hidden rounded
         border border-slate-200 bg-white shadow-sm

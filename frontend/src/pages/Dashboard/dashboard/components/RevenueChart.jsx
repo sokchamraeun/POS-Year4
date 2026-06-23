@@ -9,7 +9,7 @@ import {
 } from '../utils/constants'
 
 const REVENUE_COLOR = '#0d9488'
-const ORDERS_COLOR = '#f59e0b'
+const ORDERS_COLOR = '#3b82f6'
 
 const SUBTITLES = {
   hourly: "Today's performance broken down by the hour.",
@@ -53,7 +53,7 @@ export default function RevenueChart({
   }
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl shadow-amber-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-amber-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-amber-900/20">
+    <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
       <div className="mb-6 flex flex-col justify-between gap-4 xl:flex-row xl:items-start">
         <div>
           <h2 className="text-xl font-bold text-slate-900">
@@ -65,15 +65,15 @@ export default function RevenueChart({
         </div>
 
         <div className="flex flex-col items-start gap-3 xl:items-end">
-          <div className="flex rounded-2xl border border-amber-200 bg-amber-50/70 p-1">
+          <div className="flex rounded-2xl border border-slate-200 bg-slate-50/70 p-1">
             {periods.map((p) => (
               <button
                 key={p.key}
                 onClick={() => setPeriod(p.key)}
                 className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
                   period === p.key
-                    ? 'bg-amber-700 text-white shadow-sm'
-                    : 'text-slate-500 hover:bg-white hover:text-amber-700'
+                    ? 'bg-teal-700 text-white shadow-sm'
+                    : 'text-slate-500 hover:bg-white hover:text-teal-700'
                 }`}
               >
                 {p.label}
@@ -87,14 +87,14 @@ export default function RevenueChart({
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="rounded-xl border border-amber-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none focus:border-teal-600"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none focus:border-teal-600"
               />
               <span className="text-xs font-semibold text-slate-400">to</span>
               <input
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="rounded-xl border border-amber-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none focus:border-teal-600"
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 outline-none focus:border-teal-600"
               />
             </div>
           )}
@@ -113,7 +113,7 @@ export default function RevenueChart({
         <LegendDot color={ORDERS_COLOR} label="Orders" />
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-amber-100 bg-white p-3">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white p-3">
         <svg
           viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
           className="w-full min-w-[600px]"
@@ -135,7 +135,7 @@ export default function RevenueChart({
             y={PAD.top}
             width={plotW}
             height={plotH}
-            fill="#fafaf9"
+            fill="#f8fafc"
             rx="12"
           />
 

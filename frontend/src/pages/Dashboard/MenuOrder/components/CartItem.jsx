@@ -6,7 +6,7 @@ export default function CartItem({ item, products, onUpdateQty }) {
   const hasPromotion = !!prom
 
   return (
-    <div className="flex items-start justify-between gap-2 p-2.5 border border-amber-200 rounded-lg">
+    <div className="flex items-start justify-between gap-2 p-2.5 border border-teal-200 rounded-lg">
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-gray-800 truncate">{item.name}</p>
         {hasPromotion && prom.type !== 'combo_discount' && prom.type !== 'combo' && (

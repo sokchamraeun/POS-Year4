@@ -119,7 +119,7 @@ export default function Customers() {
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-500 font-medium bg-orange-50 border-b border-gray-200">
+                <tr className="text-left text-gray-500 font-medium bg-slate-50 border-b border-gray-200">
                   <th className="px-6 py-4">ID</th>
                   <th className="px-6 py-4">Name</th>
                   <th className="px-6 py-4">Email</th>
@@ -135,7 +135,7 @@ export default function Customers() {
                   </tr>
                 ) : (
                   customers.map((c) => (
-                    <tr key={c.id} className="border-b border-gray-100 hover:bg-orange-50">
+                    <tr key={c.id} className="border-b border-gray-100 hover:bg-slate-50">
                       <td className="px-6 py-4 text-gray-800 font-medium">{c.id}</td>
                       <td className="px-6 py-4 text-gray-800">{c.name}</td>
                       <td className="px-6 py-4 text-gray-600">{c.email}</td>
@@ -153,7 +153,7 @@ export default function Customers() {
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => openEditModal(c)}
-                            className="text-amber-600 hover:text-amber-800 text-xs font-medium transition-colors"
+                            className="text-teal-600 hover:text-teal-800 text-xs font-medium transition-colors"
                           >
                             Edit
                           </button>

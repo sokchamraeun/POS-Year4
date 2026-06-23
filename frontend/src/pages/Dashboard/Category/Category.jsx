@@ -141,21 +141,21 @@ export default function Category() {
         <main className="flex-1 overflow-y-auto p-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-amber-900 to-amber-800 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-900 to-teal-800 bg-clip-text text-transparent">
                 Categories
               </h1>
               <p className="text-sm text-slate-500 mt-1">Manage your product categories</p>
             </div>
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-900 to-amber-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-amber-950 hover:to-amber-900 transition-all duration-200 shadow-lg shadow-amber-200 hover:shadow-xl"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-900 to-teal-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-950 hover:to-teal-900 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl"
             >
               <Plus className="w-4 h-4" />
               Add Category
             </button>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-amber-100 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-sm border border-teal-100 overflow-hidden">
             {loading ? <Loader page={false} text="Loading categories..." /> : error ? (
               <div className="p-12 text-center">
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 max-w-md mx-auto">
@@ -166,7 +166,7 @@ export default function Category() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-left text-amber-600 font-semibold bg-amber-50/50 border-b border-amber-100">
+                    <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-100">
                       <th className="px-6 py-4">#ID</th>
                       <th className="px-6 py-4">Name</th>
                       <th className="px-6 py-4">Products</th>
@@ -183,13 +183,13 @@ export default function Category() {
                         className="border-b border-slate-100 hover:bg-teal-50/30 transition-colors duration-200 group"
                       >
                         <td className="px-6 py-4">
-                          <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">
+                          <div className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
                             {String(index + 1).padStart(2, '0')}
                           </div>
                         </td>
                         <td className="px-6 py-4 font-medium text-slate-800">{c.name}</td>
                         <td className="px-6 py-4">
-                          <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2.5 py-1 rounded-lg text-xs font-semibold">
+                          <span className="inline-flex items-center gap-1 bg-teal-100 text-teal-700 px-2.5 py-1 rounded-lg text-xs font-semibold">
                             {c.products_count ?? 0}
                           </span>
                         </td>
@@ -197,14 +197,14 @@ export default function Category() {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => openView(c)}
-                              className="p-2 text-amber-600 hover:bg-teal-50 rounded-xl transition-all duration-200 group-hover:scale-105"
+                              className="p-2 text-teal-600 hover:bg-teal-50 rounded-xl transition-all duration-200 group-hover:scale-105"
                               title="View"
                             >
                               <Eye className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => openEdit(c)}
-                              className="p-2 text-amber-600 hover:bg-teal-50 rounded-xl transition-all duration-200 group-hover:scale-105"
+                              className="p-2 text-teal-600 hover:bg-teal-50 rounded-xl transition-all duration-200 group-hover:scale-105"
                               title="Edit"
                             >
                               <Edit2 className="w-4 h-4" />
@@ -257,14 +257,14 @@ export default function Category() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', duration: 0.3, bounce: 0.2 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-amber-200"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden border border-teal-200"
             >
-              <div className="bg-gradient-to-r from-amber-900 to-amber-800 px-6 py-4">
+              <div className="bg-gradient-to-r from-teal-900 to-teal-800 px-6 py-4">
                 <h2 className="text-white text-lg font-semibold flex items-center gap-2">
                   {editing ? <Edit2 className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                   {editing ? 'Edit Category' : 'Add New Category'}
                 </h2>
-                <p className="text-amber-100 text-xs mt-1">
+                <p className="text-teal-100 text-xs mt-1">
                   {editing ? 'Update category details' : 'Create a new product category'}
                 </p>
               </div>
@@ -293,7 +293,7 @@ export default function Category() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-5 py-2.5 bg-gradient-to-r from-amber-900 to-amber-800 text-white rounded-xl text-sm font-medium hover:from-amber-950 hover:to-amber-900 transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-5 py-2.5 bg-gradient-to-r from-teal-900 to-teal-800 text-white rounded-xl text-sm font-medium hover:from-teal-950 hover:to-teal-900 transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {submitting && (
                       <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
@@ -324,15 +324,15 @@ export default function Category() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', duration: 0.3, bounce: 0.2 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden border border-amber-200"
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden border border-teal-200"
             >
-              <div className="bg-gradient-to-r from-amber-900 to-amber-800 px-6 py-4 flex justify-between items-center">
+              <div className="bg-gradient-to-r from-teal-900 to-teal-800 px-6 py-4 flex justify-between items-center">
                 <div>
                   <h2 className="text-white text-lg font-semibold flex items-center gap-2">
                     <Eye className="w-5 h-5" />
                     {viewLoading ? '...' : viewCategory?.name}
                   </h2>
-                  <p className="text-amber-100 text-xs mt-1">
+                  <p className="text-teal-100 text-xs mt-1">
                     {viewLoading ? '' : `${products.length} product(s) in this category`}
                   </p>
                 </div>
@@ -358,7 +358,7 @@ export default function Category() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="text-left text-amber-600 font-semibold bg-amber-50/50 border-b border-amber-100">
+                        <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-100">
                           <th className="px-4 py-3">Product</th>
                           <th className="px-4 py-3">Current</th>
                           <th className="px-4 py-3">Change Category</th>
@@ -376,7 +376,7 @@ export default function Category() {
                           >
                             <td className="px-4 py-3 font-medium text-slate-800">{product.name}</td>
                             <td className="px-4 py-3">
-                              <span className="inline-block bg-amber-100 text-amber-700 px-2.5 py-1 rounded-lg text-xs font-semibold">
+                              <span className="inline-block bg-teal-100 text-teal-700 px-2.5 py-1 rounded-lg text-xs font-semibold">
                                 {product.category?.name ?? 'Uncategorized'}
                               </span>
                             </td>
@@ -385,7 +385,7 @@ export default function Category() {
                                 value={product.category_id ?? ''}
                                 onChange={e => handleChangeCategory(product.id, e.target.value)}
                                 disabled={savingId === product.id}
-                                className="border border-amber-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 w-full"
+                                className="border border-teal-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50 w-full"
                               >
                                 <option value="">Uncategorized</option>
                                 {allCategories
@@ -401,14 +401,14 @@ export default function Category() {
                                   <button
                                     onClick={() => handleChangeCategory(product.id, '')}
                                     disabled={savingId === product.id}
-                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-amber-600 border border-amber-200 bg-white rounded-lg hover:bg-teal-50 transition disabled:opacity-50"
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-teal-600 border border-teal-200 bg-white rounded-lg hover:bg-teal-50 transition disabled:opacity-50"
                                   >
                                     <X className="w-3 h-3" />
                                     Unlink
                                   </button>
                                 )}
                                 {savingId === product.id && (
-                                  <svg className="animate-spin h-4 w-4 text-amber-600" viewBox="0 0 24 24" fill="none">
+                                  <svg className="animate-spin h-4 w-4 text-teal-600" viewBox="0 0 24 24" fill="none">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                   </svg>

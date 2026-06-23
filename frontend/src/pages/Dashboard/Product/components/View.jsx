@@ -107,7 +107,7 @@ export default function ViewProduct() {
                 <span className="text-gray-500">Sugar Levels</span>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {product.sugar_levels?.map((level) => (
-                    <span key={level.id} className="inline-block bg-amber-100 text-amber-700 text-xs px-2 py-1 rounded-md">
+                    <span key={level.id} className="inline-block bg-teal-100 text-teal-700 text-xs px-2 py-1 rounded-md">
                       {level.name}
                     </span>
                   ))}

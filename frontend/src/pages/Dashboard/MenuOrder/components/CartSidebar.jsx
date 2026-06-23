@@ -36,7 +36,7 @@ export default function CartSidebar({
 
   return (
     <div className="w-96 shrink-0 flex flex-col">
-      <div className="bg-white border-l-2 border-amber-100 shadow-sm rounded-tl-2xl mt-3 mr-3 mb-3 rounded-br-2xl rounded-bl-2xl rounded-tr-2xl flex flex-col flex-1 overflow-hidden">
+      <div className="bg-white border-l-2 border-teal-100 shadow-sm rounded-tl-2xl mt-3 mr-3 mb-3 rounded-br-2xl rounded-bl-2xl rounded-tr-2xl flex flex-col flex-1 overflow-hidden">
         <h2 className="text-base font-semibold text-gray-800 px-4 pt-4 pb-3 shrink-0 border-b border-gray-100">
           Current Order
         </h2>
@@ -91,7 +91,7 @@ export default function CartSidebar({
                           {c.size && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.size}</span>}
                           {c.sugar && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.sugarNote || c.sugar}</span>}
                           {c.ice && <span className="text-[10px] text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">{c.iceNote || c.ice}</span>}
-                          {c.addOn && <span className="text-[10px] text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">+{c.addOn}</span>}
+                          {c.addOn && <span className="text-[10px] text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded">+{c.addOn}</span>}
                         </div>
 
                         {/* Unit Price + Qty + Delete */}
@@ -101,16 +101,16 @@ export default function CartSidebar({
                               const hasPromo = promo && !['combo', 'combo_discount'].includes(promo.type)
                               const discPrice = hasPromo ? calcFinalPrice(c.unitPrice, promo, 1) : c.unitPrice
                               if (hasPromo && discPrice !== c.unitPrice) {
-                                return <><span className="text-[10px] text-gray-400 line-through">${c.unitPrice.toFixed(2)}</span><span className="text-sm font-semibold text-amber-600 ml-1">${discPrice.toFixed(2)}</span></>
+                                return <><span className="text-[10px] text-gray-400 line-through">${c.unitPrice.toFixed(2)}</span><span className="text-sm font-semibold text-teal-600 ml-1">${discPrice.toFixed(2)}</span></>
                               }
-                              return <span className="text-sm font-semibold text-amber-600">${c.unitPrice.toFixed(2)}</span>
+                              return <span className="text-sm font-semibold text-teal-600">${c.unitPrice.toFixed(2)}</span>
                             })()}
                           </div>
                           <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-1 bg-orange-50 border border-gray-200 rounded-lg p-0.5">
-                              <button onClick={() => onUpdateQty(c.key, Math.max(1, c.qty - 1))} className="w-6 h-6 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors">-</button>
-                              <span className="w-6 text-center text-sm font-medium text-gray-800">{c.qty}</span>
-                              <button onClick={() => onUpdateQty(c.key, c.qty + 1)} className="w-6 h-6 flex items-center justify-center text-sm font-semibold text-gray-600 hover:bg-white rounded-md transition-colors">+</button>
+                            <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-lg p-0.5">
+                              <button onClick={() => onUpdateQty(c.key, Math.max(1, c.qty - 1))} className="w-6 h-6 flex items-center justify-center text-sm font-semibold text-slate-600 hover:bg-white rounded-md transition-colors">-</button>
+                              <span className="w-6 text-center text-sm font-medium text-slate-800">{c.qty}</span>
+                              <button onClick={() => onUpdateQty(c.key, c.qty + 1)} className="w-6 h-6 flex items-center justify-center text-sm font-semibold text-slate-600 hover:bg-white rounded-md transition-colors">+</button>
                             </div>
                             <button onClick={() => handleDeleteItem(c.key)} className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Remove">
                               <Trash2 className="w-4 h-4" />
@@ -189,13 +189,13 @@ export default function CartSidebar({
               )}
               <div className="flex items-center justify-between text-sm font-bold text-gray-800 mb-3">
                 <span>Total</span>
-                <span className="text-base font-bold text-amber-600">${total.toFixed(2)}</span>
+                <span className="text-base font-bold text-teal-600">${total.toFixed(2)}</span>
               </div>
               <PaymentSelector value={paymentMethod} onChange={onPaymentChange} />
               <button
                 onClick={onPlaceOrder}
                 disabled={placing}
-                className="mt-3 w-full bg-gradient-to-r from-amber-900 to-amber-800 text-white text-sm font-medium py-2.5 rounded-lg hover:from-amber-950 hover:to-amber-900 transition-all duration-300 shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="mt-3 w-full bg-gradient-to-r from-teal-900 to-teal-800 text-white text-sm font-medium py-2.5 rounded-lg hover:from-teal-950 hover:to-teal-900 transition-all duration-300 shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {placing && (
                   <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">

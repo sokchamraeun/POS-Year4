@@ -38,9 +38,9 @@ export default function ProfitReport({ data }) {
         <MetricCard label="Refund" value={money(data?.refund)} tone="red" icon={RotateCcw} />
       </div>
 
-      {chartData.length > 0 && (
-        <div className="mb-6">
-          <ChartCard title="Profit by Month" subtitle="Revenue vs profit">
+      <div className="mb-6">
+        <ChartCard title="Profit by Month" subtitle="Revenue vs profit">
+          {chartData.length > 0 ? (
             <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#94a3b8" />
@@ -50,9 +50,13 @@ export default function ProfitReport({ data }) {
               <Bar dataKey="Revenue" fill="#3b82f6" radius={[6, 6, 0, 0]} />
               <Bar dataKey="Profit" fill="#0d9488" radius={[6, 6, 0, 0]} />
             </BarChart>
-          </ChartCard>
-        </div>
-      )}
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <p className="text-sm text-slate-400">No monthly data for selected period.</p>
+            </div>
+          )}
+        </ChartCard>
+      </div>
 
       <Card title="Monthly Profit" subtitle="Revenue, cost, and profit by month">
         {monthly.length > 0 ? (

@@ -52,7 +52,7 @@ export default function StatCard({ stat }) {
   return (
     <div
       className="
-        group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm
+        group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm
         transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg
       "
     >
@@ -69,7 +69,7 @@ export default function StatCard({ stat }) {
             {stat.label}
           </p>
 
-          <p className="mt-2 truncate text-3xl font-black tracking-tight text-slate-900">
+          <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">
             {stat.value}
           </p>
 

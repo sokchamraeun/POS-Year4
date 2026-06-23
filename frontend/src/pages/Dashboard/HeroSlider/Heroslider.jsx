@@ -100,14 +100,21 @@ export default function Heroslider() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Hero Sliders</h1>
-            <button onClick={openCreate} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">Add New Slider</button>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-900 to-teal-800 bg-clip-text text-transparent">
+              Hero Sliders
+            </h1>
+            <button
+              onClick={openCreate}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-900 to-teal-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-950 hover:to-teal-900 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl"
+            >
+              Add New Slider
+            </button>
           </div>
 
           <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
@@ -116,7 +123,7 @@ export default function Heroslider() {
             ) : (
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-gray-500 font-medium border-b border-gray-100">
+                  <tr className="bg-teal-800 text-white font-black">
                     <th className="px-6 py-3">Order</th>
                     <th className="px-6 py-3">Image</th>
                     <th className="px-6 py-3">Title</th>
@@ -128,19 +135,19 @@ export default function Heroslider() {
                 </thead>
                 <tbody>
                   {sliders.map((s) => (
-                    <tr key={s.id} className="border-t border-gray-100 hover:bg-orange-50 transition-colors">
-                      <td className="px-6 py-4 font-medium text-gray-800">{s.order}</td>
+                    <tr key={s.id} className="border-t border-slate-100 hover:bg-teal-50/30 transition-colors">
+                      <td className="px-6 py-4 font-medium text-slate-800">{s.order}</td>
                       <td className="px-6 py-4">
                         {s.image ? (
                           <img src={s.image} alt={s.title} className="w-16 h-10 object-cover rounded" />
                         ) : (
-                          <span className="text-gray-400 text-xs">No image</span>
+                          <span className="text-slate-400 text-xs">No image</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-gray-800 max-w-[150px] truncate">{s.title}</td>
-                      <td className="px-6 py-4 text-gray-800 max-w-[120px] truncate">{s.highlight}</td>
+                      <td className="px-6 py-4 text-slate-800 max-w-[150px] truncate">{s.title}</td>
+                      <td className="px-6 py-4 text-slate-800 max-w-[120px] truncate">{s.highlight}</td>
                       <td className="px-6 py-4">
-                        <span className="bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded-full">{s.badge}</span>
+                        <span className="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded-full">{s.badge}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${s.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -149,14 +156,14 @@ export default function Heroslider() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => openEdit(s)} className="px-3 py-1.5 text-xs font-medium text-yellow-600 hover:bg-yellow-50 rounded-md transition-colors">Edit</button>
+                          <button onClick={() => openEdit(s)} className="px-3 py-1.5 text-xs font-medium text-teal-600 hover:bg-teal-50 rounded-md transition-colors">Edit</button>
                           <button onClick={() => handleDelete(s.id)} className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-md transition-colors">Delete</button>
                         </div>
                       </td>
                     </tr>
                   ))}
                   {sliders.length === 0 && (
-                    <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500">No sliders found.</td></tr>
+                    <tr><td colSpan={7} className="px-6 py-8 text-center text-slate-500">No sliders found.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -183,19 +190,19 @@ export default function Heroslider() {
             <h2 className="text-lg font-semibold mb-4">{editing ? 'Edit Slider' : 'Add New Slider'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Title</label>
+                <input type="text" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Highlight</label>
-                <input type="text" value={form.highlight} onChange={e => setForm({ ...form, highlight: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Highlight</label>
+                <input type="text" value={form.highlight} onChange={e => setForm({ ...form, highlight: e.target.value })} required className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
-                <textarea value={form.text} onChange={e => setForm({ ...form, text: e.target.value })} required rows={3} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Text</label>
+                <textarea value={form.text} onChange={e => setForm({ ...form, text: e.target.value })} required rows={3} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">
                   Image {editing && '(leave empty to keep current)'}
                 </label>
                 <input
@@ -203,30 +210,30 @@ export default function Heroslider() {
                   type="file"
                   accept="image/jpeg,image/png,image/jpg,image/webp"
                   onChange={handleFileChange}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
                 {imagePreview && (
                   <img src={imagePreview} alt="preview" className="mt-2 h-24 object-cover rounded border" />
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Badge</label>
-                <input type="text" value={form.badge} onChange={e => setForm({ ...form, badge: e.target.value })} required className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
+                <label className="block text-sm font-medium text-slate-700 mb-1">Badge</label>
+                <input type="text" value={form.badge} onChange={e => setForm({ ...form, badge: e.target.value })} required className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Order</label>
-                  <input type="number" value={form.order} onChange={e => setForm({ ...form, order: e.target.value })} min="0" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Order</label>
+                  <input type="number" value={form.order} onChange={e => setForm({ ...form, order: e.target.value })} min="0" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500" />
                 </div>
                 <div className="flex-1 flex items-end pb-2">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={form.is_active} onChange={e => setForm({ ...form, is_active: e.target.checked })} className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-teal-500" />
-                    <span className="text-sm font-medium text-gray-700">Active</span>
+                    <input type="checkbox" checked={form.is_active} onChange={e => setForm({ ...form, is_active: e.target.checked })} className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-teal-500" />
+                    <span className="text-sm font-medium text-slate-700">Active</span>
                   </label>
                 </div>
               </div>
               <div className="flex gap-2 justify-end pt-2">
-                <button type="button" onClick={() => setShowModal(false)} disabled={submitting} className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors disabled:opacity-50">Cancel</button>
+                <button type="button" onClick={() => setShowModal(false)} disabled={submitting} className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-200 transition-colors disabled:opacity-50">Cancel</button>
                 <button type="submit" disabled={submitting} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2">
                   {submitting && (
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
