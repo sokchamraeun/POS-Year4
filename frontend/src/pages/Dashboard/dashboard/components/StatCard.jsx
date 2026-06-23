@@ -38,11 +38,11 @@ const toneMap = {
 }
 
 const tones = {
-  teal:   { icon: 'text-white', iconBox: 'border-teal-500 bg-teal-500 shadow-teal-500/20', line: 'bg-teal-500' },
-  green:  { icon: 'text-white', iconBox: 'border-emerald-500 bg-emerald-500 shadow-emerald-500/20', line: 'bg-emerald-500' },
-  orange: { icon: 'text-white', iconBox: 'border-orange-500 bg-orange-500 shadow-orange-500/20', line: 'bg-orange-500' },
-  red:    { icon: 'text-white', iconBox: 'border-red-500 bg-red-500 shadow-red-500/20', line: 'bg-red-500' },
-  blue:   { icon: 'text-white', iconBox: 'border-blue-500 bg-blue-500 shadow-blue-500/20', line: 'bg-blue-500' },
+  teal:   { icon: 'text-white', iconBox: 'border-teal-500 bg-teal-500 shadow-teal-500/20', line: 'bg-slate-200' },
+  green:  { icon: 'text-white', iconBox: 'border-emerald-500 bg-emerald-500 shadow-emerald-500/20', line: 'bg-slate-200' },
+  orange: { icon: 'text-white', iconBox: 'border-orange-500 bg-orange-500 shadow-orange-500/20', line: 'bg-slate-200' },
+  red:    { icon: 'text-white', iconBox: 'border-red-500 bg-red-500 shadow-red-500/20', line: 'bg-slate-200' },
+  blue:   { icon: 'text-white', iconBox: 'border-blue-500 bg-blue-500 shadow-blue-500/20', line: 'bg-slate-200' },
 }
 
 export default function StatCard({ stat }) {

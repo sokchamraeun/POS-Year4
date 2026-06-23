@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { ShoppingCart, CheckCircle, Clock, DollarSign } from 'lucide-react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 import Loader from '../../components/shared/Loader.jsx'
@@ -370,16 +371,34 @@ export default function StockIn() {
           {/* Stats */}
           <div className="grid grid-cols-4 gap-4 mb-6">
             {[
-              { label: 'Total Orders', value: orders.length, color: 'text-slate-800' },
-              { label: 'Received', value: receivedCount, color: 'text-green-600' },
-              { label: 'Pending', value: pendingCount, color: 'text-teal-600' },
-              { label: 'Total Value', value: `$${totalAmount.toFixed(2)}`, color: 'text-teal-700' },
-            ].map(s => (
-              <div key={s.label} className="bg-white rounded-xl p-4 shadow-sm border border-teal-100">
-                <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">{s.label}</p>
-                <p className={`text-2xl font-bold mt-1 ${s.color}`}>{s.value}</p>
-              </div>
-            ))}
+              { label: 'Total Orders', value: orders.length, icon: ShoppingCart, tone: 'blue' },
+              { label: 'Received', value: receivedCount, icon: CheckCircle, tone: 'green' },
+              { label: 'Pending', value: pendingCount, icon: Clock, tone: 'orange' },
+              { label: 'Total Value', value: `$${totalAmount.toFixed(2)}`, icon: DollarSign, tone: 'teal' },
+            ].map(s => {
+              const iconBox = {
+                teal: 'border-teal-500 bg-teal-500 shadow-teal-500/20',
+                green: 'border-emerald-500 bg-emerald-500 shadow-emerald-500/20',
+                orange: 'border-orange-500 bg-orange-500 shadow-orange-500/20',
+                blue: 'border-blue-500 bg-blue-500 shadow-blue-500/20',
+              }[s.tone]
+              const IconComp = s.icon
+
+              return (
+                <div key={s.label} className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+                  <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold uppercase tracking-wide text-slate-500">{s.label}</p>
+                      <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{s.value}</p>
+                    </div>
+                    <div className={`flex h-10 min-w-10 items-center justify-center rounded-xl border shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl ${iconBox}`}>
+                      <IconComp className="h-5 w-5 text-white" />
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
 
           {/* Filter + Table */}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { Gift } from 'lucide-react'
 import { useCart } from '../../context/CartContext.jsx'
-import { calcFinalPrice, resolvePromotionForSize } from '../../utils/promotion.js'
+import { calcFinalPrice, getPromotionShort, resolvePromotionForSize } from '../../utils/promotion.js'
 import ProductModal from './ProductModal.jsx'
 
 const STORAGE_URL = import.meta.env.VITE_STORAGE_URL ?? ''
@@ -46,18 +47,6 @@ const cycleStyles = [
 function resolveImage(image) {
   if (!image) return 'https://placehold.co/500x500?text=No+Image'
   return image.startsWith('http') ? image : `${STORAGE_URL}/${image}`
-}
-
-function promotionLabel(promo) {
-  if (!promo) return ''
-
-  if (promo.type === 'percentage') return `${parseFloat(promo.value)}% OFF`
-  if (promo.type === 'fixed_amount') return `$${promo.value} OFF`
-  if (promo.type === 'buy_x_get_y') return `BUY ${promo.buy_qty} GET ${promo.free_qty}`
-  if (promo.type === 'combo') return 'COMBO'
-  if (promo.type === 'combo_discount') return `${promo.value}% OFF COMBO`
-
-  return 'SALE'
 }
 
 function ProductCycleImage({ product, theme, cycle }) {
@@ -468,8 +457,9 @@ export default function BestSellers({ products = [] }) {
               >
                 {/* Promotion Label */}
                 {hasCardPromo && (
-                  <div className="absolute top-4 left-4 z-20 bg-red-600 text-white text-xs sm:text-sm font-black px-3.5 py-2 rounded-full shadow-xl border-2 border-white uppercase tracking-wide">
-                    {promotionLabel(cardPromo)}
+                  <div className="absolute top-4 left-4 z-20 bg-red-600 text-white text-xs sm:text-sm font-extrabold px-3 py-1.5 rounded-full shadow-xl border-2 border-red-700 uppercase tracking-wide flex items-center gap-1.5">
+                    <Gift className="w-3.5 h-3.5" />
+                    {getPromotionShort(cardPromo)}
                   </div>
                 )}
 

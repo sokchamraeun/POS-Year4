@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Navbar from '../../components/customer/Navbar.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
 import CartItem from '../../components/customer/CartItem.jsx'
@@ -24,6 +24,16 @@ export default function Cart() {
   } = useCart()
 
   const { customer, isLoggedIn } = useCustomerAuth()
+
+  const [searchParams] = useSearchParams()
+  const qrToken = (() => {
+    const fromUrl = searchParams.get('token')
+    if (fromUrl) {
+      sessionStorage.setItem('qr_token', fromUrl)
+      return fromUrl
+    }
+    return sessionStorage.getItem('qr_token') || ''
+  })()
 
   const [orderNote, setOrderNote] = useState('')
   const [name, setName] = useState(customer?.name || '')
@@ -116,6 +126,8 @@ export default function Cart() {
   }, [customer])
 
   useEffect(() => {
+    if (qrToken) return
+
     fetch(`${API_URL}/tables/available`)
       .then((r) => r.json())
       .then((data) => {
@@ -123,7 +135,7 @@ export default function Cart() {
         setTables(list)
       })
       .catch(() => setTables([]))
-  }, [])
+  }, [qrToken])
 
   useEffect(() => {
     if (!done) return
@@ -214,26 +226,33 @@ export default function Cart() {
             ? 'Cash'
             : null
 
-      const orderPayload = {
-        customer_id: customerId,
-        table_id: selectedTable || null,
-        total: finalTotal,
-        discount,
-        status: 'New',
-        payment_method: pm,
-        payment_status: paymentMethod === 'cash' ? 'Paid' : 'Unpaid',
-        note: orderNote.trim() || null,
-        items: orderItems,
-      }
-
-      const res = await fetch(`${API_URL}/orders`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(orderPayload),
-      })
+      const res = qrToken
+        ? await fetch(`${API_URL}/tables/${qrToken}/order-items`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({ customer_id: customerId, items: orderItems }),
+          })
+        : await fetch(`${API_URL}/orders`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              customer_id: customerId,
+              table_id: selectedTable || null,
+              total: finalTotal,
+              discount,
+              status: 'New',
+              payment_method: pm,
+              payment_status: paymentMethod === 'cash' ? 'Paid' : 'Unpaid',
+              note: orderNote.trim() || null,
+              items: orderItems,
+            }),
+          })
 
       if (!res.ok) {
         const err = await res.json()
@@ -453,24 +472,26 @@ export default function Cart() {
                       </div>
                     )}
 
-                    <div className="mt-3">
-                      <label className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a5d3b]">
-                        តុ
-                      </label>
+                    {!qrToken && (
+                      <div className="mt-3">
+                        <label className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a5d3b]">
+                          តុ
+                        </label>
 
-                      <select
-                        value={selectedTable}
-                        onChange={(e) => setSelectedTable(e.target.value)}
-                        className="w-full rounded-2xl border border-[#e2c59b] bg-[#fffaf3] px-4 py-3 text-sm font-black text-[#3d2415] outline-none transition-all focus:border-[#a86530] focus:bg-white focus:ring-4 focus:ring-[#c58b49]/20"
-                      >
-                        <option value="">គ្មានតុ</option>
-                        {tables.map((table) => (
-                          <option key={table.id} value={table.id}>
-                            {table.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                        <select
+                          value={selectedTable}
+                          onChange={(e) => setSelectedTable(e.target.value)}
+                          className="w-full rounded-2xl border border-[#e2c59b] bg-[#fffaf3] px-4 py-3 text-sm font-black text-[#3d2415] outline-none transition-all focus:border-[#a86530] focus:bg-white focus:ring-4 focus:ring-[#c58b49]/20"
+                        >
+                          <option value="">គ្មានតុ</option>
+                          {tables.map((table) => (
+                            <option key={table.id} value={table.id}>
+                              {table.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </Panel>
 
                   <Panel title="វិធីបង់ប្រាក់" subtitle="ជ្រើសរើសវិធីបង់ប្រាក់ដែលអ្នកចង់ប្រើ">

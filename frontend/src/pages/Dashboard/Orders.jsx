@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect, useCallback } from 'react'
+import { List, CheckCircle, Clock, DollarSign } from 'lucide-react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 import { useSocket, useSocketConnect } from '../../hooks/useSocket'
@@ -258,25 +259,57 @@ export default function Orders() {
           )}
 
           <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-2xl border border-teal-300/30 bg-white/95 p-4 shadow-lg shadow-black/10">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-teal-700">Shown Orders</p>
-              <p className="mt-1.5 text-2xl font-extrabold text-slate-900">{summary.shown}</p>
-              <p className="mt-1 text-[11px] text-slate-500">After search and filter</p>
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+              <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Shown Orders</p>
+                  <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{summary.shown}</p>
+                  <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">After search and filter</p>
+                </div>
+                <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-blue-500 bg-blue-500 shadow-lg shadow-blue-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                  <List className="h-5 w-5 text-white" />
+                </div>
+              </div>
             </div>
-            <div className="rounded-2xl border border-emerald-300/40 bg-white/95 p-4 shadow-lg shadow-black/10">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700">Paid</p>
-              <p className="mt-1.5 text-2xl font-extrabold text-slate-900">{summary.paid}</p>
-              <p className="mt-1 text-[11px] text-slate-500">Paid orders loaded</p>
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+              <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Paid</p>
+                  <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{summary.paid}</p>
+                  <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">Paid orders loaded</p>
+                </div>
+                <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-emerald-500 bg-emerald-500 shadow-lg shadow-emerald-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                  <CheckCircle className="h-5 w-5 text-white" />
+                </div>
+              </div>
             </div>
-            <div className="rounded-2xl border border-rose-300/40 bg-white/95 p-4 shadow-lg shadow-black/10">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-rose-700">Unpaid</p>
-              <p className="mt-1.5 text-2xl font-extrabold text-slate-900">{summary.unpaid}</p>
-              <p className="mt-1 text-[11px] text-slate-500">Need follow up</p>
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+              <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Unpaid</p>
+                  <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{summary.unpaid}</p>
+                  <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">Need follow up</p>
+                </div>
+                <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-orange-500 bg-orange-500 shadow-lg shadow-orange-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                  <Clock className="h-5 w-5 text-white" />
+                </div>
+              </div>
             </div>
-            <div className="rounded-2xl border border-teal-400/50 bg-gradient-to-br from-teal-500 to-teal-600 p-4 text-white shadow-lg shadow-teal-900/15">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-teal-100">Loaded Revenue</p>
-              <p className="mt-1.5 text-2xl font-extrabold">${summary.revenue.toFixed(2)}</p>
-              <p className="mt-1 text-[11px] text-teal-50/85">Current page / polling data</p>
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+              <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Loaded Revenue</p>
+                  <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">${summary.revenue.toFixed(2)}</p>
+                  <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">Current page / polling data</p>
+                </div>
+                <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-teal-500 bg-teal-500 shadow-lg shadow-teal-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                  <DollarSign className="h-5 w-5 text-white" />
+                </div>
+              </div>
             </div>
           </div>
 

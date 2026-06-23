@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import CartItem from './CartItem.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
@@ -18,6 +19,16 @@ export default function CartSidebar({ open, onClose }) {
   } = useCart()
 
   const { customer, isLoggedIn } = useCustomerAuth()
+  const [searchParams] = useSearchParams()
+  const qrToken = (() => {
+    const fromUrl = searchParams.get('token')
+    if (fromUrl) {
+      sessionStorage.setItem('qr_token', fromUrl)
+      return fromUrl
+    }
+    return sessionStorage.getItem('qr_token') || ''
+  })()
+
   const [placing, setPlacing] = useState(false)
   const [done, setDone] = useState(false)
   const [name, setName] = useState(customer?.name || '')
@@ -41,13 +52,13 @@ export default function CartSidebar({ open, onClose }) {
   }
 
   useEffect(() => {
-    if (open) {
+    if (open && !qrToken) {
       fetch(`${API_URL}/tables/available`)
         .then((r) => r.json())
         .then(setTables)
         .catch(() => {})
     }
-  }, [open])
+  }, [open, qrToken])
 
   const handleCloseRef = useRef(handleClose)
   handleCloseRef.current = handleClose
@@ -156,25 +167,32 @@ export default function CartSidebar({ open, onClose }) {
             ? 'Cash'
             : null
 
-      const orderPayload = {
-        customer_id: customerId,
-        table_id: selectedTable || null,
-        total: totalPrice,
-        discount: discountTotal,
-        status: 'New',
-        payment_method: pm,
-        payment_status: paymentMethod === 'cash' ? 'Paid' : 'Unpaid',
-        items: orderItems,
-      }
-
-      const res = await fetch(`${API_URL}/orders`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(orderPayload),
-      })
+      const res = qrToken
+        ? await fetch(`${API_URL}/tables/${qrToken}/order-items`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({ customer_id: customerId, items: orderItems }),
+          })
+        : await fetch(`${API_URL}/orders`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            },
+            body: JSON.stringify({
+              customer_id: customerId,
+              table_id: selectedTable || null,
+              total: totalPrice,
+              discount: discountTotal,
+              status: 'New',
+              payment_method: pm,
+              payment_status: paymentMethod === 'cash' ? 'Paid' : 'Unpaid',
+              items: orderItems,
+            }),
+          })
 
       if (!res.ok) {
         const err = await res.json()
@@ -379,19 +397,23 @@ export default function CartSidebar({ open, onClose }) {
               </div>
             )}
 
-            {/* Table */}
-            <select
-              value={selectedTable}
-              onChange={(e) => setSelectedTable(e.target.value)}
-              className="w-full text-xs border border-orange-100 bg-[#f8f4ee] px-3 py-2.5 text-[#3d2817] focus:outline-none focus:ring-2 focus:ring-orange-400"
-            >
-              <option value="">No table</option>
-              {tables.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
+            {!qrToken && (
+              <>
+                {/* Table */}
+                <select
+                  value={selectedTable}
+                  onChange={(e) => setSelectedTable(e.target.value)}
+                  className="w-full text-xs border border-orange-100 bg-[#f8f4ee] px-3 py-2.5 text-[#3d2817] focus:outline-none focus:ring-2 focus:ring-orange-400"
+                >
+                  <option value="">No table</option>
+                  {tables.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
 
             {/* Payment */}
             <div>

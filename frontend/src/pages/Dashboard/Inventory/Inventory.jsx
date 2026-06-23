@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect } from 'react'
+import { Package, AlertTriangle, ArrowLeftRight, Warehouse, PlusCircle, MinusCircle, SlidersHorizontal } from 'lucide-react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import Loader from '../../../components/shared/Loader.jsx'
@@ -177,28 +178,60 @@ export default function Inventory() {
 
             {/* Stats */}
             <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-2xl border border-teal-300/30 bg-white p-4 shadow-lg shadow-black/10">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-teal-700">Ingredients</p>
-                <p className="mt-1.5 text-2xl font-extrabold text-slate-800">{ingredients.length}</p>
-                <p className="mt-1 text-[11px] text-slate-500">Total ingredients</p>
+              <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+                <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Ingredients</p>
+                    <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{ingredients.length}</p>
+                    <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">Total ingredients</p>
+                  </div>
+                  <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-teal-500 bg-teal-500 shadow-lg shadow-teal-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                    <Package className="h-5 w-5 text-white" />
+                  </div>
+                </div>
               </div>
 
-              <div className="rounded-2xl border border-rose-300/40 bg-white p-4 shadow-lg shadow-black/10">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-rose-700">Low Stock</p>
-                <p className="mt-1.5 text-2xl font-extrabold text-slate-800">{lowStockCount}</p>
-                <p className="mt-1 text-[11px] text-slate-500">Need restock</p>
+              <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+                <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Low Stock</p>
+                    <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{lowStockCount}</p>
+                    <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">Need restock</p>
+                  </div>
+                  <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-red-500 bg-red-500 shadow-lg shadow-red-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                    <AlertTriangle className="h-5 w-5 text-white" />
+                  </div>
+                </div>
               </div>
 
-              <div className="rounded-2xl border border-emerald-300/40 bg-white p-4 shadow-lg shadow-black/10">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700">Transactions</p>
-                <p className="mt-1.5 text-2xl font-extrabold text-slate-800">{totalTransactions}</p>
-                <p className="mt-1 text-[11px] text-slate-500">All movements</p>
+              <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+                <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Transactions</p>
+                    <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{totalTransactions}</p>
+                    <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">All movements</p>
+                  </div>
+                  <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-blue-500 bg-blue-500 shadow-lg shadow-blue-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                    <ArrowLeftRight className="h-5 w-5 text-white" />
+                  </div>
+                </div>
               </div>
 
-              <div className="rounded-2xl border border-teal-400/50 bg-gradient-to-br from-teal-900 to-teal-800 p-4 text-white shadow-lg shadow-teal-900/15">
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-teal-100">Total Stock</p>
-                <p className="mt-1.5 text-2xl font-extrabold">{totalStock.toFixed(0)}</p>
-                <p className="mt-1 text-[11px] text-teal-50/85">Current quantity on hand</p>
+              <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+                <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Total Stock</p>
+                    <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{totalStock.toFixed(0)}</p>
+                    <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">Current quantity on hand</p>
+                  </div>
+                  <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-teal-500 bg-teal-500 shadow-lg shadow-teal-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                    <Warehouse className="h-5 w-5 text-white" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -281,10 +314,10 @@ export default function Inventory() {
 
                           <td className="px-6 py-5">
                             <div className="flex items-end gap-1">
-                              <span className="text-2xl font-black text-slate-800">
+                              <span className="text-base font-bold text-slate-800">
                                 {stock.toFixed(2)}
                               </span>
-                              <span className="text-xs text-slate-400 mb-1">
+                              <span className="text-xs text-slate-400 mb-0.5">
                                 {ing.unit}
                               </span>
                             </div>
@@ -321,22 +354,25 @@ export default function Inventory() {
                             <div className="flex justify-end gap-2">
                               <button
                                 onClick={() => openTx(ing, 'purchase')}
-                                className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-black hover:bg-emerald-600 hover:text-white transition-all"
+                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-black hover:bg-emerald-600 hover:text-white transition-all"
                               >
+                                <PlusCircle className="w-3.5 h-3.5" />
                                 Purchase
                               </button>
 
                               <button
                                 onClick={() => openTx(ing, 'deduct')}
-                                className="px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-100 text-xs font-black hover:bg-rose-600 hover:text-white transition-all"
+                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-rose-50 text-rose-700 border border-rose-100 text-xs font-black hover:bg-rose-600 hover:text-white transition-all"
                               >
+                                <MinusCircle className="w-3.5 h-3.5" />
                                 Deduct
                               </button>
 
                               <button
                                 onClick={() => openTx(ing, 'adjust')}
-                                className="px-3 py-2 rounded-xl bg-sky-50 text-sky-700 border border-sky-100 text-xs font-black hover:bg-sky-600 hover:text-white transition-all"
+                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sky-50 text-sky-700 border border-sky-100 text-xs font-black hover:bg-sky-600 hover:text-white transition-all"
                               >
+                                <SlidersHorizontal className="w-3.5 h-3.5" />
                                 Adjust
                               </button>
                             </div>
@@ -405,14 +441,14 @@ export default function Inventory() {
                       <div className="grid grid-cols-2 gap-3 mt-5">
                         <div className="rounded-2xl bg-teal-50 border border-teal-100 p-4">
                           <p className="text-xs text-teal-700 font-bold">Current Stock</p>
-                          <p className="text-2xl font-black text-slate-800 mt-1">
+                          <p className="text-base font-bold text-slate-800 mt-1">
                             {stock.toFixed(2)}
                           </p>
                         </div>
 
                         <div className="rounded-2xl bg-slate-50 border border-slate-100 p-4">
                           <p className="text-xs text-slate-500 font-bold">Reorder Level</p>
-                          <p className="text-2xl font-black text-slate-700 mt-1">
+                          <p className="text-base font-bold text-slate-700 mt-1">
                             {reorder.toFixed(2)}
                           </p>
                         </div>
@@ -443,22 +479,25 @@ export default function Inventory() {
                       <div className="grid grid-cols-3 gap-2 mt-4">
                         <button
                           onClick={() => openTx(ing, 'purchase')}
-                          className="bg-emerald-600 text-white text-xs font-black px-3 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors"
+                          className="inline-flex items-center justify-center gap-1.5 bg-emerald-600 text-white text-xs font-black px-3 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors"
                         >
+                          <PlusCircle className="w-3.5 h-3.5" />
                           Purchase
                         </button>
 
                         <button
                           onClick={() => openTx(ing, 'deduct')}
-                          className="bg-rose-600 text-white text-xs font-black px-3 py-2.5 rounded-xl hover:bg-rose-700 transition-colors"
+                          className="inline-flex items-center justify-center gap-1.5 bg-rose-600 text-white text-xs font-black px-3 py-2.5 rounded-xl hover:bg-rose-700 transition-colors"
                         >
+                          <MinusCircle className="w-3.5 h-3.5" />
                           Deduct
                         </button>
 
                         <button
                           onClick={() => openTx(ing, 'adjust')}
-                          className="bg-sky-600 text-white text-xs font-black px-3 py-2.5 rounded-xl hover:bg-sky-700 transition-colors"
+                          className="inline-flex items-center justify-center gap-1.5 bg-sky-600 text-white text-xs font-black px-3 py-2.5 rounded-xl hover:bg-sky-700 transition-colors"
                         >
+                          <SlidersHorizontal className="w-3.5 h-3.5" />
                           Adjust
                         </button>
                       </div>

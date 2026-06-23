@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Building2, CheckCircle, XCircle } from 'lucide-react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 import Loader from '../../components/shared/Loader.jsx'
@@ -134,17 +135,41 @@ export default function Suppliers() {
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-teal-100">
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">Total</p>
-              <p className="text-3xl font-bold text-slate-800 mt-1">{suppliers.length}</p>
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+              <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Total</p>
+                  <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{suppliers.length}</p>
+                </div>
+                <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-teal-500 bg-teal-500 shadow-lg shadow-teal-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                  <Building2 className="h-5 w-5 text-white" />
+                </div>
+              </div>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-teal-100">
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">Active</p>
-              <p className="text-3xl font-bold text-green-600 mt-1">{activeCount}</p>
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+              <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Active</p>
+                  <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{activeCount}</p>
+                </div>
+                <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-emerald-500 bg-emerald-500 shadow-lg shadow-emerald-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                  <CheckCircle className="h-5 w-5 text-white" />
+                </div>
+              </div>
             </div>
-            <div className="bg-white rounded-xl p-4 shadow-sm border border-teal-100">
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">Inactive</p>
-              <p className="text-3xl font-bold text-teal-600 mt-1">{inactiveCount}</p>
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+              <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Inactive</p>
+                  <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{inactiveCount}</p>
+                </div>
+                <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-slate-800 bg-slate-800 shadow-lg shadow-slate-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                  <XCircle className="h-5 w-5 text-white" />
+                </div>
+              </div>
             </div>
           </div>
 

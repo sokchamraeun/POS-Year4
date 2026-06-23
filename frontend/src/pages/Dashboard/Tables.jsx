@@ -1,12 +1,27 @@
 ﻿import { useState, useEffect } from "react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import Sidebar from "../../components/staff/Sidebar.jsx";
 import Topbar from "../../components/staff/Topbar.jsx";
 import Loader from "../../components/shared/Loader.jsx";
 
 const API_URL = import.meta.env.VITE_API_URL;
-const FRONTEND_URL = "https://pos-year4.vercel.app";
+const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
 const token = localStorage.getItem("token");
 const authHeaders = { Authorization: `Bearer ${token}` };
+
+const statusColors = {
+  available: "bg-green-100 text-green-800 border border-green-200",
+  occupied: "bg-red-100 text-red-800 border border-red-200",
+  reserved: "bg-yellow-100 text-yellow-800 border border-yellow-200",
+  cleaning: "bg-slate-100 text-slate-600 border border-slate-200",
+};
+
+const statusLabels = {
+  available: "Available",
+  occupied: "Occupied",
+  reserved: "Reserved",
+  cleaning: "Cleaning",
+};
 
 export default function Tables() {
   const [tables, setTables] = useState([]);
@@ -89,29 +104,30 @@ export default function Tables() {
   }
 
   function getQrUrl(table) {
-    return `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(FRONTEND_URL + "/?table=" + table.id)}`;
+    const token = table.qr_token || table.id;
+    return `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(FRONTEND_URL + "/products?token=" + token)}`;
   }
 
-  const statusColors = {
-    available: "bg-green-100 text-green-800",
-    occupied: "bg-red-100 text-red-800",
-    reserved: "bg-yellow-100 text-yellow-800",
-  };
-
-  if (loading) return <Loader text="Loading..." />
+  if (loading) return <Loader text="Loading..." />;
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Topbar />
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Tables</h1>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-teal-900 to-teal-800 bg-clip-text text-transparent">
+                Tables
+              </h1>
+              <p className="text-slate-500 text-sm mt-1">Manage restaurant tables and QR codes</p>
+            </div>
             <button
               onClick={openCreate}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-900 to-teal-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-teal-950 hover:to-teal-900 transition-all duration-200 shadow-lg shadow-teal-200 hover:shadow-xl"
             >
+              <Plus className="w-4 h-4" />
               Add Table
             </button>
           </div>
@@ -120,44 +136,49 @@ export default function Tables() {
             {tables.map((t) => (
               <div
                 key={t.id}
-                className="bg-white rounded-xl shadow-sm p-4 flex flex-col items-center text-center"
+                className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col items-center text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
               >
                 <img
                   src={getQrUrl(t)}
                   alt={`QR for ${t.name}`}
                   className="w-32 h-32 mb-3"
                 />
-                <h3 className="text-lg font-semibold text-gray-800">
-                  {t.name}
-                </h3>
-                <p className="text-sm text-gray-500">Capacity: {t.capacity}</p>
+                <h3 className="text-lg font-bold text-slate-800">{t.name}</h3>
+                <p className="text-sm text-slate-500">Capacity: {t.capacity}</p>
                 <span
-                  className={`mt-2 inline-block text-xs px-3 py-1 rounded-full ${statusColors[t.status] || "bg-gray-100 text-gray-800"}`}
+                  className={`mt-2 inline-block text-xs font-semibold px-3 py-1 rounded-full ${statusColors[t.status] || "bg-slate-100 text-slate-600"}`}
                 >
-                  {t.status.charAt(0).toUpperCase() + t.status.slice(1)}
+                  {statusLabels[t.status] || t.status}
                 </span>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-slate-400 mt-1">
                   {t.orders_count || 0} orders
                 </p>
-                <div className="flex gap-2 mt-3">
+                {t.qr_token && (
+                  <p className="text-[10px] text-slate-300 mt-1 truncate max-w-full" title={t.qr_token}>
+                    Token: {t.qr_token.slice(0, 8)}...
+                  </p>
+                )}
+                <div className="flex gap-3 mt-3">
                   <button
                     onClick={() => openEdit(t)}
-                    className="text-yellow-600 hover:underline text-xs font-medium"
+                    className="inline-flex items-center gap-1 text-teal-600 hover:text-teal-800 text-xs font-semibold transition-colors"
                   >
+                    <Pencil className="w-3.5 h-3.5" />
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(t.id)}
-                    className="text-red-600 hover:underline text-xs font-medium"
+                    className="inline-flex items-center gap-1 text-red-500 hover:text-red-700 text-xs font-semibold transition-colors"
                   >
+                    <Trash2 className="w-3.5 h-3.5" />
                     Delete
                   </button>
                 </div>
               </div>
             ))}
             {tables.length === 0 && (
-              <div className="col-span-full text-center text-gray-500 py-8">
-                No tables found.
+              <div className="col-span-full text-center text-slate-500 py-12">
+                No tables found. Click "Add Table" to create one.
               </div>
             )}
           </div>
@@ -166,13 +187,13 @@ export default function Tables() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6">
-            <h2 className="text-lg font-semibold mb-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+            <h2 className="text-lg font-bold text-slate-800 mb-4">
               {editing ? "Edit Table" : "Add Table"}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Name
                 </label>
                 <input
@@ -180,49 +201,48 @@ export default function Tables() {
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Capacity
                 </label>
                 <input
                   type="number"
                   value={form.capacity}
-                  onChange={(e) =>
-                    setForm({ ...form, capacity: Number(e.target.value) })
-                  }
+                  onChange={(e) => setForm({ ...form, capacity: Number(e.target.value) })}
                   min="1"
                   required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Status
                 </label>
                 <select
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
                   <option value="available">Available</option>
                   <option value="occupied">Occupied</option>
                   <option value="reserved">Reserved</option>
+                  <option value="cleaning">Cleaning</option>
                 </select>
               </div>
               <div className="flex gap-2 justify-end">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+                  className="bg-slate-100 text-slate-700 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-slate-200 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                  className="bg-gradient-to-r from-teal-900 to-teal-800 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:from-teal-950 hover:to-teal-900 transition-all shadow-lg"
                 >
                   {editing ? "Update" : "Create"}
                 </button>

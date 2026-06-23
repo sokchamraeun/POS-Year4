@@ -10,6 +10,7 @@ use App\Models\Customer;
 use App\Models\InventoryTransaction;
 use App\Models\Order;
 use App\Models\Recipe;
+use App\Models\Table;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -268,6 +269,10 @@ class OrderController extends Controller
 
         if ($newStatus === 'Completed' && $order->payment_status === 'Unpaid' && $order->payment_method) {
             $order->update(['payment_status' => 'Paid']);
+        }
+
+        if (in_array($newStatus, ['Completed', 'Cancelled'], true) && $order->table_id) {
+            $order->table->update(['status' => Table::STATUS_CLEANING]);
         }
 
         dispatch_broadcast(new OrderUpdated($order));

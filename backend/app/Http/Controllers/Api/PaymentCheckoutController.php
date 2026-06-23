@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Events\OrderUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\Table;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -89,7 +90,12 @@ class PaymentCheckoutController extends Controller
         if (strtolower((string) $order->payment_status) !== 'paid') {
             $order->update([
                 'payment_status' => 'Paid',
+                'status' => 'completed',
             ]);
+
+            if ($order->table_id) {
+                $order->table->update(['status' => Table::STATUS_CLEANING]);
+            }
 
             dispatch_broadcast(new OrderUpdated($order));
         }

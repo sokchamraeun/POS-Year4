@@ -1,5 +1,6 @@
 ﻿import { useState } from 'react'
-import { calcFinalPrice, resolvePromotionForSize } from '../../utils/promotion.js'
+import { Gift } from 'lucide-react'
+import { calcFinalPrice, getPromotionShort, resolvePromotionForSize } from '../../utils/promotion.js'
 import ProductModal from './ProductModal.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -45,15 +46,6 @@ export default function ProductCard({ product, onAddToCart }) {
       : calcFinalPrice(price, resolvedPromotion)
 
   const hasDiscount = finalPrice < price
-
-  function promotionLabel(promo) {
-    if (!promo) return null
-    if (promo.type === 'percentage') return `${parseFloat(promo.value)}% OFF`
-    if (promo.type === 'fixed_amount') return `$${promo.value} OFF`
-    if (promo.type === 'buy_x_get_y') return `Buy ${promo.buy_qty} Get ${promo.free_qty}`
-    if (promo.type === 'combo') return 'COMBO'
-    return null
-  }
 
   async function handleAddToCart(quantity = 1) {
     setStockMsg('')
@@ -115,7 +107,7 @@ export default function ProductCard({ product, onAddToCart }) {
     setTimeout(() => setIsAdded(false), 1200)
   }
 
-  const promoLabel = promotionLabel(resolvedPromotion)
+  const promotionLabel = resolvedPromotion ? getPromotionShort(resolvedPromotion) : ''
 
   return (
     <>
@@ -135,11 +127,12 @@ export default function ProductCard({ product, onAddToCart }) {
             )}
 
             {/* Promo badge */}
-            {promoLabel && (
-              <div className="absolute top-2 left-2 z-20">
-                <span className="bg-gradient-to-r from-[#5b3a29] to-amber-700 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-md flex items-center gap-1 tracking-wider uppercase">
-                  🔥 {promoLabel}
-                </span>
+            {resolvedPromotion && (
+              <div className="absolute left-3 top-3 z-20">
+                <div className="flex items-center gap-1.5 rounded-full border border-red-700 bg-red-600 px-3 py-1.5 text-[11px] font-black uppercase tracking-wide text-white shadow-sm">
+                  <Gift className="h-3.5 w-3.5" />
+                  {promotionLabel}
+                </div>
               </div>
             )}
 

@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Package, DollarSign, AlertTriangle, XCircle } from 'lucide-react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import Loader from '../../../components/shared/Loader.jsx'
@@ -26,6 +27,20 @@ export default function Ingredients() {
   const [ingredients, setIngredients] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const iconMap = {
+    'Total Ingredients': Package,
+    'Total Stock Value': DollarSign,
+    'Low Stock Items': AlertTriangle,
+    'Out of Stock': XCircle,
+  }
+
+  const toneMap = {
+    'Total Ingredients': 'teal',
+    'Total Stock Value': 'green',
+    'Low Stock Items': 'orange',
+    'Out of Stock': 'red',
+  }
+
   const [stats, setStats] = useState([
     { label: 'Total Ingredients', value: '0', change: '-' },
     { label: 'Total Stock Value', value: '$0.00', change: '-' },
@@ -168,18 +183,34 @@ export default function Ingredients() {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-            {stats.map((stat, idx) => (
-              <div key={stat.label} className="bg-white rounded-2xl p-5 shadow-md border-b-4 border-slate-200 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">{stat.label}</p>
-                    <p className="text-2xl font-bold text-slate-800 mt-2">{stat.value}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {stats.map((stat) => {
+              const IconComp = iconMap[stat.label]
+              const tone = toneMap[stat.label] || 'teal'
+
+              const iconBox = {
+                teal: 'border-teal-500 bg-teal-500 shadow-teal-500/20',
+                green: 'border-emerald-500 bg-emerald-500 shadow-emerald-500/20',
+                orange: 'border-orange-500 bg-orange-500 shadow-orange-500/20',
+                red: 'border-red-500 bg-red-500 shadow-red-500/20',
+              }[tone]
+
+              return (
+                <div key={stat.label} className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+                  <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold uppercase tracking-wide text-slate-500">{stat.label}</p>
+                      <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{stat.value}</p>
+                      <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">{stat.change}</p>
+                    </div>
+                    <div className={`flex h-10 min-w-10 items-center justify-center rounded-xl border shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl ${iconBox}`}>
+                      {IconComp && <IconComp className="h-5 w-5 text-white" />}
+                    </div>
                   </div>
-                  <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-full">{stat.change}</span>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           {/* Search */}

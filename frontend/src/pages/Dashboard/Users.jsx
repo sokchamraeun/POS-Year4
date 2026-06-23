@@ -556,26 +556,29 @@ function PageLayout({ children }) {
 }
 
 function StatCard({ title, value, icon, color }) {
-  const colors = {
-    teal: "bg-teal-50 text-teal-600",
-    green: "bg-green-50 text-green-600",
-    purple: "bg-purple-50 text-purple-600",
-    gray: "bg-slate-100 text-slate-500",
+  const tones = {
+    teal:   { iconBox: 'border-teal-500 bg-teal-500 shadow-teal-500/20' },
+    green:  { iconBox: 'border-emerald-500 bg-emerald-500 shadow-emerald-500/20' },
+    purple: { iconBox: 'border-purple-500 bg-purple-500 shadow-purple-500/20' },
+    gray:   { iconBox: 'border-slate-800 bg-slate-800 shadow-slate-500/20' },
   };
 
+  const ct = tones[color] || tones.teal;
+
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+    <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+      <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-bold uppercase tracking-wide text-slate-500">
             {title}
           </p>
-          <p className="mt-1 text-2xl font-bold text-slate-900">{value}</p>
+          <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">
+            {value}
+          </p>
         </div>
-        <div
-          className={`flex h-11 w-11 items-center justify-center rounded-xl ${colors[color]}`}
-        >
-          {icon}
+        <div className={`flex h-10 min-w-10 items-center justify-center rounded-xl border shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl ${ct.iconBox}`}>
+          <span className="text-white">{icon}</span>
         </div>
       </div>
     </div>

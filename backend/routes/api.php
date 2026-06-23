@@ -45,6 +45,8 @@ Route::post('/customer/forgot-password', [CustomerAuthController::class, 'forgot
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::get('/tables/available', [TableController::class, 'available']);
+Route::get('/tables/by-token/{qrToken}', [TableController::class, 'byToken']);
+Route::post('/tables/{qrToken}/order-items', [TableController::class, 'addOrderItems']);
 Route::post('/orders', [OrderController::class, 'store']);
 Route::post('/orders/check-stock', [OrderController::class, 'checkStock']);
 Route::get('/orders/history', [OrderController::class, 'customerHistory']);

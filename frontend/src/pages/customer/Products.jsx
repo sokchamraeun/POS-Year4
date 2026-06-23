@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import Navbar from '../../components/customer/Navbar.jsx'
 import PromotionSlider from '../../components/customer/PromotionSlider.jsx'
 import ProductCard from '../../components/customer/ProductCard.jsx'
@@ -11,6 +11,22 @@ const API_URL = import.meta.env.VITE_API_URL
 
 export default function Products() {
   const { addItem } = useCart()
+  const [searchParams] = useSearchParams()
+
+  const qrToken = (() => {
+    const fromUrl = searchParams.get('token')
+    if (fromUrl) {
+      sessionStorage.setItem('qr_token', fromUrl)
+      return fromUrl
+    }
+    return sessionStorage.getItem('qr_token') || ''
+  })()
+
+  useEffect(() => {
+    if (qrToken) {
+      fetch(`${API_URL}/tables/by-token/${qrToken}`).catch(() => {})
+    }
+  }, [qrToken])
 
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState(['All'])
