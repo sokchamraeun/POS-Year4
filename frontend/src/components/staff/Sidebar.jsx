@@ -17,10 +17,8 @@ const userLinks = [
   { to: '/staff/roles', label: 'Roles', perm: 'manage-roles' },
   { to: '/staff/users', label: 'Users', perm: 'manage-staff' },
   { to: '/staff/employees', label: 'Employees', perm: 'manage-staff' },
-  { to: '/staff/customers', label: 'Customers', perm: 'manage-customers' },
   { to: '/staff/permissions', label: 'Permissions', perm: 'manage-permissions' },
   { to: '/staff/login-history', label: 'Login History', perm: 'manage-staff' },
-  { to: '/staff/user-test', label: 'User Test', perm: 'manage-staff' },
 ]
 
 const itemProductLinks = [

@@ -21,7 +21,6 @@ import RecipeBatchEdit from './pages/Dashboard/Recipe/RecipeBatchEdit.jsx'
 import MenuOrder from './pages/Dashboard/MenuOrder/MenuOrder.jsx'
 import Permissions from './pages/Dashboard/Permissions.jsx'
 import Users from './pages/Dashboard/Users.jsx'
-import Customers from './pages/Dashboard/Customers.jsx'
 import Roles from './pages/Dashboard/Roles/Roles.jsx'
 import Reports from './pages/Dashboard/Reports/Reports.jsx'
 import Tables from './pages/Dashboard/Tables.jsx'
@@ -37,7 +36,6 @@ import HeroSliderPage from './pages/Dashboard/HeroSlider/Heroslider.jsx'
 import SiteSettings from './pages/Dashboard/Settings/Settings.jsx'
 import Events from './pages/Dashboard/Events/Events.jsx'
 import { SettingsProvider } from './context/SettingsContext.jsx'
-import UserTest from './pages/Dashboard/UserTest.jsx'
 import LoginHistory from './pages/Dashboard/LogHistory/LoginHistory.jsx'
 import Employees from './pages/Dashboard/Employees.jsx'
 import Suppliers from './pages/Dashboard/Suppliers.jsx'
@@ -74,7 +72,6 @@ export default function App() {
         <Route path="/staff/menu-order" element={<PrivateRoute><MenuOrder /></PrivateRoute>} />
         <Route path="/staff/permissions" element={<PrivateRoute><Permissions /></PrivateRoute>} />
         <Route path="/staff/users" element={<PrivateRoute><Users /></PrivateRoute>} />
-        <Route path="/staff/customers" element={<PrivateRoute><Customers /></PrivateRoute>} />
         <Route path="/staff/roles" element={<PrivateRoute><Roles /></PrivateRoute>} />
         <Route path="/staff/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
         <Route path="/staff/tables" element={<PrivateRoute><Tables /></PrivateRoute>} />
@@ -93,7 +90,6 @@ export default function App() {
         <Route path="/staff/employees" element={<PrivateRoute><Employees /></PrivateRoute>} />
         <Route path="/staff/suppliers" element={<PrivateRoute><Suppliers /></PrivateRoute>} />
         <Route path="/staff/stock-in" element={<PrivateRoute><StockIn /></PrivateRoute>} />
-        <Route path="/staff/user-test" element={<PrivateRoute><UserTest /></PrivateRoute>} />
         <Route path="/staff/login" element={<Login />} />
         <Route path="/staff/register" element={<Register />} />
         <Route path="/staff/change-password" element={<ChangePassword />} />

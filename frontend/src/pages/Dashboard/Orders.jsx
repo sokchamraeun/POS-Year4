@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback, useRef } from 'react'
 import { List, CheckCircle, Clock, DollarSign } from 'lucide-react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
@@ -6,6 +6,9 @@ import { useSocket, useSocketConnect } from '../../hooks/useSocket'
 import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
 import Loader from '../../components/shared/Loader.jsx'
 import { useSettings } from '../../context/SettingsContext.jsx'
+import { QRCodeCanvas } from 'qrcode.react'
+
+const WEBSITE_URL = 'https://pos-year4.vercel.app'
 
 const API_URL = import.meta.env.VITE_API_URL
 // Read the token at call time (not module-load) so it isn't captured stale
@@ -103,6 +106,7 @@ const paymentColors = {
 
 export default function Orders() {
   const { settings } = useSettings()
+  const qrRef = useRef(null)
   const [orders, setOrders] = useState([])
   const [activeTab, setActiveTab] = useState('All')
   const [selectedOrder, setSelectedOrder] = useState(null)
@@ -609,6 +613,10 @@ export default function Orders() {
                   </table>
                   </div>
                 </div>
+                {/* Hidden QR used to embed the website link into the printed receipt */}
+                <div style={{ position: 'absolute', left: '-9999px', top: 0 }} aria-hidden="true">
+                  <QRCodeCanvas ref={qrRef} id="website-qr" value={WEBSITE_URL} size={140} level="M" />
+                </div>
                 <div className="flex items-center justify-between gap-2 border-t border-teal-200 bg-teal-50 px-6 py-4">
                   <button
                     onClick={() => {
@@ -624,6 +632,9 @@ export default function Orders() {
                       const shopPhone = settings.receipt_phone || settings.footer_phone || ''
                       const riel = (usd) => Math.round((usd * RATE) / 100) * 100
                       const orderType = o.table && o.table !== '-' ? 'DINE-IN' : 'TAKE-AWAY'
+                      const qrCanvas = qrRef.current || document.getElementById('website-qr')
+                      let qrDataUrl = ''
+                      try { qrDataUrl = qrCanvas ? qrCanvas.toDataURL('image/png') : '' } catch { qrDataUrl = '' }
                       const itemsHtml = o.detail.map((item) => {
                         const vars = [item.size, item.sugar, item.ice, item.addOn].filter(Boolean).join(', ')
                         const promLabel = item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' ? `<div class="sub2">(${getPromotionLabel(item.promotion)})</div>` : ''
@@ -636,15 +647,18 @@ export default function Orders() {
                       }).join('')
                       const discountHtml = (() => {
                         if (!(o.discount > 0)) return ''
+                        const subtotal = o.total + o.discount
                         const pNames = [...new Set(o.detail.filter(i => i.promotion).map(i => i.promotion.name).filter(Boolean))].join(', ')
-                        return `<tr><td colspan="3" class="r" style="font-size:10px">Discount${pNames ? ' ('+pNames+')' : ''}</td><td class="r" style="font-size:10px">-${o.discount.toFixed(2)}</td></tr>`
+                        return `<tr><td colspan="3" class="r" style="font-size:10px;color:#555">Subtotal</td><td class="r" style="font-size:10px;color:#555">${subtotal.toFixed(2)}</td></tr>`
+                          + `<tr><td colspan="3" class="r" style="font-size:10px">Promotion${pNames ? ' ('+pNames+')' : ''}</td><td class="r" style="font-size:10px">-${o.discount.toFixed(2)}</td></tr>`
                       })()
                       w.document.write(`
                         <html><head><title>Receipt ${o.id}</title>
                         <style>
-                          body { font-family: 'Courier New', monospace; font-size: 11px; margin: 0; padding: 10px; width: 72mm; color: #000; }
-                          .brand { font-size: 30px; font-weight: 900; letter-spacing: 4px; text-align: center; margin: 0; }
-                          .subkh { text-align: center; font-size: 11px; margin: 2px 0 8px; }
+                          body { font-family: 'Courier New', 'Khmer OS System', 'Noto Sans Khmer', monospace; font-size: 11px; margin: 0; padding: 10px; width: 72mm; color: #000; }
+                          .brand { font-family: 'Khmer OS Muol Light', 'Noto Serif Khmer', 'Khmer OS', Georgia, serif; font-size: 22px; font-weight: 900; letter-spacing: 1px; text-align: center; margin: 0; line-height: 1.2; }
+                          .brand-en { font-size: 14px; font-weight: 900; letter-spacing: 2px; text-align: center; margin: 2px 0 0; }
+                          .subkh { font-family: 'Khmer OS', 'Noto Sans Khmer', sans-serif; text-align: center; font-size: 13px; margin: 4px 0 8px; }
                           .code { text-align: center; font-size: 11px; margin-bottom: 2px; }
                           .type { font-size: 13px; font-weight: bold; margin: 8px 0 4px; }
                           .meta { font-size: 11px; line-height: 1.6; }
@@ -659,9 +673,12 @@ export default function Orders() {
                           .rate { font-size: 10px; }
                           .dash { border-top: 1px dashed #888; margin: 8px 0; }
                           .foot { text-align: center; font-size: 9px; margin-top: 10px; line-height: 1.6; }
+                          .qrbox { text-align: center; margin-top: 10px; }
+                          .qrcap { font-size: 9px; margin-top: 4px; line-height: 1.4; }
                         </style></head><body>
                         <div class="brand">${shopName}</div>
-                        ${settings.tagline ? `<div class="subkh">${settings.tagline}</div>` : '<div style="height:6px"></div>'}
+                        ${settings.tagline ? `<div class="brand-en">${settings.tagline}</div>` : ''}
+                        <div style="height:6px"></div>
                         <div class="code">No. ${o.id}</div>
                         <div class="type">${orderType}</div>
                         <div class="meta">
@@ -689,7 +706,11 @@ export default function Orders() {
                           ${wifiName ? 'WiFi: ' + wifiName + (wifiPass ? ' / ' + wifiPass : '') + '<br>' : ''}
                           Thank you &mdash; See you again!
                         </div>
-                        <script>window.print();window.close();</script>
+                        ${qrDataUrl ? `<div class="qrbox">
+                          <img src="${qrDataUrl}" width="120" height="120" alt="website" />
+                          <div class="qrcap">Scan to order online<br>${WEBSITE_URL}</div>
+                        </div>` : ''}
+                        <script>window.onload=function(){window.print();window.close();}</script>
                         </body></html>
                       `)
                       w.document.close()

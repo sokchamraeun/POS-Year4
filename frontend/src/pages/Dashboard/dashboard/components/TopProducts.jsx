@@ -48,7 +48,7 @@ export default function TopProducts({ topProducts = [] }) {
       </div>
 
       <div className="grid grid-cols-5 gap-3">
-        {topProducts.map((product, index) => {
+        {topProducts.slice(0, 10).map((product, index) => {
           const qty = Number(product.qty ?? 0)
           const percent = total > 0 ? Math.round((qty / total) * 100) : 0
 

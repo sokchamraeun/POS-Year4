@@ -14,6 +14,32 @@ function getImageUrl(image) {
   return image.startsWith('http') ? image : `${STORAGE_URL}/${image}`
 }
 
+function ProductThumb({ image, name }) {
+  const [loaded, setLoaded] = useState(false)
+  const [failed, setFailed] = useState(false)
+
+  if (!image || failed) {
+    return (
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#134e4a] to-[#0d9488] text-lg text-white shadow-md">
+        ☕
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-2xl shadow-md">
+      {!loaded && <div className="absolute inset-0 animate-pulse bg-[#e7cda7]" />}
+      <img
+        src={getImageUrl(image)}
+        alt={name || 'Product'}
+        onLoad={() => setLoaded(true)}
+        onError={() => setFailed(true)}
+        className={`h-11 w-11 object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+      />
+    </div>
+  )
+}
+
 export default function History() {
   const { customer } = useCustomerAuth()
 
@@ -364,18 +390,7 @@ export default function History() {
                               className="flex items-start justify-between gap-4 p-3"
                             >
                               <div className="flex min-w-0 items-start gap-3">
-                                {item.product?.image ? (
-                                  <img
-                                    src={getImageUrl(item.product.image)}
-                                    alt={item.product?.name || 'Product'}
-                                    className="h-11 w-11 shrink-0 rounded-2xl object-cover shadow-md"
-                                    onError={(e) => { e.currentTarget.style.display = 'none' }}
-                                  />
-                                ) : (
-                                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#134e4a] to-[#0d9488] text-lg text-white shadow-md">
-                                    ☕
-                                  </div>
-                                )}
+                                <ProductThumb image={item.product?.image} name={item.product?.name} />
 
                                 <div className="min-w-0">
                                   <p className="truncate text-sm font-black text-black">

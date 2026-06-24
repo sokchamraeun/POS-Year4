@@ -1,4 +1,5 @@
 ﻿import { useEffect, useState } from 'react'
+import { Users, CheckCircle, XCircle } from 'lucide-react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 import Loader from '../../components/shared/Loader.jsx'
@@ -197,16 +198,26 @@ export default function Employees() {
           {/* Stat cards */}
           <div className="grid grid-cols-3 gap-4 mb-6">
             {[
-              { label: 'Total Employees', value: total,    accent: 'bg-blue-500' },
-              { label: 'Active',          value: active,   accent: 'bg-emerald-500' },
-              { label: 'Inactive',        value: inactive, accent: 'bg-slate-400' },
-            ].map((s) => (
-              <div key={s.label} className="relative bg-white rounded-2xl border border-slate-100 p-5 shadow-sm overflow-hidden">
-                <div className={`absolute top-0 left-0 right-0 h-[3px] ${s.accent}`} />
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">{s.label}</p>
-                <p className="mt-2 text-3xl font-bold text-slate-800">{s.value}</p>
-              </div>
-            ))}
+              { label: 'Total Employees', value: total,    icon: Users,      line: 'bg-blue-500',    box: 'border-blue-500 bg-blue-500 shadow-blue-500/20' },
+              { label: 'Active',          value: active,   icon: CheckCircle,line: 'bg-emerald-500', box: 'border-emerald-500 bg-emerald-500 shadow-emerald-500/20' },
+              { label: 'Inactive',        value: inactive, icon: XCircle,    line: 'bg-slate-400',   box: 'border-slate-400 bg-slate-400 shadow-slate-400/20' },
+            ].map((s) => {
+              const Icon = s.icon
+              return (
+                <div key={s.label} className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+                  <div className={`absolute left-0 top-0 h-full w-1 transition-all duration-300 ${s.line}`} />
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold uppercase tracking-wide text-slate-500">{s.label}</p>
+                      <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{s.value}</p>
+                    </div>
+                    <div className={`flex h-10 min-w-10 items-center justify-center rounded-xl border shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl ${s.box}`}>
+                      <Icon className="h-5 w-5 text-white" />
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
 
           {/* Table */}

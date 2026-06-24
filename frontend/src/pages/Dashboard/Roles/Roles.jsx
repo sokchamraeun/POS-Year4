@@ -5,6 +5,7 @@ import { fetchRoles as fetchRolesApi, fetchPermissions as fetchPermissionsApi, s
 import RolesTable from './components/RolesTable.jsx'
 import RoleFormModal from './components/RoleFormModal.jsx'
 import RoleDetailModal from './components/RoleDetailModal.jsx'
+import Loader from '../../../components/shared/Loader.jsx'
 
 export default function Roles() {
   const [roles, setRoles] = useState([])
@@ -16,11 +17,15 @@ export default function Roles() {
   const [formData, setFormData] = useState({ name: '', slug: '', permissions: [] })
   const [moduleFilter, setModuleFilter] = useState('')
   const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(true)
   const modules = [...new Set(allPermissions.map(p => p.module).filter(Boolean))]
 
   useEffect(() => {
-    fetchRolesApi().then(setRoles).catch(() => {})
-    fetchPermissionsApi().then(setAllPermissions).catch(() => {})
+    setLoading(true)
+    Promise.all([
+      fetchRolesApi().then(setRoles).catch(() => {}),
+      fetchPermissionsApi().then(setAllPermissions).catch(() => {}),
+    ]).finally(() => setLoading(false))
   }, [])
 
   function resetForm() {
@@ -80,6 +85,8 @@ export default function Roles() {
       console.error('Failed to delete role', err)
     }
   }
+
+  if (loading) return <Loader text="Loading roles..." />
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100">

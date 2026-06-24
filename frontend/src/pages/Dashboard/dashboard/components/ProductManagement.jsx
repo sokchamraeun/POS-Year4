@@ -1,224 +1,186 @@
-﻿// src/pages/staff/dashboard/components/ProductManagement.jsx
-import { useState } from 'react'
+// src/pages/staff/dashboard/components/ProductManagement.jsx
+import { useMemo, useState } from 'react'
+import {
+  ResponsiveContainer,
+  ComposedChart,
+  Bar,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from 'recharts'
 
-const STORAGE_URL = import.meta.env.VITE_STORAGE_URL ?? ''
+const PERIODS = [
+  { key: 'hour', label: 'Hour', ms: 60 * 60 * 1000 },
+  { key: 'day', label: 'Day', ms: 24 * 60 * 60 * 1000 },
+  { key: 'week', label: 'Week', ms: 7 * 24 * 60 * 60 * 1000 },
+  { key: 'month', label: 'Month', ms: 30 * 24 * 60 * 60 * 1000 },
+  { key: 'year', label: 'Year', ms: 365 * 24 * 60 * 60 * 1000 },
+]
 
-export default function ProductManagement({ products = [] }) {
+export default function ProductManagement({ products = [], orders = [] }) {
   const productList = Array.isArray(products) ? products : []
-  const [modalFilter, setModalFilter] = useState(null)
+  const [period, setPeriod] = useState('day')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
 
-  const activeProducts = productList.filter((product) => product.status)
-  const inactiveProducts = productList.filter((product) => !product.status)
-  const lowStockProducts = productList.filter((product) => {
-    const stock = Number(
-      product.stock ??
-      product.quantity ??
-      product.qty ??
-      0
-    )
-    return stock <= 5
-  })
-
-  const activeCount = activeProducts.length
-  const inactiveCount = inactiveProducts.length
-  const lowStockCount = lowStockProducts.length
-
-  let modalTitle = ''
-  let modalProducts = []
-  if (modalFilter === 'active') {
-    modalTitle = 'Active Products'
-    modalProducts = activeProducts
-  } else if (modalFilter === 'inactive') {
-    modalTitle = 'Inactive Products'
-    modalProducts = inactiveProducts
-  } else if (modalFilter === 'lowStock') {
-    modalTitle = 'Low Stock Products'
-    modalProducts = lowStockProducts
-  }
+  // Total sales price + quantity sold per product, top 8 by total price.
+  const data = useMemo(() => {
+    const orderList = Array.isArray(orders) ? orders : []
+    const isCustom = period === 'custom'
+    const windowMs = (PERIODS.find((p) => p.key === period) ?? PERIODS[1]).ms
+    const times = orderList
+      .map((o) => new Date(o.created_at ?? '').getTime())
+      .filter((t) => !isNaN(t))
+    // Reference "now" off the most recent order so filtering stays pure.
+    const ref = times.length ? Math.max(...times) : 0
+    const cutoff = ref - windowMs
+    const map = {}
+    for (const o of orderList) {
+      const day = (o.created_at ?? '').slice(0, 10)
+      if (isCustom) {
+        if (fromDate && day < fromDate) continue
+        if (toDate && day > toDate) continue
+      } else {
+        const t = new Date(o.created_at ?? '').getTime()
+        if (isNaN(t) || t < cutoff) continue
+      }
+      for (const i of o.items ?? []) {
+        const name = i.product?.name ?? i.name ?? 'Unknown'
+        if (!map[name]) map[name] = { name, total: 0, qty: 0 }
+        const sub = Number(i.subtotal ?? Number(i.unit_price ?? 0) * Number(i.qty ?? 1))
+        map[name].total += sub
+        map[name].qty += Number(i.qty ?? 0)
+      }
+    }
+    return Object.values(map)
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 8)
+      .map((d) => ({ ...d, total: Number(d.total.toFixed(2)) }))
+  }, [orders, period, fromDate, toDate])
 
   return (
-    <>
-      <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">
-              Product Management
-            </h2>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Stock status and product availability.
-            </p>
-          </div>
-
-          <div className="rounded-2xl bg-teal-700 px-5 py-3 text-right text-white shadow-sm">
-            <p className="text-xs font-medium text-teal-100">
-              Products
-            </p>
-
-            <p className="text-3xl font-bold">
-              {productList.length}
-            </p>
-          </div>
+    <div className="bg-white rounded-3xl shadow-xl shadow-teal-900/10 p-6 sm:p-8 flex flex-col flex-1 border border-teal-800/30 transition-all duration-300 hover:shadow-2xl hover:shadow-teal-900/20">
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">Product Sales</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Total price and quantity sold per product
+            {period === 'custom'
+              ? (fromDate || toDate) ? ` · ${fromDate || '…'} to ${toDate || '…'}` : ' · custom range'
+              : ` · last ${(PERIODS.find((p) => p.key === period) ?? PERIODS[1]).label.toLowerCase()}`}.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <SummaryBox
-            label="Active"
-            value={activeCount}
-            bg="bg-teal-50"
-            border="border-teal-300"
-            text="text-teal-800"
-            onClick={() => setModalFilter('active')}
-          />
-
-          <SummaryBox
-            label="Inactive"
-            value={inactiveCount}
-            bg="bg-slate-50"
-            border="border-slate-300"
-            text="text-slate-700"
-            onClick={() => setModalFilter('inactive')}
-          />
-
-          <SummaryBox
-            label="Low Stock"
-            value={lowStockCount}
-            bg="bg-red-50"
-            border="border-red-300"
-            text="text-red-700"
-            animate={lowStockCount > 0}
-            onClick={() => setModalFilter('lowStock')}
-          />
+        <div className="rounded-2xl bg-teal-700 px-5 py-3 text-right text-white shadow-sm">
+          <p className="text-xs font-medium text-teal-100">Products</p>
+          <p className="text-3xl font-bold">{productList.length}</p>
         </div>
       </div>
 
-      {modalFilter && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4"
-          onClick={() => setModalFilter(null)}
-        >
-          <div
-            className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
-            onClick={(e) => e.stopPropagation()}
+      <div className="mb-5 flex flex-wrap items-center gap-1.5">
+        {PERIODS.map((p) => (
+          <button
+            key={p.key}
+            onClick={() => setPeriod(p.key)}
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+              period === p.key
+                ? 'bg-teal-700 text-white shadow-sm'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
           >
-            <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">{modalTitle}</h3>
-                <p className="text-sm text-slate-500">{modalProducts.length} product{modalProducts.length !== 1 ? 's' : ''}</p>
-              </div>
-              <button
-                onClick={() => setModalFilter(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition-all duration-200 hover:bg-slate-100 hover:text-slate-600"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+            {p.label}
+          </button>
+        ))}
+        <button
+          onClick={() => setPeriod('custom')}
+          className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+            period === 'custom'
+              ? 'bg-teal-700 text-white shadow-sm'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          }`}
+        >
+          Custom
+        </button>
 
-            <div className="flex-1 overflow-y-auto p-6">
-              {modalProducts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <p className="text-sm text-slate-400">No products found.</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {modalProducts.map((product, index) => {
-                    const stock = Number(
-                      product.stock ?? product.quantity ?? product.qty ?? 0
-                    )
-                    return (
-                      <div
-                        key={product.id ?? product.name ?? index}
-                        className="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition-all duration-200 hover:border-teal-200 hover:shadow-md"
-                      >
-                        <div className="flex items-center gap-3">
-                          {product.image ? (
-                            <img
-                              src={product.image.startsWith('http') ? product.image : STORAGE_URL + '/' + product.image}
-                              alt={product.name}
-                              className="h-10 w-10 shrink-0 rounded-lg object-contain shadow-sm ring-1 ring-slate-200 bg-white"
-                            />
-                          ) : (
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-sm font-bold text-teal-700">
-                              {index + 1}
-                            </div>
-                          )}
-                          <div>
-                            <p className="font-semibold text-slate-800">{product.name}</p>
-                            <p className="text-xs text-slate-400">Stock: {stock}</p>
-                          </div>
-                        </div>
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                            product.status
-                              ? 'bg-teal-50 text-teal-700'
-                              : 'bg-slate-100 text-slate-500'
-                          }`}
-                        >
-                          {product.status ? 'Active' : 'Inactive'}
-                        </span>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-end border-t border-slate-200 px-6 py-4">
-              <button
-                onClick={() => setModalFilter(null)}
-                className="rounded-xl bg-slate-100 px-5 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:bg-slate-200"
-              >
-                Close
-              </button>
-            </div>
+        {period === 'custom' && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+            <span className="text-xs text-slate-400">to</span>
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
           </div>
-        </div>
-      )}
-    </>
-  )
-}
-
-function SummaryBox({
-  label,
-  value,
-  bg,
-  border,
-  text,
-  onClick,
-  animate,
-}) {
-  return (
-    <div
-      onClick={onClick}
-      className={`
-        ${bg}
-        ${border}
-        rounded-2xl
-        border-2
-        p-5
-        text-center
-        transition-all
-        duration-300
-        hover:shadow-md
-        hover:scale-[1.02]
-        cursor-pointer
-        ${animate ? 'animate-pulse' : ''}
-      `}
-    >
-      <p className={`text-3xl font-bold ${text}`}>
-        {value}
-      </p>
-
-      <p className={`mt-2 text-sm font-semibold ${text} inline-flex items-center justify-center gap-1.5`}>
-        {animate && (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 002 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
-          </svg>
         )}
-        {label}
-      </p>
+      </div>
+
+      {data.length === 0 ? (
+        <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50/30 py-16 text-center">
+          <span className="mb-3 text-2xl">📊</span>
+          <p className="font-semibold text-slate-700">No sales data yet</p>
+          <p className="mt-1 text-sm text-slate-400">Make sales to see product totals.</p>
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height={340}>
+          <ComposedChart data={data} margin={{ top: 16, right: 16, bottom: 50, left: 8 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+            <XAxis
+              dataKey="name"
+              tick={{ fontSize: 11, fill: '#475569' }}
+              interval={0}
+              angle={-20}
+              textAnchor="end"
+              height={60}
+            />
+            <YAxis
+              yAxisId="left"
+              tick={{ fontSize: 11, fill: '#475569' }}
+              tickFormatter={(v) => `$${v}`}
+            />
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              tick={{ fontSize: 11, fill: '#475569' }}
+              allowDecimals={false}
+            />
+            <Tooltip
+              formatter={(value, name) =>
+                name === 'Total Price' ? [`$${Number(value).toFixed(2)}`, name] : [value, name]
+              }
+              contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12 }}
+            />
+            <Legend wrapperStyle={{ fontSize: 12 }} />
+            <Bar
+              yAxisId="left"
+              dataKey="total"
+              name="Total Price"
+              fill="#0d9488"
+              radius={[6, 6, 0, 0]}
+              maxBarSize={48}
+            />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="qty"
+              name="Qty Sold"
+              stroke="#9333ea"
+              strokeWidth={2.5}
+              dot={{ r: 3 }}
+              activeDot={{ r: 5 }}
+            />
+          </ComposedChart>
+        </ResponsiveContainer>
+      )}
     </div>
   )
 }

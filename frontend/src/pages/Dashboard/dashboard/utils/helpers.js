@@ -147,10 +147,10 @@ export const getTopProducts = (orders, allProducts) => {
   
   const sorted = Object.entries(prodData)
     .sort((a, b) => b[1].qty - a[1].qty)
-    .slice(0, 5)
+    .slice(0, 10)
     .map(([name, data]) => ({ name, qty: data.qty, image: data.image }))
   
-  return sorted.length > 0 ? sorted : allProducts.slice(0, 5).map(p => ({ name: p.name, qty: 0, image: p.image ?? '' }))
+  return sorted.length > 0 ? sorted : allProducts.slice(0, 10).map(p => ({ name: p.name, qty: 0, image: p.image ?? '' }))
 }
 
 export const calculateCustomDateRange = (orders, fromDate, toDate) => {

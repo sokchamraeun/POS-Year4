@@ -261,7 +261,7 @@ export default function Dashboard() {
 
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <TopProducts topProducts={topProducts} />
-            <ProductManagement products={products} />
+            <ProductManagement products={products} orders={allOrders} />
           </div>
 
           {selectedOrder && (
