@@ -200,9 +200,6 @@ export default function History() {
       : 'bg-red-100 text-red-700 ring-red-200'
   }
 
-  const totalSpent = orders.reduce((sum, order) => sum + Number(order.total || 0), 0)
-  const paidOrders = orders.filter((order) => order.payment_status === 'Paid').length
-  const latestOrder = orders[0]
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fff8ef] pb-24 text-[#2b170d] sm:pb-0">
@@ -284,32 +281,6 @@ export default function History() {
                 </div>
               )}
             </div>
-
-            {/* Summary */}
-            {orders.length > 0 && (
-              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <SummaryCard
-                  label="Total Orders"
-                  value={orders.length}
-                  sub="All history"
-                  icon="🧾"
-                />
-
-                <SummaryCard
-                  label="Total Spent"
-                  value={money(totalSpent)}
-                  sub="Coffee payment"
-                  icon="☕"
-                />
-
-                <SummaryCard
-                  label="Paid Orders"
-                  value={paidOrders}
-                  sub={latestOrder ? `Latest #${latestOrder.id}` : 'No latest order'}
-                  icon="✅"
-                />
-              </div>
-            )}
 
             {/* Loading */}
             {loading && (
@@ -516,28 +487,3 @@ export default function History() {
   )
 }
 
-function SummaryCard({ label, value, sub, icon }) {
-  return (
-    <div className="rounded-[1.5rem] border border-[#e7cda7] bg-white/85 p-4 shadow-[0_16px_40px_rgba(61,40,23,0.08)] backdrop-blur-xl">
-      <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3d2415] to-[#a86530] text-xl text-white shadow-md">
-          {icon}
-        </div>
-
-        <div className="min-w-0">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#a47a55]">
-            {label}
-          </p>
-
-          <p className="truncate text-xl font-black text-[#2b170d]">
-            {value}
-          </p>
-
-          <p className="truncate text-xs font-semibold text-[#8a6a50]">
-            {sub}
-          </p>
-        </div>
-      </div>
-    </div>
-  )
-}
