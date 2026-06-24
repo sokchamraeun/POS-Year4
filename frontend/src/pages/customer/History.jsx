@@ -393,7 +393,7 @@ export default function History() {
 
                                   {(item.created_at || order.created_at) && (
                                     <p className="mt-1 text-[11px] font-bold text-black">
-                                      🕒 {formatTime(item.created_at || order.created_at)}
+                                      {formatTime(item.created_at || order.created_at)}
                                     </p>
                                   )}
                                 </div>

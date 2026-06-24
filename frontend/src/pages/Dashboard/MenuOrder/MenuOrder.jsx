@@ -34,6 +34,9 @@ export default function MenuOrder() {
   const [success, setSuccess] = useState('')
   const [khqrOrderId, setKhqrOrderId] = useState(null)
   const [receiptOrder, setReceiptOrder] = useState(null)
+  const [existingOrder, setExistingOrder] = useState(null)
+  // '' = new order, or the open order id the staff chose to add items to.
+  const [orderChoice, setOrderChoice] = useState('')
 
 
   const filteredCustomers = customers.filter((c) =>
@@ -47,7 +50,7 @@ export default function MenuOrder() {
         const [prodRes, catRes, tblRes, custRes, recRes] = await Promise.all([
           fetch(`${API_URL}/products?per_page=200`, { headers: headers() }).then((r) => r.json()),
           fetch(`${API_URL}/categories?per_page=100`, { headers: headers() }).then((r) => r.json()),
-          fetch(`${API_URL}/tables/available`, { headers: headers() }).then((r) => r.json()),
+          fetch(`${API_URL}/tables?per_page=200`, { headers: headers() }).then((r) => r.json()),
           fetch(`${API_URL}/customers?per_page=200`, { headers: headers() }).then((r) => r.json()),
           fetch(`${API_URL}/recipes?per_page=500`, { headers: headers() }).then((r) => r.json()),
         ])
@@ -64,6 +67,33 @@ export default function MenuOrder() {
     }
     fetchAll()
   }, [])
+
+  useEffect(() => {
+    if (!tableId) {
+      setExistingOrder(null) // eslint-disable-line react-hooks/set-state-in-effect
+      setOrderChoice('') // eslint-disable-line react-hooks/set-state-in-effect
+      return
+    }
+    let cancelled = false
+    fetch(`${API_URL}/tables/${tableId}/current-order`, { headers: headers() })
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return
+        setExistingOrder(data.order ?? null)
+        // Default to adding into the table's open order when one exists.
+        setOrderChoice(data.order ? String(data.order.id) : '')
+        if (data.order) {
+          setCustomerId(data.order.customer_id ?? '')
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setExistingOrder(null)
+          setOrderChoice('')
+        }
+      })
+    return () => { cancelled = true }
+  }, [tableId])
 
   const filtered = (category === 'All' ? products : products.filter((p) => p.category?.name === category))
     .filter((p) => p.status)
@@ -203,20 +233,28 @@ export default function MenuOrder() {
         }
       })
 
-      const orderRes = await fetch(`${API_URL}/orders`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers() },
-        body: JSON.stringify({
-          customer_id: finalCustomerId || null,
-          table_id: tableId || null,
-          total,
-          discount: discountTotal,
-          status: 'New',
-          payment_method: paymentMethod === 'not_yet' ? null : paymentMethod,
-          payment_status: paymentMethod === 'not_yet' ? 'Unpaid' : (paymentMethod === 'KHQR' ? 'Unpaid' : 'Paid'),
-          items,
-        }),
-      })
+      const isAddingToExisting = existingOrder && existingOrder.id && orderChoice === String(existingOrder.id)
+      const orderRes = await fetch(
+        isAddingToExisting ? `${API_URL}/orders/${existingOrder.id}/items` : `${API_URL}/orders`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...headers() },
+          body: JSON.stringify(
+            isAddingToExisting
+              ? { items, discount: discountTotal }
+              : {
+                  customer_id: finalCustomerId || null,
+                  table_id: tableId || null,
+                  total,
+                  discount: discountTotal,
+                  status: 'New',
+                  payment_method: paymentMethod === 'not_yet' ? null : paymentMethod,
+                  payment_status: paymentMethod === 'not_yet' ? 'Unpaid' : (paymentMethod === 'KHQR' ? 'Unpaid' : 'Paid'),
+                  items,
+                }
+          ),
+        }
+      )
 
       if (!orderRes.ok) {
         const errData = await orderRes.json()
@@ -230,7 +268,7 @@ export default function MenuOrder() {
       const dbOrderId = createdOrder.id ?? null
 
       const localOrder = {
-        id: `#${Date.now().toString().slice(-6)}`,
+        id: isAddingToExisting ? `#${existingOrder.id}` : `#${Date.now().toString().slice(-6)}`,
         customer: customerName || 'Guest',
         phone: phone || '-',
         table: tables.find((t) => t.id === Number(tableId))?.name || tableId || '-',
@@ -260,12 +298,20 @@ export default function MenuOrder() {
 
       setPlacing(false)
 
-      if (paymentMethod === 'KHQR' && dbOrderId) {
+      if (paymentMethod === 'KHQR' && dbOrderId && !isAddingToExisting) {
         setKhqrOrderId(dbOrderId)
         return
       }
 
-      resetCart()
+      if (isAddingToExisting) {
+        setCart([])
+        setOptions({})
+        setExistingOrder(createdOrder)
+        setSuccess(`Items added to Order #${existingOrder.id}!`)
+      } else {
+        resetCart()
+      }
+      setTimeout(() => setSuccess(''), 3000)
     } catch {
       setPlacing(false)
       setSuccess('Failed to place order. Check connection.')
@@ -282,6 +328,7 @@ export default function MenuOrder() {
     setCustomerId('')
     setCustomerSearch('')
     setTableId('')
+    setExistingOrder(null)
     setSuccess('Order placed successfully!')
     setTimeout(() => setSuccess(''), 3000)
   }
@@ -342,6 +389,24 @@ if (loading) return <Loader text="Loading menu" />
               </div>
             )}
 
+            {existingOrder && orderChoice === String(existingOrder.id) && (
+              <div className="mx-6 mt-2 flex items-center gap-3 rounded-lg bg-amber-50 border border-amber-200 px-4 py-2.5 text-sm text-amber-800">
+                <span className="size-2 rounded-full bg-amber-400 shrink-0 animate-pulse" />
+                <span>
+                  Adding items to <strong>Order #{existingOrder.id}</strong>
+                  {existingOrder.table && <> &middot; Table {existingOrder.table.name}</>}
+                  {existingOrder.customer && <> &middot; {existingOrder.customer.name}</>}
+                  &nbsp;&middot; Current total: <strong>${Number(existingOrder.total).toFixed(2)}</strong>
+                </span>
+                <button
+                  onClick={() => setOrderChoice('')}
+                  className="ml-auto text-amber-600 hover:text-amber-800 font-medium"
+                >
+                  New Order
+                </button>
+              </div>
+            )}
+
             <div className="flex-1 overflow-y-auto hide-scrollbar px-6 pb-6 pt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                 {filtered.map((product) => {
@@ -386,6 +451,9 @@ if (loading) return <Loader text="Loading menu" />
             tableId={tableId}
             onTableChange={setTableId}
             tables={tables}
+            existingOrder={existingOrder}
+            orderChoice={orderChoice}
+            onOrderChoiceChange={setOrderChoice}
             paymentMethod={paymentMethod}
             onPaymentChange={setPaymentMethod}
           />

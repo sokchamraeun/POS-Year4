@@ -38,6 +38,11 @@ function mapOrder(o) {
       ice: i.ice_level?.name ?? '',
       addOn: i.addons?.map((a) => a.addon?.name).filter(Boolean).join(', ') ?? '',
       promotion: i.promotion ?? null,
+      time: (() => {
+        const d = new Date(i.created_at ?? o.created_at ?? '')
+        if (isNaN(d)) return ''
+        return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+      })(),
     })),
     printedBy: o.printed_by?.name ?? null,
   }
@@ -547,6 +552,11 @@ export default function Orders() {
                               {item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' && (
                                 <span className="ml-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-200">
                                   ({getPromotionLabel(item.promotion)})
+                                </span>
+                              )}
+                              {item.time && (
+                                <span className="mt-0.5 block text-[11px] font-semibold text-slate-400">
+                                  {item.time}
                                 </span>
                               )}
                             </td>

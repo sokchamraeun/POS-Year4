@@ -147,6 +147,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('permission:view-table')->group(function () {
         Route::get('/tables/{table}', [TableController::class, 'show']);
     });
+
+    Route::middleware('permission:view-orders')->group(function () {
+        Route::get('/tables/{table}/current-order', [TableController::class, 'currentOrderByTable']);
+    });
     Route::middleware('permission:view-hero-slider')->group(function () {
         Route::get('/hero-sliders/{heroSlider}', [HeroSliderController::class, 'show']);
     });
@@ -238,6 +242,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::middleware('permission:manage-orders')->group(function () {
         Route::put('/orders/{order}', [OrderController::class, 'update']);
+        Route::post('/orders/{order}/items', [OrderController::class, 'addItems']);
         Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
         Route::post('/orders/{order}/mark-printed', [OrderController::class, 'markPrinted']);
     });

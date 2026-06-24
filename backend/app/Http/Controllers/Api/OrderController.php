@@ -337,6 +337,165 @@ class OrderController extends Controller
         ]);
     }
 
+    public function addItems(Request $request, Order $order): JsonResponse
+    {
+        if (! in_array($order->status, ['Open', 'New']) || ! in_array($order->payment_status, [null, 'Unpaid', 'unpaid', 'pending'])) {
+            return response()->json(['message' => 'Order is not open for adding items.'], 422);
+        }
+
+        $data = $request->validate([
+            'items' => 'required|array',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.size_id' => 'required|exists:sizes,id',
+            'items.*.sugar_level_id' => 'nullable|exists:sugar_levels,id',
+            'items.*.sugar_note' => 'nullable|string|max:255',
+            'items.*.ice_level_id' => 'nullable|exists:ice_levels,id',
+            'items.*.ice_note' => 'nullable|string|max:255',
+            'items.*.qty' => 'nullable|integer|min:1',
+            'items.*.unit_price' => 'nullable|numeric|min:0',
+            'items.*.subtotal' => 'nullable|numeric|min:0',
+            'items.*.addons' => 'nullable|array',
+            'items.*.addons.*.addon_id' => 'required|exists:addons,id',
+            'items.*.addons.*.price' => 'nullable|numeric|min:0',
+            'items.*.promotion_snapshot' => 'nullable',
+            'discount' => 'nullable|numeric|min:0',
+        ]);
+
+        $productSizePairs = collect($data['items'])->map(fn ($i) => ['product_id' => $i['product_id'], 'size_id' => $i['size_id'] ?? null])->unique();
+        $allRecipes = Recipe::with('ingredient')
+            ->whereIn('product_id', $productSizePairs->pluck('product_id'))
+            ->whereIn('size_id', $productSizePairs->pluck('size_id'))
+            ->get()
+            ->groupBy(fn ($r) => $r->product_id.'-'.$r->size_id);
+
+        $addonIds = collect($data['items'])->pluck('addons')->flatten(1)->pluck('addon_id')->unique()->filter();
+        $allAddonIngredients = collect();
+        if ($addonIds->isNotEmpty()) {
+            $allAddonIngredients = AddonIngredient::with('ingredient')
+                ->whereIn('addon_id', $addonIds)
+                ->get()
+                ->groupBy('addon_id');
+        }
+
+        $insufficient = [];
+        foreach ($data['items'] as $itemData) {
+            $qty = $itemData['qty'] ?? 1;
+            $sizeId = $itemData['size_id'] ?? null;
+            $key = $itemData['product_id'].'-'.$sizeId;
+
+            $recipes = $allRecipes->get($key, collect());
+            foreach ($recipes as $recipe) {
+                if (! $recipe?->ingredient) {
+                    continue;
+                }
+                $needed = $recipe->quantity * $qty;
+                if ($recipe->ingredient->stock_quantity < $needed) {
+                    $insufficient[] = "{$recipe->ingredient->name}: need {$needed} {$recipe->ingredient->unit}, have {$recipe->ingredient->stock_quantity} {$recipe->ingredient->unit}";
+                }
+            }
+
+            foreach (($itemData['addons'] ?? []) as $addonData) {
+                $addonIngredients = $allAddonIngredients->get($addonData['addon_id'], collect());
+                foreach ($addonIngredients as $ai) {
+                    if (! $ai?->ingredient) {
+                        continue;
+                    }
+                    $needed = $ai->quantity * $qty;
+                    if ($ai->ingredient->stock_quantity < $needed) {
+                        $insufficient[] = "{$ai->ingredient->name}: need {$needed} {$ai->ingredient->unit}, have {$ai->ingredient->stock_quantity} {$ai->ingredient->unit}";
+                    }
+                }
+            }
+        }
+
+        if (! empty($insufficient)) {
+            return response()->json(['message' => 'Insufficient ingredient stock', 'errors' => $insufficient], 422);
+        }
+
+        $order = DB::transaction(function () use ($data, $order, $allRecipes, $allAddonIngredients) {
+            $itemsTotal = 0;
+            $transactions = [];
+
+            foreach ($data['items'] as $itemData) {
+                $qty = $itemData['qty'] ?? 1;
+                $sizeId = $itemData['size_id'] ?? null;
+                $subtotal = $itemData['subtotal'] ?? ($itemData['unit_price'] ?? 0) * $qty;
+                $key = $itemData['product_id'].'-'.$sizeId;
+
+                $item = $order->items()->create([
+                    'product_id' => $itemData['product_id'],
+                    'size_id' => $itemData['size_id'],
+                    'sugar_level_id' => $itemData['sugar_level_id'] ?? null,
+                    'sugar_note' => $itemData['sugar_note'] ?? null,
+                    'ice_level_id' => $itemData['ice_level_id'] ?? null,
+                    'ice_note' => $itemData['ice_note'] ?? null,
+                    'qty' => $qty,
+                    'unit_price' => $itemData['unit_price'] ?? 0,
+                    'subtotal' => $subtotal,
+                    'promotion_snapshot' => $itemData['promotion_snapshot'] ?? null,
+                ]);
+
+                foreach (($itemData['addons'] ?? []) as $addonData) {
+                    $item->addons()->create([
+                        'addon_id' => $addonData['addon_id'],
+                        'price' => $addonData['price'] ?? 0,
+                    ]);
+                }
+
+                $recipes = $allRecipes->get($key, collect());
+                foreach ($recipes as $recipe) {
+                    if (! $recipe?->ingredient) {
+                        continue;
+                    }
+                    $deductQty = $recipe->quantity * $qty;
+                    $recipe->ingredient->decrement('stock_quantity', $deductQty);
+                    $transactions[] = [
+                        'ingredient_id' => $recipe->ingredient_id,
+                        'type' => 'deduct',
+                        'quantity' => -$deductQty,
+                        'note' => "Auto-deducted for Order #{$order->id}",
+                    ];
+                }
+
+                foreach (($itemData['addons'] ?? []) as $addonData) {
+                    $addonIngredients = $allAddonIngredients->get($addonData['addon_id'], collect());
+                    foreach ($addonIngredients as $ai) {
+                        if (! $ai?->ingredient) {
+                            continue;
+                        }
+                        $deductQty = $ai->quantity * $qty;
+                        $ai->ingredient->decrement('stock_quantity', $deductQty);
+                        $transactions[] = [
+                            'ingredient_id' => $ai->ingredient_id,
+                            'type' => 'deduct',
+                            'quantity' => -$deductQty,
+                            'note' => "Auto-deducted for Order #{$order->id}",
+                        ];
+                    }
+                }
+
+                $itemsTotal += $subtotal;
+            }
+
+            if (! empty($transactions)) {
+                InventoryTransaction::insert($transactions);
+            }
+
+            $discount = $data['discount'] ?? 0;
+            $order->increment('total', max(0, $itemsTotal - $discount));
+
+            if ($discount > 0) {
+                $order->increment('discount', $discount);
+            }
+
+            dispatch_broadcast(new OrderUpdated($order));
+
+            return $order->fresh()->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+        });
+
+        return response()->json($order);
+    }
+
     public function markPrinted(Order $order): JsonResponse
     {
         $order->increment('print_count');

@@ -1,5 +1,6 @@
 ﻿import CustomerSearch from './CustomerSearch.jsx'
 import TableSelector from './TableSelector.jsx'
+import OrderSelector from './OrderSelector.jsx'
 import CartItem from './CartItem.jsx'
 import PaymentSelector from './PaymentSelector.jsx'
 import { Trash2 } from 'lucide-react'
@@ -25,6 +26,9 @@ export default function CartSidebar({
   tableId,
   onTableChange,
   tables,
+  existingOrder,
+  orderChoice,
+  onOrderChoiceChange,
   paymentMethod,
   onPaymentChange,
   comboResult,
@@ -134,7 +138,15 @@ export default function CartSidebar({
                 phone={phone}
                 onPhoneChange={onPhoneChange}
               />
-              <TableSelector tableId={tableId} onChange={onTableChange} tables={tables} />
+              <div className="grid grid-cols-2 gap-2">
+                <TableSelector tableId={tableId} onChange={onTableChange} tables={tables} />
+                <OrderSelector
+                  value={orderChoice}
+                  onChange={onOrderChoiceChange}
+                  existingOrder={existingOrder}
+                  disabled={!existingOrder}
+                />
+              </div>
             </div>
 
             <div className="border-t border-gray-200 px-4 py-4 shrink-0">

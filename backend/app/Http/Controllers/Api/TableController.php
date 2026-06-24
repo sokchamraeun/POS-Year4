@@ -132,6 +132,20 @@ class TableController extends Controller
         return response()->json(['table' => $table, 'order' => $current, 'orders' => [$current]]);
     }
 
+    public function currentOrderByTable(Table $table): JsonResponse
+    {
+        $order = $table->currentOrder();
+
+        if ($order) {
+            $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+        }
+
+        return response()->json([
+            'table' => $table,
+            'order' => $order,
+        ]);
+    }
+
     public function addOrderItems(Request $request, string $qrToken): JsonResponse
     {
         $table = Table::where('qr_token', $qrToken)->first();
