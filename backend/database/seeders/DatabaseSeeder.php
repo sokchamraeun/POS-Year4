@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,11 +17,21 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            // PermissionSeeder::class,
-            // RoleSeeder::class,
+            // PermissionSeeder is idempotent (firstOrCreate by slug), so running it
+            // on every deploy safely adds new permissions without duplicating.
+            PermissionSeeder::class,
+            // RoleSeeder is intentionally NOT auto-run: it deletes custom roles
+            // (id > 3). Run it manually only when needed.
             // UserSeeder::class,
             // ProductSeeder::class,
             IngredientAndRecipeSeeder::class,
         ]);
+
+        // Make sure the Admin role always has every permission (including newly
+        // added ones) without detaching existing assignments or touching other roles.
+        $admin = Role::where('slug', 'admin')->first();
+        if ($admin) {
+            $admin->permissions()->syncWithoutDetaching(Permission::pluck('id'));
+        }
     }
 }

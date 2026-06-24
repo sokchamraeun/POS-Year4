@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+﻿import { useState, useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { getImageUrl } from '../../utils/image.js'
 
@@ -259,6 +259,19 @@ export default function Sidebar() {
   const [settingsOpen, setSettingsOpen] = useState(() => sessionStorage.getItem('settingsOpen') === 'true')
   const [collapsed, setCollapsed] = useState(() => sessionStorage.getItem('sidebarCollapsed') === 'true')
 
+  // Keep the sidebar's scroll position across page navigations (each page
+  // mounts its own Sidebar, which would otherwise reset scroll to the top).
+  const navRef = useRef(null)
+  useEffect(() => {
+    const el = navRef.current
+    if (!el) return
+    const saved = Number(sessionStorage.getItem('sidebarScroll') || 0)
+    el.scrollTop = saved
+    const onScroll = () => sessionStorage.setItem('sidebarScroll', el.scrollTop)
+    el.addEventListener('scroll', onScroll)
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [collapsed])
+
   useEffect(() => {
     function refresh() { setUser(safeParseUser()) }
     refresh()
@@ -336,7 +349,7 @@ export default function Sidebar() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
           </svg>
         </button>
-        <nav className="flex-1 py-6 flex flex-col items-center gap-3 overflow-y-auto custom-scrollbar">
+        <nav ref={navRef} className="flex-1 py-6 flex flex-col items-center gap-3 overflow-y-auto custom-scrollbar">
           {filteredLinks.map((link) => (
             <NavLink
               key={link.to}
@@ -399,7 +412,7 @@ export default function Sidebar() {
         </button>
       </div>
       
-      <nav className="flex-1 py-6 overflow-y-auto custom-scrollbar px-4 flex flex-col gap-1">
+      <nav ref={navRef} className="flex-1 py-6 overflow-y-auto custom-scrollbar px-4 flex flex-col gap-1">
         {filteredLinks.map((link) => (
           <NavLink
             key={link.to}
