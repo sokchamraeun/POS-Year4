@@ -113,16 +113,16 @@ export default function CustomerForgotPassword() {
             alt="Coffee shop background"
             className="h-full w-full object-cover image-zoom"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-orange-950/75 to-stone-950/90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-teal-950/75 to-teal-950/90" />
         </div>
 
         {/* Glow Effects */}
-        <div className="absolute -top-28 -left-28 w-80 h-80 rounded-full bg-amber-400/25 blur-3xl animate-glow" />
-        <div className="absolute -bottom-28 -right-28 w-96 h-96 rounded-full bg-orange-700/20 blur-3xl animate-glow" />
+        <div className="absolute -top-28 -left-28 w-80 h-80 rounded-full bg-teal-400/25 blur-3xl animate-glow" />
+        <div className="absolute -bottom-28 -right-28 w-96 h-96 rounded-full bg-teal-700/20 blur-3xl animate-glow" />
 
         <div className="relative z-10 w-full max-w-5xl grid lg:grid-cols-2 overflow-hidden rounded-[2rem] bg-white/95 shadow-2xl border border-white/20 backdrop-blur-xl animate-fade-up">
           {/* Image Box */}
-          <div className="hidden lg:block relative min-h-[620px] p-5 bg-[#2b160c]">
+          <div className="hidden lg:block relative min-h-[620px] p-5 bg-[#042f2e]">
             <div className="relative h-full overflow-hidden rounded-[1.6rem]">
               <img
                 src="https://images8.alphacoders.com/903/thumb-1920-903178.jpg"
@@ -130,7 +130,7 @@ export default function CustomerForgotPassword() {
                 className="absolute inset-0 w-full h-full object-cover"
               />
 
-              <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-orange-950/40 to-black/60" />
+              <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-teal-950/40 to-black/60" />
 
               <div className="relative z-10 h-full flex flex-col justify-between p-8 text-white">
                 <div>
@@ -146,7 +146,7 @@ export default function CustomerForgotPassword() {
 
                     <div>
                       <p className="font-black leading-none">Visal Coffee</p>
-                      <p className="text-xs text-amber-100 mt-1">
+                      <p className="text-xs text-teal-100 mt-1">
                         Customer Account
                       </p>
                     </div>
@@ -158,7 +158,7 @@ export default function CustomerForgotPassword() {
                     Continue your coffee order.
                   </h1>
 
-                  <p className="mt-4 text-sm leading-7 text-amber-100 max-w-md">
+                  <p className="mt-4 text-sm leading-7 text-teal-100 max-w-md">
                     Create a new password and get back to ordering your favorite
                     drinks faster.
                   </p>
@@ -171,7 +171,7 @@ export default function CustomerForgotPassword() {
                       className="rounded-2xl bg-white/15 border border-white/15 p-4 backdrop-blur-md"
                     >
                       <p className="text-xl font-black">{item}</p>
-                      <p className="text-xs text-amber-100 mt-1"></p>
+                      <p className="text-xs text-teal-100 mt-1"></p>
                     </div>
                   ))}
                 </div>
@@ -180,22 +180,22 @@ export default function CustomerForgotPassword() {
           </div>
 
           {/* Form Box */}
-          <div className="p-6 sm:p-10 lg:p-12 bg-gradient-to-br from-white via-orange-50 to-amber-50">
+          <div className="p-6 sm:p-10 lg:p-12 bg-gradient-to-br from-white via-teal-50 to-[#ccfbf1]">
             <div className="mb-8 text-center lg:text-left">
-              <div className="mx-auto lg:mx-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-stone-950 via-orange-900 to-amber-700 flex items-center justify-center shadow-lg shadow-orange-900/20 animate-float">
-                <Coffee className="text-amber-200" size={30} />
+              <div className="mx-auto lg:mx-0 w-16 h-16 rounded-3xl bg-gradient-to-br from-teal-950 via-teal-900 to-teal-700 flex items-center justify-center shadow-lg shadow-teal-900/20 animate-float">
+                <Coffee className="text-teal-200" size={30} />
               </div>
 
-              <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-orange-100 px-4 py-2 text-xs font-black text-orange-700">
+              <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-teal-100 px-4 py-2 text-xs font-black text-teal-700">
                 <ShieldCheck size={14} />
                 Password Recovery
               </div>
 
-              <h2 className="mt-4 text-3xl font-black text-stone-950">
+              <h2 className="mt-4 text-3xl font-black text-teal-950">
                 Reset Password
               </h2>
 
-              <p className="mt-2 text-sm text-stone-500">
+              <p className="mt-2 text-sm text-teal-500">
                 Enter your phone number and new password.
               </p>
             </div>
@@ -214,43 +214,43 @@ export default function CustomerForgotPassword() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-bold text-stone-800 mb-2">
+                <label className="block text-sm font-bold text-teal-800 mb-2">
                   Phone Number
                 </label>
 
                 <div className="relative group">
-                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-orange-700 transition" size={18} />
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-teal-400 group-focus-within:text-teal-700 transition" size={18} />
 
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Enter your phone number"
-                    className="w-full rounded-2xl border border-orange-100 bg-white/90 pl-12 pr-4 py-3 text-sm text-stone-900 outline-none shadow-sm transition focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+                    className="w-full rounded-2xl border border-[#ccfbf1] bg-white/90 pl-12 pr-4 py-3 text-sm text-teal-900 outline-none shadow-sm transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-stone-800 mb-2">
+                <label className="block text-sm font-bold text-teal-800 mb-2">
                   New Password
                 </label>
 
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-orange-700 transition" size={18} />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-teal-400 group-focus-within:text-teal-700 transition" size={18} />
 
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Min. 6 characters"
-                    className="w-full rounded-2xl border border-orange-100 bg-white/90 pl-12 pr-12 py-3 text-sm text-stone-900 outline-none shadow-sm transition focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+                    className="w-full rounded-2xl border border-[#ccfbf1] bg-white/90 pl-12 pr-12 py-3 text-sm text-teal-900 outline-none shadow-sm transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
                   />
 
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-orange-700 transition"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-400 hover:text-teal-700 transition"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -258,19 +258,19 @@ export default function CustomerForgotPassword() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-stone-800 mb-2">
+                <label className="block text-sm font-bold text-teal-800 mb-2">
                   Confirm Password
                 </label>
 
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-orange-700 transition" size={18} />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-teal-400 group-focus-within:text-teal-700 transition" size={18} />
 
                   <input
                     type="password"
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
                     placeholder="Re-enter new password"
-                    className="w-full rounded-2xl border border-orange-100 bg-white/90 pl-12 pr-4 py-3 text-sm text-stone-900 outline-none shadow-sm transition focus:border-orange-500 focus:ring-4 focus:ring-orange-100"
+                    className="w-full rounded-2xl border border-[#ccfbf1] bg-white/90 pl-12 pr-4 py-3 text-sm text-teal-900 outline-none shadow-sm transition focus:border-teal-500 focus:ring-4 focus:ring-teal-100"
                   />
                 </div>
               </div>
@@ -278,7 +278,7 @@ export default function CustomerForgotPassword() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative overflow-hidden w-full rounded-2xl bg-gradient-to-r from-stone-950 via-orange-950 to-orange-700 py-3.5 text-sm font-black text-white shadow-lg shadow-orange-900/20 transition hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0"
+                className="group relative overflow-hidden w-full rounded-2xl bg-gradient-to-r from-teal-950 via-teal-950 to-teal-700 py-3.5 text-sm font-black text-white shadow-lg shadow-teal-900/20 transition hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent group-hover:translate-x-full transition-transform duration-700" />
 
@@ -298,11 +298,11 @@ export default function CustomerForgotPassword() {
               </button>
             </form>
 
-            <p className="text-sm text-stone-500 text-center mt-6">
+            <p className="text-sm text-teal-500 text-center mt-6">
               Remember your password?{' '}
               <Link
                 to="/customer/login"
-                className="font-black text-orange-700 hover:text-stone-950 transition"
+                className="font-black text-teal-700 hover:text-teal-950 transition"
               >
                 Sign in
               </Link>

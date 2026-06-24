@@ -102,7 +102,7 @@ export default function Home() {
         : products.filter((p) => p.category?.name === selectedCategory)
 
   return (
-    <div className="min-h-screen bg-[#fffaf3] flex flex-col pb-24 sm:pb-0">
+    <div className="min-h-screen bg-[#f0fdfa] flex flex-col pb-24 sm:pb-0">
       <Navbar />
 
       <div className="flex-1">
@@ -118,21 +118,21 @@ export default function Home() {
         >
           {/* Background */}
           <div className="absolute inset-0 -z-10">
-            <div className="absolute top-10 left-0 w-72 h-72 bg-orange-200/40 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-10 right-0 w-80 h-80 bg-amber-300/30 rounded-full blur-3xl"></div>
+            <div className="absolute top-10 left-0 w-72 h-72 bg-teal-200/40 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-0 w-80 h-80 bg-teal-300/30 rounded-full blur-3xl"></div>
           </div>
 
           {/* Header */}
           <div className="mb-8">
-            <div className="relative overflow-hidden rounded-[2rem] bg-[#3d2817] px-5 sm:px-8 py-6 sm:py-8 shadow-[0_20px_50px_rgba(61,40,23,0.25)]">
-              <div className="absolute -top-20 -right-20 w-56 h-56 bg-amber-500/20 rounded-full blur-3xl"></div>
-              <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-orange-500/20 rounded-full blur-3xl"></div>
+            <div className="relative overflow-hidden rounded-[2rem] bg-[#134e4a] px-5 sm:px-8 py-6 sm:py-8 shadow-[0_20px_50px_rgba(15,118,110,0.25)]">
+              <div className="absolute -top-20 -right-20 w-56 h-56 bg-teal-500/20 rounded-full blur-3xl"></div>
+              <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-teal-600/20 rounded-full blur-3xl"></div>
 
               <div className="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5">
                 <div>
                   <div className="inline-flex items-center gap-2 mb-3 rounded-full bg-white/10 border border-white/15 px-4 py-1.5">
                     <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                    <span className="text-xs sm:text-sm font-black text-amber-200 uppercase tracking-wide">
+                    <span className="text-xs sm:text-sm font-black text-teal-200 uppercase tracking-wide">
                       Fresh Menu
                     </span>
                   </div>
@@ -141,14 +141,14 @@ export default function Home() {
                     Choose Your Favorite Drink
                   </h2>
 
-                  <p className="mt-2 text-sm sm:text-base text-amber-100/80">
+                  <p className="mt-2 text-sm sm:text-base text-teal-100/80">
                     Select category and customize your order easily.
                   </p>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <div className="rounded-2xl bg-white/10 border border-white/15 px-4 py-3">
-                    <p className="text-[11px] font-bold text-amber-100/70 uppercase">
+                    <p className="text-[11px] font-bold text-teal-100/70 uppercase">
                       Products
                     </p>
                     <p className="text-2xl font-black text-white">
@@ -170,7 +170,7 @@ export default function Home() {
 
             {/* Category Tabs */}
             <div className="relative -mt-5 mx-3 sm:mx-6">
-              <div className="rounded-[1.5rem] bg-white border border-amber-100 shadow-[0_15px_40px_rgba(61,40,23,0.12)] p-2.5">
+              <div className="rounded-[1.5rem] bg-white border border-[#ccfbf1] shadow-[0_15px_40px_rgba(15,118,110,0.12)] p-2.5">
                 <div className="overflow-x-auto hide-scrollbar">
                   <div className="flex gap-2 min-w-max">
                     {categories.map((cat) => {
@@ -189,8 +189,8 @@ export default function Home() {
                           onClick={() => setSelectedCategory(cat)}
                           className={`relative group flex items-center gap-2 rounded-2xl px-4 sm:px-5 py-3 transition-all duration-300 active:scale-95 ${
                             active
-                              ? 'bg-[#3d2817] text-white shadow-lg shadow-amber-900/20'
-                              : 'bg-[#fff7ed] text-[#5b3a29] hover:bg-amber-100'
+                              ? 'bg-[#134e4a] text-white shadow-lg shadow-teal-900/20'
+                              : 'bg-[#f0fdfa] text-[#115e59] hover:bg-teal-100'
                           }`}
                         >
                           <span className="text-sm font-black whitespace-nowrap">
@@ -200,8 +200,8 @@ export default function Home() {
                           <span
                             className={`min-w-6 h-6 px-2 rounded-full text-[11px] font-black flex items-center justify-center ${
                               active
-                                ? 'bg-amber-400 text-[#3d2817]'
-                                : 'bg-white text-amber-700 border border-amber-100'
+                                ? 'bg-teal-400 text-[#134e4a]'
+                                : 'bg-white text-teal-700 border border-[#ccfbf1]'
                             }`}
                           >
                             {getCategoryCount(cat)}
@@ -230,7 +230,7 @@ export default function Home() {
           {/* Selected Category Small Text */}
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h3 className="text-lg sm:text-xl font-black text-[#3d2817]">
+              <h3 className="text-lg sm:text-xl font-black text-[#134e4a]">
                 {selectedCategory === 'All'
                   ? 'All Products'
                   : selectedCategory === 'Promotion'
@@ -238,7 +238,7 @@ export default function Home() {
                     : selectedCategory}
               </h3>
 
-              <p className="text-xs sm:text-sm text-[#8a715c] font-medium">
+              <p className="text-xs sm:text-sm text-[#0d9488] font-medium">
                 Showing {filtered.length} item{filtered.length !== 1 ? 's' : ''}
               </p>
             </div>
@@ -248,16 +248,16 @@ export default function Home() {
           {loading ? (
             <Loader page={false} text="Loading menu..." />
           ) : filtered.length === 0 ? (
-            <div className="bg-white border border-amber-100 rounded-[2rem] py-16 text-center shadow-sm">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-amber-100 flex items-center justify-center text-3xl">
+            <div className="bg-white border border-[#ccfbf1] rounded-[2rem] py-16 text-center shadow-sm">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-teal-100 flex items-center justify-center text-3xl">
                 ☕
               </div>
 
-              <h3 className="text-lg font-black text-[#3d2817]">
+              <h3 className="text-lg font-black text-[#134e4a]">
                 No products found
               </h3>
 
-              <p className="text-sm text-[#8a715c] mt-1">
+              <p className="text-sm text-[#0d9488] mt-1">
                 No products in this category.
               </p>
             </div>

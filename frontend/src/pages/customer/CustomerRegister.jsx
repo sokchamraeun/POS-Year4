@@ -101,18 +101,18 @@ export default function CustomerRegister() {
         .image-zoom { animation: slowZoom 20s ease-in-out infinite; }
       `}</style>
 
-      <div className="relative min-h-screen overflow-hidden flex items-center justify-center px-4 py-8 bg-stone-950">
+      <div className="relative min-h-screen overflow-hidden flex items-center justify-center px-4 py-8 bg-teal-950">
         <div className="absolute inset-0">
           <img
             src="https://images3.alphacoders.com/941/thumb-1920-94135.jpg"
             alt="Coffee shop"
             className="h-full w-full object-cover scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-orange-950/75 to-stone-950/90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/85 via-teal-950/75 to-teal-950/90" />
         </div>
 
-        <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-orange-400/25 blur-3xl register-glow" />
-        <div className="absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-amber-300/25 blur-3xl register-glow" />
+        <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-teal-400/25 blur-3xl register-glow" />
+        <div className="absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-teal-300/25 blur-3xl register-glow" />
         <div className="absolute left-1/2 top-1/3 h-56 w-56 rounded-full bg-yellow-500/10 blur-3xl register-glow" />
 
         <div className="relative z-10 grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/20 bg-white/95 shadow-2xl backdrop-blur-xl register-fade-up lg:grid-cols-[1.05fr_.95fr]">
@@ -154,18 +154,18 @@ export default function CustomerRegister() {
               <div className="mb-16">
                 <h1 className="text-5xl font-black leading-tight drop-shadow-2xl">
                   Join our<br />
-                  <span className="text-amber-300">coffee family</span><br />
+                  <span className="text-teal-300">coffee family</span><br />
                   today!
                 </h1>
 
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <div className="rounded-full bg-amber-500/20 backdrop-blur-sm px-4 py-1.5 text-sm font-semibold border border-amber-400/30">
+                  <div className="rounded-full bg-teal-500/20 backdrop-blur-sm px-4 py-1.5 text-sm font-semibold border border-teal-400/30">
                     Welcome Bonus
                   </div>
-                  <div className="rounded-full bg-amber-500/20 backdrop-blur-sm px-4 py-1.5 text-sm font-semibold border border-amber-400/30">
+                  <div className="rounded-full bg-teal-500/20 backdrop-blur-sm px-4 py-1.5 text-sm font-semibold border border-teal-400/30">
                     Loyalty Points
                   </div>
-                  <div className="rounded-full bg-amber-500/20 backdrop-blur-sm px-4 py-1.5 text-sm font-semibold border border-amber-400/30">
+                  <div className="rounded-full bg-teal-500/20 backdrop-blur-sm px-4 py-1.5 text-sm font-semibold border border-teal-400/30">
                     Fast Checkout
                   </div>
                 </div>
@@ -195,25 +195,25 @@ export default function CustomerRegister() {
           </div>
 
           {/* Right Side - Registration Form */}
-          <div className="relative bg-gradient-to-br from-white via-orange-50 to-amber-50 p-6 sm:p-10 lg:p-12">
-            <div className="absolute right-8 top-8 hidden rounded-full bg-orange-100 p-3 text-orange-700 sm:block register-float">
+          <div className="relative bg-gradient-to-br from-white via-teal-50 to-[#ccfbf1] p-6 sm:p-10 lg:p-12">
+            <div className="absolute right-8 top-8 hidden rounded-full bg-teal-100 p-3 text-teal-700 sm:block register-float">
               <Sparkles size={20} />
             </div>
 
             <div className="mb-8 text-center lg:text-left">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-stone-950 via-orange-900 to-amber-700 shadow-lg shadow-orange-900/20 lg:mx-0 register-float">
-                <UserPlus className="text-amber-200" size={30} />
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-to-br from-teal-950 via-teal-900 to-teal-700 shadow-lg shadow-teal-900/20 lg:mx-0 register-float">
+                <UserPlus className="text-teal-200" size={30} />
               </div>
 
-              <div className="mt-6 inline-flex rounded-full bg-orange-100 px-4 py-2 text-xs font-black text-orange-700">
+              <div className="mt-6 inline-flex rounded-full bg-teal-100 px-4 py-2 text-xs font-black text-teal-700">
                 New Customer
               </div>
 
-              <h2 className="mt-4 text-3xl font-black text-stone-950">
+              <h2 className="mt-4 text-3xl font-black text-teal-950">
                 Create Account
               </h2>
 
-              <p className="mt-2 text-sm text-stone-500">
+              <p className="mt-2 text-sm text-teal-500">
                 Join us and start your coffee journey
               </p>
             </div>
@@ -227,65 +227,65 @@ export default function CustomerRegister() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Full Name */}
               <div>
-                <label className="mb-2 block text-sm font-bold text-stone-800">
+                <label className="mb-2 block text-sm font-bold text-teal-800">
                   Full Name
                 </label>
                 <div className="group relative">
                   <User
                     size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 transition group-focus-within:text-orange-700"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-teal-400 transition group-focus-within:text-teal-700"
                   />
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your full name"
-                    className="w-full rounded-2xl border border-orange-100 bg-white/90 py-3.5 pl-12 pr-4 text-sm text-stone-900 shadow-sm outline-none transition duration-300 focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-100"
+                    className="w-full rounded-2xl border border-[#ccfbf1] bg-white/90 py-3.5 pl-12 pr-4 text-sm text-teal-900 shadow-sm outline-none transition duration-300 focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-100"
                   />
                 </div>
               </div>
 
               {/* Phone Number */}
               <div>
-                <label className="mb-2 block text-sm font-bold text-stone-800">
+                <label className="mb-2 block text-sm font-bold text-teal-800">
                   Phone Number
                 </label>
                 <div className="group relative">
                   <Phone
                     size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 transition group-focus-within:text-orange-700"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-teal-400 transition group-focus-within:text-teal-700"
                   />
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Enter your phone number"
-                    className="w-full rounded-2xl border border-orange-100 bg-white/90 py-3.5 pl-12 pr-4 text-sm text-stone-900 shadow-sm outline-none transition duration-300 focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-100"
+                    className="w-full rounded-2xl border border-[#ccfbf1] bg-white/90 py-3.5 pl-12 pr-4 text-sm text-teal-900 shadow-sm outline-none transition duration-300 focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-100"
                   />
                 </div>
               </div>
 
               {/* Password */}
               <div>
-                <label className="mb-2 block text-sm font-bold text-stone-800">
+                <label className="mb-2 block text-sm font-bold text-teal-800">
                   Password
                 </label>
                 <div className="group relative">
                   <Lock
                     size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 transition group-focus-within:text-orange-700"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-teal-400 transition group-focus-within:text-teal-700"
                   />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={handlePasswordChange}
                     placeholder="Min. 6 characters"
-                    className="w-full rounded-2xl border border-orange-100 bg-white/90 py-3.5 pl-12 pr-12 text-sm text-stone-900 shadow-sm outline-none transition duration-300 focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-100"
+                    className="w-full rounded-2xl border border-[#ccfbf1] bg-white/90 py-3.5 pl-12 pr-12 text-sm text-teal-900 shadow-sm outline-none transition duration-300 focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-100"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 transition hover:text-orange-700"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-400 transition hover:text-teal-700"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -316,25 +316,25 @@ export default function CustomerRegister() {
 
               {/* Confirm Password */}
               <div>
-                <label className="mb-2 block text-sm font-bold text-stone-800">
+                <label className="mb-2 block text-sm font-bold text-teal-800">
                   Confirm Password
                 </label>
                 <div className="group relative">
                   <Lock
                     size={18}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 transition group-focus-within:text-orange-700"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-teal-400 transition group-focus-within:text-teal-700"
                   />
                   <input
                     type={showConfirm ? 'text' : 'password'}
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
                     placeholder="Re-enter your password"
-                    className="w-full rounded-2xl border border-orange-100 bg-white/90 py-3.5 pl-12 pr-12 text-sm text-stone-900 shadow-sm outline-none transition duration-300 focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-100"
+                    className="w-full rounded-2xl border border-[#ccfbf1] bg-white/90 py-3.5 pl-12 pr-12 text-sm text-teal-900 shadow-sm outline-none transition duration-300 focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-100"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 transition hover:text-orange-700"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-teal-400 transition hover:text-teal-700"
                   >
                     {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -353,7 +353,7 @@ export default function CustomerRegister() {
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-stone-950 via-orange-950 to-orange-700 py-3.5 text-sm font-black text-white shadow-lg shadow-orange-900/25 transition duration-300 hover:-translate-y-0.5 hover:shadow-orange-900/40 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 mt-6"
+                className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-teal-950 via-teal-950 to-teal-700 py-3.5 text-sm font-black text-white shadow-lg shadow-teal-900/25 transition duration-300 hover:-translate-y-0.5 hover:shadow-teal-900/40 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 mt-6"
               >
                 <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <span className="relative flex items-center justify-center gap-2">
@@ -373,11 +373,11 @@ export default function CustomerRegister() {
             </form>
 
             <div className="mt-7 space-y-3 text-center">
-              <p className="text-sm text-stone-500">
+              <p className="text-sm text-teal-500">
                 Already have an account?{' '}
                 <Link
                   to="/customer/login"
-                  className="inline-flex items-center gap-1 font-black text-orange-700 transition hover:text-stone-950"
+                  className="inline-flex items-center gap-1 font-black text-teal-700 transition hover:text-teal-950"
                 >
                   Sign in
                 </Link>
@@ -385,7 +385,7 @@ export default function CustomerRegister() {
 
               <Link
                 to="/"
-                className="inline-flex items-center justify-center gap-2 text-xs font-bold text-stone-400 transition hover:text-orange-700"
+                className="inline-flex items-center justify-center gap-2 text-xs font-bold text-teal-400 transition hover:text-teal-700"
               >
                 <Home size={14} />
                 Back to Home

@@ -76,27 +76,27 @@ export default function Products() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fbf1e3] pb-24 text-[#2b170d] sm:pb-0">
+    <div className="min-h-screen bg-[#f0fdfa] pb-24 text-[#134e4a] sm:pb-0">
       <Navbar />
 
       <main className="relative">
         {/* Background */}
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#fff8ef_0%,#fbf1e3_45%,#f8ead7_100%)]" />
-        <div className="pointer-events-none absolute -left-28 top-28 h-72 w-72 rounded-full bg-[#d59a52]/25 blur-3xl" />
-        <div className="pointer-events-none absolute -right-28 top-72 h-72 w-72 rounded-full bg-[#5b321a]/15 blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#f0fdfa_0%,#ccfbf1_45%,#99f6e4_100%)]" />
+        <div className="pointer-events-none absolute -left-28 top-28 h-72 w-72 rounded-full bg-[#14b8a6]/25 blur-3xl" />
+        <div className="pointer-events-none absolute -right-28 top-72 h-72 w-72 rounded-full bg-[#0f766e]/15 blur-3xl" />
 
         <div className="relative">
           <PromotionSlider products={promoProducts} />
 
           {/* Top Header */}
           <section className="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8">
-            <div className="relative overflow-hidden rounded-[2rem] border border-[#e4c49c] bg-[#2b170d] p-5 shadow-[0_25px_70px_rgba(61,40,23,0.20)] sm:p-7">
-              <div className="pointer-events-none absolute -right-14 -top-14 h-40 w-40 rounded-full bg-[#d59a52]/30 blur-3xl" />
+            <div className="relative overflow-hidden rounded-[2rem] border border-[#ccfbf1] bg-[#134e4a] p-5 shadow-[0_25px_70px_rgba(15,118,110,0.20)] sm:p-7">
+              <div className="pointer-events-none absolute -right-14 -top-14 h-40 w-40 rounded-full bg-[#14b8a6]/30 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-16 -left-14 h-44 w-44 rounded-full bg-white/10 blur-3xl" />
 
               <div className="relative flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <span className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-[#f9d9ac]">
+                  <span className="inline-flex rounded-full border border-white/10 bg-white/10 px-3 py-1 text-[11px] font-black uppercase tracking-[0.2em] text-[#5eead4]">
                     Coffee Menu
                   </span>
 
@@ -104,14 +104,14 @@ export default function Products() {
                     Choose Your Favorite Drink
                   </h1>
 
-                  <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-[#f1d6b6]/80">
+                  <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-[#99f6e4]/80">
                     Browse coffee, tea, frappe, bakery, and special promotions.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 sm:min-w-[270px]">
                   <div className="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur-xl">
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#f9d9ac]/80">
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#5eead4]/80">
                       Products
                     </p>
                     <p className="mt-1 text-3xl font-black text-white">
@@ -120,7 +120,7 @@ export default function Products() {
                   </div>
 
                   <div className="rounded-3xl border border-white/10 bg-white/10 p-4 backdrop-blur-xl">
-                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#f9d9ac]/80">
+                    <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#5eead4]/80">
                       Categories
                     </p>
                     <p className="mt-1 text-3xl font-black text-white">
@@ -137,18 +137,18 @@ export default function Products() {
             <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#9a6a3c]">
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0d9488]">
                     Special Deal
                   </p>
 
-                  <h2 className="mt-1 text-xl font-black text-[#2b170d]">
+                  <h2 className="mt-1 text-xl font-black text-[#134e4a]">
                     Promotion Products
                   </h2>
                 </div>
 
                 <Link
                   to="/promotion"
-                  className="rounded-2xl border border-[#d9b98f] bg-white px-4 py-2 text-xs font-black text-[#7b4a26] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#2b170d] hover:text-white"
+                  className="rounded-2xl border border-[#99f6e4] bg-white px-4 py-2 text-xs font-black text-[#0d9488] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#134e4a] hover:text-white"
                 >
                   View All
                 </Link>
@@ -167,7 +167,7 @@ export default function Products() {
           )}
 
           {/* Sticky Category - fixed scroll up issue */}
-          <div className="sticky top-[68px] z-30 border-y border-[#e7cda7] bg-[#fbf1e3]/95 shadow-[0_12px_30px_rgba(61,40,23,0.10)] backdrop-blur-2xl sm:top-[76px]">
+          <div className="sticky top-[68px] z-30 border-y border-[#ccfbf1] bg-[#f0fdfa]/95 shadow-[0_12px_30px_rgba(15,118,110,0.10)] backdrop-blur-2xl sm:top-[76px]">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="hide-scrollbar flex gap-3 overflow-x-auto py-3">
                 {categories.map((cat) => {
@@ -181,8 +181,8 @@ export default function Products() {
                       onClick={() => setSelectedCategory(cat)}
                       className={`relative flex shrink-0 items-center gap-3 rounded-[1.35rem] border px-4 py-2.5 text-xs font-black transition-all duration-300 active:scale-95 sm:text-sm ${
                         active
-                          ? 'border-[#2b170d] bg-[#2b170d] text-white shadow-[0_14px_30px_rgba(43,23,13,0.30)]'
-                          : 'border-[#e1c29a] bg-white text-[#76543a] hover:-translate-y-0.5 hover:border-[#a86530] hover:bg-[#fff7ec] hover:text-[#2b170d]'
+                          ? 'border-[#134e4a] bg-[#134e4a] text-white shadow-[0_14px_30px_rgba(15,118,110,0.30)]'
+                          : 'border-[#ccfbf1] bg-white text-[#115e59] hover:-translate-y-0.5 hover:border-[#0d9488] hover:bg-[#f0fdfa] hover:text-[#134e4a]'
                       }`}
                     >
                       <span>{cat}</span>
@@ -190,8 +190,8 @@ export default function Products() {
                       <span
                         className={`flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-[10px] font-black ${
                           active
-                            ? 'bg-[#d59a52] text-white'
-                            : 'bg-[#f5dfc2] text-[#8a5d3b]'
+                            ? 'bg-[#14b8a6] text-white'
+                            : 'bg-[#ccfbf1] text-[#14b8a6]'
                         }`}
                       >
                         {count}
@@ -205,44 +205,44 @@ export default function Products() {
 
           {/* Products */}
           <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mb-5 flex flex-col gap-3 rounded-[1.75rem] border border-[#e7cda7] bg-white/75 p-4 shadow-[0_18px_45px_rgba(61,40,23,0.08)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-5 flex flex-col gap-3 rounded-[1.75rem] border border-[#ccfbf1] bg-white/75 p-4 shadow-[0_18px_45px_rgba(15,118,110,0.08)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#9a6a3c]">
+                <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#0d9488]">
                   Now Showing
                 </p>
 
-                <h2 className="mt-1 text-2xl font-black text-[#2b170d]">
+                <h2 className="mt-1 text-2xl font-black text-[#134e4a]">
                   {selectedCategory === 'All' ? 'All Products' : selectedCategory}
                 </h2>
               </div>
 
-              <span className="w-fit rounded-full bg-[#fff0dc] px-4 py-2 text-xs font-black text-[#7b4a26]">
+              <span className="w-fit rounded-full bg-[#ccfbf1] px-4 py-2 text-xs font-black text-[#0d9488]">
                 {filtered.length} items
               </span>
             </div>
 
             {loading ? (
-              <div className="rounded-[2rem] border border-[#e7cda7] bg-white/80 p-10 shadow-[0_18px_45px_rgba(61,40,23,0.08)]">
+              <div className="rounded-[2rem] border border-[#ccfbf1] bg-white/80 p-10 shadow-[0_18px_45px_rgba(15,118,110,0.08)]">
                 <Loader page={false} text="Loading products..." />
               </div>
             ) : filtered.length === 0 ? (
-              <div className="rounded-[2rem] border border-[#e7cda7] bg-white/85 px-5 py-16 text-center shadow-[0_18px_45px_rgba(61,40,23,0.08)]">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-[#fff0dc] text-2xl font-black text-[#7b4a26]">
+              <div className="rounded-[2rem] border border-[#ccfbf1] bg-white/85 px-5 py-16 text-center shadow-[0_18px_45px_rgba(15,118,110,0.08)]">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-[#ccfbf1] text-2xl font-black text-[#0d9488]">
                   0
                 </div>
 
-                <h3 className="text-lg font-black text-[#2b170d]">
+                <h3 className="text-lg font-black text-[#134e4a]">
                   No products found
                 </h3>
 
-                <p className="mt-1 text-sm font-semibold text-[#8a715c]">
+                <p className="mt-1 text-sm font-semibold text-[#0d9488]">
                   No products in this category.
                 </p>
 
                 <button
                   type="button"
                   onClick={() => setSelectedCategory('All')}
-                  className="mt-5 rounded-2xl bg-[#2b170d] px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(43,23,13,0.25)] transition-all duration-300 hover:bg-[#5b321a]"
+                  className="mt-5 rounded-2xl bg-[#134e4a] px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(15,118,110,0.25)] transition-all duration-300 hover:bg-[#0f766e]"
                 >
                   View All Products
                 </button>

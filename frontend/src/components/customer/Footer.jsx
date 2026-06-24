@@ -14,14 +14,14 @@ export default function Footer() {
   const hoursSunday = settings.hours_sunday || '8:00 - 18:00'
 
   return (
-    <footer className="relative overflow-hidden bg-[#24160f] text-amber-100/70">
+    <footer className="relative overflow-hidden bg-[#042f2e] text-teal-100/70">
       {/* Top accent */}
-      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-amber-500 via-orange-400 to-yellow-500" />
+      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-teal-800 via-teal-600 to-teal-400" />
 
       {/* Background glow */}
-      <div className="absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-amber-500/10 blur-3xl" />
-      <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-orange-500/10 blur-3xl" />
-      <div className="absolute bottom-10 left-0 h-64 w-64 rounded-full bg-yellow-500/5 blur-3xl" />
+      <div className="absolute -top-28 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-teal-500/10 blur-3xl" />
+      <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-teal-600/10 blur-3xl" />
+      <div className="absolute bottom-10 left-0 h-64 w-64 rounded-full bg-emerald-500/5 blur-3xl" />
 
       <div className="relative max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 pt-12 sm:pt-16 pb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -29,9 +29,9 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link to="/" className="group mb-5 flex w-fit items-center gap-3">
               <div className="relative">
-                <div className="absolute inset-0 rounded-2xl bg-amber-400/30 blur-xl opacity-50 transition-all duration-300 group-hover:opacity-80" />
+                <div className="absolute inset-0 rounded-2xl bg-teal-400/30 blur-xl opacity-50 transition-all duration-300 group-hover:opacity-80" />
 
-                <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl border border-amber-300/20 bg-white/10 p-1 shadow-lg backdrop-blur-sm">
+                <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl border border-teal-300/20 bg-white/10 p-1 shadow-lg backdrop-blur-sm">
                   <img
                     src={settings.logo}
                     alt={`${siteName} Logo`}
@@ -46,21 +46,21 @@ export default function Footer() {
                 </span>
 
                 {tagline && (
-                  <span className="mt-0.5 block text-[10px] font-bold uppercase tracking-[0.22em] text-amber-300">
+                  <span className="mt-0.5 block text-[10px] font-bold uppercase tracking-[0.22em] text-teal-300">
                     {tagline}
                   </span>
                 )}
               </div>
             </Link>
 
-            <p className="max-w-xs text-sm leading-relaxed text-amber-100/60">
+            <p className="max-w-xs text-sm leading-relaxed text-teal-100/60">
               Fresh coffee, tasty drinks, and fast ordering experience made for
               customers who love comfort and good flavor.
             </p>
 
-            <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-amber-300/15 bg-white/5 px-4 py-2">
+            <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-teal-300/15 bg-white/5 px-4 py-2">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-bold text-amber-100/80">
+              <span className="text-xs font-bold text-teal-100/80">
                 Open daily for fresh orders
               </span>
             </div>
@@ -83,9 +83,9 @@ export default function Footer() {
                   <li key={to}>
                     <a
                       href={to}
-                      className="group flex items-center gap-2 transition-colors duration-200 hover:text-amber-300"
+                      className="group flex items-center gap-2 transition-colors duration-200 hover:text-teal-300"
                     >
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500 transition-all duration-200 group-hover:w-4" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-teal-500 transition-all duration-200 group-hover:w-4" />
                       {label}
                     </a>
                   </li>
@@ -93,9 +93,9 @@ export default function Footer() {
                   <li key={to}>
                     <Link
                       to={to}
-                      className="group flex items-center gap-2 transition-colors duration-200 hover:text-amber-300"
+                      className="group flex items-center gap-2 transition-colors duration-200 hover:text-teal-300"
                     >
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500 transition-all duration-200 group-hover:w-4" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-teal-500 transition-all duration-200 group-hover:w-4" />
                       {label}
                     </Link>
                   </li>
@@ -112,7 +112,7 @@ export default function Footer() {
 
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-300">
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-300">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4"
@@ -138,7 +138,7 @@ export default function Footer() {
               </li>
 
               <li className="flex items-center gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-300">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-300">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4"
@@ -159,7 +159,7 @@ export default function Footer() {
               </li>
 
               <li className="flex items-center gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-300">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-teal-500/10 text-teal-300">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4"
@@ -187,32 +187,32 @@ export default function Footer() {
               Opening Hours
             </h3>
 
-            <div className="rounded-3xl border border-amber-300/15 bg-white/[0.04] p-5 shadow-lg backdrop-blur-sm">
+            <div className="rounded-3xl border border-teal-300/15 bg-white/[0.04] p-5 shadow-lg backdrop-blur-sm">
               <div className="space-y-3 text-sm">
                 <div className="flex items-center justify-between gap-4">
                   <span>Monday - Friday</span>
-                  <span className="font-bold text-amber-300">
+                  <span className="font-bold text-teal-300">
                     {hoursWeekday}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between gap-4">
                   <span>Saturday</span>
-                  <span className="font-bold text-amber-300">
+                  <span className="font-bold text-teal-300">
                     {hoursSaturday}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between gap-4">
                   <span>Sunday</span>
-                  <span className="font-bold text-amber-300">
+                  <span className="font-bold text-teal-300">
                     {hoursSunday}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-5 rounded-2xl bg-amber-500/10 px-4 py-3">
-                <p className="text-xs font-bold leading-relaxed text-amber-100/75">
+              <div className="mt-5 rounded-2xl bg-teal-500/10 px-4 py-3">
+                <p className="text-xs font-bold leading-relaxed text-teal-100/75">
                   Order online, choose your favorite drink, and enjoy a faster
                   checkout experience.
                 </p>
@@ -222,8 +222,8 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-5 border-t border-amber-100/10 pt-6 sm:flex-row">
-          <p className="text-center text-xs text-amber-100/45 sm:text-left">
+        <div className="mt-10 flex flex-col items-center justify-between gap-5 border-t border-teal-100/10 pt-6 sm:flex-row">
+          <p className="text-center text-xs text-teal-100/45 sm:text-left">
             &copy; {new Date().getFullYear()} {siteName}. Crafted with care for
             coffee lovers. All rights reserved.
           </p>
@@ -247,7 +247,7 @@ export default function Footer() {
                 key={label}
                 href="#"
                 aria-label={label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-amber-300/15 bg-white/5 text-amber-100/50 transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-400 hover:bg-amber-500 hover:text-[#24160f]"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-teal-300/15 bg-white/5 text-teal-100/50 transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-400 hover:bg-teal-500 hover:text-[#042f2e]"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

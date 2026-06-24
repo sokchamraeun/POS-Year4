@@ -163,7 +163,7 @@ export default function MobileBottomNav() {
 
       <div className="fixed inset-x-0 bottom-3 z-50 px-3 pb-[env(safe-area-inset-bottom)] md:hidden">
         <div className="mx-auto max-w-md animate-bottomNavIn">
-          <div className="rounded-[1.75rem] border border-[#e6c8a1] bg-white/95 p-2 shadow-[0_18px_45px_rgba(61,40,23,0.20)] backdrop-blur-2xl">
+          <div className="rounded-[1.75rem] border border-[#ccfbf1] bg-white/95 p-2 shadow-[0_18px_45px_rgba(15,118,110,0.20)] backdrop-blur-2xl">
             <div className="grid h-[66px] grid-cols-4 gap-1.5">
               {navItems.map((item) => (
                 <NavLink
@@ -174,22 +174,22 @@ export default function MobileBottomNav() {
                   className={({ isActive }) =>
                     `group relative flex flex-col items-center justify-center rounded-[1.35rem] text-[10px] font-black transition-all duration-300 ${
                       isActive
-                        ? 'bg-[#3d2415] text-white shadow-[0_12px_28px_rgba(61,36,21,0.32)]'
-                        : 'text-[#8a6a50] hover:bg-[#fff1dd] hover:text-[#3d2415]'
+                        ? 'bg-[#134e4a] text-white shadow-[0_12px_28px_rgba(15,118,110,0.32)]'
+                        : 'text-[#0d9488] hover:bg-[#f0fdfa] hover:text-[#134e4a]'
                     }`
                   }
                 >
                   {({ isActive }) => (
                     <>
                       {isActive && (
-                        <span className="absolute -top-1.5 h-1.5 w-9 rounded-full bg-gradient-to-r from-[#c58b49] to-[#a86530] shadow-[0_6px_14px_rgba(197,139,73,0.45)]" />
+                        <span className="absolute -top-1.5 h-1.5 w-9 rounded-full bg-gradient-to-r from-[#14b8a6] to-[#0d9488] shadow-[0_6px_14px_rgba(20,184,166,0.45)]" />
                       )}
 
                       <span
                         className={`mb-1 flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-300 ${
                           isActive
                             ? 'animate-activeScale bg-white/15 text-white'
-                            : 'bg-[#fff7ec] text-[#7b4a26] group-hover:bg-white group-hover:text-[#3d2415]'
+                            : 'bg-[#f0fdfa] text-[#0d9488] group-hover:bg-white group-hover:text-[#134e4a]'
                         }`}
                       >
                         {item.icon}
@@ -197,7 +197,7 @@ export default function MobileBottomNav() {
 
                       <span
                         className={`leading-none transition-all duration-300 ${
-                          isActive ? 'text-white' : 'text-[#8a6a50] group-hover:text-[#3d2415]'
+                          isActive ? 'text-white' : 'text-[#0d9488] group-hover:text-[#134e4a]'
                         }`}
                       >
                         {item.label}

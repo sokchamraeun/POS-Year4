@@ -25,9 +25,9 @@ export default function CartItem({ item, onEditItem }) {
     item.addons?.length > 0
 
   return (
-    <div className="relative flex gap-3 rounded-2xl border border-orange-100 bg-white p-2.5 shadow-sm transition-shadow hover:shadow-md">
+    <div className="relative flex gap-3 rounded-2xl border border-[#ccfbf1] bg-white p-2.5 shadow-sm transition-shadow hover:shadow-md">
       {/* Thumbnail */}
-      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-[#f1e7db]">
+      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-[#ccfbf1]">
         {imageUrl ? (
           <img src={imageUrl} alt={item.name} className="h-full w-full object-cover" />
         ) : (
@@ -46,12 +46,12 @@ export default function CartItem({ item, onEditItem }) {
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Name + actions */}
         <div className="flex items-start justify-between gap-2">
-          <p className="truncate text-sm font-black text-[#3d2817]">{item.name}</p>
+          <p className="truncate text-sm font-black text-[#134e4a]">{item.name}</p>
           <div className="flex shrink-0 items-center gap-1.5">
             {hasOptions && (
               <button
                 onClick={() => onEditItem?.(item)}
-                className="text-[#8a715c] transition-colors hover:text-amber-600"
+                className="text-[#0d9488] transition-colors hover:text-teal-600"
                 aria-label="Edit options"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,7 +61,7 @@ export default function CartItem({ item, onEditItem }) {
             )}
             <button
               onClick={() => removeItem(item.key)}
-              className="text-[#c9b29a] transition-colors hover:text-red-500"
+              className="text-[#5eead4] transition-colors hover:text-red-500"
               aria-label="Remove item"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,10 +73,10 @@ export default function CartItem({ item, onEditItem }) {
 
         {/* Option pills */}
         <div className="mt-1 flex flex-wrap gap-1">
-          {item.size && <span className="rounded-md bg-[#f8f4ee] px-1.5 py-0.5 text-[10px] font-semibold text-[#8a715c]">{item.size}</span>}
-          {item.sugar && <span className="rounded-md bg-[#f8f4ee] px-1.5 py-0.5 text-[10px] font-semibold text-[#8a715c]">{item.sugarNote || item.sugar}</span>}
-          {item.ice && <span className="rounded-md bg-[#f8f4ee] px-1.5 py-0.5 text-[10px] font-semibold text-[#8a715c]">{item.iceNote || item.ice}</span>}
-          {item.addOn && <span className="rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">+{item.addOn}</span>}
+          {item.size && <span className="rounded-md bg-[#f0fdfa] px-1.5 py-0.5 text-[10px] font-semibold text-[#0d9488]">{item.size}</span>}
+          {item.sugar && <span className="rounded-md bg-[#f0fdfa] px-1.5 py-0.5 text-[10px] font-semibold text-[#0d9488]">{item.sugarNote || item.sugar}</span>}
+          {item.ice && <span className="rounded-md bg-[#f0fdfa] px-1.5 py-0.5 text-[10px] font-semibold text-[#0d9488]">{item.iceNote || item.ice}</span>}
+          {item.addOn && <span className="rounded-md bg-teal-50 px-1.5 py-0.5 text-[10px] font-semibold text-teal-600">+{item.addOn}</span>}
         </div>
 
         {/* Price + quantity */}
@@ -84,28 +84,28 @@ export default function CartItem({ item, onEditItem }) {
           <div className="flex items-baseline gap-1.5">
             {hasDiscount ? (
               <>
-                <span className="text-[11px] text-[#c9b29a] line-through">${item.unitPrice.toFixed(2)}</span>
-                <span className="text-sm font-black text-orange-600">${finalUnit.toFixed(2)}</span>
+                <span className="text-[11px] text-[#5eead4] line-through">${item.unitPrice.toFixed(2)}</span>
+                <span className="text-sm font-black text-teal-600">${finalUnit.toFixed(2)}</span>
               </>
             ) : (
-              <span className="text-sm font-black text-[#3d2817]">${item.unitPrice.toFixed(2)}</span>
+              <span className="text-sm font-black text-[#134e4a]">${item.unitPrice.toFixed(2)}</span>
             )}
           </div>
 
-          <div className="flex items-center gap-1 rounded-full border border-orange-100 bg-[#f8f4ee] p-0.5">
+          <div className="flex items-center gap-1 rounded-full border border-[#ccfbf1] bg-[#f0fdfa] p-0.5">
             <button
               onClick={() => updateQty(item.key, item.qty - 1)}
-              className="flex h-6 w-6 items-center justify-center rounded-full text-[#8a715c] transition-colors hover:bg-white hover:text-[#3d2817] active:scale-95"
+              className="flex h-6 w-6 items-center justify-center rounded-full text-[#0d9488] transition-colors hover:bg-white hover:text-[#134e4a] active:scale-95"
               aria-label="Decrease quantity"
             >
               <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
               </svg>
             </button>
-            <span className="w-5 text-center text-sm font-black text-[#3d2817]">{item.qty}</span>
+            <span className="w-5 text-center text-sm font-black text-[#134e4a]">{item.qty}</span>
             <button
               onClick={() => updateQty(item.key, item.qty + 1)}
-              className="flex h-6 w-6 items-center justify-center rounded-full bg-[#3d2817] text-white transition-colors hover:bg-[#2a1b10] active:scale-95"
+              className="flex h-6 w-6 items-center justify-center rounded-full bg-[#134e4a] text-white transition-colors hover:bg-[#0d9488] active:scale-95"
               aria-label="Increase quantity"
             >
               <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

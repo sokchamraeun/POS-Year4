@@ -22,7 +22,7 @@ export default function EventSection() {
     <section className="w-full max-w-7xl mx-auto mt-8 sm:mt-12 px-4">
       <div className="flex items-center gap-2 mb-5">
         <h2 className="text-xl sm:text-2xl font-extrabold text-slate-800">Events</h2>
-        <span className="w-1.5 h-6 bg-gradient-to-b from-amber-600 to-orange-500 rounded-full" />
+        <span className="w-1.5 h-6 bg-gradient-to-b from-teal-600 to-emerald-500 rounded-full" />
       </div>
 
       {/* Bento mosaic: first event large, the rest in a grid beside it */}

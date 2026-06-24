@@ -112,23 +112,23 @@ export default function Navbar() {
       <nav
         className={`fixed left-0 top-0 z-50 w-full transition-all duration-500 ${
           scrolled
-            ? "bg-[#fffaf3]/90 shadow-[0_18px_45px_rgba(61,40,23,0.14)] backdrop-blur-2xl border-b border-[#d9b98f]/40"
-            : "bg-[#fffaf3]/75 backdrop-blur-xl border-b border-white/60"
+            ? "bg-[#f0fdfa]/90 shadow-[0_18px_45px_rgba(15,118,110,0.14)] backdrop-blur-2xl border-b border-[#99f6e4]/40"
+            : "bg-[#f0fdfa]/75 backdrop-blur-xl border-b border-white/60"
         }`}
       >
         <div className="relative overflow-hidden">
-          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#2b170d] via-[#c58b49] to-[#6f3f1f]" />
-          <div className="pointer-events-none absolute -left-24 -top-20 h-44 w-44 rounded-full bg-amber-300/20 blur-3xl" />
-          <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-[#6f3f1f]/15 blur-3xl" />
+          <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#134e4a] via-[#14b8a6] to-[#0f766e]" />
+          <div className="pointer-events-none absolute -left-24 -top-20 h-44 w-44 rounded-full bg-teal-300/20 blur-3xl" />
+          <div className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-full bg-[#0f766e]/15 blur-3xl" />
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-[68px] items-center justify-between gap-3 sm:h-[76px]">
               {/* Logo */}
               <Link to="/" className="group flex min-w-0 items-center gap-3">
                 <div className="relative shrink-0">
-                  <div className="absolute inset-0 rounded-[1.25rem] bg-gradient-to-br from-[#6f3f1f] to-[#d59a52] opacity-30 blur-lg transition-all duration-300 group-hover:opacity-60" />
+                  <div className="absolute inset-0 rounded-[1.25rem] bg-gradient-to-br from-[#0f766e] to-[#14b8a6] opacity-30 blur-lg transition-all duration-300 group-hover:opacity-60" />
 
-                  <div className="relative flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-[#d9b98f]/70 bg-white shadow-[0_12px_28px_rgba(61,40,23,0.16)] transition-all duration-300 group-hover:-rotate-3 group-hover:scale-105 sm:h-13 sm:w-13 sm:rounded-[1.35rem]">
+                  <div className="relative flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-[#99f6e4]/70 bg-white shadow-[0_12px_28px_rgba(15,118,110,0.16)] transition-all duration-300 group-hover:-rotate-3 group-hover:scale-105 sm:h-13 sm:w-13 sm:rounded-[1.35rem]">
                     <img
                       src={logo}
                       alt={`${siteName} Logo`}
@@ -138,12 +138,12 @@ export default function Navbar() {
                 </div>
 
                 <div className="min-w-0">
-                  <h1 className="truncate text-base font-black tracking-tight text-[#2b170d] sm:text-xl">
+                  <h1 className="truncate text-base font-black tracking-tight text-[#134e4a] sm:text-xl">
                     {siteName}
                   </h1>
 
                   {tagline && (
-                    <p className="truncate text-[9px] font-bold uppercase tracking-[0.18em] text-[#a47a55] sm:text-[11px] sm:tracking-[0.24em]">
+                    <p className="truncate text-[9px] font-bold uppercase tracking-[0.18em] text-[#14b8a6] sm:text-[11px] sm:tracking-[0.24em]">
                       {tagline}
                     </p>
                   )}
@@ -151,14 +151,14 @@ export default function Navbar() {
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="hidden items-center rounded-full border border-[#d9b98f]/60 bg-white/70 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_14px_30px_rgba(61,40,23,0.08)] backdrop-blur-xl lg:flex">
+              <div className="hidden items-center rounded-full border border-[#99f6e4]/60 bg-white/70 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_14px_30px_rgba(15,118,110,0.08)] backdrop-blur-xl lg:flex">
                 {navLinks.map(({ label, to, isAnchor }) => {
                   const active = isActive(to);
 
                   const cls = `relative rounded-full px-4 py-2 text-sm font-extrabold transition-all duration-300 ${
                     active
-                      ? "bg-gradient-to-r from-[#3d2415] via-[#6f3f1f] to-[#a86530] text-white shadow-[0_10px_24px_rgba(111,63,31,0.28)]"
-                      : "text-[#76543a] hover:bg-[#f8ead7] hover:text-[#2b170d]"
+                      ? "bg-gradient-to-r from-[#134e4a] via-[#0f766e] to-[#0d9488] text-white shadow-[0_10px_24px_rgba(15,118,110,0.28)]"
+                      : "text-[#115e59] hover:bg-[#f0fdfa] hover:text-[#134e4a]"
                   }`;
 
                   return isAnchor ? (
@@ -179,13 +179,13 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setCartOpen(true)}
-                  className="relative hidden h-11 w-11 items-center justify-center rounded-2xl border border-[#d9b98f]/70 bg-white/75 text-[#5b321a] shadow-[0_10px_24px_rgba(61,40,23,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#a86530]/60 hover:bg-[#fff3df] hover:shadow-[0_16px_30px_rgba(61,40,23,0.14)] md:flex"
+                  className="relative hidden h-11 w-11 items-center justify-center rounded-2xl border border-[#99f6e4]/70 bg-white/75 text-[#0f766e] shadow-[0_10px_24px_rgba(15,118,110,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#0d9488]/60 hover:bg-[#f0fdfa] hover:shadow-[0_16px_30px_rgba(15,118,110,0.14)] md:flex"
                   aria-label="Open cart"
                 >
                   {cartIcon}
 
                   {cartCount > 0 && (
-                    <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-[#fffaf3] bg-gradient-to-br from-red-600 to-orange-500 px-1 text-[10px] font-black text-white shadow-md">
+                    <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-[#f0fdfa] bg-gradient-to-br from-red-600 to-teal-500 px-1 text-[10px] font-black text-white shadow-md">
                       {cartCount}
                     </span>
                   )}
@@ -193,18 +193,18 @@ export default function Navbar() {
 
                 {/* Desktop User */}
                 {isLoggedIn ? (
-                  <div className="hidden items-center gap-2 rounded-2xl border border-[#d9b98f]/70 bg-white/75 py-1 pl-1 pr-2 shadow-[0_10px_24px_rgba(61,40,23,0.08)] backdrop-blur-xl sm:flex">
-                    <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#3d2415] to-[#a86530] text-sm font-black text-white shadow-md">
+                  <div className="hidden items-center gap-2 rounded-2xl border border-[#99f6e4]/70 bg-white/75 py-1 pl-1 pr-2 shadow-[0_10px_24px_rgba(15,118,110,0.08)] backdrop-blur-xl sm:flex">
+                    <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#134e4a] to-[#0d9488] text-sm font-black text-white shadow-md">
                       {userInitial}
 
                       <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-400" />
                     </div>
 
                     <div className="hidden leading-tight md:block">
-                      <p className="max-w-[90px] truncate text-sm font-black text-[#2b170d]">
+                      <p className="max-w-[90px] truncate text-sm font-black text-[#134e4a]">
                         {firstName}
                       </p>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#a47a55]">
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-[#14b8a6]">
                         Member
                       </p>
                     </div>
@@ -212,7 +212,7 @@ export default function Navbar() {
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="rounded-xl px-3 py-2 text-xs font-black text-[#8a5d3b] transition-all duration-200 hover:bg-red-50 hover:text-red-600"
+                      className="rounded-xl px-3 py-2 text-xs font-black text-[#14b8a6] transition-all duration-200 hover:bg-red-50 hover:text-red-600"
                     >
                       Logout
                     </button>
@@ -220,7 +220,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     to="/customer/login"
-                    className="hidden items-center gap-2 rounded-2xl bg-gradient-to-r from-[#3d2415] via-[#6f3f1f] to-[#a86530] px-4 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(111,63,31,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(111,63,31,0.38)] active:scale-95 sm:flex"
+                    className="hidden items-center gap-2 rounded-2xl bg-gradient-to-r from-[#134e4a] via-[#0f766e] to-[#0d9488] px-4 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(15,118,110,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,118,110,0.38)] active:scale-95 sm:flex"
                   >
                     {userIcon}
                     Login
@@ -231,7 +231,7 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setMenuOpen((prev) => !prev)}
-                  className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#d9b98f]/70 bg-white/75 text-[#5b321a] shadow-sm transition-all duration-300 hover:bg-[#fff3df] lg:hidden"
+                  className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[#99f6e4]/70 bg-white/75 text-[#0f766e] shadow-sm transition-all duration-300 hover:bg-[#f0fdfa] lg:hidden"
                   aria-label="Open menu"
                 >
                   {menuOpen ? (
@@ -250,13 +250,13 @@ export default function Navbar() {
             {/* Mobile Menu */}
             {menuOpen && (
               <div className="pb-5 lg:hidden">
-                <div className="animate-slideDown overflow-hidden rounded-[1.75rem] border border-[#d9b98f]/70 bg-white/90 p-3 shadow-[0_20px_50px_rgba(61,40,23,0.14)] backdrop-blur-2xl">
-                  <div className="mb-3 rounded-2xl bg-gradient-to-r from-[#2b170d] via-[#5b321a] to-[#a86530] p-4 text-white">
-                    <p className="text-xs font-black uppercase tracking-[0.24em] text-amber-100/80">
+                <div className="animate-slideDown overflow-hidden rounded-[1.75rem] border border-[#99f6e4]/70 bg-white/90 p-3 shadow-[0_20px_50px_rgba(15,118,110,0.14)] backdrop-blur-2xl">
+                  <div className="mb-3 rounded-2xl bg-gradient-to-r from-[#134e4a] via-[#0f766e] to-[#0d9488] p-4 text-white">
+                    <p className="text-xs font-black uppercase tracking-[0.24em] text-teal-100/80">
                       Welcome to
                     </p>
                     <p className="mt-1 text-lg font-black">{siteName}</p>
-                    <p className="mt-1 text-xs font-semibold text-amber-100/80">
+                    <p className="mt-1 text-xs font-semibold text-teal-100/80">
                       Order fresh coffee, drinks, and promotions.
                     </p>
                   </div>
@@ -267,8 +267,8 @@ export default function Navbar() {
 
                       const cls = `rounded-2xl px-4 py-3 text-center text-sm font-black transition-all duration-300 ${
                         active
-                          ? "bg-gradient-to-r from-[#3d2415] to-[#a86530] text-white shadow-md"
-                          : "bg-[#fff7ec] text-[#76543a] hover:bg-[#f0dcc1] hover:text-[#2b170d]"
+                          ? "bg-gradient-to-r from-[#134e4a] to-[#0d9488] text-white shadow-md"
+                          : "bg-[#f0fdfa] text-[#115e59] hover:bg-[#ccfbf1] hover:text-[#134e4a]"
                       }`;
 
                       return isAnchor ? (
@@ -283,21 +283,21 @@ export default function Navbar() {
                     })}
                   </div>
 
-                  <div className="mt-3 border-t border-[#d9b98f]/60 pt-3">
+                  <div className="mt-3 border-t border-[#99f6e4]/60 pt-3">
                     {isLoggedIn ? (
-                      <div className="flex items-center justify-between gap-3 rounded-2xl bg-[#fff7ec] p-3">
+                      <div className="flex items-center justify-between gap-3 rounded-2xl bg-[#f0fdfa] p-3">
                         <div className="flex min-w-0 items-center gap-3">
-                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3d2415] to-[#a86530] text-sm font-black text-white shadow-md">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#134e4a] to-[#0d9488] text-sm font-black text-white shadow-md">
                             {userInitial}
                           </div>
 
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-black text-[#2b170d]">
+                            <p className="truncate text-sm font-black text-[#134e4a]">
                               {customer?.name || "Customer"}
                             </p>
 
                             {customer?.phone && (
-                              <p className="truncate text-xs font-semibold text-[#a47a55]">
+                              <p className="truncate text-xs font-semibold text-[#14b8a6]">
                                 {customer.phone}
                               </p>
                             )}
@@ -315,7 +315,7 @@ export default function Navbar() {
                     ) : (
                       <Link
                         to="/customer/login"
-                        className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#3d2415] via-[#6f3f1f] to-[#a86530] px-4 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(111,63,31,0.25)]"
+                        className="flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#134e4a] via-[#0f766e] to-[#0d9488] px-4 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(15,118,110,0.25)]"
                       >
                         {userIcon}
                         Login to Account

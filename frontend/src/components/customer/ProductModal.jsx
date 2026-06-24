@@ -87,7 +87,7 @@ export default function ProductModal({
         {/* Back Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 left-4 z-10 w-10 h-10 bg-[#3d2817]/70 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-[#3d2817]/90 active:scale-95 transition-all duration-200"
+          className="absolute top-4 left-4 z-10 w-10 h-10 bg-[#134e4a]/70 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-[#134e4a]/90 active:scale-95 transition-all duration-200"
         >
           <svg
             className="w-5 h-5"
@@ -107,7 +107,7 @@ export default function ProductModal({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-10 h-10 bg-[#3d2817]/70 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-[#3d2817]/90 active:scale-95 transition-all duration-200"
+          className="absolute top-4 right-4 z-10 w-10 h-10 bg-[#134e4a]/70 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-[#134e4a]/90 active:scale-95 transition-all duration-200"
         >
           <svg
             className="w-5 h-5"
@@ -149,7 +149,7 @@ export default function ProductModal({
                 </div>
 
                 {!isBogo && (
-                  <div className="bg-[#3d2817]/70 backdrop-blur-md text-white/80 text-xs line-through font-medium px-3 py-1 rounded-full">
+                  <div className="bg-[#134e4a]/70 backdrop-blur-md text-white/80 text-xs line-through font-medium px-3 py-1 rounded-full">
                     ${price.toFixed(2)}
                   </div>
                 )}
@@ -168,7 +168,7 @@ export default function ProductModal({
                 </div>
               </div>
             ) : (
-              <div className="bg-gradient-to-r from-[#3d2817] to-[#5b3a29] text-white font-bold text-xl px-5 py-2.5 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1">
+              <div className="bg-gradient-to-r from-[#134e4a] to-[#115e59] text-white font-bold text-xl px-5 py-2.5 rounded-full shadow-lg backdrop-blur-sm flex items-center gap-1">
                 <span className="text-sm">$</span>
                 <span>{finalPrice.toFixed(2)}</span>
               </div>
@@ -184,22 +184,22 @@ export default function ProductModal({
           {/* Header + Quantity */}
           <div className="flex items-start justify-between gap-3 mb-4">
             <div className="flex-1">
-              <h2 className="text-xl sm:text-2xl font-extrabold text-[#3d2817] mb-1 line-clamp-2">
+              <h2 className="text-xl sm:text-2xl font-extrabold text-[#134e4a] mb-1 line-clamp-2">
                 {product.name}
               </h2>
 
               {product.description && (
-                <p className="text-xs sm:text-sm text-[#8a715c] leading-relaxed line-clamp-2">
+                <p className="text-xs sm:text-sm text-[#0d9488] leading-relaxed line-clamp-2">
                   {product.description}
                 </p>
               )}
             </div>
 
             {/* Quantity Selector */}
-            <div className="flex items-center gap-1 bg-amber-50 border border-amber-900/15 rounded-2xl p-1 shadow-inner shrink-0">
+            <div className="flex items-center gap-1 bg-teal-50 border border-teal-900/15 rounded-2xl p-1 shadow-inner shrink-0">
               <button
                 onClick={() => onQtyChange(Math.max(1, qty - 1))}
-                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-lg font-bold text-[#5b3a29] hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 active:scale-95"
+                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-lg font-bold text-[#115e59] hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 active:scale-95"
               >
                 -
               </button>
@@ -212,12 +212,12 @@ export default function ProductModal({
                   const v = parseInt(e.target.value)
                   if (!isNaN(v)) onQtyChange(Math.max(1, v))
                 }}
-                className="w-8 sm:w-10 text-center text-base font-bold bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-[#3d2817]"
+                className="w-8 sm:w-10 text-center text-base font-bold bg-transparent outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none text-[#134e4a]"
               />
 
               <button
                 onClick={() => onQtyChange(qty + 1)}
-                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-lg font-bold text-[#5b3a29] hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 active:scale-95"
+                className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-lg font-bold text-[#115e59] hover:bg-white hover:shadow-md rounded-xl transition-all duration-200 active:scale-95"
               >
                 +
               </button>
@@ -252,12 +252,12 @@ export default function ProductModal({
           )}
 
           {/* Options Box */}
-          <div className="border-2 border-amber-900/15 rounded-2xl p-4 bg-amber-50/40">
+          <div className="border-2 border-teal-900/15 rounded-2xl p-4 bg-teal-50/40">
             {/* Size Selection */}
             {product.sizes?.length > 0 && (
               <div className="mb-5">
-                <p className="text-sm font-bold text-[#5b3a29] mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-amber-700 rounded-full"></span>
+                <p className="text-sm font-bold text-[#115e59] mb-3 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-teal-700 rounded-full"></span>
                   Select Size
                 </p>
 
@@ -282,8 +282,8 @@ export default function ProductModal({
                         onClick={() => onSizeChange(s.name)}
                         className={`relative rounded-xl px-3 py-2 text-sm font-semibold transition-all duration-200 ${
                           isSelected
-                            ? 'bg-gradient-to-r from-[#5b3a29] to-amber-700 text-white shadow-md'
-                            : 'bg-white text-[#3d2817] hover:bg-amber-100 border border-amber-900/15'
+                            ? 'bg-gradient-to-r from-[#115e59] to-teal-700 text-white shadow-md'
+                            : 'bg-white text-[#134e4a] hover:bg-teal-100 border border-teal-900/15'
                         }`}
                       >
                         {sizeHasDiscount && (
@@ -301,8 +301,8 @@ export default function ProductModal({
                             <span
                               className={`line-through ${
                                 isSelected
-                                  ? 'text-amber-100/70'
-                                  : 'text-[#8a715c]'
+                                  ? 'text-teal-100/70'
+                                  : 'text-[#0d9488]'
                               }`}
                             >
                               ${sizePrice.toFixed(2)}
@@ -319,7 +319,7 @@ export default function ProductModal({
                         ) : (
                           <span
                             className={`block text-[10px] mt-0.5 ${
-                              isSelected ? 'text-amber-100' : 'text-amber-700'
+                              isSelected ? 'text-teal-100' : 'text-teal-700'
                             }`}
                           >
                             ${sizePrice.toFixed(2)}
@@ -332,14 +332,14 @@ export default function ProductModal({
               </div>
             )}
 
-            <div className="border-t border-amber-900/15 my-4"></div>
+            <div className="border-t border-teal-900/15 my-4"></div>
 
             {/* Ice + Sugar */}
             <div className="grid grid-cols-2 gap-4 mb-5">
               {product.ice_levels?.length > 0 && (
                 <div>
-                  <p className="text-xs font-bold text-[#5b3a29] mb-2 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 bg-amber-700 rounded-full"></span>
+                  <p className="text-xs font-bold text-[#115e59] mb-2 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-teal-700 rounded-full"></span>
                     Ice Level
                   </p>
 
@@ -353,8 +353,8 @@ export default function ProductModal({
                         }}
                         className={`rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200 ${
                           selectedIce === i.name
-                            ? 'bg-gradient-to-r from-[#5b3a29] to-amber-700 text-white shadow-sm'
-                            : 'bg-white text-[#3d2817] hover:bg-amber-100 border border-amber-900/15'
+                            ? 'bg-gradient-to-r from-[#115e59] to-teal-700 text-white shadow-sm'
+                            : 'bg-white text-[#134e4a] hover:bg-teal-100 border border-teal-900/15'
                         }`}
                       >
                         {i.name}
@@ -368,7 +368,7 @@ export default function ProductModal({
                       value={iceNote}
                       onChange={(e) => onIceNoteChange?.(e.target.value)}
                       placeholder="Specify ice amount"
-                      className="mt-2 w-full rounded-xl border border-amber-900/20 bg-white px-3 py-2 text-xs font-semibold text-[#3d2817] outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/15"
+                      className="mt-2 w-full rounded-xl border border-teal-900/20 bg-white px-3 py-2 text-xs font-semibold text-[#134e4a] outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/15"
                     />
                   )}
                 </div>
@@ -376,8 +376,8 @@ export default function ProductModal({
 
               {product.sugar_levels?.length > 0 && (
                 <div>
-                  <p className="text-xs font-bold text-[#5b3a29] mb-2 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 bg-amber-700 rounded-full"></span>
+                  <p className="text-xs font-bold text-[#115e59] mb-2 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-teal-700 rounded-full"></span>
                     Sugar Level
                   </p>
 
@@ -391,8 +391,8 @@ export default function ProductModal({
                         }}
                         className={`rounded-xl px-3 py-2 text-xs font-semibold transition-all duration-200 ${
                           selectedSugar === s.name
-                            ? 'bg-gradient-to-r from-[#5b3a29] to-amber-700 text-white shadow-sm'
-                            : 'bg-white text-[#3d2817] hover:bg-amber-100 border border-amber-900/15'
+                            ? 'bg-gradient-to-r from-[#115e59] to-teal-700 text-white shadow-sm'
+                            : 'bg-white text-[#134e4a] hover:bg-teal-100 border border-teal-900/15'
                         }`}
                       >
                         {s.name}
@@ -406,20 +406,20 @@ export default function ProductModal({
                       value={sugarNote}
                       onChange={(e) => onSugarNoteChange?.(e.target.value)}
                       placeholder="Specify sugar amount"
-                      className="mt-2 w-full rounded-xl border border-amber-900/20 bg-white px-3 py-2 text-xs font-semibold text-[#3d2817] outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/15"
+                      className="mt-2 w-full rounded-xl border border-teal-900/20 bg-white px-3 py-2 text-xs font-semibold text-[#134e4a] outline-none focus:border-teal-700 focus:ring-2 focus:ring-teal-700/15"
                     />
                   )}
                 </div>
               )}
             </div>
 
-            <div className="border-t border-amber-900/15 my-4"></div>
+            <div className="border-t border-teal-900/15 my-4"></div>
 
             {/* Add-ons */}
             {product.addons?.length > 0 && (
               <div>
-                <p className="text-sm font-bold text-[#5b3a29] mb-3 flex items-center gap-2">
-                  <span className="w-2 h-2 bg-amber-700 rounded-full"></span>
+                <p className="text-sm font-bold text-[#115e59] mb-3 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-teal-700 rounded-full"></span>
                   Add-ons
                 </p>
 
@@ -428,8 +428,8 @@ export default function ProductModal({
                     onClick={() => onAddOnChange('')}
                     className={`rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-200 ${
                       selectedAddOn === ''
-                        ? 'bg-gradient-to-r from-[#5b3a29] to-amber-700 text-white shadow-sm'
-                        : 'bg-white text-[#3d2817] hover:bg-amber-100 border border-amber-900/15'
+                        ? 'bg-gradient-to-r from-[#115e59] to-teal-700 text-white shadow-sm'
+                        : 'bg-white text-[#134e4a] hover:bg-teal-100 border border-teal-900/15'
                     }`}
                   >
                     No Add-on
@@ -450,8 +450,8 @@ export default function ProductModal({
                         onClick={() => onAddOnChange(a.name)}
                         className={`rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-200 ${
                           selectedAddOn === a.name
-                            ? 'bg-gradient-to-r from-[#5b3a29] to-amber-700 text-white shadow-sm'
-                            : 'bg-white text-[#3d2817] hover:bg-amber-100 border border-amber-900/15'
+                            ? 'bg-gradient-to-r from-[#115e59] to-teal-700 text-white shadow-sm'
+                            : 'bg-white text-[#134e4a] hover:bg-teal-100 border border-teal-900/15'
                         }`}
                       >
                         {a.name} (+${ap.toFixed(2)})
@@ -486,7 +486,7 @@ export default function ProductModal({
           {/* Add to Cart Button */}
           <button
             onClick={onAddToCart}
-            className="w-full mt-5 relative overflow-hidden group bg-gradient-to-r from-[#5b3a29] to-amber-700 hover:from-[#3d2817] hover:to-[#5b3a29] text-white rounded-xl py-3.5 text-sm font-bold shadow-lg shadow-amber-900/20 transition-all duration-200 hover:shadow-xl active:scale-95"
+            className="w-full mt-5 relative overflow-hidden group bg-gradient-to-r from-[#115e59] to-teal-700 hover:from-[#134e4a] hover:to-[#115e59] text-white rounded-xl py-3.5 text-sm font-bold shadow-lg shadow-teal-900/20 transition-all duration-200 hover:shadow-xl active:scale-95"
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
               <svg
@@ -536,7 +536,7 @@ export default function ProductModal({
 
         {/* Drag Handle for Mobile */}
         <div className="sm:hidden flex justify-center py-2">
-          <div className="w-12 h-1 bg-amber-900/20 rounded-full"></div>
+          <div className="w-12 h-1 bg-teal-900/20 rounded-full"></div>
         </div>
       </div>
     </div>

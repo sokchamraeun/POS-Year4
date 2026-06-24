@@ -312,11 +312,11 @@ export default function Cart() {
 
   if (done) {
     return (
-      <div className="min-h-screen bg-[#fff8ef] pb-24 text-[#2b170d] sm:pb-0">
+      <div className="min-h-screen bg-[#f0fdfa] pb-24 text-[#134e4a] sm:pb-0">
         <Navbar />
 
         <main className="flex min-h-[calc(100vh-76px)] items-center justify-center px-4">
-          <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-[#e7cda7] bg-white p-7 text-center shadow-[0_28px_80px_rgba(61,40,23,0.16)]">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-[#ccfbf1] bg-white p-7 text-center shadow-[0_28px_80px_rgba(15,118,110,0.16)]">
             <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-emerald-300/25 blur-3xl" />
 
             <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-emerald-100 text-emerald-600 shadow-inner">
@@ -335,16 +335,16 @@ export default function Cart() {
               </svg>
             </div>
 
-            <h1 className="text-2xl font-black text-[#2b170d]">ការបញ្ជាទិញបានជោគជ័យ!</h1>
+            <h1 className="text-2xl font-black text-[#134e4a]">ការបញ្ជាទិញបានជោគជ័យ!</h1>
 
-            <p className="mt-2 text-sm font-semibold leading-6 text-[#8a6a50]">
+            <p className="mt-2 text-sm font-semibold leading-6 text-[#0d9488]">
               ការបញ្ជាទិញរបស់អ្នកត្រូវបានដាក់ជូនដោយជោគជ័យ។ យើងនឹងរៀបចំវាឆាប់ៗនេះ។
             </p>
 
             <button
               type="button"
               onClick={() => navigate('/products')}
-              className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#3d2415] via-[#6f3f1f] to-[#a86530] px-6 py-3 text-sm font-black text-white shadow-[0_16px_35px_rgba(111,63,31,0.30)] transition-all duration-300 hover:-translate-y-0.5"
+              className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#134e4a] via-[#0f766e] to-[#0d9488] px-6 py-3 text-sm font-black text-white shadow-[0_16px_35px_rgba(15,118,110,0.30)] transition-all duration-300 hover:-translate-y-0.5"
             >
               បន្តការដើរទិញ
             </button>
@@ -357,34 +357,34 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fff8ef] pb-24 text-[#2b170d] sm:pb-0">
+    <div className="min-h-screen bg-[#f0fdfa] pb-24 text-[#134e4a] sm:pb-0">
       <Navbar />
 
       <main className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(197,139,73,0.22),transparent_34%),radial-gradient(circle_at_top_right,rgba(91,50,26,0.14),transparent_32%)]" />
-        <div className="pointer-events-none absolute -left-24 top-24 h-64 w-64 rounded-full bg-amber-300/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-24 top-72 h-72 w-72 rounded-full bg-[#6f3f1f]/15 blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(20,184,166,0.22),transparent_34%),radial-gradient(circle_at_top_right,rgba(15,118,110,0.14),transparent_32%)]" />
+        <div className="pointer-events-none absolute -left-24 top-24 h-64 w-64 rounded-full bg-teal-300/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 top-72 h-72 w-72 rounded-full bg-[#0f766e]/15 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           {items.length === 0 ? (
             <EmptyCart onBrowse={() => navigate('/products')} />
           ) : (
-            <div className="rounded-[1rem] border border-[#d8b98b] bg-white/45 p-3 shadow-[0_24px_70px_rgba(61,40,23,0.12)] backdrop-blur-xl sm:p-5">
-              <div className="mb-5 flex flex-col gap-2 border-b border-[#e7cda7] pb-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="rounded-[1rem] border border-[#99f6e4] bg-white/45 p-3 shadow-[0_24px_70px_rgba(15,118,110,0.12)] backdrop-blur-xl sm:p-5">
+              <div className="mb-5 flex flex-col gap-2 border-b border-[#ccfbf1] pb-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#a47a55]">
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#14b8a6]">
                     ត្រួតពិនិត្យការបញ្ជាទិញ
                   </p>
-                  <h1 className="mt-1 text-2xl font-black text-[#2b170d] sm:text-3xl">
+                  <h1 className="mt-1 text-2xl font-black text-[#134e4a] sm:text-3xl">
                     ពិនិត្យការបញ្ជាទិញរបស់អ្នក
                   </h1>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-[#fff0dc] px-4 py-2 text-xs font-black text-[#7b4a26]">
+                  <span className="rounded-full bg-[#ccfbf1] px-4 py-2 text-xs font-black text-[#0d9488]">
                     {totalItems} មុខ
                   </span>
-                  <span className="rounded-full bg-[#2b170d] px-4 py-2 text-xs font-black text-white">
+                  <span className="rounded-full bg-[#134e4a] px-4 py-2 text-xs font-black text-white">
                     ${finalTotal.toFixed(2)}
                   </span>
                 </div>
@@ -396,11 +396,11 @@ export default function Cart() {
                   <div>
                     <div className="mb-4 flex items-center justify-between gap-4">
                       <div>
-                        <h2 className="text-xl font-black text-[#2b170d]">
+                        <h2 className="text-xl font-black text-[#134e4a]">
                           មុខម្ហូបដែលបានជ្រើសរើស
                         </h2>
 
-                        <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-[#a47a55]">
+                        <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-[#14b8a6]">
                           {totalItems} មុខក្នុងកន្ត្រករបស់អ្នក
                         </p>
                       </div>
@@ -430,7 +430,7 @@ export default function Cart() {
                       placeholder="ឧទាហរណ៍: ផ្អែមតិច រៀបចំក្រោយ១០នាទី..."
                       value={orderNote}
                       onChange={(e) => setOrderNote(e.target.value)}
-                      className="min-h-[96px] w-full resize-none rounded-2xl border border-[#e2c59b] bg-[#fffaf3] p-4 text-sm font-semibold text-[#3d2415] outline-none transition-all placeholder:text-[#b99a78] focus:border-[#a86530] focus:bg-white focus:ring-4 focus:ring-[#c58b49]/20"
+                      className="min-h-[96px] w-full resize-none rounded-2xl border border-[#99f6e4] bg-[#f0fdfa] p-4 text-sm font-semibold text-[#134e4a] outline-none transition-all placeholder:text-[#5eead4] focus:border-[#0d9488] focus:bg-white focus:ring-4 focus:ring-[#14b8a6]/20"
                       rows={3}
                     />
                   </Panel>
@@ -440,22 +440,22 @@ export default function Cart() {
                 <aside className="space-y-4 lg:sticky lg:top-[96px]">
                   <Panel title="ព័ត៌មានអតិថិជន" subtitle="សម្រាប់ប្រវត្តិការបញ្ជាទិញ និងទំនាក់ទំនង">
                     {isLoggedIn ? (
-                      <div className="flex items-center gap-3 rounded-2xl border border-[#e2c59b] bg-[#fffaf3] p-4">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3d2415] to-[#a86530] text-sm font-black text-white shadow-md">
+                      <div className="flex items-center gap-3 rounded-2xl border border-[#99f6e4] bg-[#f0fdfa] p-4">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#134e4a] to-[#0d9488] text-sm font-black text-white shadow-md">
                           {(customer?.name?.[0] || 'U').toUpperCase()}
                         </div>
 
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-black text-[#2b170d]">
+                          <p className="truncate text-sm font-black text-[#134e4a]">
                             {customer?.name}
                           </p>
-                          <p className="truncate text-xs font-bold text-[#8a6a50]">
+                          <p className="truncate text-xs font-bold text-[#0d9488]">
                             {customer?.phone}
                           </p>
                         </div>
                       </div>
                     ) : qrToken ? (
-                      <div className="rounded-2xl border border-[#e2c59b] bg-[#fffaf3] p-4 text-sm font-bold text-[#8a6a50]">
+                      <div className="rounded-2xl border border-[#99f6e4] bg-[#f0fdfa] p-4 text-sm font-bold text-[#0d9488]">
                         ការបញ្ជាទិញតាមតុ — មិនត្រូវការឈ្មោះ ឬលេខទូរស័ព្ទទេ។
                       </div>
                     ) : (
@@ -480,14 +480,14 @@ export default function Cart() {
 
                     {!qrToken && (
                       <div className="mt-3">
-                        <label className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a5d3b]">
+                        <label className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#14b8a6]">
                           តុ
                         </label>
 
                         <select
                           value={selectedTable}
                           onChange={(e) => setSelectedTable(e.target.value)}
-                          className="w-full rounded-2xl border border-[#e2c59b] bg-[#fffaf3] px-4 py-3 text-sm font-black text-[#3d2415] outline-none transition-all focus:border-[#a86530] focus:bg-white focus:ring-4 focus:ring-[#c58b49]/20"
+                          className="w-full rounded-2xl border border-[#99f6e4] bg-[#f0fdfa] px-4 py-3 text-sm font-black text-[#134e4a] outline-none transition-all focus:border-[#0d9488] focus:bg-white focus:ring-4 focus:ring-[#14b8a6]/20"
                         >
                           <option value="">គ្មានតុ</option>
                           {tables.map((table) => (
@@ -556,25 +556,25 @@ export default function Cart() {
                         </div>
                       )}
 
-                      <div className="border-t border-[#ead2ad] pt-3">
+                      <div className="border-t border-[#ccfbf1] pt-3">
                         <div className="flex items-end justify-between">
                           <div>
-                            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#a47a55]">
+                            <p className="text-xs font-black uppercase tracking-[0.18em] text-[#14b8a6]">
                               សរុប
                             </p>
-                            <p className="text-xs font-semibold text-[#8a6a50]">
+                            <p className="text-xs font-semibold text-[#0d9488]">
                               រួមទាំងបញ្ចុះតម្លៃ
                             </p>
                           </div>
 
-                          <p className="text-3xl font-black text-[#6f3f1f]">
+                          <p className="text-3xl font-black text-[#0f766e]">
                             ${finalTotal.toFixed(2)}
                           </p>
                         </div>
                       </div>
 
                       {!isLoggedIn && !qrToken && !phone.trim() && (
-                        <p className="rounded-2xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
+                        <p className="rounded-2xl bg-teal-50 px-3 py-2 text-xs font-bold text-teal-700">
                           សូមបញ្ចូលលេខទូរស័ព្ទមុនពេលដាក់ការបញ្ជាទិញ។
                         </p>
                       )}
@@ -583,7 +583,7 @@ export default function Cart() {
                         type="button"
                         onClick={placeOrder}
                         disabled={!canPlaceOrder}
-                        className="w-full rounded-2xl bg-gradient-to-r from-[#3d2415] via-[#6f3f1f] to-[#a86530] py-4 text-sm font-black text-white shadow-[0_18px_40px_rgba(111,63,31,0.30)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_50px_rgba(111,63,31,0.40)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
+                        className="w-full rounded-2xl bg-gradient-to-r from-[#134e4a] via-[#0f766e] to-[#0d9488] py-4 text-sm font-black text-white shadow-[0_18px_40px_rgba(15,118,110,0.30)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_50px_rgba(15,118,110,0.40)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0"
                       >
                         {placing ? 'កំពុងដំណើរការ...' : 'ដាក់ការបញ្ជាទិញ'}
                       </button>
@@ -631,13 +631,13 @@ export default function Cart() {
 
 function Panel({ title, subtitle, action, children }) {
   return (
-    <div className="rounded-[1rem] border border-[#e7cda7] bg-white/85 p-4 shadow-[0_20px_55px_rgba(61,40,23,0.08)] backdrop-blur-xl sm:p-5">
+    <div className="rounded-[1rem] border border-[#ccfbf1] bg-white/85 p-4 shadow-[0_20px_55px_rgba(15,118,110,0.08)] backdrop-blur-xl sm:p-5">
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-black text-[#2b170d]">{title}</h2>
+          <h2 className="text-lg font-black text-[#134e4a]">{title}</h2>
 
           {subtitle && (
-            <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-[#a47a55]">
+            <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-[#14b8a6]">
               {subtitle}
             </p>
           )}
@@ -654,14 +654,14 @@ function Panel({ title, subtitle, action, children }) {
 function Field({ label, type = 'text', required = false, ...props }) {
   return (
     <div>
-      <label className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#8a5d3b]">
+      <label className="mb-2 block text-xs font-black uppercase tracking-[0.14em] text-[#14b8a6]">
         {label}
         {required && <span className="ml-1 text-red-500">*</span>}
       </label>
 
       <input
         type={type}
-        className="w-full rounded-2xl border border-[#e2c59b] bg-[#fffaf3] px-4 py-3 text-sm font-semibold text-[#3d2415] outline-none transition-all placeholder:text-[#b99a78] focus:border-[#a86530] focus:bg-white focus:ring-4 focus:ring-[#c58b49]/20"
+        className="w-full rounded-2xl border border-[#99f6e4] bg-[#f0fdfa] px-4 py-3 text-sm font-semibold text-[#134e4a] outline-none transition-all placeholder:text-[#5eead4] focus:border-[#0d9488] focus:bg-white focus:ring-4 focus:ring-[#14b8a6]/20"
         {...props}
       />
     </div>
@@ -675,15 +675,15 @@ function PaymentButton({ active, label, sub, onClick }) {
       onClick={onClick}
       className={`rounded-2xl border p-3 text-center transition-all duration-300 active:scale-95 ${
         active
-          ? 'border-[#5b321a] bg-[#2b170d] text-white shadow-[0_14px_30px_rgba(43,23,13,0.25)]'
-          : 'border-[#e2c59b] bg-[#fffaf3] text-[#76543a] hover:bg-[#fff0dc] hover:text-[#2b170d]'
+          ? 'border-[#0f766e] bg-[#134e4a] text-white shadow-[0_14px_30px_rgba(15,118,110,0.25)]'
+          : 'border-[#99f6e4] bg-[#f0fdfa] text-[#115e59] hover:bg-[#ccfbf1] hover:text-[#134e4a]'
       }`}
     >
       <p className="text-sm font-black">{label}</p>
 
       <p
         className={`mt-0.5 text-[10px] font-black uppercase tracking-[0.12em] ${
-          active ? 'text-[#f9d9ac]' : 'text-[#a47a55]'
+          active ? 'text-[#99f6e4]' : 'text-[#14b8a6]'
         }`}
       >
         {sub}
@@ -695,16 +695,16 @@ function PaymentButton({ active, label, sub, onClick }) {
 function SummaryRow({ label, value }) {
   return (
     <div className="flex items-center justify-between text-sm">
-      <span className="font-bold text-[#8a6a50]">{label}</span>
-      <span className="font-black text-[#2b170d]">{value}</span>
+      <span className="font-bold text-[#0d9488]">{label}</span>
+      <span className="font-black text-[#134e4a]">{value}</span>
     </div>
   )
 }
 
 function EmptyCart({ onBrowse }) {
   return (
-    <div className="mx-auto max-w-lg rounded-[2rem] border border-[#e7cda7] bg-white/85 px-5 py-16 text-center shadow-[0_20px_55px_rgba(61,40,23,0.08)] backdrop-blur-xl">
-      <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-[#fff0dc] text-[#7b4a26] shadow-inner">
+    <div className="mx-auto max-w-lg rounded-[2rem] border border-[#ccfbf1] bg-white/85 px-5 py-16 text-center shadow-[0_20px_55px_rgba(15,118,110,0.08)] backdrop-blur-xl">
+      <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-[#ccfbf1] text-[#0d9488] shadow-inner">
         <svg
           className="h-11 w-11"
           fill="none"
@@ -720,16 +720,16 @@ function EmptyCart({ onBrowse }) {
         </svg>
       </div>
 
-      <h2 className="text-2xl font-black text-[#2b170d]">កន្ត្រករបស់អ្នកទទេ</h2>
+      <h2 className="text-2xl font-black text-[#134e4a]">កន្ត្រករបស់អ្នកទទេ</h2>
 
-      <p className="mx-auto mt-2 max-w-sm text-sm font-semibold leading-6 text-[#8a6a50]">
+      <p className="mx-auto mt-2 max-w-sm text-sm font-semibold leading-6 text-[#0d9488]">
         សូមបន្ថែមកាហ្វេ ឬភេសជ្ជៈដែលអ្នកចូលចិត្តមុនពេលទិញ។
       </p>
 
       <button
         type="button"
         onClick={onBrowse}
-        className="mt-6 rounded-2xl bg-gradient-to-r from-[#3d2415] via-[#6f3f1f] to-[#a86530] px-6 py-3 text-sm font-black text-white shadow-[0_16px_35px_rgba(111,63,31,0.30)] transition-all duration-300 hover:-translate-y-0.5"
+        className="mt-6 rounded-2xl bg-gradient-to-r from-[#134e4a] via-[#0f766e] to-[#0d9488] px-6 py-3 text-sm font-black text-white shadow-[0_16px_35px_rgba(15,118,110,0.30)] transition-all duration-300 hover:-translate-y-0.5"
       >
         មើលមុខម្ហូប
       </button>

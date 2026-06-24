@@ -111,19 +111,19 @@ export default function ProductCard({ product, onAddToCart }) {
 
   return (
     <>
-      <div className="group relative bg-white rounded-2xl border border-amber-900/10 shadow-sm hover:shadow-[0_10px_35px_rgba(92,58,33,0.18)] hover:-translate-y-1 transition-all duration-300 flex flex-col w-full overflow-hidden">
+      <div className="group relative bg-white rounded-2xl border border-teal-900/10 shadow-sm hover:shadow-[0_10px_35px_rgba(15,118,110,0.18)] hover:-translate-y-1 transition-all duration-300 flex flex-col w-full overflow-hidden">
         {/* Top coffee accent */}
-        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#5b3a29] via-amber-500 to-[#3d2817] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#115e59] via-teal-500 to-[#134e4a] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         {/* Image */}
         <div className="relative p-2.5 pb-1.5">
           <div
-            className="relative overflow-hidden rounded-xl bg-amber-50 aspect-square cursor-pointer border border-amber-900/5"
+            className="relative overflow-hidden rounded-xl bg-teal-50 aspect-square cursor-pointer border border-teal-900/5"
             onClick={() => setShowModal(true)}
           >
             {/* Skeleton */}
             {!imageLoaded && product.image && (
-              <div className="absolute inset-0 bg-amber-100/60 animate-pulse" />
+              <div className="absolute inset-0 bg-teal-100/60 animate-pulse" />
             )}
 
             {/* Promo badge */}
@@ -137,8 +137,8 @@ export default function ProductCard({ product, onAddToCart }) {
             )}
 
             {/* Hover overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#3d2817]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-end justify-center pb-3">
-              <span className="text-white text-[10px] font-semibold tracking-widest uppercase bg-[#3d2817]/35 backdrop-blur-sm px-3 py-1 rounded-full border border-white/30">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#134e4a]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-end justify-center pb-3">
+              <span className="text-white text-[10px] font-semibold tracking-widest uppercase bg-[#134e4a]/35 backdrop-blur-sm px-3 py-1 rounded-full border border-white/30">
                 View Details
               </span>
             </div>
@@ -153,7 +153,7 @@ export default function ProductCard({ product, onAddToCart }) {
                 }`}
               />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-amber-900/25 select-none">
+              <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 text-teal-900/25 select-none">
                 <svg className="w-9 h-9 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -174,11 +174,11 @@ export default function ProductCard({ product, onAddToCart }) {
         <div className="px-3 pb-3 pt-1 flex flex-col flex-1">
           {/* Name & description */}
           <div className="mb-2 flex-1 cursor-pointer" onClick={() => setShowModal(true)}>
-            <h3 className="font-bold text-sm sm:text-[15px] text-[#3d2817] line-clamp-1 group-hover:text-[#5b3a29] transition-colors duration-200">
+            <h3 className="font-bold text-sm sm:text-[15px] text-[#134e4a] line-clamp-1 group-hover:text-[#115e59] transition-colors duration-200">
               {product.name}
             </h3>
 
-            <p className="text-[11px] text-[#8a715c] mt-0.5 line-clamp-2 leading-relaxed min-h-8">
+            <p className="text-[11px] text-[#0d9488] mt-0.5 line-clamp-2 leading-relaxed min-h-8">
               {product.description || 'Delicately crafted beverage made from selected premium ingredients.'}
             </p>
           </div>
@@ -202,15 +202,15 @@ export default function ProductCard({ product, onAddToCart }) {
           )}
 
           {/* Price & action */}
-          <div className="flex items-center justify-between pt-2 border-t border-amber-900/10 mt-auto">
+          <div className="flex items-center justify-between pt-2 border-t border-teal-900/10 mt-auto">
             <div className="flex flex-col leading-none">
               {hasDiscount && (
-                <span className="text-[10px] text-[#8a715c] line-through mb-0.5">
+                <span className="text-[10px] text-[#0d9488] line-through mb-0.5">
                   ${price.toFixed(2)}
                 </span>
               )}
 
-              <span className="text-base font-extrabold bg-gradient-to-r from-[#3d2817] via-[#5b3a29] to-amber-700 bg-clip-text text-transparent">
+              <span className="text-base font-extrabold bg-gradient-to-r from-[#134e4a] via-[#115e59] to-teal-700 bg-clip-text text-transparent">
                 ${finalPrice.toFixed(2)}
               </span>
             </div>
@@ -220,7 +220,7 @@ export default function ProductCard({ product, onAddToCart }) {
               className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all duration-300 active:scale-90 shadow-md ${
                 isAdded
                   ? 'bg-emerald-500 text-white shadow-emerald-200'
-                  : 'bg-gradient-to-br from-[#5b3a29] to-amber-700 text-white shadow-amber-200 hover:shadow-[0_4px_16px_rgba(92,58,33,0.4)] hover:scale-110'
+                  : 'bg-gradient-to-br from-[#115e59] to-teal-700 text-white shadow-teal-200 hover:shadow-[0_4px_16px_rgba(15,118,110,0.4)] hover:scale-110'
               }`}
             >
               {isAdded ? (

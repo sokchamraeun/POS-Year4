@@ -241,7 +241,7 @@ export default function CartSidebar({ open, onClose }) {
       key: 'pay_later',
       label: 'Later',
       icon: '',
-      active: 'bg-amber-500 text-white border-amber-500',
+      active: 'bg-teal-500 text-white border-teal-500',
     },
     {
       key: 'cash',
@@ -281,18 +281,18 @@ export default function CartSidebar({ open, onClose }) {
         onClick={handleClose}
       ></div>
 
-      <aside className="fixed top-0 right-0 bottom-0 z-[60] w-full max-w-md bg-[#f8f4ee] shadow-2xl flex flex-col animate-cartSlideIn overflow-hidden">
+      <aside className="fixed top-0 right-0 bottom-0 z-[60] w-full max-w-md bg-[#f0fdfa] shadow-2xl flex flex-col animate-cartSlideIn overflow-hidden">
         {/* Header */}
-        <div className="bg-white border-b border-orange-100 px-5 py-4">
+        <div className="bg-white border-b border-[#ccfbf1] px-5 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-black text-orange-500 uppercase tracking-widest">
+              <p className="text-[11px] font-black text-teal-500 uppercase tracking-widest">
                 Order Summary
               </p>
 
-              <h2 className="text-xl font-black text-[#3d2817] mt-0.5">
+              <h2 className="text-xl font-black text-[#134e4a] mt-0.5">
                 Cart
-                <span className="ml-2 text-sm font-bold text-[#8a715c]">
+                <span className="ml-2 text-sm font-bold text-[#0d9488]">
                   ({totalItems})
                 </span>
               </h2>
@@ -300,7 +300,7 @@ export default function CartSidebar({ open, onClose }) {
 
             <button
               onClick={handleClose}
-              className="w-9 h-9 rounded-full bg-[#f8f4ee] text-[#8a715c] hover:bg-orange-100 hover:text-[#3d2817] flex items-center justify-center active:scale-95 transition-all"
+              className="w-9 h-9 rounded-full bg-[#f0fdfa] text-[#0d9488] hover:bg-teal-100 hover:text-[#134e4a] flex items-center justify-center active:scale-95 transition-all"
             >
               <svg
                 className="w-4.5 h-4.5"
@@ -323,9 +323,9 @@ export default function CartSidebar({ open, onClose }) {
         <div className="flex-1 overflow-y-auto px-4 py-4">
           {items.length === 0 ? (
             <div className="h-full min-h-[360px] flex flex-col items-center justify-center text-center">
-              <div className="w-20 h-20 rounded-full bg-white border border-orange-100 shadow-sm flex items-center justify-center mb-4">
+              <div className="w-20 h-20 rounded-full bg-white border border-[#ccfbf1] shadow-sm flex items-center justify-center mb-4">
                 <svg
-                  className="w-9 h-9 text-[#8a715c]"
+                  className="w-9 h-9 text-[#0d9488]"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -339,17 +339,17 @@ export default function CartSidebar({ open, onClose }) {
                 </svg>
               </div>
 
-              <h3 className="text-lg font-black text-[#3d2817]">
+              <h3 className="text-lg font-black text-[#134e4a]">
                 Empty cart
               </h3>
 
-              <p className="text-sm text-[#8a715c] mt-1">
+              <p className="text-sm text-[#0d9488] mt-1">
                 Add drinks to continue checkout.
               </p>
 
               <button
                 onClick={handleClose}
-                className="mt-5 rounded-full bg-[#3d2817] text-white text-xs font-black px-5 py-2.5 active:scale-95 transition-all"
+                className="mt-5 rounded-full bg-[#134e4a] text-white text-xs font-black px-5 py-2.5 active:scale-95 transition-all"
               >
                 Shop Now
               </button>
@@ -365,17 +365,17 @@ export default function CartSidebar({ open, onClose }) {
 
         {/* Footer */}
         {items.length > 0 && !done && (
-          <div className="bg-white border-t border-orange-100 px-4 py-4 space-y-3 shadow-[0_-10px_30px_rgba(61,40,23,0.08)]">
+          <div className="bg-white border-t border-[#ccfbf1] px-4 py-4 space-y-3 shadow-[0_-10px_30px_rgba(15,118,110,0.08)]">
             {/* Customer */}
             {isLoggedIn ? (
-              <div className="bg-[#f8f4ee] border border-orange-100 px-4 py-3">
-                <p className="text-[10px] font-black uppercase tracking-wider text-[#8a715c]">
+              <div className="bg-[#f0fdfa] border border-[#ccfbf1] px-4 py-3">
+                <p className="text-[10px] font-black uppercase tracking-wider text-[#0d9488]">
                   Customer
                 </p>
-                <p className="text-sm font-black text-[#3d2817] mt-0.5">
+                <p className="text-sm font-black text-[#134e4a] mt-0.5">
                   {customer?.name}
                 </p>
-                <p className="text-xs text-[#8a715c]">{customer?.phone}</p>
+                <p className="text-xs text-[#0d9488]">{customer?.phone}</p>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
@@ -384,7 +384,7 @@ export default function CartSidebar({ open, onClose }) {
                   placeholder="Name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full text-xs border border-orange-100 bg-[#f8f4ee] px-3 py-2.5 text-[#3d2817] placeholder:text-[#8a715c]/60 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-full text-xs border border-[#ccfbf1] bg-[#f0fdfa] px-3 py-2.5 text-[#134e4a] placeholder:text-[#0d9488]/60 focus:outline-none focus:ring-2 focus:ring-teal-400"
                 />
 
                 <input
@@ -392,7 +392,7 @@ export default function CartSidebar({ open, onClose }) {
                   placeholder="Phone"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full text-xs border border-orange-100 bg-[#f8f4ee] px-3 py-2.5 text-[#3d2817] placeholder:text-[#8a715c]/60 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-full text-xs border border-[#ccfbf1] bg-[#f0fdfa] px-3 py-2.5 text-[#134e4a] placeholder:text-[#0d9488]/60 focus:outline-none focus:ring-2 focus:ring-teal-400"
                 />
               </div>
             )}
@@ -403,7 +403,7 @@ export default function CartSidebar({ open, onClose }) {
                 <select
                   value={selectedTable}
                   onChange={(e) => setSelectedTable(e.target.value)}
-                  className="w-full text-xs border border-orange-100 bg-[#f8f4ee] px-3 py-2.5 text-[#3d2817] focus:outline-none focus:ring-2 focus:ring-orange-400"
+                  className="w-full text-xs border border-[#ccfbf1] bg-[#f0fdfa] px-3 py-2.5 text-[#134e4a] focus:outline-none focus:ring-2 focus:ring-teal-400"
                 >
                   <option value="">No table</option>
                   {tables.map((t) => (
@@ -417,7 +417,7 @@ export default function CartSidebar({ open, onClose }) {
 
             {/* Payment */}
             <div>
-              <p className="text-[10px] font-black uppercase tracking-wider text-[#8a715c] mb-2">
+              <p className="text-[10px] font-black uppercase tracking-wider text-[#0d9488] mb-2">
                 Payment
               </p>
 
@@ -433,7 +433,7 @@ export default function CartSidebar({ open, onClose }) {
                       className={`flex items-center justify-center gap-1.5 border px-2 py-2 text-xs font-black transition-all active:scale-95 ${
                         active
                           ? option.active
-                          : 'bg-[#f8f4ee] text-[#8a715c] border-orange-100 hover:bg-orange-50'
+                          : 'bg-[#f0fdfa] text-[#0d9488] border-[#ccfbf1] hover:bg-teal-50'
                       }`}
                     >
                       <span>{option.icon}</span>
@@ -503,15 +503,15 @@ export default function CartSidebar({ open, onClose }) {
             )}
 
             {/* Total + Small Checkout Button */}
-            <div className="flex items-center justify-between gap-3 bg-[#3d2817] px-4 py-3">
+            <div className="flex items-center justify-between gap-3 bg-[#134e4a] px-4 py-3">
               <div>
                 {discountTotal > 0 && (
-                  <p className="text-[11px] text-amber-100/60 line-through">
+                  <p className="text-[11px] text-teal-100/60 line-through">
                     ${fullTotal.toFixed(2)}
                   </p>
                 )}
 
-                <p className="text-[11px] font-bold text-amber-100/70 uppercase tracking-wide">
+                <p className="text-[11px] font-bold text-teal-100/70 uppercase tracking-wide">
                   Total
                 </p>
 
@@ -523,11 +523,11 @@ export default function CartSidebar({ open, onClose }) {
               <button
                 onClick={placeOrder}
                 disabled={placing}
-                className="shrink-0 rounded-full bg-amber-500 px-4 py-2 text-xs font-black text-[#3d2817] shadow-md hover:bg-amber-400 active:scale-95 transition-all disabled:opacity-60"
+                className="shrink-0 rounded-full bg-teal-500 px-4 py-2 text-xs font-black text-[#134e4a] shadow-md hover:bg-teal-400 active:scale-95 transition-all disabled:opacity-60"
               >
                 {placing ? (
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-full border-2 border-[#3d2817]/30 border-t-[#3d2817] animate-spin"></span>
+                    <span className="w-3 h-3 rounded-full border-2 border-[#134e4a]/30 border-t-[#134e4a] animate-spin"></span>
                     Wait
                   </span>
                 ) : (
@@ -540,7 +540,7 @@ export default function CartSidebar({ open, onClose }) {
 
         {/* Success */}
         {done && (
-          <div className="border-t border-orange-100 bg-white px-5 py-10 text-center">
+          <div className="border-t border-[#ccfbf1] bg-white px-5 py-10 text-center">
             <div className="w-16 h-16 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-4">
               <svg
                 className="w-9 h-9 text-emerald-600"
@@ -557,17 +557,17 @@ export default function CartSidebar({ open, onClose }) {
               </svg>
             </div>
 
-            <p className="text-xl font-black text-[#3d2817]">
+            <p className="text-xl font-black text-[#134e4a]">
               Order Placed!
             </p>
 
-            <p className="text-sm text-[#8a715c] mt-1 mb-5">
+            <p className="text-sm text-[#0d9488] mt-1 mb-5">
               Your order has been submitted.
             </p>
 
             <button
               onClick={handleClose}
-              className="rounded-full bg-[#3d2817] text-white text-xs font-black px-5 py-2.5 active:scale-95 transition-all"
+              className="rounded-full bg-[#134e4a] text-white text-xs font-black px-5 py-2.5 active:scale-95 transition-all"
             >
               Close
             </button>

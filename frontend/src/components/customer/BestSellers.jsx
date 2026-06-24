@@ -8,11 +8,11 @@ const STORAGE_URL = import.meta.env.VITE_STORAGE_URL ?? ''
 
 const themes = [
   {
-    card: 'from-[#fff7ed] via-[#fffbeb] to-[#fef3c7]',
-    glow: 'bg-amber-300/40',
-    accent: 'text-amber-700',
-    button: 'from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700',
-    ring: 'border-amber-400/60',
+    card: 'from-[#f0fdfa] via-[#ccfbf1] to-[#99f6e4]',
+    glow: 'bg-teal-300/40',
+    accent: 'text-teal-700',
+    button: 'from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700',
+    ring: 'border-teal-400/60',
   },
   {
     card: 'from-[#fff1f2] via-[#fff7f7] to-[#ffe4e6]',
@@ -368,27 +368,27 @@ export default function BestSellers({ products = [] }) {
       `}</style>
 
       {/* Background Decoration */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white via-amber-50/50 to-white"></div>
-      <div className="absolute top-10 left-0 -z-10 w-72 h-72 bg-amber-200/30 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 -z-10 w-80 h-80 bg-orange-200/30 rounded-full blur-3xl"></div>
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-white via-teal-50/50 to-white"></div>
+      <div className="absolute top-10 left-0 -z-10 w-72 h-72 bg-teal-200/30 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 -z-10 w-80 h-80 bg-teal-200/30 rounded-full blur-3xl"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex items-end justify-between gap-4 mb-8 sm:mb-10">
           <div>
-            <div className="inline-flex items-center gap-2 mb-3 rounded-full bg-white border border-amber-200 px-4 py-1.5 shadow-sm">
+            <div className="inline-flex items-center gap-2 mb-3 rounded-full bg-white border border-[#ccfbf1] px-4 py-1.5 shadow-sm">
               <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
 
-              <span className="text-xs sm:text-sm font-extrabold tracking-wide text-amber-700 uppercase">
+              <span className="text-xs sm:text-sm font-extrabold tracking-wide text-teal-700 uppercase">
                 Best Sellers
               </span>
             </div>
 
-            <h2 className="text-2xl sm:text-4xl font-black text-[#3d2817] leading-tight">
+            <h2 className="text-2xl sm:text-4xl font-black text-[#134e4a] leading-tight">
               Customer Favorite Drinks
             </h2>
 
-            <p className="mt-2 text-sm sm:text-base text-[#8a715c] max-w-xl">
+            <p className="mt-2 text-sm sm:text-base text-[#0d9488] max-w-xl">
               Popular coffee and drinks selected for fast order.
             </p>
           </div>
@@ -398,7 +398,7 @@ export default function BestSellers({ products = [] }) {
             <button
               onClick={() => scrollBy(-1)}
               aria-label="Scroll left"
-              className="w-11 h-11 rounded-full bg-white border border-amber-200 text-[#5b3a29] shadow-sm hover:bg-[#5b3a29] hover:text-white hover:border-[#5b3a29] active:scale-95 transition-all duration-200 flex items-center justify-center"
+              className="w-11 h-11 rounded-full bg-white border border-[#ccfbf1] text-[#115e59] shadow-sm hover:bg-[#115e59] hover:text-white hover:border-[#115e59] active:scale-95 transition-all duration-200 flex items-center justify-center"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
@@ -408,7 +408,7 @@ export default function BestSellers({ products = [] }) {
             <button
               onClick={() => scrollBy(1)}
               aria-label="Scroll right"
-              className="w-11 h-11 rounded-full bg-white border border-amber-200 text-[#5b3a29] shadow-sm hover:bg-[#5b3a29] hover:text-white hover:border-[#5b3a29] active:scale-95 transition-all duration-200 flex items-center justify-center"
+              className="w-11 h-11 rounded-full bg-white border border-[#ccfbf1] text-[#115e59] shadow-sm hover:bg-[#115e59] hover:text-white hover:border-[#115e59] active:scale-95 transition-all duration-200 flex items-center justify-center"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
@@ -472,22 +472,22 @@ export default function BestSellers({ products = [] }) {
                     {/* Info */}
                     <div className="min-w-0 flex-1 pt-10 sm:pt-12">
                       <div className="inline-flex items-center gap-1.5 bg-white/70 backdrop-blur-sm rounded-full px-2.5 py-1 shadow-sm border border-white">
-                        <svg className="w-3.5 h-3.5 fill-amber-400" viewBox="0 0 20 20">
+                        <svg className="w-3.5 h-3.5 fill-teal-400" viewBox="0 0 20 20">
                           <path d="M9.05 2.927c.3-.921 1.6-.921 1.9 0l1.286 3.957a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.367 2.446a1 1 0 00-.364 1.118l1.287 3.957c.3.922-.755 1.688-1.54 1.118l-3.366-2.446a1 1 0 00-1.176 0l-3.366 2.446c-.784.57-1.838-.196-1.539-1.118l1.286-3.957a1 1 0 00-.363-1.118L2.075 9.384c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69l1.286-3.957z" />
                         </svg>
 
-                        <span className="text-[11px] font-extrabold text-amber-600">
+                        <span className="text-[11px] font-extrabold text-teal-600">
                           {(p.rating ?? 4.5).toFixed(1)}
                         </span>
                       </div>
 
-                      <h3 className="mt-3 text-xl sm:text-2xl font-black text-[#3d2817] line-clamp-2 leading-tight">
+                      <h3 className="mt-3 text-xl sm:text-2xl font-black text-[#134e4a] line-clamp-2 leading-tight">
                         {p.name}
                       </h3>
 
                       <div className="mt-3 flex items-end gap-2">
                         {hasCardPromo && cardPromo?.type !== 'buy_x_get_y' && (
-                          <span className="text-sm font-bold text-[#8a715c] line-through mb-0.5">
+                          <span className="text-sm font-bold text-[#0d9488] line-through mb-0.5">
                             ${basePrice.toFixed(2)}
                           </span>
                         )}
@@ -504,7 +504,7 @@ export default function BestSellers({ products = [] }) {
 
                   {/* Bottom Action */}
                   <div className="mt-6 flex items-center justify-between gap-3">
-                    <div className="text-xs text-[#8a715c] font-semibold">
+                    <div className="text-xs text-[#0d9488] font-semibold">
                       Tap to customize
                     </div>
 
