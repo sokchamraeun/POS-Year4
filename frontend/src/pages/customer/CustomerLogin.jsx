@@ -99,7 +99,7 @@ export default function CustomerLogin() {
 
         <div className="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-teal-400/25 blur-3xl login-glow" />
         <div className="absolute -bottom-28 -right-24 h-80 w-80 rounded-full bg-teal-300/25 blur-3xl login-glow" />
-        <div className="absolute left-1/2 top-1/3 h-56 w-56 rounded-full bg-yellow-500/10 blur-3xl login-glow" />
+        <div className="absolute left-1/2 top-1/3 h-56 w-56 rounded-full bg-teal-300/10 blur-3xl login-glow" />
 
         <div className="relative z-10 grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/20 bg-white/95 shadow-2xl backdrop-blur-xl login-fade-up lg:grid-cols-[1.05fr_.95fr]">
           

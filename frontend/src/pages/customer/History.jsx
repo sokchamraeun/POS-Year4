@@ -202,32 +202,31 @@ export default function History() {
 
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f0fdfa] pb-24 text-[#134e4a] sm:pb-0">
+    <div className="min-h-screen flex flex-col bg-[#f0fdfa] pb-24 text-black sm:pb-0">
       <Navbar />
 
       <main className="flex-1">
         {/* Background */}
         <section className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.24),transparent_34%),radial-gradient(circle_at_top_right,rgba(15,118,110,0.18),transparent_30%)]" />
-          <div className="absolute left-0 top-16 h-40 w-40 rounded-full bg-teal-300/20 blur-3xl" />
-          <div className="absolute right-0 top-24 h-52 w-52 rounded-full bg-[#0f766e]/15 blur-3xl" />
+
+
 
           <div className="relative mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-            <div className="space-y-5 rounded-[2.25rem] border border-[#ccfbf1] bg-white/70 p-3 shadow-[0_30px_80px_rgba(15,118,110,0.14)] backdrop-blur-2xl sm:p-5">
+            <div className="space-y-5 rounded-[2.25rem] border border-[#ccfbf1] bg-white/70 p-3 shadow-[0_30px_80px_rgba(15,118,110,0.14)] sm:p-5">
             {/* Header */}
-            <div className="rounded-[2rem] border border-[#ccfbf1] bg-white/80 p-5 shadow-[0_24px_70px_rgba(15,118,110,0.12)] backdrop-blur-2xl sm:p-7">
+            <div className="rounded-[2rem] border border-[#ccfbf1] bg-white/80 p-5 shadow-[0_24px_70px_rgba(15,118,110,0.12)] sm:p-7">
               <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#ccfbf1] bg-[#ccfbf1] px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-[#14b8a6]">
+                  <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#ccfbf1] bg-[#ccfbf1] px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-black">
                     <span></span>
                     Coffee Orders
                   </div>
 
-                  <h1 className="text-3xl font-black tracking-tight text-[#134e4a] sm:text-4xl">
+                  <h1 className="text-3xl font-black tracking-tight text-black sm:text-4xl">
                     Order History
                   </h1>
 
-                  <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#0d9488]">
+                  <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-black">
                     View your coffee orders, payment status, table information, and receipt in one place.
                   </p>
                 </div>
@@ -250,13 +249,13 @@ export default function History() {
               {/* Search */}
               {!customer?.phone && (
                 <div className="mt-6 rounded-[1.5rem] border border-[#ccfbf1] bg-[#f0fdfa] p-4">
-                  <label className="mb-2 block text-sm font-black text-[#134e4a]">
+                  <label className="mb-2 block text-sm font-black text-black">
                     Enter your phone number
                   </label>
 
                   <div className="flex flex-col gap-3 sm:flex-row">
                     <div className="relative flex-1">
-                      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#14b8a6]">
+                      <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-black">
                         ☎
                       </span>
 
@@ -266,7 +265,7 @@ export default function History() {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                        className="w-full rounded-2xl border border-[#99f6e4] bg-white px-11 py-3 text-sm font-semibold text-[#134e4a] outline-none transition-all placeholder:text-[#5eead4] focus:border-[#0d9488] focus:ring-4 focus:ring-[#14b8a6]/20"
+                        className="w-full rounded-2xl border border-[#99f6e4] bg-white px-11 py-3 text-sm font-semibold text-black outline-none transition-all placeholder:text-[#5eead4] focus:border-[#0d9488] focus:ring-4 focus:ring-[#14b8a6]/20"
                       />
                     </div>
 
@@ -287,7 +286,7 @@ export default function History() {
             {loading && (
               <div className="mt-6 rounded-[2rem] border border-[#ccfbf1] bg-white/80 p-12 text-center shadow-[0_20px_55px_rgba(15,118,110,0.08)]">
                 <div className="mx-auto mb-4 h-11 w-11 animate-spin rounded-full border-4 border-[#99f6e4] border-t-[#0d9488]" />
-                <p className="text-sm font-bold text-[#0d9488]">Loading your coffee orders...</p>
+                <p className="text-sm font-bold text-black">Loading your coffee orders...</p>
               </div>
             )}
 
@@ -298,9 +297,9 @@ export default function History() {
                   🧾
                 </div>
 
-                <h2 className="text-xl font-black text-[#134e4a]">No orders found</h2>
+                <h2 className="text-xl font-black text-black">No orders found</h2>
 
-                <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-6 text-[#0d9488]">
+                <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-6 text-black">
                   We could not find any order history for this phone number. Please check the number and search again.
                 </p>
               </div>
@@ -312,13 +311,13 @@ export default function History() {
                 {orders.map((order) => (
                   <article
                     key={order.id}
-                    className="overflow-hidden rounded-[2rem] border border-[#ccfbf1] bg-white/85 shadow-[0_20px_55px_rgba(15,118,110,0.08)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_26px_70px_rgba(15,118,110,0.13)]"
+                    className="overflow-hidden rounded-[2rem] border border-[#ccfbf1] bg-white/85 shadow-[0_20px_55px_rgba(15,118,110,0.08)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_26px_70px_rgba(15,118,110,0.13)]"
                   >
                     <div className="border-b border-[#ccfbf1] bg-gradient-to-r from-[#f0fdfa] to-white px-5 py-4">
                       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
-                            <h2 className="text-lg font-black text-[#134e4a]">
+                            <h2 className="text-lg font-black text-black">
                               Order #{order.id}
                             </h2>
 
@@ -331,16 +330,16 @@ export default function History() {
                             </span>
                           </div>
 
-                          <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-[#14b8a6]">
+                          <p className="mt-1 text-xs font-bold uppercase tracking-[0.16em] text-black">
                             {formatDate(order.created_at)} {formatTime(order.created_at)}
                           </p>
                         </div>
 
                         <div className="text-left sm:text-right">
-                          <p className="text-xs font-black uppercase tracking-[0.18em] text-[#14b8a6]">
+                          <p className="text-xs font-black uppercase tracking-[0.18em] text-black">
                             Total
                           </p>
-                          <p className="text-2xl font-black text-[#0f766e]">
+                          <p className="text-2xl font-black text-black">
                             {money(order.total)}
                           </p>
                         </div>
@@ -379,28 +378,28 @@ export default function History() {
                                 )}
 
                                 <div className="min-w-0">
-                                  <p className="truncate text-sm font-black text-[#134e4a]">
+                                  <p className="truncate text-sm font-black text-black">
                                     {item.product?.name || 'Coffee Item'}
-                                    <span className="ml-2 text-xs font-black text-[#14b8a6]">
+                                    <span className="ml-2 text-xs font-black text-black">
                                       x{item.qty}
                                     </span>
                                   </p>
 
                                   {opts && (
-                                    <p className="mt-1 line-clamp-2 text-xs font-semibold leading-5 text-[#0d9488]">
+                                    <p className="mt-1 line-clamp-2 text-xs font-semibold leading-5 text-black">
                                       {opts}
                                     </p>
                                   )}
 
                                   {(item.created_at || order.created_at) && (
-                                    <p className="mt-1 text-[11px] font-bold text-[#14b8a6]">
+                                    <p className="mt-1 text-[11px] font-bold text-black">
                                       🕒 {formatTime(item.created_at || order.created_at)}
                                     </p>
                                   )}
                                 </div>
                               </div>
 
-                              <p className="shrink-0 text-sm font-black text-[#0f766e]">
+                              <p className="shrink-0 text-sm font-black text-black">
                                 {money(item.subtotal)}
                               </p>
                             </div>
@@ -409,15 +408,15 @@ export default function History() {
                       </div>
 
                       <div className="mt-4 flex flex-col gap-3 border-t border-[#ccfbf1] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-[#0d9488]">
+                        <div className="flex flex-wrap items-center gap-2 text-sm font-bold text-black">
                           {order.table && (
-                            <span className="rounded-full bg-[#ccfbf1] px-3 py-1 text-xs font-black text-[#0d9488]">
+                            <span className="rounded-full bg-[#ccfbf1] px-3 py-1 text-xs font-black text-black">
                               Table: {order.table.name}
                             </span>
                           )}
 
                           {order.payment_method && (
-                            <span className="rounded-full bg-[#ccfbf1] px-3 py-1 text-xs font-black text-[#0d9488]">
+                            <span className="rounded-full bg-[#ccfbf1] px-3 py-1 text-xs font-black text-black">
                               {order.payment_method}
                             </span>
                           )}
@@ -426,7 +425,7 @@ export default function History() {
                         <button
                           type="button"
                           onClick={() => setReceiptOrder(order)}
-                          className="rounded-2xl border border-[#99f6e4] bg-white px-5 py-2.5 text-sm font-black text-[#0f766e] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#ccfbf1] hover:shadow-md"
+                          className="rounded-2xl border border-[#99f6e4] bg-white px-5 py-2.5 text-sm font-black text-black shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#ccfbf1] hover:shadow-md"
                         >
                           View Receipt
                         </button>
@@ -443,7 +442,7 @@ export default function History() {
 
       {receiptOrder && (
         <div
-          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#134e4a]/70 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#134e4a]/70 p-4"
           onClick={() => setReceiptOrder(null)}
         >
           <div
