@@ -23,51 +23,28 @@ class RoleSeeder extends Seeder
         // Admin gets ALL permissions
         $admin->permissions()->sync($allPermIds);
 
-        // Manage gets most permissions except role/permission management
+        // Manage gets all permissions except admin-only and delete-*
         $manage->permissions()->sync(
             Permission::whereNotIn('slug', [
                 'manage-roles',
                 'manage-permissions',
                 'manage-staff',
-                'delete-product',
-                'delete-category',
-                'delete-size',
-                'delete-sugar-level',
-                'delete-ice-level',
-                'delete-addon',
-                'delete-table',
-                'delete-hero-slider',
-                'delete-promotion',
-                'delete-ingredient',
-                'delete-recipe',
-            ])->pluck('id')
+            ])->where('slug', 'not like', 'delete-%')
+                ->pluck('id')
         );
 
-        // Staff gets view + basic create permissions
+        // Staff gets all view-* (except sensitive) and all create-* permissions
         $staff->permissions()->sync(
-            Permission::whereIn('slug', [
-                'view-orders',
-                'view-product',
-                'view-category',
-                'view-size',
-                'view-sugar-level',
-                'view-ice-level',
-                'view-addon',
-                'view-table',
-                'view-promotion',
-                'view-ingredient',
-                'view-recipe',
-                'create-category',
-                'create-product',
-                'create-size',
-                'create-sugar-level',
-                'create-ice-level',
-                'create-addon',
-                'create-table',
-                'create-promotion',
-                'create-ingredient',
-                'create-recipe',
-            ])->pluck('id')
+            Permission::where(function ($q) {
+                $q->where('slug', 'like', 'view-%')
+                    ->whereNotIn('slug', [
+                        'view-login-history',
+                        'view-employee',
+                        'view-reports',
+                    ]);
+            })->orWhere(function ($q) {
+                $q->where('slug', 'like', 'create-%');
+            })->pluck('id')
         );
     }
 }

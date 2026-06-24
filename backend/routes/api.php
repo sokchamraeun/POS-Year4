@@ -85,9 +85,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/users', [UserController::class, 'store']);
         Route::put('/users/{user}', [UserController::class, 'update']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
+    });
+
+    Route::middleware('permission:view-login-history,manage-staff')->group(function () {
         Route::get('/login-histories', [LoginHistoryController::class, 'index']);
         Route::get('/login-histories/export-excel', [LoginHistoryController::class, 'exportExcel']);
+    });
 
+    Route::middleware('permission:manage-employees,manage-staff')->group(function () {
         Route::get('/employees', [EmployeeController::class, 'index']);
         Route::get('/employees/{employee}', [EmployeeController::class, 'show']);
         Route::post('/employees', [EmployeeController::class, 'store']);
@@ -294,13 +299,15 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Supplier management
-    Route::middleware('permission:manage-inventory,manage-staff')->group(function () {
+    Route::middleware('permission:manage-suppliers,manage-staff')->group(function () {
         Route::get('/suppliers', [SupplierController::class, 'index']);
         Route::get('/suppliers/{supplier}', [SupplierController::class, 'show']);
         Route::post('/suppliers', [SupplierController::class, 'store']);
         Route::put('/suppliers/{supplier}', [SupplierController::class, 'update']);
         Route::delete('/suppliers/{supplier}', [SupplierController::class, 'destroy']);
+    });
 
+    Route::middleware('permission:manage-purchase-orders,manage-staff')->group(function () {
         Route::get('/purchase-orders', [PurchaseOrderController::class, 'index']);
         Route::get('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'show']);
         Route::post('/purchase-orders', [PurchaseOrderController::class, 'store']);
@@ -308,7 +315,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/purchase-orders/{purchaseOrder}', [PurchaseOrderController::class, 'destroy']);
     });
 
-    Route::middleware('permission:manage-inventory,manage-staff')->group(function () {
+    Route::middleware('permission:manage-inventory-transactions,manage-staff')->group(function () {
         Route::get('/inventory-transactions', [InventoryTransactionController::class, 'index']);
         Route::get('/inventory-transactions/{inventoryTransaction}', [InventoryTransactionController::class, 'show']);
         Route::post('/inventory-transactions', [InventoryTransactionController::class, 'store']);
@@ -316,17 +323,20 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Site settings (logo, name, footer contact)
-    Route::middleware('permission:manage-staff')->group(function () {
+    Route::middleware('permission:manage-settings,manage-staff')->group(function () {
         Route::post('/settings', [SettingController::class, 'update']);
         Route::put('/settings', [SettingController::class, 'update']);
+    });
 
-        // Event images management
+    Route::middleware('permission:manage-events,manage-staff')->group(function () {
         Route::post('/events', [EventController::class, 'store']);
         Route::put('/events/{event}', [EventController::class, 'update']);
         Route::delete('/events/{event}', [EventController::class, 'destroy']);
     });
 
-    Route::get('/dashboard/profit-today', [ReportController::class, 'profitToday']);
+    Route::middleware('permission:view-dashboard')->group(function () {
+        Route::get('/dashboard/profit-today', [ReportController::class, 'profitToday']);
+    });
 
     Route::middleware('permission:view-reports,manage-staff')->prefix('reports')->group(function () {
         Route::get('/sale-users', [ReportController::class, 'saleUsers']);

@@ -78,6 +78,46 @@ class PermissionSeeder extends Seeder
             // Roles & Permissions
             ['name' => 'Manage Roles', 'slug' => 'manage-roles', 'module' => 'Roles'],
             ['name' => 'Manage Permissions', 'slug' => 'manage-permissions', 'module' => 'Permissions'],
+
+            // Events
+            ['name' => 'View Event', 'slug' => 'view-event', 'module' => 'Events'],
+            ['name' => 'Create Event', 'slug' => 'create-event', 'module' => 'Events'],
+            ['name' => 'Edit Event', 'slug' => 'edit-event', 'module' => 'Events'],
+            ['name' => 'Delete Event', 'slug' => 'delete-event', 'module' => 'Events'],
+            ['name' => 'Manage Events', 'slug' => 'manage-events', 'module' => 'Events'],
+
+            // Settings
+            ['name' => 'Manage Settings', 'slug' => 'manage-settings', 'module' => 'Settings'],
+
+            // Suppliers
+            ['name' => 'View Supplier', 'slug' => 'view-supplier', 'module' => 'Suppliers'],
+            ['name' => 'Create Supplier', 'slug' => 'create-supplier', 'module' => 'Suppliers'],
+            ['name' => 'Edit Supplier', 'slug' => 'edit-supplier', 'module' => 'Suppliers'],
+            ['name' => 'Delete Supplier', 'slug' => 'delete-supplier', 'module' => 'Suppliers'],
+
+            // Purchase Orders
+            ['name' => 'View Purchase Order', 'slug' => 'view-purchase-order', 'module' => 'Purchase Orders'],
+            ['name' => 'Create Purchase Order', 'slug' => 'create-purchase-order', 'module' => 'Purchase Orders'],
+            ['name' => 'Edit Purchase Order', 'slug' => 'edit-purchase-order', 'module' => 'Purchase Orders'],
+            ['name' => 'Delete Purchase Order', 'slug' => 'delete-purchase-order', 'module' => 'Purchase Orders'],
+
+            // Inventory Transactions
+            ['name' => 'Manage Inventory Transactions', 'slug' => 'manage-inventory-transactions', 'module' => 'Inventory'],
+
+            // Log History
+            ['name' => 'View Login History', 'slug' => 'view-login-history', 'module' => 'Log History'],
+
+            // Employees
+            ['name' => 'View Employee', 'slug' => 'view-employee', 'module' => 'Employees'],
+            ['name' => 'Create Employee', 'slug' => 'create-employee', 'module' => 'Employees'],
+            ['name' => 'Edit Employee', 'slug' => 'edit-employee', 'module' => 'Employees'],
+            ['name' => 'Delete Employee', 'slug' => 'delete-employee', 'module' => 'Employees'],
+
+            // Dashboard
+            ['name' => 'View Dashboard', 'slug' => 'view-dashboard', 'module' => 'Dashboard'],
+
+            // Addon Ingredients
+            ['name' => 'Manage Ingredients', 'slug' => 'manage-ingredients', 'module' => 'Addon Ingredients'],
         ];
 
         foreach ($permissions as $perm) {
