@@ -7,6 +7,12 @@ import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
 import { useSocket, useSocketConnect } from '../../hooks/useSocket'
 
 const API_URL = import.meta.env.VITE_API_URL
+const STORAGE_URL = import.meta.env.VITE_STORAGE_URL
+
+function getImageUrl(image) {
+  if (!image) return ''
+  return image.startsWith('http') ? image : `${STORAGE_URL}/${image}`
+}
 
 export default function History() {
   const { customer } = useCustomerAuth()
@@ -19,8 +25,41 @@ export default function History() {
   const [searchPhone, setSearchPhone] = useState('')
 
   const activePhone = customer?.phone || searchPhone
+  const qrToken = sessionStorage.getItem('qr_token') || ''
 
   useSocketConnect()
+
+  // When the customer arrived by scanning a table QR, show that table's order
+  // history (while the table is still occupied) even without a phone/login.
+  useEffect(() => {
+    if (!qrToken) return
+
+    async function fetchTableOrders(silent = false) {
+      if (!silent) setLoading(true)
+      setSearched(true)
+      try {
+        const res = await fetch(`${API_URL}/tables/by-token/${qrToken}/current-order`, {
+          headers: { Accept: 'application/json' },
+        })
+        const data = await res.json()
+        const tableOrders = Array.isArray(data?.orders) ? data.orders : []
+        if (tableOrders.length) {
+          setOrders((prev) => {
+            const ids = new Set(tableOrders.map((o) => Number(o.id)))
+            return [...tableOrders, ...prev.filter((o) => !ids.has(Number(o.id)))]
+          })
+        }
+      } catch {
+        // ignore
+      } finally {
+        if (!silent) setLoading(false)
+      }
+    }
+
+    fetchTableOrders()
+    const interval = setInterval(() => fetchTableOrders(true), 5000)
+    return () => clearInterval(interval)
+  }, [qrToken])
 
   useEffect(() => {
     if (!activePhone) return
@@ -354,9 +393,18 @@ export default function History() {
                               className="flex items-start justify-between gap-4 rounded-2xl border border-[#f0dcc1] bg-[#fffaf3] p-3"
                             >
                               <div className="flex min-w-0 items-start gap-3">
-                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3d2415] to-[#a86530] text-lg text-white shadow-md">
-                                  ☕
-                                </div>
+                                {item.product?.image ? (
+                                  <img
+                                    src={getImageUrl(item.product.image)}
+                                    alt={item.product?.name || 'Product'}
+                                    className="h-11 w-11 shrink-0 rounded-2xl object-cover shadow-md"
+                                    onError={(e) => { e.currentTarget.style.display = 'none' }}
+                                  />
+                                ) : (
+                                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#3d2415] to-[#a86530] text-lg text-white shadow-md">
+                                    ☕
+                                  </div>
+                                )}
 
                                 <div className="min-w-0">
                                   <p className="truncate text-sm font-black text-[#2b170d]">
@@ -369,6 +417,12 @@ export default function History() {
                                   {opts && (
                                     <p className="mt-1 line-clamp-2 text-xs font-semibold leading-5 text-[#8a6a50]">
                                       {opts}
+                                    </p>
+                                  )}
+
+                                  {(item.created_at || order.created_at) && (
+                                    <p className="mt-1 text-[11px] font-bold text-[#a47a55]">
+                                      🕒 {formatTime(item.created_at || order.created_at)}
                                     </p>
                                   )}
                                 </div>

@@ -13,12 +13,16 @@ class OrderItem extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
+    // Track only created_at (when the item was added); there is no updated_at column.
+    public $timestamps = true;
+
+    const UPDATED_AT = null;
 
     protected function casts(): array
     {
         return [
             'promotion_snapshot' => 'array',
+            'created_at' => 'datetime',
         ];
     }
 

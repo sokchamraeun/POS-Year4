@@ -118,7 +118,8 @@ export default function Cart() {
   const discount = Number(discountTotal || 0)
   const finalTotal = Number(totalPrice || 0)
 
-  const canPlaceOrder = items.length > 0 && !placing && (isLoggedIn || phone.trim())
+  // QR table orders don't require a name/phone — the table identifies the order.
+  const canPlaceOrder = items.length > 0 && !placing && (isLoggedIn || qrToken || phone.trim())
 
   useEffect(() => {
     if (customer?.name) setName(customer.name)
@@ -453,6 +454,10 @@ export default function Cart() {
                           </p>
                         </div>
                       </div>
+                    ) : qrToken ? (
+                      <div className="rounded-2xl border border-[#e2c59b] bg-[#fffaf3] p-4 text-sm font-bold text-[#8a6a50]">
+                        ការបញ្ជាទិញតាមតុ — មិនត្រូវការឈ្មោះ ឬលេខទូរស័ព្ទទេ។
+                      </div>
                     ) : (
                       <div className="space-y-3">
                         <Field
@@ -568,7 +573,7 @@ export default function Cart() {
                         </div>
                       </div>
 
-                      {!isLoggedIn && !phone.trim() && (
+                      {!isLoggedIn && !qrToken && !phone.trim() && (
                         <p className="rounded-2xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
                           សូមបញ្ចូលលេខទូរស័ព្ទមុនពេលដាក់ការបញ្ជាទិញ។
                         </p>

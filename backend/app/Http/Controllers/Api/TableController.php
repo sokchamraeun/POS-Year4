@@ -106,6 +106,32 @@ class TableController extends Controller
         ]);
     }
 
+    /**
+     * Read-only: while the table is still occupied, return the order history for
+     * that table so a QR customer can review it (no phone/login required, and
+     * never creates an order). Returns an empty list once the table is freed.
+     */
+    public function currentOrderByToken(string $qrToken): JsonResponse
+    {
+        $table = Table::where('qr_token', $qrToken)->first();
+
+        if (! $table) {
+            return response()->json(['message' => 'Invalid QR token.'], 404);
+        }
+
+        $current = $table->currentOrder();
+
+        // Only expose the latest open order, and only while the table is still
+        // occupied. Once it is paid/freed, currentOrder() is null -> empty list.
+        if (! $current) {
+            return response()->json(['table' => $table, 'order' => null, 'orders' => []]);
+        }
+
+        $current->load(['table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
+
+        return response()->json(['table' => $table, 'order' => $current, 'orders' => [$current]]);
+    }
+
     public function addOrderItems(Request $request, string $qrToken): JsonResponse
     {
         $table = Table::where('qr_token', $qrToken)->first();
