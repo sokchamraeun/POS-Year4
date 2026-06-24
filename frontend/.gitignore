@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 .env
+# Dev-only LAN IP override for QR codes — must never reach production builds
+.env.development
 
 # Editor directories and files
 .vscode/*
