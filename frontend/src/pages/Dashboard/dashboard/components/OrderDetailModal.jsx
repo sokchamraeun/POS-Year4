@@ -136,7 +136,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
                 className={`text-sm border border-gray-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500 ${statusColors[order.status ?? 'New']?.split(' ')[0] || 'text-gray-600'}`}
               >
                 <option value="New">New</option>
-                <option value="Processing">Processing</option>
+                <option value="Open">Open</option>
                 <option value="Completed">Completed</option>
                 <option value="Cancelled">Cancelled</option>
               </select>

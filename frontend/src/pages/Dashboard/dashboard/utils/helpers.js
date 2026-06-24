@@ -22,7 +22,7 @@ export const calculateStats = (orders, products, customers, lowStockCount = 0, p
 
   const paidToday      = ordersToday.filter(o => o.payment_status === 'Paid')
   const unpaidToday    = ordersToday.filter(o => o.payment_status !== 'Paid' && o.payment_status !== 'Refunded')
-  const pendingToday   = ordersToday.filter(o => o.status === 'New' || o.status === 'Processing')
+  const pendingToday   = ordersToday.filter(o => o.status === 'Open' || o.status === 'New')
   const completedToday = ordersToday.filter(o => o.status === 'Completed')
 
   const totalRevenue  = ordersToday.reduce((s, o) => s + Number(o.total ?? 0), 0)
@@ -34,7 +34,7 @@ export const calculateStats = (orders, products, customers, lowStockCount = 0, p
     { label: 'Paid Revenue',        value: `$${paidRevenue.toFixed(2)}`,   change: `${paidToday.length} paid orders`,         type: 'paid' },
     { label: 'Unpaid Amount',       value: `$${unpaidAmount.toFixed(2)}`,  change: `${unpaidToday.length} unpaid orders`,     type: 'unpaid' },
     { label: 'Orders Today',        value: String(ordersToday.length),     change: `$${totalRevenue.toFixed(2)} total`,       type: 'orders' },
-    { label: 'Pending Orders',      value: String(pendingToday.length),    change: 'New + Processing',                        type: 'pending' },
+    { label: 'Pending Orders',      value: String(pendingToday.length),    change: 'New + Open',                        type: 'pending' },
     { label: 'Completed Orders',    value: String(completedToday.length),  change: 'Completed today',                         type: 'completed' },
     { label: 'Products',            value: String(products.length),        change: `${products.filter(p => p.status).length} active`, type: 'products' },
     { label: 'Low Stock Items',     value: String(lowStockCount),          change: lowStockCount > 0 ? 'Check inventory' : 'All stocked', type: 'stock' },

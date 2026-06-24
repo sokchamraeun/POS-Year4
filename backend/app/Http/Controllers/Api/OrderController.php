@@ -271,7 +271,11 @@ class OrderController extends Controller
             $order->update(['payment_status' => 'Paid']);
         }
 
-        if (in_array($newStatus, ['Completed', 'Cancelled'], true) && $order->table_id) {
+        // Free the table for cleaning only once the order is fully done:
+        // Completed AND Paid, or Cancelled.
+        $completedAndPaid = $newStatus === 'Completed' && $order->payment_status === 'Paid';
+
+        if (($completedAndPaid || $newStatus === 'Cancelled') && $order->table_id) {
             $order->table->update(['status' => Table::STATUS_CLEANING]);
         }
 

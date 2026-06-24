@@ -147,6 +147,7 @@ export default function History() {
         return 'bg-red-100 text-red-700 ring-red-200'
       case 'Processing':
         return 'bg-blue-100 text-blue-700 ring-blue-200'
+      case 'Open':
       case 'Pending':
       case 'New':
       default:

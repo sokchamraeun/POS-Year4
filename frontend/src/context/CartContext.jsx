@@ -21,8 +21,12 @@ export function CartProvider({ children }) {
     localStorage.setItem('customerCart', JSON.stringify(items))
   }, [items])
 
-  function addItem(product, { size, sugar, ice, addOn, qty, unitPrice, sugarNote = '', iceNote = '' }) {
+  function addItem(product, { size, sugar, ice, addOn, qty, unitPrice, promotion, sugarNote = '', iceNote = '' }) {
     const key = getKey(product, size, sugar, ice, addOn, sugarNote, iceNote)
+    // Use the promotion resolved for the chosen size (falls back to the
+    // product-level promotion) so the cart item, the displayed discount, and
+    // the saved order all reference the same promotion.
+    const resolvedPromotion = promotion ?? product.promotion ?? null
     setItems((prev) => {
       const existing = prev.find((i) => i.key === key)
       if (existing) {
@@ -30,7 +34,7 @@ export function CartProvider({ children }) {
           i.key === key ? { ...i, qty: i.qty + qty } : i
         )
       }
-      return [...prev, { ...product, key, size, sugar, ice, addOn, sugarNote, iceNote, unitPrice, qty }]
+      return [...prev, { ...product, key, size, sugar, ice, addOn, sugarNote, iceNote, unitPrice, qty, promotion: resolvedPromotion }]
     })
   }
 

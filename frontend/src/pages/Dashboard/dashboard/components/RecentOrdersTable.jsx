@@ -77,7 +77,7 @@ export default function RecentOrdersTable({
                         style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
                       >
                         <option value="New">New</option>
-                        <option value="Processing">Processing</option>
+                        <option value="Open">Open</option>
                         <option value="Completed">Completed</option>
                         <option value="Cancelled">Cancelled</option>
                       </select>

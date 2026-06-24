@@ -13,6 +13,7 @@ export default defineConfig({
     include: ['recharts'],
   },
   server: {
+    host: true, // listen on 0.0.0.0 so phones on the same Wi-Fi can reach the dev server
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8000',

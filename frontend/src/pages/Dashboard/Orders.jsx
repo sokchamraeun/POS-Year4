@@ -13,7 +13,7 @@ const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('toke
 function mapOrder(o) {
   return {
     id: `#${o.id}`,
-    customer: o.customer?.name ?? 'Guest',
+    customer: o.customer?.name ?? (o.table_id && !o.staff_id ? `Scan-QR-${o.table?.name ?? o.table_id}` : 'Guest'),
     phone: o.customer?.phone ?? '-',
     table: o.table?.name ?? '-',
     items: o.items?.reduce((s, i) => s + i.qty, 0) ?? 0,
@@ -80,12 +80,12 @@ const recipes = {
   ],
 }
 
-const tabs = ['All', 'Completed', 'Processing', 'New', 'Cancelled']
+const tabs = ['All', 'New', 'Open', 'Completed', 'Cancelled']
 
 const statusColors = {
-  Completed: 'text-emerald-700 bg-emerald-50 border border-emerald-200',
-  Processing: 'text-sky-700 bg-sky-50 border border-sky-200',
   New: 'text-teal-800 bg-teal-50 border border-teal-200',
+  Open: 'text-amber-700 bg-amber-50 border border-amber-200',
+  Completed: 'text-emerald-700 bg-emerald-50 border border-emerald-200',
   Cancelled: 'text-rose-700 bg-rose-50 border border-rose-200',
 }
 
@@ -99,7 +99,6 @@ export default function Orders() {
   const [orders, setOrders] = useState([])
   const [activeTab, setActiveTab] = useState('All')
   const [selectedOrder, setSelectedOrder] = useState(null)
-  const [deductMsg, setDeductMsg] = useState('')
   const [search, setSearch] = useState('')
   const [todayOnly, setTodayOnly] = useState(false)
   const [page, setPage] = useState(1)
@@ -163,13 +162,6 @@ export default function Orders() {
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {
-    if (deductMsg) {
-      const t = setTimeout(() => setDeductMsg(''), 4000)
-      return () => clearTimeout(t)
-    }
-  }, [deductMsg])
-
   const today = new Date()
   const todayStr = today.toISOString().slice(0, 10)
   const filtered = orders
@@ -195,23 +187,6 @@ export default function Orders() {
       body: JSON.stringify({ status: newStatus }),
     })
 
-    if (newStatus === 'Completed') {
-      const order = orders.find((o) => o.id === orderId)
-      if (order) {
-        const consumed = {}
-        order.detail.forEach((item) => {
-          const recipe = recipes[item.name]
-          if (recipe) {
-            recipe.forEach((ing) => {
-              const key = `${ing.name} (${ing.unit})`
-              consumed[key] = (consumed[key] || 0) + ing.qty * item.qty
-            })
-          }
-        })
-        const lines = Object.entries(consumed).map(([k, v]) => `-${v} ${k}`).join(', ')
-        setDeductMsg(`Ingredients deducted for ${order.id}: ${lines}`)
-      }
-    }
   }
 
   function handlePaymentChange(orderId, newPayment) {
@@ -248,15 +223,6 @@ export default function Orders() {
               Clear Local
             </button>
           </div>
-
-          {deductMsg && (
-            <div className="mb-6 flex items-center gap-3 rounded-2xl border border-emerald-300/50 bg-emerald-50 p-4 shadow-lg shadow-emerald-900/10">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-sm text-green-700">{deductMsg}</span>
-            </div>
-          )}
 
           <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
@@ -413,7 +379,7 @@ export default function Orders() {
                           style={{ borderRadius: '9999px', WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none', outline: 'none' }}
                         >
                           <option value="New">New</option>
-                          <option value="Processing">Processing</option>
+                          <option value="Open">Open</option>
                           <option value="Completed">Completed</option>
                           <option value="Cancelled">Cancelled</option>
                         </select>
@@ -532,7 +498,7 @@ export default function Orders() {
                         className={`rounded-xl border border-teal-200 bg-white px-3 py-1.5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-4 focus:ring-teal-500/15 ${statusColors[selectedOrder.status]?.split(' ')[0] || 'text-slate-600'}`}
                       >
                         <option value="New">New</option>
-                        <option value="Processing">Processing</option>
+                        <option value="Open">Open</option>
                         <option value="Completed">Completed</option>
                         <option value="Cancelled">Cancelled</option>
                       </select>
@@ -550,7 +516,8 @@ export default function Orders() {
                       </select>
                     </div>
                   </div>
-                  <table className="w-full min-w-[980px] text-sm">
+                  <div className="overflow-x-auto">
+                  <table className="w-full min-w-[720px] text-sm">
                     <thead>
                       <tr className="border-b border-teal-200 bg-teal-50 text-left font-bold text-teal-900">
                         <th className="pb-2">Item</th>
@@ -564,6 +531,13 @@ export default function Orders() {
                       </tr>
                     </thead>
                     <tbody>
+                      {selectedOrder.detail.length === 0 && (
+                        <tr>
+                          <td colSpan={8} className="py-8 text-center text-sm text-slate-400">
+                            No items in this order yet.
+                          </td>
+                        </tr>
+                      )}
                       {selectedOrder.detail.map((item, i) => {
                         const recipe = recipes[item.name]
                         return (
@@ -621,6 +595,7 @@ export default function Orders() {
                       </tr>
                     </tfoot>
                   </table>
+                  </div>
                 </div>
                 <div className="flex items-center justify-between gap-2 border-t border-teal-200 bg-teal-50 px-6 py-4">
                   <button

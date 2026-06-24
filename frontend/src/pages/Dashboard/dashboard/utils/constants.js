@@ -9,9 +9,9 @@ export const periods = [
 ]
 
 export const statusColors = {
-  Completed: 'text-green-600 bg-green-100',
-  Processing: 'text-blue-600 bg-blue-100',
   New: 'text-yellow-600 bg-yellow-100',
+  Open: 'text-amber-600 bg-amber-100',
+  Completed: 'text-green-600 bg-green-100',
   Cancelled: 'text-red-600 bg-red-100',
 }
 

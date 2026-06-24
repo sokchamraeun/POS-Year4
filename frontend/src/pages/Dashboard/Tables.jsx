@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import { QRCodeCanvas } from "qrcode.react";
 import Sidebar from "../../components/staff/Sidebar.jsx";
 import Topbar from "../../components/staff/Topbar.jsx";
 import Loader from "../../components/shared/Loader.jsx";
@@ -103,9 +104,18 @@ export default function Tables() {
     }
   }
 
-  function getQrUrl(table) {
+  function getMenuUrl(table) {
     const token = table.qr_token || table.id;
-    return `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(FRONTEND_URL + "/products?token=" + token)}`;
+    return `${FRONTEND_URL}/?token=${token}`;
+  }
+
+  function downloadQr(table) {
+    const canvas = document.getElementById(`qr-${table.id}`);
+    if (!canvas) return;
+    const link = document.createElement("a");
+    link.download = `table-${table.name}-qr.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
   }
 
   if (loading) return <Loader text="Loading..." />;
@@ -138,11 +148,21 @@ export default function Tables() {
                 key={t.id}
                 className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col items-center text-center hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
               >
-                <img
-                  src={getQrUrl(t)}
-                  alt={`QR for ${t.name}`}
-                  className="w-32 h-32 mb-3"
-                />
+                <div className="bg-white p-2 rounded-xl border border-slate-100 mb-3">
+                  <QRCodeCanvas
+                    id={`qr-${t.id}`}
+                    value={getMenuUrl(t)}
+                    size={128}
+                    level="M"
+                    includeMargin
+                  />
+                </div>
+                <button
+                  onClick={() => downloadQr(t)}
+                  className="text-[11px] text-teal-600 hover:text-teal-800 font-semibold mb-1"
+                >
+                  Download QR
+                </button>
                 <h3 className="text-lg font-bold text-slate-800">{t.name}</h3>
                 <p className="text-sm text-slate-500">Capacity: {t.capacity}</p>
                 <span

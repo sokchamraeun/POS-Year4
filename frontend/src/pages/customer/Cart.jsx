@@ -216,6 +216,7 @@ export default function Cart() {
           unit_price: c.unitPrice,
           subtotal: c.unitPrice * c.qty,
           addons: addonObj ? [{ addon_id: addonObj.id, price: 0 }] : [],
+          promotion_snapshot: c.promotion ?? null,
         }
       })
 
@@ -233,7 +234,7 @@ export default function Cart() {
               'Content-Type': 'application/json',
               Accept: 'application/json',
             },
-            body: JSON.stringify({ customer_id: customerId, items: orderItems }),
+            body: JSON.stringify({ customer_id: customerId, items: orderItems, discount }),
           })
         : await fetch(`${API_URL}/orders`, {
             method: 'POST',

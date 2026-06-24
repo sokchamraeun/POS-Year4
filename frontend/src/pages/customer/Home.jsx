@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import Navbar from '../../components/customer/Navbar.jsx'
 import Footer from '../../components/customer/Footer.jsx'
 import PromotionSlider from '../../components/customer/PromotionSlider.jsx'
@@ -13,6 +14,25 @@ const API_URL = import.meta.env.VITE_API_URL
 
 export default function Home() {
   const { addItem } = useCart()
+  const [searchParams] = useSearchParams()
+
+  // Capture the table QR token (?token=...) so scanning the QR opens the home
+  // page and still registers a pending order for that table.
+  const qrToken = (() => {
+    const fromUrl = searchParams.get('token')
+    if (fromUrl) {
+      sessionStorage.setItem('qr_token', fromUrl)
+      return fromUrl
+    }
+    return sessionStorage.getItem('qr_token') || ''
+  })()
+
+  useEffect(() => {
+    if (qrToken) {
+      fetch(`${API_URL}/tables/by-token/${qrToken}`).catch(() => {})
+    }
+  }, [qrToken])
+
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [selectedCategory, setSelectedCategory] = useState('All')

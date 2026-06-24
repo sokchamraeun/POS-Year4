@@ -90,8 +90,8 @@ class TableController extends Controller
                 $order = Order::create([
                     'table_id' => $table->id,
                     'total' => 0,
-                    'status' => 'pending',
-                    'payment_status' => 'unpaid',
+                    'status' => 'Open',
+                    'payment_status' => 'Unpaid',
                 ]);
 
                 $table->update(['status' => Table::STATUS_OCCUPIED]);
@@ -114,6 +114,17 @@ class TableController extends Controller
             return response()->json(['message' => 'Invalid QR token.'], 404);
         }
 
+        // TEMP DEBUG: log exactly what the customer's device sends so we can see
+        // whether promotion_snapshot/discount arrive. Remove once verified.
+        \Log::info('QR order-items payload', [
+            'discount' => $request->input('discount'),
+            'items' => collect($request->input('items', []))->map(fn ($i) => [
+                'product_id' => $i['product_id'] ?? null,
+                'qty' => $i['qty'] ?? null,
+                'promotion_snapshot' => $i['promotion_snapshot'] ?? 'MISSING',
+            ]),
+        ]);
+
         $data = $request->validate([
             'customer_id' => 'nullable|exists:customers,id',
             'items' => 'required|array',
@@ -129,6 +140,8 @@ class TableController extends Controller
             'items.*.addons' => 'nullable|array',
             'items.*.addons.*.addon_id' => 'required|exists:addons,id',
             'items.*.addons.*.price' => 'nullable|numeric|min:0',
+            'items.*.promotion_snapshot' => 'nullable',
+            'discount' => 'nullable|numeric|min:0',
         ]);
 
         $order = DB::transaction(function () use ($table, $data) {
@@ -139,8 +152,8 @@ class TableController extends Controller
                     'customer_id' => $data['customer_id'] ?? null,
                     'table_id' => $table->id,
                     'total' => 0,
-                    'status' => 'pending',
-                    'payment_status' => 'unpaid',
+                    'status' => 'Open',
+                    'payment_status' => 'Unpaid',
                 ]);
 
                 $table->update(['status' => Table::STATUS_OCCUPIED]);
@@ -162,6 +175,7 @@ class TableController extends Controller
                     'qty' => $qty,
                     'unit_price' => $itemData['unit_price'] ?? 0,
                     'subtotal' => $subtotal,
+                    'promotion_snapshot' => $itemData['promotion_snapshot'] ?? null,
                 ]);
 
                 foreach (($itemData['addons'] ?? []) as $addonData) {
@@ -174,7 +188,13 @@ class TableController extends Controller
                 $itemsTotal += $subtotal;
             }
 
-            $order->increment('total', $itemsTotal);
+            $discount = $data['discount'] ?? 0;
+
+            $order->increment('total', max(0, $itemsTotal - $discount));
+
+            if ($discount > 0) {
+                $order->increment('discount', $discount);
+            }
 
             return $order->fresh()->load(['items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon']);
         });

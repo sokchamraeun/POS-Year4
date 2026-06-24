@@ -29,7 +29,7 @@ class Table extends Model
     public function currentOrder(): ?Order
     {
         return $this->orders()
-            ->whereIn('payment_status', [null, 'unpaid', 'pending'])
+            ->whereIn('payment_status', [null, 'Unpaid', 'unpaid', 'pending'])
             ->latest('id')
             ->first();
     }
