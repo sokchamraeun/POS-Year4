@@ -67,7 +67,7 @@ CLOUDINARY_URL=cloudinary://@
 
 ffffff
 
-
+fff
 
 VITE_API_URL = https://pos-year4-production.up.railway.app/api
 VITE_STORAGE_URL=https://pos-year4-production.up.railway.app/storage
