@@ -27,6 +27,12 @@ class SettingController extends Controller
             'hours_weekday' => 'nullable|string|max:100',
             'hours_saturday' => 'nullable|string|max:100',
             'hours_sunday' => 'nullable|string|max:100',
+            'receipt_shop_name' => 'nullable|string|max:255',
+            'receipt_location' => 'nullable|string|max:255',
+            'receipt_phone' => 'nullable|string|max:50',
+            'receipt_wifi_name' => 'nullable|string|max:255',
+            'receipt_wifi_password' => 'nullable|string|max:255',
+            'receipt_exchange_rate' => 'nullable|numeric|min:0',
         ]);
 
         $setting = Setting::current();

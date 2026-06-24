@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect, useMemo } from 'react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
+import Loader from '../../components/shared/Loader.jsx'
 
 const API = import.meta.env.VITE_API_URL || '/api'
 const hardcodedModules = ['', 'Dashboard', 'Products', 'Categories', 'Sizes', 'Sugar Levels', 'Ice Levels', 'Addons', 'Tables', 'Orders', 'Inventory', 'Ingredients', 'Recipe', 'Reports', 'Promotions', 'Hero Sliders', 'Permissions', 'Roles', 'Staff', 'Customers']
@@ -15,6 +16,7 @@ export default function Permissions() {
   const [formData, setFormData] = useState({ name: '', slug: '', module: '' })
   const [error, setError] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(true)
   const moduleOptions = useMemo(() => {
     const apiModules = [...new Set(permissions.map((p) => p.module).filter(Boolean))]
     return [...new Set([...hardcodedModules, ...apiModules])]
@@ -30,6 +32,7 @@ export default function Permissions() {
 
   async function fetchPermissions() {
     try {
+      setLoading(true)
       setError(null)
       const allPermissions = []
       let page = 1
@@ -48,6 +51,8 @@ export default function Permissions() {
       setPermissions(allPermissions)
     } catch (err) {
       setError(err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -164,8 +169,20 @@ export default function Permissions() {
             )}
           </div>
 
+          {loading && (
+            <div className="py-16">
+              <Loader page={false} text="Loading permissions..." />
+            </div>
+          )}
+
+          {!loading && grouped.length === 0 && (
+            <div className="text-center text-slate-500 py-16">
+              No permissions found.
+            </div>
+          )}
+
           <div className="space-y-4">
-            {(() => { let idx = 0; return grouped.map(([module, perms]) => {
+            {!loading && (() => { let idx = 0; return grouped.map(([module, perms]) => {
               const c = moduleStyle
               return (
                 <div key={module} className={`${c.bg} rounded-xl shadow-sm overflow-hidden border border-slate-200`}>

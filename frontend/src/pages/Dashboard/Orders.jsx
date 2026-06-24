@@ -5,6 +5,7 @@ import Topbar from '../../components/staff/Topbar.jsx'
 import { useSocket, useSocketConnect } from '../../hooks/useSocket'
 import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
 import Loader from '../../components/shared/Loader.jsx'
+import { useSettings } from '../../context/SettingsContext.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
 // Read the token at call time (not module-load) so it isn't captured stale
@@ -101,6 +102,7 @@ const paymentColors = {
 }
 
 export default function Orders() {
+  const { settings } = useSettings()
   const [orders, setOrders] = useState([])
   const [activeTab, setActiveTab] = useState('All')
   const [selectedOrder, setSelectedOrder] = useState(null)
@@ -614,62 +616,79 @@ export default function Orders() {
                       fetch(`${API_URL}/orders/${numericId}/mark-printed`, { method: 'POST', headers: authHeaders() }).catch(() => {})
                       const w = window.open('', '_blank')
                       const o = selectedOrder
-                      const itemsHtml = o.detail.map((item, idx) => {
-                        const vars = [item.size, item.sugar, item.ice, item.addOn].filter(Boolean).join('|')
-                        const promLabel = item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' ? `<br><span style="color:#0d9488;font-size:8px">${getPromotionLabel(item.promotion)}</span>` : ''
-                        return `<tr><td style="padding:4px 4px;text-align:center;font-size:10px">${idx + 1}</td><td style="padding:4px 4px;font-size:10px">${item.name}${vars ? '<br><span style="color:#666;font-size:8px">'+vars+'</span>' : ''}${promLabel}</td><td style="padding:4px 4px;text-align:center;font-size:10px">${item.qty}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${item.price.toFixed(2)}</td><td style="padding:4px 4px;text-align:right;font-size:10px">$${(item.qty * item.price).toFixed(2)}</td></tr>`
+                      const RATE = Number(settings.receipt_exchange_rate) || 4100 // USD -> KHR
+                      const shopName = settings.receipt_shop_name || settings.site_name || 'VISAL CAFE'
+                      const shopLocation = settings.receipt_location || settings.footer_location || ''
+                      const wifiName = settings.receipt_wifi_name || ''
+                      const wifiPass = settings.receipt_wifi_password || ''
+                      const shopPhone = settings.receipt_phone || settings.footer_phone || ''
+                      const riel = (usd) => Math.round((usd * RATE) / 100) * 100
+                      const orderType = o.table && o.table !== '-' ? 'DINE-IN' : 'TAKE-AWAY'
+                      const itemsHtml = o.detail.map((item) => {
+                        const vars = [item.size, item.sugar, item.ice, item.addOn].filter(Boolean).join(', ')
+                        const promLabel = item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' ? `<div class="sub2">(${getPromotionLabel(item.promotion)})</div>` : ''
+                        return `<tr>
+                          <td>${item.name}${vars ? '<div class="sub2">'+vars+'</div>' : ''}${promLabel}${item.time ? '<div class="sub2">'+item.time+'</div>' : ''}</td>
+                          <td class="c">${item.qty}</td>
+                          <td class="r">${item.price.toFixed(2)}</td>
+                          <td class="r">${(item.qty * item.price).toFixed(2)}</td>
+                        </tr>`
                       }).join('')
+                      const discountHtml = (() => {
+                        if (!(o.discount > 0)) return ''
+                        const pNames = [...new Set(o.detail.filter(i => i.promotion).map(i => i.promotion.name).filter(Boolean))].join(', ')
+                        return `<tr><td colspan="3" class="r" style="font-size:10px">Discount${pNames ? ' ('+pNames+')' : ''}</td><td class="r" style="font-size:10px">-${o.discount.toFixed(2)}</td></tr>`
+                      })()
                       w.document.write(`
                         <html><head><title>Receipt ${o.id}</title>
                         <style>
-                          body { font-family: 'Courier New', monospace; font-size: 11px; margin: 0; padding: 8px; width: 58mm; font-weight: bold; }
-                          h1 { font-size: 14px; text-align: center; margin-bottom: 4px; color: #0d9488; }
-                          .info { text-align: center; color: #555; margin-bottom: 12px; font-size: 10px; }
-                          table { width: 100%; border-collapse: collapse; }
-                          th { border-bottom: 1px solid #333; padding: 4px 4px; text-align: left; font-size: 10px; }
-                          th.right { text-align: right; }
-                          td { padding: 4px 4px; font-size: 10px; }
-                          .total { border-top: 2px solid #333; font-weight: bold; font-size: 12px; }
-                          .total td { padding-top: 6px; }
-                          hr { border: none; border-top: 1px dashed #999; margin: 8px 0; }
-                          .footer { text-align: center; color: #888; font-size: 9px; margin-top: 12px; }
+                          body { font-family: 'Courier New', monospace; font-size: 11px; margin: 0; padding: 10px; width: 72mm; color: #000; }
+                          .brand { font-size: 30px; font-weight: 900; letter-spacing: 4px; text-align: center; margin: 0; }
+                          .subkh { text-align: center; font-size: 11px; margin: 2px 0 8px; }
+                          .code { text-align: center; font-size: 11px; margin-bottom: 2px; }
+                          .type { font-size: 13px; font-weight: bold; margin: 8px 0 4px; }
+                          .meta { font-size: 11px; line-height: 1.6; }
+                          .meta b { font-weight: bold; }
+                          table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+                          th { border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 4px 2px; font-size: 10px; text-align: left; }
+                          th.r, td.r { text-align: right; }
+                          th.c, td.c { text-align: center; }
+                          td { padding: 4px 2px; font-size: 11px; vertical-align: top; }
+                          .sub2 { font-size: 8px; color: #555; }
+                          .grand td { border-top: 1px solid #000; font-weight: bold; font-size: 13px; padding-top: 6px; }
+                          .rate { font-size: 10px; }
+                          .dash { border-top: 1px dashed #888; margin: 8px 0; }
+                          .foot { text-align: center; font-size: 9px; margin-top: 10px; line-height: 1.6; }
                         </style></head><body>
-                        <h1>Visal Cafe</h1>
-                        <div class="info">
-                          ${o.id}<br>
-                          ${o.customer}${o.phone !== '-' ? ' &mdash; '+o.phone : ''}${o.table !== '-' ? ' | Table: '+o.table : ''}<br>
-                          ${o.datetime}<br>
-                          Status: ${o.status} | Payment: ${o.payment}<br>
-                          ${o.printedBy ? 'Staff: '+o.printedBy+'<br>' : ''}Free WIFI<br>Username: Visal<br>Password: 12345678
+                        <div class="brand">${shopName}</div>
+                        ${settings.tagline ? `<div class="subkh">${settings.tagline}</div>` : '<div style="height:6px"></div>'}
+                        <div class="code">No. ${o.id}</div>
+                        <div class="type">${orderType}</div>
+                        <div class="meta">
+                          Date&nbsp;&nbsp;&nbsp;&nbsp;: ${o.datetime}<br>
+                          Cashier&nbsp;: ${o.printedBy || 'Staff'}<br>
+                          Customer: ${o.customer}<br>
+                          ${o.table !== '-' ? 'Table&nbsp;&nbsp;&nbsp;: <b>'+o.table+'</b><br>' : ''}
+                          Trans No: ${o.id.replace('#','')}
                         </div>
-                        <hr>
                         <table>
-                          <thead><tr><th style="text-align:center">No.</th><th>Item</th><th style="text-align:center">Qty</th><th class="right">Price</th><th class="right">Subtotal</th></tr></thead>
+                          <thead><tr><th>Description</th><th class="c">QTY</th><th class="r">Unit Price</th><th class="r">Amount</th></tr></thead>
                           <tbody>${itemsHtml}</tbody>
-                          <tfoot>${(() => {
-                            const promoItems = o.detail.filter(i => i.promotion)
-                            let html = ''
-                            promoItems.forEach((item) => {
-                              const d = calcDiscount(item.price, item.promotion, item.qty)
-                              if (d <= 0) return
-                              const displayQty = item.promotion?.type === 'buy_x_get_y' ? Math.round(d / item.price) : item.qty
-                              html += `<tr><td colspan="4" style="text-align:right;font-size:9px;padding:1px 4px;color:#0d9488">${getPromotionLabel(item.promotion)} &mdash; ${item.name}${item.size ? ' ('+item.size+')' : ''} x${displayQty}</td><td style="text-align:right;font-size:9px;padding:1px 4px;color:#0d9488">-${d.toFixed(2)}</td></tr>`
-                            })
-                            if (html) {
-                              const pNames = [...new Set(o.detail.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', ')
-                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#0d9488;border-top:1px dashed #ccc">Total Discount${pNames ? ' ('+pNames+')' : ''}</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#0d9488;border-top:1px dashed #ccc">-${o.discount.toFixed(2)}</td></tr>`
-                            } else if (o.discount > 0) {
-                              html += `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#0d9488">Promotion</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#0d9488">-${o.discount.toFixed(2)}</td></tr>`
-                            }
-                            if (html) {
-                              const subtotal = o.total + o.discount
-                              html = `<tr><td colspan="4" style="text-align:right;font-size:10px;padding:2px 4px;color:#666">Subtotal</td><td style="text-align:right;font-size:10px;padding:2px 4px;color:#666">$${subtotal.toFixed(2)}</td></tr>` + html
-                            }
-                            return html
-                          })()}<tr class="total"><td colspan="4" style="text-align:right">Total</td><td style="text-align:right">$${o.total.toFixed(2)}</td></tr></tfoot>
+                          <tfoot>
+                            ${discountHtml}
+                            <tr class="grand"><td colspan="3" class="r">Grand total ($)</td><td class="r">${o.total.toFixed(2)}</td></tr>
+                            <tr><td colspan="3" class="r" style="font-size:11px">Grand total (R)</td><td class="r" style="font-size:11px">${riel(o.total).toLocaleString()}</td></tr>
+                            <tr><td colspan="4" class="rate">Exchange rate 1 USD = ${RATE.toLocaleString()} R</td></tr>
+                            <tr><td colspan="4" style="padding-top:6px">${o.paymentMethod && o.paymentMethod !== '-' ? o.paymentMethod : 'Cash'} &middot; ${o.payment}</td></tr>
+                          </tfoot>
                         </table>
-                        <hr>
-                        <div class="footer">Thank you for your visit!</div>
+                        <div class="dash"></div>
+                        <div class="foot">
+                          ${shopLocation ? shopLocation + '<br>' : ''}
+                          ${shopPhone ? 'Tel: ' + shopPhone + '<br>' : ''}
+                          ${wifiName ? 'WiFi: ' + wifiName + (wifiPass ? ' / ' + wifiPass : '') + '<br>' : ''}
+                          Thank you &mdash; See you again!
+                        </div>
                         <script>window.print();window.close();</script>
                         </body></html>
                       `)

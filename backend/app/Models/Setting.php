@@ -19,6 +19,12 @@ class Setting extends Model
         'hours_weekday',
         'hours_saturday',
         'hours_sunday',
+        'receipt_shop_name',
+        'receipt_location',
+        'receipt_phone',
+        'receipt_wifi_name',
+        'receipt_wifi_password',
+        'receipt_exchange_rate',
     ];
 
     /**

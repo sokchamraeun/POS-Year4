@@ -16,6 +16,8 @@ export default function Settings() {
   const [form, setForm] = useState({
     site_name: '', tagline: '', footer_location: '', footer_phone: '', footer_email: '',
     hours_weekday: '', hours_saturday: '', hours_sunday: '',
+    receipt_shop_name: '', receipt_location: '', receipt_phone: '', receipt_wifi_name: '',
+    receipt_wifi_password: '', receipt_exchange_rate: '',
   })
   const [logoFile, setLogoFile] = useState(null)
   const [logoPreview, setLogoPreview] = useState('')
@@ -34,6 +36,12 @@ export default function Settings() {
           hours_weekday: data.hours_weekday ?? '',
           hours_saturday: data.hours_saturday ?? '',
           hours_sunday: data.hours_sunday ?? '',
+          receipt_shop_name: data.receipt_shop_name ?? '',
+          receipt_location: data.receipt_location ?? '',
+          receipt_phone: data.receipt_phone ?? '',
+          receipt_wifi_name: data.receipt_wifi_name ?? '',
+          receipt_wifi_password: data.receipt_wifi_password ?? '',
+          receipt_exchange_rate: data.receipt_exchange_rate ?? '',
         })
         setLogoPreview(data.logo ?? '')
         setLoading(false)
@@ -61,6 +69,12 @@ export default function Settings() {
     fd.append('hours_weekday', form.hours_weekday ?? '')
     fd.append('hours_saturday', form.hours_saturday ?? '')
     fd.append('hours_sunday', form.hours_sunday ?? '')
+    fd.append('receipt_shop_name', form.receipt_shop_name ?? '')
+    fd.append('receipt_location', form.receipt_location ?? '')
+    fd.append('receipt_phone', form.receipt_phone ?? '')
+    fd.append('receipt_wifi_name', form.receipt_wifi_name ?? '')
+    fd.append('receipt_wifi_password', form.receipt_wifi_password ?? '')
+    fd.append('receipt_exchange_rate', form.receipt_exchange_rate ?? '')
     if (logoFile) fd.append('logo', logoFile)
 
     setSubmitting(true)
@@ -173,6 +187,39 @@ export default function Settings() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Sunday</label>
                       <input type="text" value={form.hours_sunday} onChange={(e) => setForm({ ...form, hours_sunday: e.target.value })} placeholder="8:00 - 18:00" className={inputCls} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Receipt paper */}
+                <div className="pt-2 border-t border-gray-100">
+                  <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-4 mt-4">Receipt Paper</h2>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Shop Name <span className="text-gray-400 font-normal">(top of receipt)</span></label>
+                      <input type="text" value={form.receipt_shop_name} onChange={(e) => setForm({ ...form, receipt_shop_name: e.target.value })} placeholder="VISAL CAFE" className={inputCls} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                      <input type="text" value={form.receipt_location} onChange={(e) => setForm({ ...form, receipt_location: e.target.value })} placeholder="National Road 6A, Phnom Penh" className={inputCls} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                      <input type="text" value={form.receipt_phone} onChange={(e) => setForm({ ...form, receipt_phone: e.target.value })} placeholder="086 688 139" className={inputCls} />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">WiFi Username</label>
+                        <input type="text" value={form.receipt_wifi_name} onChange={(e) => setForm({ ...form, receipt_wifi_name: e.target.value })} placeholder="Visal" className={inputCls} />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">WiFi Password</label>
+                        <input type="text" value={form.receipt_wifi_password} onChange={(e) => setForm({ ...form, receipt_wifi_password: e.target.value })} placeholder="12345678" className={inputCls} />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Exchange Rate <span className="text-gray-400 font-normal">(1 USD = ? Riel)</span></label>
+                      <input type="number" step="1" min="0" value={form.receipt_exchange_rate} onChange={(e) => setForm({ ...form, receipt_exchange_rate: e.target.value })} placeholder="4100" className={inputCls} />
                     </div>
                   </div>
                 </div>

@@ -13,6 +13,12 @@ const DEFAULTS = {
   hours_weekday: '7:00 - 20:00',
   hours_saturday: '8:00 - 21:00',
   hours_sunday: '8:00 - 18:00',
+  receipt_shop_name: '',
+  receipt_location: '',
+  receipt_phone: '',
+  receipt_wifi_name: '',
+  receipt_wifi_password: '',
+  receipt_exchange_rate: 4100,
 }
 
 const SettingsContext = createContext({ settings: DEFAULTS, refresh: () => {} })
@@ -36,6 +42,12 @@ export function SettingsProvider({ children }) {
           hours_weekday: data.hours_weekday || DEFAULTS.hours_weekday,
           hours_saturday: data.hours_saturday || DEFAULTS.hours_saturday,
           hours_sunday: data.hours_sunday || DEFAULTS.hours_sunday,
+          receipt_shop_name: data.receipt_shop_name || '',
+          receipt_location: data.receipt_location || '',
+          receipt_phone: data.receipt_phone || '',
+          receipt_wifi_name: data.receipt_wifi_name || '',
+          receipt_wifi_password: data.receipt_wifi_password || '',
+          receipt_exchange_rate: Number(data.receipt_exchange_rate) || DEFAULTS.receipt_exchange_rate,
         })
       })
       .catch(() => {})
