@@ -2,11 +2,15 @@
 import html2canvas from 'html2canvas'
 import { useRef, useState } from 'react'
 import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
+import { mergeOrderItems } from '../../utils/helpers.js'
+
+const getItemMergeKey = (item) =>
+  `${item.product?.name ?? item.name}|${item.size?.name ?? ''}|${item.sugar_level?.name ?? ''}|${item.ice_level?.name ?? ''}|${(item.addons ?? []).map(a => a.addon?.name).sort().join(',')}|${item.promotion?.type ?? ''}`
 
 export default function Invoice({ order, customer }) {
   const receiptRef = useRef(null)
   const [loading, setLoading] = useState(false)
-  const items = order.items ?? []
+  const items = mergeOrderItems(order.items ?? [], getItemMergeKey)
   const customerName = customer?.name ?? order.customer?.name ?? 'Guest'
   const customerPhone = customer?.phone ?? order.customer?.phone ?? ''
 
@@ -82,13 +86,7 @@ export default function Invoice({ order, customer }) {
           </div>
 
           <div className="text-[10px] text-gray-500 mt-1">
-            {order.created_at
-              ? new Date(order.created_at).toLocaleString('en-US', {
-                  year: 'numeric', month: '2-digit', day: '2-digit',
-                  hour: '2-digit', minute: '2-digit', second: '2-digit',
-                  hour12: false, timeZone: 'Asia/Phnom_Penh',
-                })
-              : ''}
+            {order.created_at?.slice(0, 10) ?? ''}
           </div>
 
           <div className="text-[10px] mt-1 text-gray-600">

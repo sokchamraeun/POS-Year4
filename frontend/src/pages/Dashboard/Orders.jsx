@@ -4,6 +4,7 @@ import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 import { useSocket, useSocketConnect } from '../../hooks/useSocket'
 import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
+import { mergeOrderItems } from '../../utils/helpers.js'
 import Loader from '../../components/shared/Loader.jsx'
 import { useSettings } from '../../context/SettingsContext.jsx'
 import { QRCodeCanvas } from 'qrcode.react'
@@ -33,7 +34,7 @@ function mapOrder(o) {
     status: o.status ?? 'New',
     payment: o.payment_status ?? 'Unpaid',
     paymentMethod: o.payment_method ?? '-',
-    detail: (o.items ?? []).map((i) => ({
+    detail: mergeOrderItems((o.items ?? []).map((i) => ({
       name: i.product?.name ?? 'Unknown',
       qty: i.qty,
       price: Number(i.unit_price ?? 0),
@@ -42,12 +43,7 @@ function mapOrder(o) {
       ice: i.ice_level?.name ?? '',
       addOn: i.addons?.map((a) => a.addon?.name).filter(Boolean).join(', ') ?? '',
       promotion: i.promotion ?? null,
-      time: (() => {
-        const d = new Date(i.created_at ?? o.created_at ?? '')
-        if (isNaN(d)) return ''
-        return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-      })(),
-    })),
+    })), (item) => `${item.name}|${item.size}|${item.sugar}|${item.ice}|${item.addOn}|${item.promotion?.type ?? ''}`),
     printedBy: o.printed_by?.name ?? null,
   }
 }
@@ -493,7 +489,7 @@ export default function Orders() {
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
                       {selectedOrder.printedBy && <span><span className="text-slate-400">Staff:</span> <span className="font-bold text-slate-800">{selectedOrder.printedBy}</span></span>}
-                      <span className="ml-auto text-slate-400">{selectedOrder.datetime}</span>
+                      <span className="ml-auto text-slate-400">{selectedOrder.date}</span>
                     </div>
                   </div>
                   <div className="mb-4 grid gap-3 border-b border-teal-200 pb-4 sm:grid-cols-3">
@@ -558,11 +554,6 @@ export default function Orders() {
                               {item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' && (
                                 <span className="ml-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-200">
                                   ({getPromotionLabel(item.promotion)})
-                                </span>
-                              )}
-                              {item.time && (
-                                <span className="mt-0.5 block text-[11px] font-semibold text-slate-400">
-                                  {item.time}
                                 </span>
                               )}
                             </td>
@@ -639,7 +630,7 @@ export default function Orders() {
                         const vars = [item.size, item.sugar, item.ice, item.addOn].filter(Boolean).join(', ')
                         const promLabel = item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' ? `<div class="sub2">(${getPromotionLabel(item.promotion)})</div>` : ''
                         return `<tr>
-                          <td>${item.name}${vars ? '<div class="sub2">'+vars+'</div>' : ''}${promLabel}${item.time ? '<div class="sub2">'+item.time+'</div>' : ''}</td>
+                          <td>${item.name}${vars ? '<div class="sub2">'+vars+'</div>' : ''}${promLabel}</td>
                           <td class="c">${item.qty}</td>
                           <td class="r">${item.price.toFixed(2)}</td>
                           <td class="r">${(item.qty * item.price).toFixed(2)}</td>
@@ -682,7 +673,7 @@ export default function Orders() {
                         <div class="code">No. ${o.id}</div>
                         <div class="type">${orderType}</div>
                         <div class="meta">
-                          Date&nbsp;&nbsp;&nbsp;&nbsp;: ${o.datetime}<br>
+                          Date&nbsp;&nbsp;&nbsp;&nbsp;: ${o.date}<br>
                           Cashier&nbsp;: ${o.printedBy || 'Staff'}<br>
                           Customer: ${o.customer}<br>
                           ${o.table !== '-' ? 'Table&nbsp;&nbsp;&nbsp;: <b>'+o.table+'</b><br>' : ''}

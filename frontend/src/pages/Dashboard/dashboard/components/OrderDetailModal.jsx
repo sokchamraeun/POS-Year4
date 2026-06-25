@@ -1,15 +1,20 @@
 ﻿// src/pages/staff/dashboard/components/OrderDetailModal.jsx
 import { statusColors, paymentColors } from '../utils/constants'
-import { formatKhmerTime } from '../utils/helpers'
 import { markOrderPrinted } from '../utils/api'
 import { calcDiscount, getPromotionLabel } from '../../../../utils/promotion.js'
+import { mergeOrderItems } from '../../../../utils/helpers.js'
+
+const getItemMergeKey = (item) =>
+  `${item.product?.name ?? item.name}|${item.size?.name ?? ''}|${item.sugar_level?.name ?? ''}|${item.ice_level?.name ?? ''}|${(item.addons ?? []).map(a => a.addon?.name).sort().join(',')}|${item.promotion?.type ?? ''}`
 
 export default function OrderDetailModal({ order, onClose, onStatusChange, onPaymentChange }) {
+  const mergedItems = mergeOrderItems(order.items ?? [], getItemMergeKey)
+
   const handlePrint = async () => {
     await markOrderPrinted(order.id)
     
     const w = window.open('', '_blank')
-    const itemsHtml = (order.items ?? []).map((item, idx) => {
+    const itemsHtml = mergedItems.map((item, idx) => {
       const name = item.product?.name ?? item.name ?? 'Unknown'
       const qty = item.qty ?? 1
       const price = Number(item.unit_price ?? item.price ?? 0)
@@ -47,7 +52,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
           <div class="info">
             Receipt #${order.id}<br>
             ${order.customer?.name ?? 'Guest'}${order.customer?.phone ? ' &mdash; '+order.customer.phone : ''}${order.table ? ' | Table: '+(order.table?.name??order.table) : ''}<br>
-            ${formatKhmerTime(order.created_at)}<br>
+            ${order.created_at?.slice(0, 10) ?? ''}<br>
             Status: ${order.status ?? 'New'} | Payment: ${order.payment_status ?? 'Unpaid'}<br>
             ${order.printed_by?.name ? 'Staff: '+order.printed_by.name+'<br>' : ''}Free WIFI<br>Username: Visal<br>Password: 12345678
           </div>
@@ -124,7 +129,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
                 {order.table && <><span className="text-gray-300">|</span><span>Table: <span className="text-gray-800 font-medium">{order.table?.name ?? order.table}</span></span></>}
                 {order.printed_by?.name && <><span className="text-gray-300">|</span><span>Staff: <span className="text-gray-800 font-medium">{order.printed_by.name}</span></span></>}
               </div>
-              <span className="text-gray-400">{formatKhmerTime(order.created_at)}</span>
+              <span className="text-gray-400">{order.created_at?.slice(0, 10) ?? ''}</span>
             </div>
           
           <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
@@ -170,7 +175,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
                </tr>
             </thead>
             <tbody>
-              {(order.items ?? []).map((item, i) => {
+              {mergedItems.map((item, i) => {
                 const name = item.product?.name ?? item.name ?? 'Unknown'
                 const price = Number(item.unit_price ?? item.price ?? 0)
                 const qty = item.qty ?? 1
@@ -205,8 +210,8 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
                 <td colSpan={7} className="pt-3 text-right text-sm text-gray-500">Subtotal</td>
                 <td className="pt-3 text-right text-sm text-gray-500">${(Number(order.total ?? 0) + Number(order.discount ?? 0)).toFixed(2)}</td>
               </tr>
-              {Number(order.discount ?? 0) > 0 && (order.items ?? []).filter(i => i.promotion).length > 0 && (
-                (order.items ?? []).filter(i => i.promotion).map((item, idx) => {
+              {Number(order.discount ?? 0) > 0 && mergedItems.filter(i => i.promotion).length > 0 && (
+                mergedItems.filter(i => i.promotion).map((item, idx) => {
                   const prom = item.promotion
                   const unitPrice = Number(item.unit_price ?? item.price ?? 0)
                   const d = calcDiscount(unitPrice, prom, item.qty ?? 1)
@@ -228,7 +233,7 @@ export default function OrderDetailModal({ order, onClose, onStatusChange, onPay
               {Number(order.discount ?? 0) > 0 && (
                 <tr>
                   <td colSpan={7} className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">
-                    {(order.items ?? []).some(i => i.promotion) ? (() => { const pNames = [...new Set((order.items ?? []).filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', '); return `Total Discount${pNames ? ' ('+pNames+')' : ''}` })() : 'Promotion'}
+                    {mergedItems.some(i => i.promotion) ? (() => { const pNames = [...new Set(mergedItems.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', '); return `Total Discount${pNames ? ' ('+pNames+')' : ''}` })() : 'Promotion'}
                   </td>
                   <td className="pt-2 text-right text-sm text-green-600 font-semibold border-t border-dashed border-green-200">-${Number(order.discount).toFixed(2)}</td>
                 </tr>
