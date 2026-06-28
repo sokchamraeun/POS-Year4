@@ -276,7 +276,7 @@ export default function ProductCard({
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto p-5">
-              <div className="rounded-xl border border-slate-200 bg-white p-4">
+              <div className="rounded-lg border border-slate-200 bg-white p-4">
                 {/* Size */}
                 <div className="mb-5">
                   <label className="mb-2 block text-sm font-black text-slate-700">
@@ -316,7 +316,7 @@ export default function ProductCard({
                         <button
                           key={s.id}
                           onClick={() => setSelectedSize(s.name)}
-                          className={`relative rounded-2xl border px-2 py-3 text-center text-xs font-black transition-all ${
+                          className={`relative rounded-sm border px-2 py-3 text-center text-xs font-black transition-all ${
                             isSelected ? selectedStyle : normalStyle
                           }`}
                         >
@@ -384,7 +384,7 @@ export default function ProductCard({
                             setSelectedIce(ice.name)
                             if (!ice.requires_input) setIceNote('')
                           }}
-                          className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                          className={`rounded-sm border px-3 py-2 text-xs font-bold transition ${
                             selectedIce === ice.name
                               ? selectedStyle
                               : normalStyle
@@ -401,7 +401,7 @@ export default function ProductCard({
                         value={iceNote}
                         onChange={(e) => setIceNote(e.target.value)}
                         placeholder="Specify ice amount"
-                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
+                        className="mt-2 w-full rounded border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
                       />
                     )}
                   </div>
@@ -419,7 +419,7 @@ export default function ProductCard({
                             setSelectedSugar(sugar.name)
                             if (!sugar.requires_input) setSugarNote('')
                           }}
-                          className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                          className={`rounded border px-3 py-2 text-xs font-bold transition ${
                             selectedSugar === sugar.name
                               ? selectedStyle
                               : normalStyle
@@ -436,7 +436,7 @@ export default function ProductCard({
                         value={sugarNote}
                         onChange={(e) => setSugarNote(e.target.value)}
                         placeholder="Specify sugar amount"
-                        className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
+                        className="mt-2 w-full rounded border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
                       />
                     )}
                   </div>
@@ -455,7 +455,7 @@ export default function ProductCard({
                       <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => setSelectedAddOn('')}
-                          className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                          className={`rounded border px-3 py-2 text-xs font-bold transition ${
                             selectedAddOn === ''
                               ? selectedStyle
                               : normalStyle
@@ -477,7 +477,7 @@ export default function ProductCard({
                             <button
                               key={addon.id}
                               onClick={() => setSelectedAddOn(addon.name)}
-                              className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                              className={`rounded border px-3 py-2 text-xs font-bold transition ${
                                 selectedAddOn === addon.name
                                   ? selectedStyle
                                   : normalStyle
