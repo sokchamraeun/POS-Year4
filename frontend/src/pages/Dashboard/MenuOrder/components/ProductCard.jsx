@@ -29,7 +29,9 @@ export default function ProductCard({
   const [quantity, setQuantity] = useState(1)
 
   const selectedIceObj = product.ice_levels?.find((i) => i.name === selectedIce)
-  const selectedSugarObj = product.sugar_levels?.find((s) => s.name === selectedSugar)
+  const selectedSugarObj = product.sugar_levels?.find(
+    (s) => s.name === selectedSugar
+  )
 
   const selectedStyle =
     'border-teal-600 bg-teal-600 text-white shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/30'
@@ -41,6 +43,7 @@ export default function ProductCard({
   const basePrice = size ? Number(size.pivot?.price ?? 0) : 0
 
   let addonPrice = 0
+
   if (selectedAddOn) {
     const addon = product.addons?.find((a) => a.name === selectedAddOn)
 
@@ -60,15 +63,12 @@ export default function ProductCard({
   const isBuyGet =
     resolvedPromotion && resolvedPromotion.type === 'buy_x_get_y'
 
-  // Original unit price = selected size + selected add-on
   const originalUnitPrice = basePrice + addonPrice
 
-  // Discount only selected size price, not add-on price
   const discountedBasePrice = isBuyGet
     ? basePrice
     : calcFinalPrice(basePrice, resolvedPromotion)
 
-  // Final unit price = discounted size + add-on
   const finalUnitPrice = isBuyGet
     ? originalUnitPrice
     : discountedBasePrice + addonPrice
@@ -117,7 +117,9 @@ export default function ProductCard({
       selectedIce,
       selectedSugar,
       selectedIceNote: selectedIceObj?.requires_input ? iceNote.trim() : '',
-      selectedSugarNote: selectedSugarObj?.requires_input ? sugarNote.trim() : '',
+      selectedSugarNote: selectedSugarObj?.requires_input
+        ? sugarNote.trim()
+        : '',
       selectedAddOn,
       originalUnitPrice,
       finalUnitPrice,
@@ -128,13 +130,13 @@ export default function ProductCard({
     setQuantity(1)
   }
 
-  const incrementQty = () => setQuantity((prev) => prev + 1)
+  const incrementQty = () => {
+    setQuantity((prev) => prev + 1)
+  }
 
-  const decrementQty = () =>
-    setQuantity((prev) => {
-      if (prev <= 1) return 1
-      return prev - 1
-    })
+  const decrementQty = () => {
+    setQuantity((prev) => Math.max(1, prev - 1))
+  }
 
   const handleQuantityChange = (e) => {
     const value = parseInt(e.target.value, 10)
@@ -212,6 +214,7 @@ export default function ProductCard({
           </div>
 
           <button
+            type="button"
             onClick={() => setShowModal(true)}
             className="mt-auto flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-black text-white shadow-sm transition-all duration-300 hover:bg-teal-700 active:scale-[0.98]"
           >
@@ -266,6 +269,7 @@ export default function ProductCard({
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => setShowModal(false)}
                   className="rounded-full border border-slate-200 bg-white p-2 text-slate-600 transition hover:border-red-500 hover:text-red-600"
                 >
@@ -302,6 +306,7 @@ export default function ProductCard({
                       const isSelected = selectedSize === s.name
 
                       let sizePromoText = ''
+
                       if (sizePromo) {
                         if (sizePromo.type === 'percentage') {
                           sizePromoText = `-${parseFloat(sizePromo.value)}%`
@@ -315,6 +320,7 @@ export default function ProductCard({
                       return (
                         <button
                           key={s.id}
+                          type="button"
                           onClick={() => setSelectedSize(s.name)}
                           className={`relative rounded-sm border px-2 py-3 text-center text-xs font-black transition-all ${
                             isSelected ? selectedStyle : normalStyle
@@ -380,6 +386,7 @@ export default function ProductCard({
                       {product.ice_levels?.map((ice) => (
                         <button
                           key={ice.id}
+                          type="button"
                           onClick={() => {
                             setSelectedIce(ice.name)
                             if (!ice.requires_input) setIceNote('')
@@ -400,7 +407,7 @@ export default function ProductCard({
                         type="text"
                         value={iceNote}
                         onChange={(e) => setIceNote(e.target.value)}
-                        placeholder="Specify ice amount"
+                        placeholder="ថែមទឹកកក (e.g. 50%)"
                         className="mt-2 w-full rounded border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 outline-none focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
                       />
                     )}
@@ -415,6 +422,7 @@ export default function ProductCard({
                       {product.sugar_levels?.map((sugar) => (
                         <button
                           key={sugar.id}
+                          type="button"
                           onClick={() => {
                             setSelectedSugar(sugar.name)
                             if (!sugar.requires_input) setSugarNote('')
@@ -445,7 +453,7 @@ export default function ProductCard({
                 {/* Addons */}
                 {product.addons?.length > 0 && (
                   <>
-                <div className="my-4 border-t border-slate-100" />
+                    <div className="my-4 border-t border-slate-100" />
 
                     <div>
                       <label className="mb-2 block text-sm font-black text-slate-700">
@@ -454,6 +462,7 @@ export default function ProductCard({
 
                       <div className="flex flex-wrap gap-2">
                         <button
+                          type="button"
                           onClick={() => setSelectedAddOn('')}
                           className={`rounded border px-3 py-2 text-xs font-bold transition ${
                             selectedAddOn === ''
@@ -476,6 +485,7 @@ export default function ProductCard({
                           return (
                             <button
                               key={addon.id}
+                              type="button"
                               onClick={() => setSelectedAddOn(addon.name)}
                               className={`rounded border px-3 py-2 text-xs font-bold transition ${
                                 selectedAddOn === addon.name
@@ -494,17 +504,35 @@ export default function ProductCard({
               </div>
 
               {/* Quantity */}
-              <div className="mt-5 rounded-xl border border-slate-200 bg-white p-4">
-                <label className="mb-3 block text-sm font-black text-slate-700">
-                  Quantity
-                </label>
+              <div className="mt-5 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    <label className="block text-sm font-black text-slate-800">
+                      Quantity
+                    </label>
 
-                <div className="flex items-center justify-center gap-4">
+                    <p className="mt-0.5 text-[11px] font-bold text-slate-400">
+                      Choose how many items to add
+                    </p>
+                  </div>
+
+                  <div className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-black text-teal-700">
+                    {quantity} item{quantity !== 1 ? 's' : ''}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white p-2">
                   <button
+                    type="button"
                     onClick={decrementQty}
-                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-teal-500 hover:bg-teal-50/50"
+                    disabled={quantity <= 1}
+                    className={`flex h-12 w-12 items-center justify-center rounded-xl border text-slate-700 transition-all active:scale-95 ${
+                      quantity <= 1
+                        ? 'cursor-not-allowed border-slate-100 bg-slate-100 text-slate-300'
+                        : 'border-slate-200 bg-white hover:border-red-300 hover:bg-red-50 hover:text-red-600'
+                    }`}
                   >
-                    <Minus className="h-4 w-4" />
+                    <Minus className="h-5 w-5" />
                   </button>
 
                   <input
@@ -512,23 +540,40 @@ export default function ProductCard({
                     min="1"
                     value={quantity}
                     onChange={handleQuantityChange}
-                    className="h-11 w-24 rounded-xl border border-slate-200 bg-white text-center text-lg font-black text-slate-900 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    className="mx-3 h-12 w-24 rounded-xl border-0 bg-slate-50 text-center text-2xl font-black text-slate-900 outline-none transition focus:bg-white focus:ring-4 focus:ring-teal-500/10 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                   />
 
                   <button
+                    type="button"
                     onClick={incrementQty}
-                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-teal-500 bg-teal-50/50 text-teal-700 transition hover:border-teal-600 hover:bg-teal-50"
+                    className="flex h-12 w-12 items-center justify-center rounded-xl border border-teal-600 bg-teal-600 text-white shadow-sm shadow-teal-600/20 transition-all hover:bg-teal-700 active:scale-95"
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className="h-5 w-5" />
                   </button>
                 </div>
 
+                <div className="mt-3 grid grid-cols-4 gap-2">
+                  {[1, 2, 3, 4].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setQuantity(num)}
+                      className={`rounded-xl border px-3 py-2 text-xs font-black transition-all active:scale-95 ${
+                        quantity === num
+                          ? 'border-teal-600 bg-teal-600 text-white'
+                          : 'border-slate-200 bg-white text-slate-600 hover:border-teal-400 hover:bg-teal-50 hover:text-teal-700'
+                      }`}
+                    >
+                      x{num}
+                    </button>
+                  ))}
+                </div>
+
                 {isBuyGet && freeItems > 0 && (
-                  <div className="mt-4 rounded-2xl border border-red-500 bg-red-50 px-3 py-3">
+                  <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-3 py-3">
                     <p className="flex items-center justify-center gap-2 text-xs font-black text-red-600">
                       <Gift className="h-4 w-4" />
-                      {promotionMessage} — {freeItems} free item
-                      {freeItems !== 1 ? 's' : ''}
+                      {promotionMessage} — {paidItems} paid + {freeItems} free
                     </p>
                   </div>
                 )}
@@ -596,6 +641,7 @@ export default function ProductCard({
               </div>
 
               <button
+                type="button"
                 onClick={handleAddToCart}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 py-3.5 text-sm font-black text-white shadow-sm transition-all duration-300 hover:bg-teal-700 active:scale-[0.98]"
               >
