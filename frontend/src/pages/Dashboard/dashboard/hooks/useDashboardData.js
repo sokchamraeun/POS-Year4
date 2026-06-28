@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { fetchOrders, fetchProducts, fetchCustomers, fetchProfitToday } from '../utils/api'
+import { fetchOrders, fetchProducts, fetchCustomers, fetchProfitToday, fetchIngredients } from '../utils/api'
 import { calculateStats, processChartData, getTopProducts } from '../utils/helpers'
 
 export function useDashboardData() {
@@ -19,24 +19,27 @@ export function useDashboardData() {
 
   const loadData = async () => {
     try {
-      const [orders, allProducts, customers, profitData] = await Promise.all([
+      const [orders, allProducts, customers, profitData, allIngredients] = await Promise.all([
         fetchOrders(),
         fetchProducts(),
         fetchCustomers(),
         fetchProfitToday(),
+        fetchIngredients(),
       ])
       profitDataRef.current = profitData
 
       const visible = orders.filter(isVisibleOrder)
 
-      const lowStockCount = allProducts.filter(
-        p => Number(p.stock ?? p.quantity ?? p.qty ?? 0) <= 5
-      ).length
+      const lowStockIngredients = allIngredients.filter(
+        i => Number(i.stock_quantity) > 0 && Number(i.stock_quantity) <= Number(i.reorder_level)
+      )
+      const lowStockCount = lowStockIngredients.length
+      const lowStockValue = lowStockIngredients.reduce((sum, i) => sum + Number(i.cost_per_unit ?? 0) * Number(i.stock_quantity ?? 0), 0)
 
       setProducts(allProducts)
       setAllOrders(visible)
       setRecentOrders(visible.slice(0, 5))
-      setStats(calculateStats(visible, allProducts, customers, lowStockCount, profitData))
+      setStats(calculateStats(visible, allProducts, customers, lowStockCount, profitData, lowStockValue))
       setTopProducts(getTopProducts(visible, allProducts))
       
       setChartData({

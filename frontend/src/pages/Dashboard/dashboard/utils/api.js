@@ -50,6 +50,10 @@ export async function fetchProducts() {
   return fetchAll('/products?per_page=200')
 }
 
+export async function fetchIngredients() {
+  return fetchAll('/ingredients?per_page=200')
+}
+
 export async function fetchCustomers() {
   return fetchAll('/customers?per_page=200')
 }

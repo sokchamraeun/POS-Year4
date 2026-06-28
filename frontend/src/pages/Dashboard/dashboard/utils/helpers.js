@@ -11,7 +11,7 @@ export const getTodayDate = () => {
   return new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10)
 }
 
-export const calculateStats = (orders, products, customers, lowStockCount = 0, profitData = null) => {
+export const calculateStats = (orders, products, customers, lowStockCount = 0, profitData = null, lowStockValue = 0) => {
   const today = getTodayDate()
   const ordersToday = orders.filter(o => {
     const d = new Date(o.created_at ?? '')
@@ -37,7 +37,7 @@ export const calculateStats = (orders, products, customers, lowStockCount = 0, p
     { label: 'Pending Orders',      value: String(pendingToday.length),    change: 'New + Open',                        type: 'pending' },
     { label: 'Completed Orders',    value: String(completedToday.length),  change: 'Completed today',                         type: 'completed' },
     { label: 'Products',            value: String(products.length),        change: `${products.filter(p => p.status).length} active`, type: 'products' },
-    { label: 'Low Stock Items',     value: String(lowStockCount),          change: lowStockCount > 0 ? 'Check inventory' : 'All stocked', type: 'stock' },
+    { label: 'Ingredient Low Stock',     value: String(lowStockCount),          change: lowStockCount > 0 ? `Value $${Number(lowStockValue).toFixed(2)}` : 'All stocked', type: 'stock' },
     { label: 'Customers',           value: String(customers.length),       change: 'Total registered',                        type: 'customers' },
     { label: 'Profit Today',
       value:  profitData !== null ? `$${Number(profitData.profit).toFixed(2)}` : `$${paidRevenue.toFixed(2)}`,
