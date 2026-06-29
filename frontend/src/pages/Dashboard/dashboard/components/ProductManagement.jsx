@@ -26,20 +26,22 @@ export default function ProductManagement({ products = [], orders = [] }) {
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
 
-  // Total sales price + quantity sold per product, top 8 by total price.
   const data = useMemo(() => {
     const orderList = Array.isArray(orders) ? orders : []
     const isCustom = period === 'custom'
     const windowMs = (PERIODS.find((p) => p.key === period) ?? PERIODS[1]).ms
+
     const times = orderList
       .map((o) => new Date(o.created_at ?? '').getTime())
       .filter((t) => !isNaN(t))
-    // Reference "now" off the most recent order so filtering stays pure.
+
     const ref = times.length ? Math.max(...times) : 0
     const cutoff = ref - windowMs
     const map = {}
+
     for (const o of orderList) {
       const day = (o.created_at ?? '').slice(0, 10)
+
       if (isCustom) {
         if (fromDate && day < fromDate) continue
         if (toDate && day > toDate) continue
@@ -47,14 +49,23 @@ export default function ProductManagement({ products = [], orders = [] }) {
         const t = new Date(o.created_at ?? '').getTime()
         if (isNaN(t) || t < cutoff) continue
       }
+
       for (const i of o.items ?? []) {
         const name = i.product?.name ?? i.name ?? 'Unknown'
-        if (!map[name]) map[name] = { name, total: 0, qty: 0 }
-        const sub = Number(i.subtotal ?? Number(i.unit_price ?? 0) * Number(i.qty ?? 1))
+
+        if (!map[name]) {
+          map[name] = { name, total: 0, qty: 0 }
+        }
+
+        const sub = Number(
+          i.subtotal ?? Number(i.unit_price ?? 0) * Number(i.qty ?? 1)
+        )
+
         map[name].total += sub
         map[name].qty += Number(i.qty ?? 0)
       }
     }
+
     return Object.values(map)
       .sort((a, b) => b.total - a.total)
       .slice(0, 8)
@@ -66,11 +77,17 @@ export default function ProductManagement({ products = [], orders = [] }) {
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-900">Product Sales</h2>
+
           <p className="mt-1 text-sm text-slate-500">
             Total price and quantity sold per product
             {period === 'custom'
-              ? (fromDate || toDate) ? ` · ${fromDate || '…'} to ${toDate || '…'}` : ' · custom range'
-              : ` · last ${(PERIODS.find((p) => p.key === period) ?? PERIODS[1]).label.toLowerCase()}`}.
+              ? fromDate || toDate
+                ? ` · ${fromDate || '…'} to ${toDate || '…'}`
+                : ' · custom range'
+              : ` · last ${(
+                  PERIODS.find((p) => p.key === period) ?? PERIODS[1]
+                ).label.toLowerCase()}`}
+            .
           </p>
         </div>
 
@@ -94,6 +111,7 @@ export default function ProductManagement({ products = [], orders = [] }) {
             {p.label}
           </button>
         ))}
+
         <button
           onClick={() => setPeriod('custom')}
           className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
@@ -113,7 +131,9 @@ export default function ProductManagement({ products = [], orders = [] }) {
               onChange={(e) => setFromDate(e.target.value)}
               className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
+
             <span className="text-xs text-slate-400">to</span>
+
             <input
               type="date"
               value={toDate}
@@ -128,55 +148,109 @@ export default function ProductManagement({ products = [], orders = [] }) {
         <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50/30 py-16 text-center">
           <span className="mb-3 text-2xl">📊</span>
           <p className="font-semibold text-slate-700">No sales data yet</p>
-          <p className="mt-1 text-sm text-slate-400">Make sales to see product totals.</p>
+          <p className="mt-1 text-sm text-slate-400">
+            Make sales to see product totals.
+          </p>
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={340}>
-          <ComposedChart data={data} margin={{ top: 16, right: 16, bottom: 50, left: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+          <ComposedChart
+            data={data}
+            margin={{ top: 18, right: 18, bottom: 50, left: 8 }}
+            barCategoryGap="32%"
+          >
+            <defs>
+              <linearGradient id="roundedCoffeeBar" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#78350f" stopOpacity={1} />
+                <stop offset="45%" stopColor="#92400e" stopOpacity={0.95} />
+                <stop offset="100%" stopColor="#d97706" stopOpacity={0.9} />
+              </linearGradient>
+
+              <linearGradient id="purpleQtyLine" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#7c3aed" />
+                <stop offset="50%" stopColor="#a855f7" />
+                <stop offset="100%" stopColor="#c084fc" />
+              </linearGradient>
+            </defs>
+
+            <CartesianGrid
+              strokeDasharray="3 6"
+              stroke="#e2e8f0"
+              vertical={false}
+            />
+
             <XAxis
               dataKey="name"
-              tick={{ fontSize: 11, fill: '#475569' }}
+              tick={{ fontSize: 11, fill: '#475569', fontWeight: 600 }}
               interval={0}
               angle={-20}
               textAnchor="end"
               height={60}
+              tickLine={false}
+              axisLine={{ stroke: '#cbd5e1' }}
             />
+
             <YAxis
               yAxisId="left"
-              tick={{ fontSize: 11, fill: '#475569' }}
+              tick={{ fontSize: 11, fill: '#475569', fontWeight: 600 }}
               tickFormatter={(v) => `$${v}`}
+              tickLine={false}
+              axisLine={false}
             />
+
             <YAxis
               yAxisId="right"
               orientation="right"
-              tick={{ fontSize: 11, fill: '#475569' }}
+              tick={{ fontSize: 11, fill: '#475569', fontWeight: 600 }}
               allowDecimals={false}
+              tickLine={false}
+              axisLine={false}
             />
+
             <Tooltip
               formatter={(value, name) =>
-                name === 'Total Price' ? [`$${Number(value).toFixed(2)}`, name] : [value, name]
+                name === 'Total Price'
+                  ? [`$${Number(value).toFixed(2)}`, name]
+                  : [value, name]
               }
-              contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12 }}
+              contentStyle={{
+                borderRadius: 16,
+                border: '1px solid #e2e8f0',
+                fontSize: 12,
+                boxShadow: '0 16px 35px rgba(15, 23, 42, 0.12)',
+              }}
             />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
+
+            <Legend wrapperStyle={{ fontSize: 12, fontWeight: 700 }} />
+
             <Bar
               yAxisId="left"
               dataKey="total"
               name="Total Price"
-              fill="#0d9488"
-              radius={[6, 6, 0, 0]}
-              maxBarSize={48}
+              fill="url(#roundedCoffeeBar)"
+              maxBarSize={36}
+              barSize={30}
             />
+
             <Line
               yAxisId="right"
               type="monotone"
               dataKey="qty"
               name="Qty Sold"
-              stroke="#9333ea"
-              strokeWidth={2.5}
-              dot={{ r: 3 }}
-              activeDot={{ r: 5 }}
+              stroke="url(#purpleQtyLine)"
+              strokeWidth={3.5}
+              dot={{
+                r: 5,
+                fill: '#ffffff',
+                stroke: '#9333ea',
+                strokeWidth: 3,
+              }}
+              activeDot={{
+                r: 8,
+                fill: '#9333ea',
+                stroke: '#ffffff',
+                strokeWidth: 3,
+              }}
             />
           </ComposedChart>
         </ResponsiveContainer>

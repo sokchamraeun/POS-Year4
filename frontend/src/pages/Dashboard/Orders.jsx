@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect, useCallback, useRef } from 'react'
-import { List, CheckCircle, Clock, DollarSign } from 'lucide-react'
+import { List, CheckCircle, Clock, DollarSign, RotateCcw } from 'lucide-react'
 import Sidebar from '../../components/staff/Sidebar.jsx'
 import Topbar from '../../components/staff/Topbar.jsx'
 import { useSocket, useSocketConnect } from '../../hooks/useSocket'
@@ -45,7 +45,7 @@ function mapOrder(o) {
       promotion: i.promotion ?? null,
     })), (item) => `${item.name}|${item.size}|${item.sugar}|${item.ice}|${item.addOn}|${item.promotion?.type ?? ''}`),
     printedBy: o.printed_by?.name ?? null,
-    placedBy: o.staff?.name ?? null,
+    placedBy: o.staff?.name ?? (o.table_id ? 'Customer' : null),
   }
 }
 
@@ -109,6 +109,8 @@ export default function Orders() {
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [search, setSearch] = useState('')
   const [todayOnly, setTodayOnly] = useState(false)
+  const [staffFilter, setStaffFilter] = useState('')
+  const [staffList, setStaffList] = useState([])
   const [page, setPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [total, setTotal] = useState(0)
@@ -116,7 +118,9 @@ export default function Orders() {
 
   function loadOrders() {
     setLoading(true)
-    fetch(`${API_URL}/orders?page=${page}`, { headers: authHeaders() })
+    const params = new URLSearchParams({ page })
+    if (staffFilter) params.set('staff_id', staffFilter)
+    fetch(`${API_URL}/orders?${params}`, { headers: authHeaders() })
       .then((res) => res.json())
       .then((json) => {
         const apiOrders = (json.data ?? []).map(mapOrder)
@@ -131,7 +135,9 @@ export default function Orders() {
   }
 
   function pollOrders() {
-    fetch(`${API_URL}/orders?page=1&per_page=50`, { headers: authHeaders() })
+    const params = new URLSearchParams({ page: '1', per_page: '50' })
+    if (staffFilter) params.set('staff_id', staffFilter)
+    fetch(`${API_URL}/orders?${params}`, { headers: authHeaders() })
       .then((res) => res.json())
       .then((json) => {
         const apiOrders = (json.data ?? []).map(mapOrder)
@@ -161,14 +167,22 @@ export default function Orders() {
   }, []))
 
   useEffect(() => {
-    loadOrders()
-  }, [page])
+    fetch(`${API_URL}/reports/sale-users`, { headers: authHeaders() })
+      .then((res) => res.json())
+      .then(setStaffList)
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
+    loadOrders()
+  }, [page, staffFilter])
+
+  useEffect(() => {
+    setPage(1)
     pollOrders()
     const interval = setInterval(pollOrders, 5000)
     return () => clearInterval(interval)
-  }, [])
+  }, [staffFilter])
 
   const today = new Date()
   const todayStr = today.toISOString().slice(0, 10)
@@ -181,6 +195,7 @@ export default function Orders() {
     shown: filtered.length,
     paid: orders.filter((o) => o.payment === 'Paid').length,
     unpaid: orders.filter((o) => o.payment === 'Unpaid').length,
+    refunded: orders.filter((o) => o.payment === 'Refunded').length,
     revenue: orders.reduce((sum, o) => sum + o.total, 0),
   }
 
@@ -232,7 +247,7 @@ export default function Orders() {
             </button>
           </div>
 
-          <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
               <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
               <div className="flex items-start justify-between gap-4">
@@ -276,6 +291,19 @@ export default function Orders() {
               <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
+                  <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Refunded</p>
+                  <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">{summary.refunded}</p>
+                  <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">Refunded orders</p>
+                </div>
+                <div className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-red-500 bg-red-500 shadow-lg shadow-red-500/20 transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl">
+                  <RotateCcw className="h-5 w-5 text-white" />
+                </div>
+              </div>
+            </div>
+            <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+              <div className="absolute left-0 top-0 h-full w-1 bg-slate-200 transition-all duration-300" />
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
                   <p className="text-sm font-bold uppercase tracking-wide text-slate-500">Loaded Revenue</p>
                   <p className="mt-2 truncate text-xl font-black tracking-tight text-slate-900">${summary.revenue.toFixed(2)}</p>
                   <p className="mt-2 line-clamp-1 text-xs font-semibold text-slate-400">Current page / polling data</p>
@@ -311,6 +339,16 @@ export default function Orders() {
                   </button>
                 )}
               </div>
+              <select
+                value={staffFilter}
+                onChange={(e) => { setStaffFilter(e.target.value); setPage(1) }}
+                className="rounded-xl border border-teal-200 bg-white px-3 py-2.5 text-sm text-slate-700 shadow-sm outline-none transition-all focus:border-teal-500 focus:ring-4 focus:ring-teal-500/15"
+              >
+                <option value="">All Staff</option>
+                {staffList.map((u) => (
+                  <option key={u.id} value={u.id}>{u.name}</option>
+                ))}
+              </select>
               <button
                 onClick={() => setTodayOnly(!todayOnly)}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
@@ -324,9 +362,9 @@ export default function Orders() {
                 </svg>
                 Today
               </button>
-              {(search || todayOnly) && (
+              {(search || todayOnly || staffFilter) && (
                 <button
-                  onClick={() => { setSearch(''); setTodayOnly(false) }}
+                  onClick={() => { setSearch(''); setTodayOnly(false); setStaffFilter('') }}
                   className="inline-flex items-center gap-2 whitespace-nowrap rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-600 shadow-sm transition-all hover:bg-red-100"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -366,6 +404,7 @@ export default function Orders() {
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4">Payment</th>
                     <th className="px-6 py-4">Method</th>
+                    <th className="px-6 py-4">Placed By</th>
                     <th className="px-6 py-4">Actions</th>
                   </tr>
                 </thead>
@@ -405,6 +444,7 @@ export default function Orders() {
                         </select>
                       </td>
                       <td className="px-6 py-4 capitalize text-slate-600">{order.paymentMethod}</td>
+                      <td className="px-6 py-4 text-slate-600">{order.placedBy || '-'}</td>
                       <td className="px-6 py-4">
                         <button
                           onClick={() => setSelectedOrder(order)}

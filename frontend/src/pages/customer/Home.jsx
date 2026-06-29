@@ -85,10 +85,6 @@ export default function Home() {
 
   const promoProducts = products.filter((p) => p.promotion)
 
-  const categoriesWithPromo = new Set(
-    promoProducts.map((p) => p.category?.name).filter(Boolean)
-  )
-
   const categoryCounts = products.reduce((acc, product) => {
     const name = product.category?.name
 
@@ -187,13 +183,6 @@ export default function Home() {
                   <div className="flex gap-2 min-w-max">
                     {categories.map((cat) => {
                       const active = selectedCategory === cat.name
-
-                      const hasPromo =
-                        cat.name !== 'All' &&
-                        cat.name !== 'Promotion' &&
-                        categoriesWithPromo.has(cat.name)
-
-                      const isPromotionTab = cat.name === 'Promotion' && promoProducts.length > 0
                       const imgUrl = cat.name === 'All' || cat.name === 'Promotion' ? null : getImageUrl(cat.image)
 
                       return (
@@ -210,10 +199,10 @@ export default function Home() {
                             <img
                               src={imgUrl}
                               alt={cat.name}
-                              className="aspect-square h-8 w-8 rounded-lg border border-slate-100 bg-slate-50 object-cover"
+                              className="aspect-square h-12 w-12 rounded-xl border border-slate-100 bg-slate-50 object-cover"
                             />
                           ) : (
-                            <div className={`flex aspect-square h-8 w-8 items-center justify-center rounded-lg text-[10px] font-bold ${
+                            <div className={`flex aspect-square h-12 w-12 items-center justify-center rounded-xl text-[10px] font-bold ${
                               active ? 'text-white' : 'text-slate-400'
                             }`}>
                               {cat.name === 'Promotion' ? (
@@ -240,17 +229,7 @@ export default function Home() {
                               {getCategoryCount(cat.name)}
                             </span>
 
-                            {hasPromo && (
-                              <span className="inline-flex items-center rounded-full bg-red-600 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-white shadow-sm ring-1 ring-white/70">
-                                Sale
-                              </span>
-                            )}
 
-                            {isPromotionTab && (
-                              <span className="inline-flex items-center rounded-full bg-red-600 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-white shadow-sm ring-1 ring-white/70">
-                                Hot
-                              </span>
-                            )}
                           </div>
                         </button>
                       )

@@ -42,7 +42,7 @@ class ReportController extends Controller
             $query->where('staff_id', $saleUser);
         }
 
-        $totalSales = (clone $query)->whereIn('payment_status', ['Paid', 'Refunded'])->sum('total');
+        $totalSales = (clone $query)->where('payment_status', 'Paid')->sum('total');
         $totalOrders = (clone $query)->count();
         $paidOrders = (clone $query)->where('payment_status', 'Paid')->count();
         $unpaidOrders = (clone $query)->where('payment_status', 'Unpaid')->count();
@@ -52,6 +52,8 @@ class ReportController extends Controller
         $paidAmount = (float) (clone $query)->where('payment_status', 'Paid')->sum('total');
         $unpaidAmount = (float) (clone $query)->where('payment_status', 'Unpaid')->sum('total');
         $refundAmount = (float) (clone $query)->where('payment_status', 'Refunded')->sum('total');
+        $netSales = round($paidAmount - $refundAmount, 2);
+        $totalOrderValue = round($paidAmount + $unpaidAmount, 2);
         $totalDiscount = (float) (clone $query)->whereIn('payment_status', ['Paid', 'Refunded'])->sum('discount');
 
         // Cost of goods sold for the period (paid + refunded orders), computed from recipes.
@@ -105,6 +107,8 @@ class ReportController extends Controller
             'paid_amount' => round($paidAmount, 2),
             'unpaid_amount' => round($unpaidAmount, 2),
             'refund_amount' => round($refundAmount, 2),
+            'net_sales' => round($netSales, 2),
+            'total_order_value' => round($totalOrderValue, 2),
             'daily' => $daily,
             'payment_methods' => $paymentMethod,
             'best_sellers' => $bestSellers,

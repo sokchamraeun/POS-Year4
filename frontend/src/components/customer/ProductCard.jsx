@@ -126,15 +126,20 @@ export default function ProductCard({ product, onAddToCart }) {
               <div className="absolute inset-0 bg-teal-100/60 animate-pulse" />
             )}
 
-            {/* Promo badge */}
-            {resolvedPromotion && (
-              <div className="absolute left-3 top-3 z-20">
-                <div className="flex items-center gap-1.5 rounded-full border border-red-700 bg-red-600 px-3 py-1.5 text-[11px] font-black uppercase tracking-wide text-white shadow-sm">
-                  <Gift className="h-3.5 w-3.5" />
-                  {promotionLabel}
+            {/* Badges */}
+            <div className="absolute left-3 top-3 z-20 flex flex-col gap-1.5">
+              {product.is_featured && (
+                <div className="flex items-center gap-1.5 rounded-full border border-orange-700 bg-orange-600 px-3 py-1.5 text-[11px] font-black uppercase tracking-wide text-white shadow-sm">
+                  Hot
                 </div>
-              </div>
-            )}
+              )}
+              {resolvedPromotion && (
+                <div className="flex items-center gap-1.5 rounded-full border border-red-700 bg-red-600 px-3 py-1.5 text-[11px] font-black uppercase tracking-wide text-white shadow-sm">
+                  <Gift className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate max-w-[100px]">{resolvedPromotion.name || promotionLabel}</span>
+                </div>
+              )}
+            </div>
 
             {/* Hover overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-[#134e4a]/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-end justify-center pb-3">

@@ -24,7 +24,10 @@ class OrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = min((int) $request->get('per_page', 20), 500);
+
         $orders = Order::with(['customer', 'table', 'staff', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy'])
+            ->when($request->get('staff_id'), fn ($q, $v) => $q->where('staff_id', $v))
+            ->when($request->get('customer'), fn ($q, $v) => $q->whereHas('customer', fn ($cq) => $cq->where('name', 'like', "%{$v}%")))
             ->orderByDesc('id')->paginate($perPage);
 
         return response()->json($orders);

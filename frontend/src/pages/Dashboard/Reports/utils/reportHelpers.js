@@ -198,6 +198,8 @@ export function getSummaryForExport(activeTab, report) {
     case 'sales':
       return [
         ['Total Sales', money(report.total_sales)],
+        ['Net Sales', money(report.net_sales)],
+        ['Total Order Value', money(report.total_order_value)],
         ['Total Orders', report.total_orders ?? 0],
         ['Total Profit', money(report.total_profit)],
         ['Total Cost', money(report.total_cost)],

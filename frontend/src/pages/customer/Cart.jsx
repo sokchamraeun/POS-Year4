@@ -620,7 +620,7 @@ export default function Cart() {
               onClick={() => navigate('/products')}
               className="mt-3 w-full rounded-2xl bg-gradient-to-r from-[#134e4a] via-[#0f766e] to-[#0d9488] px-6 py-3 text-sm font-black text-white shadow-lg transition-all hover:-translate-y-0.5"
             >
-              បន្តការដើរទិញ
+              Close
             </button>
           </div>
         </div>

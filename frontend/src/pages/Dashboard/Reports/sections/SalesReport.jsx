@@ -41,6 +41,8 @@ export default function SalesReport({ data, orders = [], pagination = {}, orders
     paid_amount,
     unpaid_amount,
     refund_amount,
+    net_sales,
+    total_order_value,
     daily = [],
     payment_methods = [],
     best_sellers = [],
@@ -55,17 +57,14 @@ export default function SalesReport({ data, orders = [], pagination = {}, orders
   return (
     <>
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Total Sales" value={money(total_sales)} tone="green" icon={DollarSign} />
-        <MetricCard label="Total Profit" value={money(total_profit)} sub={`Cost ${money(total_cost)}`} tone="teal" icon={TrendingUp} />
-        <MetricCard label="Total Orders" value={total_orders ?? 0} sub={`${paid_orders ?? 0} paid`} tone="blue" icon={ShoppingCart} />
-        <MetricCard label="Average Order" value={money(avg_order_value)} tone="orange" icon={Receipt} />
-      </div>
-
-      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Paid Amount" value={money(paid_amount)} sub={`${paid_orders ?? 0} orders`} tone="green" icon={Wallet} />
+        <MetricCard label="Total Order Value" value={money(total_order_value)} sub="incl. unpaid" tone="blue" icon={Receipt} />
+        <MetricCard label="Total Sale" value={money(total_sales)} sub={`${paid_orders ?? 0} orders`} tone="green" icon={DollarSign} />
+        <MetricCard label="Net Sales" value={money(net_sales)} sub="After refund" tone="teal" icon={Wallet} />
         <MetricCard label="Unpaid Amount" value={money(unpaid_amount)} sub={`${unpaid_orders ?? 0} orders`} tone="orange" icon={Clock} />
         <MetricCard label="Refund Amount" value={money(refund_amount)} sub={`${refund_orders ?? 0} orders`} tone="red" icon={RotateCcw} />
         <MetricCard label="Total Discount" value={money(total_discount)} tone="slate" icon={Tag} />
+        <MetricCard label="Total Profit" value={money(total_profit)} sub={`Cost ${money(total_cost)}`} tone="teal" icon={TrendingUp} />
+        <MetricCard label="Average Order" value={money(avg_order_value)} tone="orange" icon={ShoppingCart} />
       </div>
 
       <div className="mb-6 grid grid-cols-1 gap-6 xl:grid-cols-3">
@@ -77,7 +76,7 @@ export default function SalesReport({ data, orders = [], pagination = {}, orders
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#94a3b8" />
                 <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" />
                 <Tooltip formatter={value => money(value)} />
-                <Line type="monotone" dataKey="Revenue" stroke="#0d9488" strokeWidth={2.5} dot={{ r: 3 }} />
+                <Line type="linear" dataKey="Revenue" stroke="#0d9488" strokeWidth={2.5} dot={{ r: 3 }} connectNulls />
               </LineChart>
             </ChartCard>
           ) : (

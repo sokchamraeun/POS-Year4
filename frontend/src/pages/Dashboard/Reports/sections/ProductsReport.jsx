@@ -43,7 +43,7 @@ export default function ProductsReport({ data }) {
             <XAxis dataKey="name" tick={{ fontSize: 11 }} stroke="#94a3b8" />
             <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" allowDecimals={false} />
             <Tooltip />
-            <Bar dataKey="Quantity" fill="#0d9488" radius={[6, 6, 0, 0]} />
+            <Bar dataKey="Quantity" fill="#0d9488" />
           </BarChart>
         </ChartCard>
       </div>

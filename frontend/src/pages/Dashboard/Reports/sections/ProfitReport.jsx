@@ -47,8 +47,8 @@ export default function ProfitReport({ data }) {
               <YAxis tick={{ fontSize: 11 }} stroke="#94a3b8" />
               <Tooltip formatter={value => money(value)} />
               <Legend />
-              <Bar dataKey="Revenue" fill="#3b82f6" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="Profit" fill="#0d9488" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="Revenue" fill="#3b82f6" />
+              <Bar dataKey="Profit" fill="#0d9488" />
             </BarChart>
           ) : (
             <div className="flex h-full items-center justify-center">
