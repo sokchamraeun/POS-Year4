@@ -503,65 +503,67 @@ export default function ProductCard({
                 )}
               </div>
 
-              {/* Quantity */}
-              <div className="mt-5 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-4">
-                <div className="mb-4 flex items-center justify-between gap-3">
+              {/* Quantity - Small Box Style */}
+              <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-3">
+                <div className="mb-3 flex items-center justify-between">
                   <div>
                     <label className="block text-sm font-black text-slate-800">
                       Quantity
                     </label>
 
-                    <p className="mt-0.5 text-[11px] font-bold text-slate-400">
-                      Choose how many items to add
+                    <p className="text-[10px] font-bold text-slate-400">
+                      Small qty control
                     </p>
                   </div>
 
-                  <div className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-black text-teal-700">
+                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-700">
                     {quantity} item{quantity !== 1 ? 's' : ''}
-                  </div>
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white p-2">
+                <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2">
                   <button
                     type="button"
                     onClick={decrementQty}
                     disabled={quantity <= 1}
-                    className={`flex h-12 w-12 items-center justify-center rounded-xl border text-slate-700 transition-all active:scale-95 ${
+                    className={`flex h-9 w-9 items-center justify-center rounded-lg border transition active:scale-95 ${
                       quantity <= 1
-                        ? 'cursor-not-allowed border-slate-100 bg-slate-100 text-slate-300'
-                        : 'border-slate-200 bg-white hover:border-red-300 hover:bg-red-50 hover:text-red-600'
+                        ? 'cursor-not-allowed border-slate-200 bg-slate-100 text-slate-300'
+                        : 'border-red-200 bg-white text-red-600 hover:bg-red-50'
                     }`}
                   >
-                    <Minus className="h-5 w-5" />
+                    <Minus className="h-4 w-4 stroke-[3]" />
                   </button>
 
-                  <input
-                    type="number"
-                    min="1"
-                    value={quantity}
-                    onChange={handleQuantityChange}
-                    className="mx-3 h-12 w-24 rounded-xl border-0 bg-slate-50 text-center text-2xl font-black text-slate-900 outline-none transition focus:bg-white focus:ring-4 focus:ring-teal-500/10 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                  />
+                  <div className="flex flex-1 items-center justify-center">
+                    <input
+                      type="number"
+                      min="1"
+                      value={quantity}
+                      onChange={handleQuantityChange}
+                      className="h-9 w-16 rounded-lg border border-slate-200 bg-white text-center text-lg font-black text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    />
+                  </div>
 
                   <button
                     type="button"
                     onClick={incrementQty}
-                    className="flex h-12 w-12 items-center justify-center rounded-xl border border-teal-600 bg-teal-600 text-white shadow-sm shadow-teal-600/20 transition-all hover:bg-teal-700 active:scale-95"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-teal-600 bg-teal-600 text-white transition hover:bg-teal-700 active:scale-95"
                   >
-                    <Plus className="h-5 w-5" />
+                    <Plus className="h-4 w-4 stroke-[3]" />
                   </button>
                 </div>
 
-                <div className="mt-3 grid grid-cols-4 gap-2">
+                <div className="mt-2 grid grid-cols-4 gap-1.5">
                   {[1, 2, 3, 4].map((num) => (
                     <button
                       key={num}
                       type="button"
                       onClick={() => setQuantity(num)}
-                      className={`rounded-xl border px-3 py-2 text-xs font-black transition-all active:scale-95 ${
+                      className={`rounded-lg border py-1.5 text-[11px] font-black transition active:scale-95 ${
                         quantity === num
                           ? 'border-teal-600 bg-teal-600 text-white'
-                          : 'border-slate-200 bg-white text-slate-600 hover:border-teal-400 hover:bg-teal-50 hover:text-teal-700'
+                          : 'border-slate-200 bg-white text-slate-500 hover:border-teal-400 hover:bg-teal-50 hover:text-teal-700'
                       }`}
                     >
                       x{num}
@@ -570,9 +572,9 @@ export default function ProductCard({
                 </div>
 
                 {isBuyGet && freeItems > 0 && (
-                  <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-3 py-3">
-                    <p className="flex items-center justify-center gap-2 text-xs font-black text-red-600">
-                      <Gift className="h-4 w-4" />
+                  <div className="mt-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2">
+                    <p className="flex items-center justify-center gap-1.5 text-[11px] font-black text-red-600">
+                      <Gift className="h-3.5 w-3.5" />
                       {promotionMessage} — {paidItems} paid + {freeItems} free
                     </p>
                   </div>
