@@ -1,225 +1,265 @@
-﻿import { jsPDF } from 'jspdf'
-import html2canvas from 'html2canvas'
-import { useRef, useState } from 'react'
+﻿import { useRef } from 'react'
+import { QRCodeCanvas } from 'qrcode.react'
 import { calcDiscount, getPromotionLabel } from '../../utils/promotion.js'
 import { mergeOrderItems } from '../../utils/helpers.js'
+
+const WEBSITE_URL = 'https://pos-year4.vercel.app'
 
 const getItemMergeKey = (item) =>
   `${item.product?.name ?? item.name}|${item.size?.name ?? ''}|${item.sugar_level?.name ?? ''}|${item.ice_level?.name ?? ''}|${(item.addons ?? []).map(a => a.addon?.name).sort().join(',')}|${item.promotion?.type ?? ''}`
 
 export default function Invoice({ order, customer }) {
-  const receiptRef = useRef(null)
-  const [loading, setLoading] = useState(false)
+  const qrRef = useRef(null)
   const items = mergeOrderItems(order.items ?? [], getItemMergeKey)
   const customerName = customer?.name ?? order.customer?.name ?? 'Guest'
   const customerPhone = customer?.phone ?? order.customer?.phone ?? ''
 
-  async function downloadPDF() {
-    const el = receiptRef.current
-    if (!el) return
-
-    setLoading(true)
-    try {
-      const canvas = await html2canvas(el, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#fafaf9',
-        onclone: (clonedDoc) => {
-          const s = clonedDoc.createElement('style')
-          s.textContent = `
-            .text-gray-400 { color: #a8a29e !important; }
-            .text-gray-500 { color: #78716c !important; }
-            .text-gray-600 { color: #57534e !important; }
-            .text-gray-700 { color: #44403c !important; }
-            .text-gray-800 { color: #292524 !important; }
-            .text-blue-600 { color: #2563eb !important; }
-            .text-blue-800 { color: #1e40af !important; }
-            .bg-blue-600 { background-color: #2563eb !important; }
-            .bg-blue-700 { background-color: #1d4ed8 !important; }
-            .bg-orange-50 { background-color: #fafaf9 !important; }
-            .bg-white { background-color: #ffffff !important; }
-            .border-gray-100 { border-color: #f3f4f6 !important; }
-            .border-gray-200 { border-color: #e5e7eb !important; }
-            .border-gray-300 { border-color: #d1d5db !important; }
-            .text-green-600 { color: #16a34a !important; }
-            .text-red-600 { color: #dc2626 !important; }
-            .text-yellow-700 { color: #a16207 !important; }
-            .bg-green-100 { background-color: #dcfce7 !important; }
-            .bg-red-100 { background-color: #fee2e2 !important; }
-            .bg-blue-100 { background-color: #dbeafe !important; }
-            .bg-yellow-100 { background-color: #fef9c3 !important; }
-            .truncate {
-              overflow: visible !important;
-              white-space: normal !important;
-              text-overflow: clip !important;
-            }
-          `
-          clonedDoc.head.appendChild(s)
-        },
-      })
-
-      const imgData = canvas.toDataURL('image/png')
-      const imgW = 80
-      const imgH = (canvas.height / canvas.width) * imgW
-      const doc = new jsPDF({ unit: 'mm', format: [imgW, imgH] })
-      doc.addImage(imgData, 'PNG', 0, 0, imgW, imgH)
-      doc.save('receipt-' + order.id + '.pdf')
-    } catch (err) {
-      console.error('PDF error:', err)
-      alert('PDF generation failed: ' + err.message)
-    } finally {
-      setLoading(false)
-    }
+  function printReceipt() {
+    const w = window.open('', '_blank')
+    const o = order
+    const RATE = 4100
+    const qrCanvas = qrRef.current
+    let qrDataUrl = ''
+    try { qrDataUrl = qrCanvas ? qrCanvas.toDataURL('image/png') : '' } catch { qrDataUrl = '' }
+    const shopName = 'VISAL CAFE'
+    const shopLocation = ''
+    const wifiName = ''
+    const wifiPass = ''
+    const shopPhone = ''
+    const riel = (usd) => Math.round((usd * RATE) / 100) * 100
+    const orderType = o.table ? 'DINE-IN' : 'TAKE-AWAY'
+    const itemsHtml = items.map((item) => {
+      const name = item.product?.name ?? item.name ?? 'Item'
+      const qty = item.qty ?? 1
+      const subtotal = Number(item.subtotal ?? 0)
+      const price = item.unit_price ? Number(item.unit_price) : subtotal / qty
+      const opts = [item.size?.name, item.sugar_level?.name, item.ice_level?.name, ...(item.addons?.map(a => a.addon?.name).filter(Boolean) ?? [])].filter(Boolean).join(', ')
+      const promLabel = item.promotion && item.promotion.type !== 'combo_discount' && item.promotion.type !== 'combo' ? `<div class="sub2">(${getPromotionLabel(item.promotion)})</div>` : ''
+      return `<tr>
+        <td>${name}${opts ? '<div class="sub2">'+opts+'</div>' : ''}${promLabel}</td>
+        <td class="c">${qty}</td>
+        <td class="r">${price.toFixed(2)}</td>
+        <td class="r">${subtotal.toFixed(2)}</td>
+      </tr>`
+    }).join('')
+    const discountTotal = Number(o.discount ?? 0)
+    const subtotalVal = Number(o.total ?? 0) + discountTotal
+    const discountHtml = discountTotal > 0
+      ? `<tr><td colspan="3" class="r" style="font-size:10px;color:#555">Subtotal</td><td class="r" style="font-size:10px;color:#555">${subtotalVal.toFixed(2)}</td></tr>`
+        + `<tr><td colspan="3" class="r" style="font-size:10px">Promotion</td><td class="r" style="font-size:10px">-${discountTotal.toFixed(2)}</td></tr>`
+      : ''
+    w.document.write(`
+      <html><head><title>Receipt ${o.id}</title>
+      <style>
+        body { font-family: 'Courier New', 'Khmer OS System', 'Noto Sans Khmer', monospace; font-size: 11px; margin: 0; padding: 10px; width: 72mm; color: #000; }
+        .brand { font-family: 'Khmer OS Muol Light', 'Noto Serif Khmer', 'Khmer OS', Georgia, serif; font-size: 22px; font-weight: 900; letter-spacing: 1px; text-align: center; margin: 0; line-height: 1.2; }
+        .brand-en { font-size: 14px; font-weight: 900; letter-spacing: 2px; text-align: center; margin: 2px 0 0; }
+        .subkh { font-family: 'Khmer OS', 'Noto Sans Khmer', sans-serif; text-align: center; font-size: 13px; margin: 4px 0 8px; }
+        .code { text-align: center; font-size: 11px; margin-bottom: 2px; }
+        .type { font-size: 13px; font-weight: bold; margin: 8px 0 4px; }
+        .meta { font-size: 11px; line-height: 1.6; }
+        .meta b { font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+        th { border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 4px 2px; font-size: 10px; text-align: left; }
+        th.r, td.r { text-align: right; }
+        th.c, td.c { text-align: center; }
+        td { padding: 4px 2px; font-size: 11px; vertical-align: top; }
+        .sub2 { font-size: 8px; color: #555; }
+        .grand td { border-top: 1px solid #000; font-weight: bold; font-size: 13px; padding-top: 6px; }
+        .rate { font-size: 10px; }
+        .dash { border-top: 1px dashed #888; margin: 8px 0; }
+        .foot { text-align: center; font-size: 9px; margin-top: 10px; line-height: 1.6; }
+        .qrbox { text-align: center; margin-top: 10px; }
+        .qrcap { font-size: 9px; margin-top: 4px; line-height: 1.4; }
+      </style></head><body>
+      <div class="brand">${shopName}</div>
+      <div style="height:6px"></div>
+      <div class="code">No. #${o.id}</div>
+      <div class="type">${orderType}</div>
+      <div class="meta">
+        Date&nbsp;&nbsp;&nbsp;&nbsp;: ${(o.created_at ?? '').slice(0, 10)}<br>
+        Cashier&nbsp;: ${o.printed_by?.name || 'Staff'}<br>
+        Customer: ${customerName}${customerPhone ? ' ('+customerPhone+')' : ''}<br>
+        ${o.table ? 'Table&nbsp;&nbsp;&nbsp;: <b>'+o.table.name+'</b><br>' : ''}
+        Trans No: ${o.id}
+      </div>
+      <table>
+        <thead><tr><th>Description</th><th class="c">QTY</th><th class="r">Unit Price</th><th class="r">Amount</th></tr></thead>
+        <tbody>${itemsHtml}</tbody>
+        <tfoot>
+          ${discountHtml}
+          <tr class="grand"><td colspan="3" class="r">Grand total ($)</td><td class="r">${Number(o.total || 0).toFixed(2)}</td></tr>
+          <tr><td colspan="3" class="r" style="font-size:11px">Grand total (R)</td><td class="r" style="font-size:11px">${riel(Number(o.total || 0)).toLocaleString()}</td></tr>
+          <tr><td colspan="4" class="rate">Exchange rate 1 USD = ${RATE.toLocaleString()} R</td></tr>
+          <tr><td colspan="4" style="padding-top:6px">${o.payment_method || 'Cash'} &middot; ${o.payment_status || 'Unpaid'}</td></tr>
+        </tfoot>
+      </table>
+      <div class="dash"></div>
+      <div class="foot">
+        ${shopLocation ? shopLocation + '<br>' : ''}
+        ${shopPhone ? 'Tel: ' + shopPhone + '<br>' : ''}
+        ${wifiName ? 'WiFi: ' + wifiName + (wifiPass ? ' / ' + wifiPass : '') + '<br>' : ''}
+        Thank you &mdash; See you again!
+      </div>
+        ${qrDataUrl ? `<div class="qrbox">
+          <img src="${qrDataUrl}" width="120" height="120" alt="website" />
+          <div class="qrcap">Scan to order online<br>${WEBSITE_URL}</div>
+        </div>` : ''}
+      <script>window.onload=function(){window.print();window.close();}</script>
+      </body></html>
+    `)
+    w.document.close()
   }
 
   return (
-    <div className="w-full max-w-sm mx-auto" style={{ fontFamily: "'Courier New', 'Noto Sans Khmer', monospace" }}>
-      <div ref={receiptRef} className="w-full bg-[#fafaf9] shadow-xl rounded-none border border-gray-300 overflow-hidden">
-        
-        {/* HEADER */}
-        <div className="text-center px-4 pt-5 pb-3" style={{ borderBottom: '1px dashed #ccc' }}>
-          <div className="text-lg font-black tracking-wide">VISAL CAFE</div>
-          <div className="text-xs text-gray-500 mt-1">#{order.id}</div>
-
-          <div className="text-xs mt-2 text-gray-700">
-            {customerName}{customerPhone ? ' — ' + customerPhone : ''}
+    <div className="w-full max-w-sm mx-auto">
+      <div className="w-full overflow-hidden rounded-2xl border border-teal-200 bg-white shadow-lg">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-teal-800 to-teal-700 px-5 py-4 text-white">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-extrabold">Receipt #{order.id}</h2>
+            <span className={`rounded-full px-3 py-1 text-[10px] font-bold ${
+              order.payment_status === 'Paid'
+                ? 'bg-emerald-500/20 text-emerald-200'
+                : 'bg-red-500/20 text-red-200'
+            }`}>
+              {order.payment_status === 'Paid' ? 'Paid' : 'Unpaid'}
+            </span>
           </div>
-
-          <div className="text-[10px] text-gray-500 mt-1">
-            {order.created_at?.slice(0, 10) ?? ''}
-          </div>
-
-          <div className="text-[10px] mt-1 text-gray-600">
-            Status: {order.status || 'New'} | Payment: {order.payment_status || 'Unpaid'}
-          </div>
-
-          {order.printed_by?.name && (
-            <div className="text-[10px] mt-1 text-gray-600">
-              Staff: {order.printed_by.name}
-            </div>
-          )}
-
-          <div className="text-[10px] mt-2 text-gray-500">Free WIFI</div>
-          <div className="text-[10px] text-gray-500">Username: Visal</div>
-          <div className="text-[10px] text-gray-500">Password: 12345678</div>
+          <p className="mt-1 text-xs text-teal-100">{customerName}{customerPhone ? ` — ${customerPhone}` : ''}</p>
+          <p className="text-[10px] text-teal-200/70">{order.created_at?.slice(0, 10) ?? ''}</p>
         </div>
 
-        {/* TABLE HEADER */}
-        <div className="grid grid-cols-[14px_auto_24px_52px_50px] text-[10px] font-bold px-5 pt-5 pb-3" style={{ borderBottom: '1px dashed #ccc' }}>
-          <span className="text-center">No</span>
-          <span>Item</span>
-          <span className="text-center">Qty</span>
-          <span className="text-right">Price</span>
-          <span className="mx-3 text-right">Subtotal</span>
-        </div>
+        <div className="p-4">
+          {/* Info row */}
+          <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+            <span className="font-semibold text-slate-700">Status:</span>
+            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+              order.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
+              order.status === 'Cancelled' ? 'bg-red-100 text-red-700' :
+              'bg-amber-100 text-amber-700'
+            }`}>
+              {order.status || 'New'}
+            </span>
+            {order.payment_method && (
+              <>
+                <span className="text-teal-300">•</span>
+                <span className="font-semibold text-slate-700">Payment:</span>
+                <span className="capitalize text-slate-600">{order.payment_method}</span>
+              </>
+            )}
+            {order.table && (
+              <>
+                <span className="text-teal-300">•</span>
+                <span className="font-semibold text-slate-700">Table:</span>
+                <span className="text-slate-600">{order.table.name}</span>
+              </>
+            )}
+          </div>
 
-        {/* ITEMS */}
-        <div className="px-3">
-          {items.map((item, i) => {
-            const name = item.product?.name ?? item.name ?? 'Item'
-            const qty = item.qty ?? 1
-            const subtotal = Number(item.subtotal ?? 0)
-            const price = item.unit_price
-              ? Number(item.unit_price)
-              : subtotal / qty
-            const prom = item.promotion ?? item.product?.promotion
+          {/* Items Table */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-teal-100 bg-teal-50 text-left font-bold text-teal-900">
+                  <th className="py-2 pr-2">Item</th>
+                  <th className="py-2 px-2">Options</th>
+                  <th className="py-2 px-2 text-center">Qty</th>
+                  <th className="py-2 px-2 text-right">Price</th>
+                  <th className="py-2 pl-2 text-right">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item, i) => {
+                  const name = item.product?.name ?? item.name ?? 'Item'
+                  const qty = item.qty ?? 1
+                  const subtotal = Number(item.subtotal ?? 0)
+                  const price = item.unit_price
+                    ? Number(item.unit_price)
+                    : subtotal / qty
+                  const prom = item.promotion ?? item.product?.promotion
 
-            const opts = [
-              item.size?.name,
-              item.sugar_level?.name ? (item.sugar_note || item.sugar_level.name) : null,
-              item.ice_level?.name ? (item.ice_note || item.ice_level.name) : null,
-              ...(item.addons?.map(a => a.addon?.name).filter(Boolean) ?? []),
-            ]
-              .filter(Boolean)
-              .join(' | ')
+                  const opts = [
+                    item.size?.name,
+                    item.sugar_level?.name ? (item.sugar_note || item.sugar_level.name) : null,
+                    item.ice_level?.name ? (item.ice_note || item.ice_level.name) : null,
+                    ...(item.addons?.map(a => a.addon?.name).filter(Boolean) ?? []),
+                  ].filter(Boolean)
 
-            return (
-              <div key={i} className="py-1" style={{ borderBottom: i < items.length - 1 ? '1px dashed #e5e5e5' : 'none' }}>
-                <div className="grid grid-cols-[14px_auto_24px_52px_50px] text-[11px] py-2">
-                  <span className="text-center text-gray-400">{i + 1}</span>
-                  <span className="truncate text-gray-800 font-medium">{name}</span>
-                  <span className="text-center text-gray-700">{qty}</span>
-                  <span className="text-right text-gray-600">${price.toFixed(2)}</span>
-                  <span className="text-right text-gray-800 font-medium">${subtotal.toFixed(2)}</span>
-                </div>
-
-                {opts && (
-                  <div className="text-[9px] text-gray-400 ml-7 mt-0.5 mb-1">
-                    {opts}
-                  </div>
+                  return (
+                    <tr key={i} className="border-b border-teal-100 hover:bg-teal-50/50">
+                      <td className="py-2 pr-2 font-semibold text-slate-800">
+                        {name}
+                        {prom && prom.type !== 'combo_discount' && prom.type !== 'combo' && (
+                          <span className="ml-1 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700">
+                            {getPromotionLabel(prom)}
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-2 px-2 text-slate-500">
+                        {opts.length > 0 ? opts.join(' • ') : '-'}
+                      </td>
+                      <td className="py-2 px-2 text-center font-semibold text-slate-700">{qty}</td>
+                      <td className="py-2 px-2 text-right text-slate-600">${price.toFixed(2)}</td>
+                      <td className="py-2 pl-2 text-right font-semibold text-slate-800">${subtotal.toFixed(2)}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan={4} className="pt-3 text-right text-xs font-medium text-slate-500">Subtotal</td>
+                  <td className="pt-3 text-right text-xs font-medium text-slate-500">${(Number(order.total ?? 0) + Number(order.discount ?? 0)).toFixed(2)}</td>
+                </tr>
+                {Number(order.discount ?? 0) > 0 && items.filter(i => i.promotion).length > 0 && items.filter(i => i.promotion).map((item, idx) => {
+                  const prom = item.promotion
+                  const price = item.unit_price ? Number(item.unit_price) : Number(item.subtotal ?? 0) / (item.qty ?? 1)
+                  const d = calcDiscount(price, prom, item.qty ?? 1)
+                  if (d <= 0) return null
+                  const displayQty = prom?.type === 'buy_x_get_y' ? Math.round(d / price) : (item.qty ?? 1)
+                  const name = item.product?.name ?? item.name ?? 'Item'
+                  const sizeName = item.size?.name ?? ''
+                  const label = name + (sizeName ? ` (${sizeName})` : '')
+                  return (
+                    <tr key={idx}>
+                      <td colSpan={4} className="pt-1 text-right text-[10px] font-bold text-emerald-700">
+                        {getPromotionLabel(prom)} &mdash; {label} x{displayQty}
+                      </td>
+                      <td className="pt-1 text-right text-[10px] font-bold text-emerald-700">-${d.toFixed(2)}</td>
+                    </tr>
+                  )
+                })}
+                {Number(order.discount ?? 0) > 0 && (
+                  <tr>
+                    <td colSpan={4} className="border-t border-dashed border-emerald-200 pt-2 text-right text-xs font-bold text-emerald-700">
+                      {items.some(i => i.promotion) ? (() => { const pNames = [...new Set(items.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', '); return `Total Discount${pNames ? ' ('+pNames+')' : ''}` })() : 'Promotion'}
+                    </td>
+                    <td className="border-t border-dashed border-emerald-200 pt-2 text-right text-xs font-bold text-emerald-700">-${Number(order.discount).toFixed(2)}</td>
+                  </tr>
                 )}
-                {prom && prom.type !== 'combo_discount' && prom.type !== 'combo' && (
-                  <div className="text-[9px] text-green-600 ml-7 mb-1 font-medium">
-                    {getPromotionLabel(prom)}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-
-        {/* SUBTOTAL */}
-        <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] px-10 py-1" style={{ borderTop: '1px solid #ccc' }}>
-          <span />
-          <span className="text-right col-span-3 text-gray-500">Subtotal</span>
-          <span className="text-right text-gray-500">${(Number(order.total ?? 0) + Number(order.discount ?? 0)).toFixed(2)}</span>
-        </div>
-
-        {/* PROMOTION DISCOUNT */}
-        {Number(order.discount ?? 0) > 0 && items.filter(i => i.promotion).length > 0 && (
-          <>
-            {items.filter(i => i.promotion).map((item, idx) => {
-            const prom = item.promotion
-              const price = item.unit_price ? Number(item.unit_price) : Number(item.subtotal ?? 0) / (item.qty ?? 1)
-              const d = calcDiscount(price, prom, item.qty ?? 1)
-              if (d <= 0) return null
-              const displayQty = prom?.type === 'buy_x_get_y' ? Math.round(d / price) : (item.qty ?? 1)
-              const name = item.product?.name ?? item.name ?? 'Item'
-              const sizeName = item.size?.name ?? ''
-              const label = name + (sizeName ? ` (${sizeName})` : '')
-              return (
-                <div key={idx} className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[9px] px-10 py-0.5">
-                  <span />
-                  <span className="text-right col-span-3 text-green-600 font-medium">{getPromotionLabel(prom)} &mdash; {label} x{displayQty}</span>
-                  <span className="text-right text-green-600 font-medium">-${d.toFixed(2)}</span>
-                </div>
-              )
-            })}
-            <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] px-10 py-1" style={{ borderTop: '1px dashed #ccc' }}>
-              <span />
-              <span className="text-right col-span-3 text-green-600 font-semibold">Total Discount{(() => { const pNames = [...new Set(items.filter(i=>i.promotion).map(i=>i.promotion.name).filter(Boolean))].join(', '); return pNames ? ' ('+pNames+')' : '' })()}</span>
-              <span className="text-right text-green-600 font-semibold">-${Number(order.discount).toFixed(2)}</span>
-            </div>
-          </>
-        )}
-        {Number(order.discount ?? 0) > 0 && items.filter(i => i.promotion).length === 0 && (
-          <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] px-10 py-1" style={{ borderTop: '1px dashed #ccc' }}>
-            <span />
-            <span className="text-right col-span-3 text-green-600 font-medium">Promotion</span>
-            <span className="text-right text-green-600 font-medium">-${Number(order.discount).toFixed(2)}</span>
+                <tr>
+                  <td colSpan={4} className="pt-3 text-right text-sm font-extrabold text-slate-900">Total</td>
+                  <td className="pt-3 text-right text-sm font-extrabold text-teal-800">${Number(order.total || 0).toFixed(2)}</td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
-        )}
 
-        {/* TOTAL */}
-        <div className="grid grid-cols-[14px_auto_24px_52px_50px] gap-0 text-[11px] font-bold px-10 py-2" style={{ borderTop: '2px solid #333' }}>
-          <span />
-          <span className="text-right col-span-3 text-gray-800">TOTAL</span>
-          <span className="text-right text-gray-800">${Number(order.total || 0).toFixed(2)}</span>
-        </div>
-
-        {/* FOOTER */}
-        <div className="text-center text-[10px] text-gray-500 pb-4 pt-2" style={{ borderTop: '1px dashed #ccc' }}>
-          — Thank you for your visit! —
+          <div className="mt-4 border-t border-teal-100 pt-3 text-center text-[10px] text-slate-400">
+            — Thank you for your visit! —
+          </div>
+          {/* Hidden QR used to embed the website link into the printed receipt */}
+          <div style={{ position: 'absolute', left: '-9999px', top: 0 }} aria-hidden="true">
+            <QRCodeCanvas ref={qrRef} id="website-qr" value={WEBSITE_URL} size={140} level="M" />
+          </div>
         </div>
       </div>
 
-      {/* DOWNLOAD */}
       <button
-        onClick={downloadPDF}
-        disabled={loading}
-        className="w-full mt-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium py-2.5 rounded-xl transition-all active:scale-[0.98] shadow-sm"
+        onClick={printReceipt}
+        className="mt-3 w-full rounded-2xl bg-gradient-to-r from-teal-800 to-teal-700 py-3 text-sm font-bold text-white shadow-lg shadow-teal-900/20 transition-all hover:from-teal-700 hover:to-teal-600"
       >
-        {loading ? 'Generating...' : 'Download PDF'}
+        Print Receipt
       </button>
     </div>
   )

@@ -11,6 +11,7 @@ export default function ProductCard({
   opt = {},
   onSetOpt,
   onAddToCart,
+  viewMode = 'grid',
 }) {
   const [showModal, setShowModal] = useState(false)
 
@@ -151,10 +152,74 @@ export default function ProductCard({
     }
   }
 
-  return (
-    <>
-      {/* Product Card */}
-      <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
+  const renderCard = () => {
+    if (viewMode === 'list') {
+      return (
+        <div
+          onClick={() => setShowModal(true)}
+          className="group flex cursor-pointer items-center gap-4 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all duration-200 hover:border-teal-400 hover:shadow-md active:scale-[0.99]"
+        >
+          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-100 bg-slate-50">
+            {imageSrc ? (
+              <img
+                src={imageSrc}
+                alt={product.name}
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-[9px] font-bold text-slate-400">
+                No img
+              </div>
+            )}
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="truncate text-sm font-black text-slate-900">
+                {product.name}
+              </h3>
+              {resolvedPromotion && (
+                <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full border border-red-700 bg-red-600 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-white">
+                  <Gift className="h-2.5 w-2.5" />
+                  {promotionLabel}
+                </span>
+              )}
+              {selectedSize && (
+                <span className="shrink-0 text-[11px] font-semibold text-slate-400">
+                  ({selectedSize})
+                </span>
+              )}
+            </div>
+
+            <div className="mt-0.5 flex items-center gap-2">
+              {hasDiscount && (
+                <span className="text-[11px] font-bold text-red-500 line-through">
+                  ${originalUnitPrice.toFixed(2)}
+                </span>
+              )}
+              <span className="text-sm font-black text-slate-900">
+                ${finalUnitPrice.toFixed(2)}
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              setShowModal(true)
+            }}
+            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-teal-600 px-3 py-2 text-xs font-black text-white shadow-sm transition hover:bg-teal-700 active:scale-95"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add
+          </button>
+        </div>
+      )
+    }
+
+    return (
+      <>
         {/* Promotion Label */}
         {resolvedPromotion && (
           <div className="absolute left-3 top-3 z-20">
@@ -222,6 +287,21 @@ export default function ProductCard({
             Add
           </button>
         </div>
+      </>
+    )
+  }
+
+  return (
+    <>
+      {/* Product Card */}
+      <div
+        className={
+          viewMode === 'list'
+            ? ''
+            : 'group relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg'
+        }
+      >
+        {renderCard()}
       </div>
 
       {/* Modal */}

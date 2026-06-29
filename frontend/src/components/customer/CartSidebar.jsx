@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import CartItem from './CartItem.jsx'
+import Invoice from './Invoice.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
 import { getPromotionLabel } from '../../utils/promotion.js'
@@ -31,6 +32,7 @@ export default function CartSidebar({ open, onClose }) {
 
   const [placing, setPlacing] = useState(false)
   const [done, setDone] = useState(false)
+  const [placedOrder, setPlacedOrder] = useState(null)
   const [name, setName] = useState(customer?.name || '')
   const [phone, setPhone] = useState(customer?.phone || '')
   const [selectedTable, setSelectedTable] = useState('')
@@ -62,13 +64,6 @@ export default function CartSidebar({ open, onClose }) {
 
   const handleCloseRef = useRef(handleClose)
   handleCloseRef.current = handleClose
-
-  useEffect(() => {
-    if (done) {
-      const timer = setTimeout(() => handleCloseRef.current(), 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [done])
 
   if (!open) return null
 
@@ -228,8 +223,24 @@ export default function CartSidebar({ open, onClose }) {
         return
       }
 
+      // Show receipt immediately with basic order data
+      setPlacedOrder(createdOrder.data ?? createdOrder)
       setDone(true)
       setPlacing(false)
+
+      // Fetch full details in background
+      const orderId = createdOrder.id ?? createdOrder.data?.id ?? null
+      if (orderId) {
+        try {
+          const detailRes = await fetch(`${API_URL}/orders/${orderId}`, {
+            headers: { Accept: 'application/json' },
+          })
+          if (detailRes.ok) {
+            const detailData = await detailRes.json()
+            setPlacedOrder(detailData.data ?? detailData)
+          }
+        } catch {}
+      }
     } catch (err) {
       setPlacing(false)
       alert('Error: ' + (err.message || 'Check connection.'))
@@ -540,34 +551,27 @@ export default function CartSidebar({ open, onClose }) {
 
         {/* Success */}
         {done && (
-          <div className="border-t border-[#ccfbf1] bg-white px-5 py-10 text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-4">
-              <svg
-                className="w-9 h-9 text-emerald-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.3}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+          <div className="flex-1 overflow-y-auto border-t border-[#ccfbf1] bg-white px-4 py-6">
+            <div className="text-center mb-4">
+              <div className="w-12 h-12 mx-auto rounded-full bg-emerald-100 flex items-center justify-center mb-3">
+                <svg className="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.3} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <p className="text-lg font-black text-[#134e4a]">Order Placed!</p>
             </div>
-
-            <p className="text-xl font-black text-[#134e4a]">
-              Order Placed!
-            </p>
-
-            <p className="text-sm text-[#0d9488] mt-1 mb-5">
-              Your order has been submitted.
-            </p>
-
+            {placedOrder ? (
+              <div className="scale-[0.85] origin-top">
+                <Invoice order={placedOrder} customer={customer} />
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-8">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-teal-200 border-t-teal-600"></div>
+              </div>
+            )}
             <button
               onClick={handleClose}
-              className="rounded-full bg-[#134e4a] text-white text-xs font-black px-5 py-2.5 active:scale-95 transition-all"
+              className="mt-4 w-full rounded-2xl bg-[#134e4a] py-3 text-sm font-black text-white active:scale-95 transition-all"
             >
               Close
             </button>

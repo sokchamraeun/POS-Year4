@@ -1,10 +1,21 @@
-﻿export default function CategoryFilter({
+﻿import { LayoutGrid, List } from 'lucide-react'
+
+const STORAGE_URL = import.meta.env.VITE_STORAGE_URL ?? ''
+
+function getImageUrl(image) {
+  if (!image) return null
+  return image.startsWith('http') ? image : `${STORAGE_URL}/${image}`
+}
+
+export default function CategoryFilter({
   categories,
   category,
   onSelect,
   search,
   onSearchChange,
   onSearchClear,
+  viewMode,
+  onViewModeChange,
 }) {
   return (
     <div className="border-b border-slate-200 bg-white px-4 py-3">
@@ -62,23 +73,66 @@
         {/* Category Buttons */}
         <div className="flex flex-1 items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categories.map((cat) => {
-            const isActive = category === cat
+            const isActive = category === cat.name
+            const imgUrl = cat.name === 'All' ? null : getImageUrl(cat.image)
 
             return (
               <button
-                key={cat}
+                key={cat.name}
                 type="button"
-                onClick={() => onSelect(cat)}
-                className={`shrink-0 rounded-xl border px-4 py-2 text-sm font-black whitespace-nowrap transition-all duration-200 active:scale-[0.97] ${
+                onClick={() => onSelect(cat.name)}
+                className={`flex shrink-0 flex-col items-center gap-1 rounded-xl border px-3 py-2 text-xs font-black transition-all duration-200 active:scale-[0.97] ${
                   isActive
                     ? 'border-teal-600 bg-teal-600 text-white shadow-sm'
                     : 'border-slate-200 bg-white text-slate-600 hover:border-teal-500 hover:bg-teal-50/50 hover:text-teal-700'
                 }`}
               >
-                {cat}
+                {imgUrl ? (
+                  <img
+                    src={imgUrl}
+                    alt={cat.name}
+                    className="aspect-square h-8 w-8 rounded-lg border border-slate-100 bg-slate-50 object-cover"
+                  />
+                ) : (
+                  <div className={`flex aspect-square h-8 w-8 items-center justify-center rounded-lg text-[10px] font-bold ${
+                    isActive ? 'text-white' : 'text-slate-400'
+                  }`}>
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                    </svg>
+                  </div>
+                )}
+                <span className="whitespace-nowrap">{cat.name}</span>
               </button>
             )
           })}
+
+          <div className="ml-auto inline-flex shrink-0 items-center rounded-xl border border-slate-200 bg-white p-0.5 shadow-sm">
+            <button
+              type="button"
+              onClick={() => onViewModeChange('grid')}
+              className={`rounded-lg p-2 transition ${
+                viewMode === 'grid'
+                  ? 'bg-teal-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-600'
+              }`}
+              title="Grid view"
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onViewModeChange('list')}
+              className={`rounded-lg p-2 transition ${
+                viewMode === 'list'
+                  ? 'bg-teal-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-600'
+              }`}
+              title="List view"
+            >
+              <List className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

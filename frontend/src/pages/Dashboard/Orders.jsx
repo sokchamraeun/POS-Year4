@@ -45,6 +45,7 @@ function mapOrder(o) {
       promotion: i.promotion ?? null,
     })), (item) => `${item.name}|${item.size}|${item.sugar}|${item.ice}|${item.addOn}|${item.promotion?.type ?? ''}`),
     printedBy: o.printed_by?.name ?? null,
+    placedBy: o.staff?.name ?? null,
   }
 }
 
@@ -488,7 +489,8 @@ export default function Orders() {
                       {selectedOrder.table && selectedOrder.table !== '-' ? <><span className="text-teal-300">•</span><span>Table: <span className="font-bold text-teal-800">{selectedOrder.table}</span></span></> : null}
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
-                      {selectedOrder.printedBy && <span><span className="text-slate-400">Staff:</span> <span className="font-bold text-slate-800">{selectedOrder.printedBy}</span></span>}
+                      {selectedOrder.placedBy && <span><span className="text-slate-400">Placed by:</span> <span className="font-bold text-slate-800">{selectedOrder.placedBy}</span></span>}
+                      {selectedOrder.printedBy && <span><span className="text-slate-400">Print:</span> <span className="font-bold text-slate-800">{selectedOrder.printedBy}</span></span>}
                       <span className="ml-auto text-slate-400">{selectedOrder.date}</span>
                     </div>
                   </div>

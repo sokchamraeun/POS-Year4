@@ -7,8 +7,14 @@ import Loader from '../../../components/shared/Loader.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL + '/categories'
 const PRODUCTS_API = import.meta.env.VITE_API_URL + '/products'
+const STORAGE_URL = import.meta.env.VITE_STORAGE_URL
 const token = localStorage.getItem('token')
 const authHeaders = { Authorization: `Bearer ${token}` }
+
+function getImageUrl(image) {
+  if (!image) return null
+  return image.startsWith('http') ? image : `${STORAGE_URL}/${image}`
+}
 
 export default function Category() {
   const [categories, setCategories] = useState([])
@@ -17,7 +23,8 @@ export default function Category() {
   const [error, setError] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [form, setForm] = useState({ name: '' })
+  const [form, setForm] = useState({ name: '', image: null })
+  const [imagePreview, setImagePreview] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const [viewCategory, setViewCategory] = useState(null)
   const [showViewModal, setShowViewModal] = useState(false)
@@ -47,13 +54,15 @@ export default function Category() {
 
   const openCreate = () => {
     setEditing(null)
-    setForm({ name: '' })
+    setForm({ name: '', image: null })
+    setImagePreview(null)
     setShowModal(true)
   }
 
   const openEdit = (c) => {
     setEditing(c)
-    setForm({ name: c.name })
+    setForm({ name: c.name, image: null })
+    setImagePreview(getImageUrl(c.image))
     setShowModal(true)
   }
 
@@ -65,10 +74,19 @@ export default function Category() {
 
     setSubmitting(true)
     try {
+      const fd = new FormData()
+      fd.append('name', form.name)
+      if (form.image) {
+        fd.append('image', form.image)
+      }
+      if (editing) {
+        fd.append('_method', 'PUT')
+      }
+
       const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form),
+        method: editing ? 'POST' : 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
       })
       if (!res.ok) throw new Error('Failed to save')
       setShowModal(false)
@@ -168,6 +186,7 @@ export default function Category() {
                   <thead>
                     <tr className="text-left text-teal-600 font-semibold bg-teal-50/50 border-b border-teal-100">
                       <th className="px-6 py-4">#ID</th>
+                      <th className="px-6 py-4">Image</th>
                       <th className="px-6 py-4">Name</th>
                       <th className="px-6 py-4">Products</th>
                       <th className="px-6 py-4 text-right">Actions</th>
@@ -186,6 +205,19 @@ export default function Category() {
                           <div className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold">
                             {String(index + 1).padStart(2, '0')}
                           </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          {getImageUrl(c.image) ? (
+                            <img
+                              src={getImageUrl(c.image)}
+                              alt={c.name}
+                              className="h-10 w-10 rounded-lg border border-slate-200 bg-white object-contain"
+                            />
+                          ) : (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 text-[9px] font-bold text-slate-400">
+                              No img
+                            </div>
+                          )}
                         </td>
                         <td className="px-6 py-4 font-medium text-slate-800">{c.name}</td>
                         <td className="px-6 py-4">
@@ -224,7 +256,7 @@ export default function Category() {
                     ))}
                     {categories.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="px-6 py-16 text-center">
+                        <td colSpan={5} className="px-6 py-16 text-center">
                           <div className="text-slate-400">
                             <svg className="w-16 h-16 mx-auto mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -281,6 +313,52 @@ export default function Category() {
                     autoFocus
                   />
                   <p className="text-xs text-slate-400 mt-1">Enter a unique category name</p>
+                </div>
+
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Category Image</label>
+                  <div className="flex items-center gap-4">
+                    <label className="flex cursor-pointer items-center gap-2 rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-500 transition hover:border-teal-400 hover:bg-teal-50">
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                      </svg>
+                      Upload Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            setForm({ ...form, image: file })
+                            setImagePreview(URL.createObjectURL(file))
+                          }
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                    {imagePreview && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setForm({ ...form, image: null })
+                          setImagePreview(null)
+                        }}
+                        className="text-xs font-medium text-red-500 hover:text-red-700"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  {imagePreview && (
+                    <div className="mt-3">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="h-20 w-20 rounded-xl border border-slate-200 bg-white object-contain"
+                      />
+                    </div>
+                  )}
+                  <p className="text-xs text-slate-400 mt-1">Optional. Upload a category image (max 2MB)</p>
                 </div>
                 <div className="flex gap-3 justify-end pt-2 border-t border-slate-200">
                   <button

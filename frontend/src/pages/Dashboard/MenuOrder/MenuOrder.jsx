@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import Sidebar from '../../../components/staff/Sidebar.jsx'
 import Topbar from '../../../components/staff/Topbar.jsx'
 import CategoryFilter from './components/CategoryFilter.jsx'
@@ -18,8 +18,28 @@ export default function MenuOrder() {
   const [categories, setCategories] = useState(['All'])
   const [loading, setLoading] = useState(true)
   const [recipes, setRecipes] = useState([])
-  const [cart, setCart] = useState([])
-  const [options, setOptions] = useState({})
+  const [cart, setCart] = useState(() => {
+    try { const c = localStorage.getItem('pos_cart'); return c ? JSON.parse(c) : [] } catch { return [] }
+  })
+  const [options, setOptions] = useState(() => {
+    try { const o = localStorage.getItem('pos_options'); return o ? JSON.parse(o) : {} } catch { return {} }
+  })
+
+  const persistCart = useCallback((next) => {
+    setCart((prev) => {
+      const updated = typeof next === 'function' ? next(prev) : next
+      localStorage.setItem('pos_cart', JSON.stringify(updated))
+      return updated
+    })
+  }, [])
+
+  const persistOptions = useCallback((next) => {
+    setOptions((prev) => {
+      const updated = typeof next === 'function' ? next(prev) : next
+      localStorage.setItem('pos_options', JSON.stringify(updated))
+      return updated
+    })
+  }, [])
   const [customerName, setCustomerName] = useState('')
   const [phone, setPhone] = useState('')
   const [customerId, setCustomerId] = useState('')
@@ -37,6 +57,7 @@ export default function MenuOrder() {
   const [existingOrder, setExistingOrder] = useState(null)
   // '' = new order, or the open order id the staff chose to add items to.
   const [orderChoice, setOrderChoice] = useState('')
+  const [viewMode, setViewMode] = useState('grid')
 
 
   const filteredCustomers = customers.filter((c) =>
@@ -55,8 +76,8 @@ export default function MenuOrder() {
           fetch(`${API_URL}/recipes?per_page=500`, { headers: headers() }).then((r) => r.json()),
         ])
         setProducts(prodRes.data ?? [])
-        const cats = [...new Set((catRes.data ?? catRes).map((c) => c.name))]
-        setCategories(['All', ...cats])
+        const cats = (catRes.data ?? catRes).map((c) => ({ name: c.name, image: c.image ?? null }))
+        setCategories([{ name: 'All', image: null }, ...cats])
         setTables(tblRes.data ?? tblRes ?? [])
         setCustomers(custRes.data ?? custRes ?? [])
         setRecipes(recRes.data ?? recRes ?? [])
@@ -113,7 +134,7 @@ export default function MenuOrder() {
   }
 
   function setOpt(id, field, value) {
-    setOptions((prev) => ({
+    persistOptions((prev) => ({
       ...prev,
       [id]: { ...(prev[id] || {}), [field]: value },
     }))
@@ -171,7 +192,7 @@ export default function MenuOrder() {
     // Get quantity from product if it exists, otherwise default to 1
     const quantity = product.quantity || 1
 
-    setCart((prev) => {
+    persistCart((prev) => {
       const existing = prev.find((c) => c.key === key)
       if (existing) {
         return prev.map((c) =>
@@ -187,9 +208,9 @@ export default function MenuOrder() {
 
   function updateQty(key, qty) {
     if (qty <= 0) {
-      setCart((prev) => prev.filter((c) => c.key !== key))
+      persistCart((prev) => prev.filter((c) => c.key !== key))
     } else {
-      setCart((prev) =>
+      persistCart((prev) =>
         prev.map((c) => (c.key === key ? { ...c, qty } : c))
       )
     }
@@ -304,8 +325,8 @@ export default function MenuOrder() {
       }
 
       if (isAddingToExisting) {
-        setCart([])
-        setOptions({})
+        persistCart([])
+        persistOptions({})
         setExistingOrder(createdOrder)
         setSuccess(`Items added to Order #${existingOrder.id}!`)
       } else {
@@ -320,8 +341,8 @@ export default function MenuOrder() {
   }
 
   function resetCart() {
-    setCart([])
-    setOptions({})
+    persistCart([])
+    persistOptions({})
     setCategory('All')
     setCustomerName('')
     setPhone('')
@@ -381,6 +402,8 @@ if (loading) return <Loader text="Loading menu" />
               search={productSearch}
               onSearchChange={setProductSearch}
               onSearchClear={() => setProductSearch('')}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
             />
 
             {success && (
@@ -408,7 +431,11 @@ if (loading) return <Loader text="Loading menu" />
             )}
 
             <div className="flex-1 overflow-y-auto hide-scrollbar px-6 pb-6 pt-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className={
+                viewMode === 'grid'
+                  ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4'
+                  : 'flex flex-col gap-3'
+              }>
                 {filtered.map((product) => {
                   const opt = { ...getDefaultOpt(product), ...getOpt(product.id) }
                   return (
@@ -418,11 +445,16 @@ if (loading) return <Loader text="Loading menu" />
                       opt={opt}
                       onSetOpt={setOpt}
                       onAddToCart={addToCart}
+                      viewMode={viewMode}
                     />
                   )
                 })}
                 {filtered.length === 0 && (
-                  <div className="col-span-full text-center text-gray-500 py-8">
+                  <div className={
+                    viewMode === 'grid'
+                      ? 'col-span-full text-center text-gray-500 py-8'
+                      : 'text-center text-gray-500 py-8'
+                  }>
                     No products found.
                   </div>
                 )}

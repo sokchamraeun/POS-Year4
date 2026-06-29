@@ -24,7 +24,7 @@ class OrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = min((int) $request->get('per_page', 20), 500);
-        $orders = Order::with(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy'])
+        $orders = Order::with(['customer', 'table', 'staff', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy'])
             ->orderByDesc('id')->paginate($perPage);
 
         return response()->json($orders);
@@ -32,7 +32,7 @@ class OrderController extends Controller
 
     public function show(Order $order): JsonResponse
     {
-        $order->load(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
+        $order->load(['customer', 'table', 'staff', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy']);
 
         return response()->json($order);
     }
@@ -44,7 +44,7 @@ class OrderController extends Controller
         if (! $customer) {
             return response()->json(['data' => [], 'message' => 'No orders found']);
         }
-        $orders = Order::with(['customer', 'table', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy'])
+        $orders = Order::with(['customer', 'table', 'staff', 'items.product', 'items.size', 'items.sugarLevel', 'items.iceLevel', 'items.addons.addon', 'printedBy'])
             ->where('customer_id', $customer->id)
             ->orderByDesc('id')
             ->paginate(10);

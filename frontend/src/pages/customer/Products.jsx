@@ -8,6 +8,12 @@ import { useCart } from '../../context/CartContext.jsx'
 import Loader from '../../components/shared/Loader.jsx'
 
 const API_URL = import.meta.env.VITE_API_URL
+const STORAGE_URL = import.meta.env.VITE_STORAGE_URL
+
+function getImageUrl(image) {
+  if (!image) return null
+  return image.startsWith('http') ? image : `${STORAGE_URL}/${image}`
+}
 
 export default function Products() {
   const { addItem } = useCart()
@@ -29,32 +35,37 @@ export default function Products() {
   }, [qrToken])
 
   const [products, setProducts] = useState([])
-  const [categories, setCategories] = useState(['All'])
+  const [categories, setCategories] = useState([{ name: 'All', image: null }])
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchAll() {
       try {
-        const res = await fetch(`${API_URL}/products?per_page=200`)
-        const json = await res.json()
+        const [prodRes, catRes] = await Promise.all([
+          fetch(`${API_URL}/products?per_page=200`),
+          fetch(`${API_URL}/categories`),
+        ])
 
-        const data = Array.isArray(json)
-          ? json
-          : Array.isArray(json.data)
-            ? json.data
+        const prodJson = await prodRes.json()
+        const catJson = await catRes.json()
+
+        const data = Array.isArray(prodJson)
+          ? prodJson
+          : Array.isArray(prodJson.data)
+            ? prodJson.data
             : []
 
         setProducts(data)
 
-        const cats = [
-          ...new Set(data.map((p) => p.category?.name).filter(Boolean)),
-        ]
-
-        setCategories(['All', ...cats])
+        const cats = (catJson.data ?? catJson).map((c) => ({
+          name: c.name,
+          image: c.image ?? null,
+        }))
+        setCategories([{ name: 'All', image: null }, ...cats])
       } catch {
         setProducts([])
-        setCategories(['All'])
+        setCategories([{ name: 'All', image: null }])
       } finally {
         setLoading(false)
       }
@@ -69,11 +80,6 @@ export default function Products() {
     selectedCategory === 'All'
       ? products
       : products.filter((p) => p.category?.name === selectedCategory)
-
-  function getCategoryCount(cat) {
-    if (cat === 'All') return products.length
-    return products.filter((p) => p.category?.name === cat).length
-  }
 
   return (
     <div className="min-h-screen bg-[#f0fdfa] pb-24 text-[#134e4a] sm:pb-0">
@@ -166,36 +172,41 @@ export default function Products() {
             </section>
           )}
 
-          {/* Sticky Category - fixed scroll up issue */}
+          {/* Sticky Category - style like MenuOrder */}
           <div className="sticky top-[68px] z-30 border-y border-[#ccfbf1] bg-[#f0fdfa]/95 shadow-[0_12px_30px_rgba(15,118,110,0.10)] backdrop-blur-2xl sm:top-[76px]">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="hide-scrollbar flex gap-3 overflow-x-auto py-3">
+              <div className="hide-scrollbar flex gap-2 overflow-x-auto py-3">
                 {categories.map((cat) => {
-                  const active = selectedCategory === cat
-                  const count = getCategoryCount(cat)
+                  const active = selectedCategory === cat.name
+                  const imgUrl = cat.name === 'All' ? null : getImageUrl(cat.image)
 
                   return (
                     <button
-                      key={cat}
+                      key={cat.name}
                       type="button"
-                      onClick={() => setSelectedCategory(cat)}
-                      className={`relative flex shrink-0 items-center gap-3 rounded-[1.35rem] border px-4 py-2.5 text-xs font-black transition-all duration-300 active:scale-95 sm:text-sm ${
+                      onClick={() => setSelectedCategory(cat.name)}
+                      className={`flex shrink-0 flex-col items-center gap-1 rounded-xl border px-3 py-2 text-xs font-black transition-all duration-200 active:scale-[0.97] ${
                         active
-                          ? 'border-[#134e4a] bg-[#134e4a] text-white shadow-[0_14px_30px_rgba(15,118,110,0.30)]'
-                          : 'border-[#ccfbf1] bg-white text-[#115e59] hover:-translate-y-0.5 hover:border-[#0d9488] hover:bg-[#f0fdfa] hover:text-[#134e4a]'
+                          ? 'border-teal-600 bg-teal-600 text-white shadow-sm'
+                          : 'border-slate-200 bg-white text-slate-600 hover:border-teal-500 hover:bg-teal-50/50 hover:text-teal-700'
                       }`}
                     >
-                      <span>{cat}</span>
-
-                      <span
-                        className={`flex h-6 min-w-6 items-center justify-center rounded-full px-2 text-[10px] font-black ${
-                          active
-                            ? 'bg-[#14b8a6] text-white'
-                            : 'bg-[#ccfbf1] text-[#14b8a6]'
-                        }`}
-                      >
-                        {count}
-                      </span>
+                      {imgUrl ? (
+                        <img
+                          src={imgUrl}
+                          alt={cat.name}
+                          className="aspect-square h-8 w-8 rounded-lg border border-slate-100 bg-slate-50 object-cover"
+                        />
+                      ) : (
+                        <div className={`flex aspect-square h-8 w-8 items-center justify-center rounded-lg text-[10px] font-bold ${
+                          active ? 'text-white' : 'text-slate-400'
+                        }`}>
+                          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                          </svg>
+                        </div>
+                      )}
+                      <span className="whitespace-nowrap">{cat.name}</span>
                     </button>
                   )
                 })}

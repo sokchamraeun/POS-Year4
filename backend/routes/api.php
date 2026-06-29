@@ -63,6 +63,7 @@ Route::get('/orders/{order}/khqr-qr', [OrderController::class, 'generateKhqrQr']
 Route::post('/orders/payment/initiate', [PaymentCheckoutController::class, 'initiate']);
 Route::match(['get', 'post'], '/orders/payment/callback', [PaymentCheckoutController::class, 'callback']);
 // Public customer routes (for guest checkout)
+Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/customers', [CustomerController::class, 'index']);
 Route::post('/customers', [CustomerController::class, 'store']);
 Route::put('/customers/{customer}', [CustomerController::class, 'update']);
@@ -127,10 +128,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('permission:view-ice-level')->group(function () {
         Route::get('/ice-levels', [IceLevelController::class, 'index']);
         Route::get('/ice-levels/{iceLevel}', [IceLevelController::class, 'show']);
-    });
-    Route::middleware('permission:view-category')->group(function () {
-        Route::get('/categories', [CategoryController::class, 'index']);
-        Route::get('/categories/{category}', [CategoryController::class, 'show']);
     });
     Route::middleware('permission:view-addon')->group(function () {
         Route::get('/addons', [AddonController::class, 'index']);

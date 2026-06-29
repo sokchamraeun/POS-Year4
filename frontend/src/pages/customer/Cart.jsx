@@ -4,6 +4,7 @@ import Navbar from '../../components/customer/Navbar.jsx'
 import MobileBottomNav from '../../components/customer/MobileBottomNav.jsx'
 import CartItem from '../../components/customer/CartItem.jsx'
 import ProductModal from '../../components/customer/ProductModal.jsx'
+import Invoice from '../../components/customer/Invoice.jsx'
 import { useCart } from '../../context/CartContext.jsx'
 import { useCustomerAuth } from '../../context/CustomerAuthContext.jsx'
 import { calcFinalPrice, getPromotionLabel, resolvePromotionForSize } from '../../utils/promotion.js'
@@ -43,6 +44,7 @@ export default function Cart() {
   const [paymentMethod, setPaymentMethod] = useState('pay_later')
   const [placing, setPlacing] = useState(false)
   const [done, setDone] = useState(false)
+  const [placedOrder, setPlacedOrder] = useState(null)
 
   // Edit item modal state
   const [editItem, setEditItem] = useState(null)
@@ -137,16 +139,6 @@ export default function Cart() {
       })
       .catch(() => setTables([]))
   }, [qrToken])
-
-  useEffect(() => {
-    if (!done) return
-
-    const timer = setTimeout(() => {
-      navigate('/products')
-    }, 3000)
-
-    return () => clearTimeout(timer)
-  }, [done])
 
   async function placeOrder() {
     if (!canPlaceOrder) return
@@ -292,8 +284,24 @@ export default function Cart() {
         return
       }
 
+      // Show modal immediately with basic order data
+      setPlacedOrder(createdOrder.data ?? createdOrder)
       setDone(true)
       setPlacing(false)
+
+      // Fetch full order details in background and update receipt
+      const orderId = createdOrder.id ?? createdOrder.data?.id ?? null
+      if (orderId) {
+        try {
+          const detailRes = await fetch(`${API_URL}/orders/${orderId}`, {
+            headers: { Accept: 'application/json' },
+          })
+          if (detailRes.ok) {
+            const detailData = await detailRes.json()
+            setPlacedOrder(detailData.data ?? detailData)
+          }
+        } catch {}
+      }
     } catch (err) {
       setPlacing(false)
       alert('Error: ' + (err.message || 'Check connection.'))
@@ -309,52 +317,6 @@ export default function Cart() {
         : ''
     )
     .filter(Boolean)
-
-  if (done) {
-    return (
-      <div className="min-h-screen bg-[#f0fdfa] pb-24 text-[#134e4a] sm:pb-0">
-        <Navbar />
-
-        <main className="flex min-h-[calc(100vh-76px)] items-center justify-center px-4">
-          <div className="relative w-full max-w-md overflow-hidden rounded-[2rem] border border-[#ccfbf1] bg-white p-7 text-center shadow-[0_28px_80px_rgba(15,118,110,0.16)]">
-            <div className="pointer-events-none absolute -right-14 -top-14 h-36 w-36 rounded-full bg-emerald-300/25 blur-3xl" />
-
-            <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-emerald-100 text-emerald-600 shadow-inner">
-              <svg
-                className="h-11 w-11"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2.4}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-            </div>
-
-            <h1 className="text-2xl font-black text-[#134e4a]">ការបញ្ជាទិញបានជោគជ័យ!</h1>
-
-            <p className="mt-2 text-sm font-semibold leading-6 text-[#0d9488]">
-              ការបញ្ជាទិញរបស់អ្នកត្រូវបានដាក់ជូនដោយជោគជ័យ។ យើងនឹងរៀបចំវាឆាប់ៗនេះ។
-            </p>
-
-            <button
-              type="button"
-              onClick={() => navigate('/products')}
-              className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#134e4a] via-[#0f766e] to-[#0d9488] px-6 py-3 text-sm font-black text-white shadow-[0_16px_35px_rgba(15,118,110,0.30)] transition-all duration-300 hover:-translate-y-0.5"
-            >
-              បន្តការដើរទិញ
-            </button>
-          </div>
-        </main>
-
-        <MobileBottomNav />
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-[#f0fdfa] pb-24 text-[#134e4a] sm:pb-0">
@@ -624,6 +586,44 @@ export default function Cart() {
           onAddToCart={handleSaveEdit}
           submitLabel="ធ្វើបច្ចុប្បន្នភាព"
         />
+      )}
+
+      {done && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-2xl bg-transparent">
+            <button
+              onClick={() => navigate('/products')}
+              className="absolute -top-3 -right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md text-slate-500 hover:text-slate-700"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="mb-3 text-center">
+              <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.4} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 className="text-lg font-black text-white drop-shadow-sm">ការបញ្ជាទិញបានជោគជ័យ!</h2>
+            </div>
+            {placedOrder ? (
+              <Invoice order={placedOrder} customer={customer} />
+            ) : (
+              <div className="rounded-2xl bg-white p-8 text-center shadow-lg">
+                <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-teal-200 border-t-teal-600"></div>
+                <p className="mt-3 text-sm font-semibold text-slate-500">Loading receipt...</p>
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => navigate('/products')}
+              className="mt-3 w-full rounded-2xl bg-gradient-to-r from-[#134e4a] via-[#0f766e] to-[#0d9488] px-6 py-3 text-sm font-black text-white shadow-lg transition-all hover:-translate-y-0.5"
+            >
+              បន្តការដើរទិញ
+            </button>
+          </div>
+        </div>
       )}
     </div>
   )
