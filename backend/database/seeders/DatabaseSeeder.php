@@ -20,9 +20,8 @@ class DatabaseSeeder extends Seeder
             // PermissionSeeder is idempotent (firstOrCreate by slug), so running it
             // on every deploy safely adds new permissions without duplicating.
             PermissionSeeder::class,
-            // RoleSeeder is intentionally NOT auto-run: it deletes custom roles
-            // (id > 3). Run it manually only when needed.
-            // UserSeeder::class,
+            RoleSeeder::class,
+            UserSeeder::class,
             // ProductSeeder::class,
             IngredientAndRecipeSeeder::class,
         ]);
