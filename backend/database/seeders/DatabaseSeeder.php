@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             RoleSeeder::class,
             UserSeeder::class,
-            // ProductSeeder::class,
+            ProductSeeder::class,
             IngredientAndRecipeSeeder::class,
         ]);
 
